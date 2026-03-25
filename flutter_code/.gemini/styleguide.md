@@ -2,7 +2,7 @@
 
 ## Arquitectura
 
-
+- **Organización Layer-first**: Los archivos se agrupan estrictamente por su capa técnica (UI, Dominio, Datos) en lugar de agruparlos por funcionalidad (Feature-first).
 - Todo código debe seguir MVVM: Views → ViewModels → Repositories/UseCases → Services.
 - Las Views no pueden importar clases de `lib/data/` ni `lib/domain/`.
 - Los ViewModels no pueden importar clases de `lib/data/services/`.
