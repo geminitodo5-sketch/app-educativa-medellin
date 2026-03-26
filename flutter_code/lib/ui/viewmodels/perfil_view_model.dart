@@ -1,4 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Definición del provider para este ViewModel - Responsabilidad de Ingeniería
+final perfilViewModelProvider = ChangeNotifierProvider<PerfilViewModel>((ref) {
+  return PerfilViewModel();
+});
 
 class PerfilViewModel extends ChangeNotifier {
   // Estado del ViewModel
@@ -7,6 +13,8 @@ class PerfilViewModel extends ChangeNotifier {
 
   // Comandos que responden a eventos de la vista
   void commandCargarDatos() async {
+    if (_ocupado) return; // Evita ejecuciones duplicadas
+
     _ocupado = true;
     notifyListeners();
 

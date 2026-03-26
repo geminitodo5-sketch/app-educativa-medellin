@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../viewmodels/perfil_view_model.dart';
 
-// Definición del provider para este ViewModel
-final perfilViewModelProvider = ChangeNotifierProvider<PerfilViewModel>((ref) {
-  return PerfilViewModel();
-});
-
 class PerfilView extends ConsumerWidget {
   const PerfilView({super.key});
 

@@ -18,7 +18,6 @@ class AppEducativa extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      // Punto de entrada temporal según la lista de vistas disponibles
       home: const PerfilView(),
     );
   }
