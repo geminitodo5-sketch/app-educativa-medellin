@@ -88,7 +88,25 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/animations/
-    - assets/images/
+    - assets/images/splash/
+    - assets/images/bienvenida/
+    - assets/images/areas/matematicas/
+    - assets/images/areas/ciencias_naturales/
+    - assets/images/areas/ingles/
+    - assets/images/areas/espanol/
+    - assets/images/areas/sociales/
+    - assets/images/avatares/
+    - assets/images/interfaz/iconos/
+    - assets/images/interfaz/botones/
+    - assets/images/interfaz/fondos/
+    - assets/images/actividades/matematicas/
+    - assets/images/actividades/ciencias_naturales/
+    - assets/images/actividades/ingles/
+    - assets/images/actividades/espanol/
+    - assets/images/actividades/sociales/
+    - assets/images/recompensas/insignias/
+    - assets/images/recompensas/estrellas/
+    - assets/images/asistente_ia/
     - assets/packages/
 
   # An image asset can refer to one or more resolution-specific "variants", see
