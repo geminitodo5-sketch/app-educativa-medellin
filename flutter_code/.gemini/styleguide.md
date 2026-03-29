@@ -63,10 +63,11 @@
 
 Cuando el equipo de Crosmedia traiga diseños o assets de editores externos, se seguirá este proceso:
 
-1.  **Gestión de Assets**: Las imágenes deben copiarse a `assets/images/`. Se debe actualizar inmediatamente el `pubspec.yaml` para registrar los nuevos archivos.
+1.  **Gestión de Assets**: Las imágenes deben copiarse a `assets/images/` y en el orden se las subcarpetas de la carpeta "images".  Se debe actualizar inmediatamente el `pubspec.yaml` para registrar los nuevos archivos.
 2.  **Procesamiento de Código**: Al recibir código de front-end externo, Gemini debe:
     -   Transformarlo en un `ConsumerWidget` de Riverpod.
     -   Separar cualquier lógica de "clics" o "datos" y delegarla a un `ViewModel` (que Ingeniería completará después).
     -   Asegurar que el diseño use los componentes de Material 3 y constantes del proyecto.
 3.  **Ubicación**: El archivo resultante debe guardarse estrictamente en `lib/ui/views/`.
 4.  **Validación**: Revisar que no se hayan introducido importaciones de capas prohibidas (Domain/Data) en la View.
+
