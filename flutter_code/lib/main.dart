@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'ui/views/perfil_view.dart';
+import 'ui/views/bienvenida.dart';
+
 
 void main() {
   // Inicializamos Riverpod con ProviderScope
