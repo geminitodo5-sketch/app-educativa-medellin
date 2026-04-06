@@ -134,3 +134,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts:
+    - family: Hiruko
+      fonts:
+        - asset: assets/fonts/Hiruko.ttf
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
