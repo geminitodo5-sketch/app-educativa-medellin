@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'ui/views/perfil_view.dart';
+//import 'ui/views/perfil_view.dart';
 import 'ui/views/bienvenida.dart';
 
 
@@ -20,7 +20,8 @@ class AppEducativa extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const PerfilView(),
+      //home: const PerfilView(),
+      home: const WelcomeScreen(),
     );
   }
 }
