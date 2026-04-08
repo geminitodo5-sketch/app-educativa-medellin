@@ -66,9 +66,9 @@ class _MatematicasViewState extends ConsumerState<MatematicasView>
               ),
             ),
 
-            // ── Pollito flotante (posicionado detrás del SafeArea) ──
+            
             Positioned(
-              top: MediaQuery.of(context).size.height * 0.22,
+              top: MediaQuery.of(context).size.height * 0.16,
               left: 50,
               child: AnimatedBuilder(
                 animation: _pollitoY,
