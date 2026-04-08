@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'ui/views/perfil_view.dart';
-import 'ui/views/bienvenida.dart';
-
+import 'ui/views/matematicas_view.dart';
 
 void main() {
   // Inicializamos Riverpod con ProviderScope
@@ -20,8 +18,7 @@ class AppEducativa extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      //home: const PerfilView(),
-      home: const WelcomeScreen(),
+      home: const MatematicasView(),
     );
   }
 }
