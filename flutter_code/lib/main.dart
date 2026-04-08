@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'ui/views/matematicas_view.dart';
+import 'ui/views/menu_principal.dart';
 
 void main() {
-  // Inicializamos Riverpod con ProviderScope
   runApp(const ProviderScope(child: AppEducativa()));
 }
 
@@ -18,7 +17,7 @@ class AppEducativa extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MatematicasView(),
+      home: const MenuPrincipal(),
     );
   }
 }
