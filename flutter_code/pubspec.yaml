@@ -65,8 +65,10 @@ dependencies:
   # Audio offline
   just_audio: ^0.9.0
 
-  # Reproducción de video (pantalla intro)
-  video_player: ^2.8.3
+  # Reproducción de video (pantalla intro) — soporta Windows/Linux/Android/iOS
+  media_kit: ^1.1.10
+  media_kit_video: ^1.2.4
+  media_kit_libs_video: ^1.0.4
 
   # Fuentes de Google (usado en menú)
   google_fonts: ^6.2.1

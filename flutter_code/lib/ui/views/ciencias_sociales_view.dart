@@ -98,7 +98,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                         color: const Color(0xFFF5A623)),
                   ),
 
-                  const Spacer(flex: 2),
+                  const Spacer(flex: 1),
 
                   // Botones
                   Padding(
@@ -108,7 +108,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                         _BotonSociales(
                           imagePath: 'assets/images/areas/sociales/heroes_ciudad.png.png',
                           fallbackEmoji: '👧',
-                          texto: 'Héroes de la\nCiudad',
+                          texto: 'Héroes de\nla\nCiudad',
                           completado: _completado(vm, 'Héroes de la Ciudad'),
                           onTap: () => vm.commandSeleccionarTema(
                               'Héroes de la Ciudad',
@@ -149,7 +149,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
               right: 0,
               child: Image.asset(
                 'assets/images/avatares/avatar_mono1.jpg',
-                width: 110,
+                width: 130,
                 errorBuilder: (ctx, e, _) => const SizedBox(),
               ),
             ),
@@ -247,7 +247,7 @@ class _BotonSocialesState extends State<_BotonSociales>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          height: 90,
+          height: 75,
           decoration: BoxDecoration(
             color: const Color(0xFFF5A623),
             borderRadius: BorderRadius.circular(18),

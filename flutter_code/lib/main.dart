@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:media_kit/media_kit.dart';
 import 'data/providers/database_provider.dart';
 import 'data/providers/app_state_provider.dart';
 import 'ui/views/inicio_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
 
   // sqflite necesita FFI en Windows y Linux (no en Android/iOS)
   if (Platform.isWindows || Platform.isLinux) {

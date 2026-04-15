@@ -41,11 +41,11 @@ class _InglesViewState extends ConsumerState<InglesView> {
 
           // Pollito esquina inferior izquierda
           Positioned(
-            bottom: 0,
-            left: 0,
+            bottom: 370,
+            left: 40,
             child: Image.asset(
               'assets/images/bienvenida/pollo feliz 2 (2).png',
-              width: 90,
+              width: 60,
               fit: BoxFit.contain,
               errorBuilder: (ctx, e, _) => const SizedBox(),
             ),
@@ -53,11 +53,11 @@ class _InglesViewState extends ConsumerState<InglesView> {
 
           // Mono esquina inferior derecha
           Positioned(
-            bottom: 0,
+            bottom: -20,
             right: 0,
             child: Image.asset(
               'assets/images/bienvenida/mono.png',
-              width: 120,
+              width: 150,
               fit: BoxFit.contain,
               errorBuilder: (ctx, e, _) => const SizedBox(),
             ),
@@ -107,7 +107,7 @@ class _InglesViewState extends ConsumerState<InglesView> {
                       color: const Color(0xFF8B5CF6)),
                 ),
 
-                const Spacer(flex: 1),
+                const Spacer(flex: 2),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 35),
@@ -125,7 +125,7 @@ class _InglesViewState extends ConsumerState<InglesView> {
                       const SizedBox(height: 20),
                       _BotonMateria(
                         imagen: 'assets/images/areas/ingles/ingles2.png',
-                        texto: 'Une la pareja',
+                        texto: 'Une\nla pareja',
                         completado: _completado(vm, 'Module 2'),
                         onTap: () => vm.commandSeleccionarLeccion(
                             'Module 2',
@@ -240,7 +240,7 @@ class _BotonMateriaState extends State<_BotonMateria>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          height: 120,
+          height: 80,
           decoration: BoxDecoration(
             color: const Color(0xFF8B5CF6),
             borderRadius: BorderRadius.circular(18),

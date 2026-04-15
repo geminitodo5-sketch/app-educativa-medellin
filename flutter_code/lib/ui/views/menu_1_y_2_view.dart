@@ -4,9 +4,12 @@
 //  Muestra las 5 materias con barra de progreso real desde la BD.
 // ─────────────────────────────────────────────────────────────
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
+import '../../data/providers/database_provider.dart';
+import 'inicio_view.dart';
 import 'matematicas_view.dart';
 import 'ciencias_view.dart';
 import 'ingles_view.dart';
@@ -31,6 +34,33 @@ class Menu1Y2Screen extends ConsumerStatefulWidget {
 }
 
 class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
+  Future<void> _confirmarReset() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reiniciar base de datos'),
+        content: const Text(
+            '¿Borrar todos los datos y empezar desde cero?\nEsta acción no se puede deshacer.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Borrar', style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirmar != true || !mounted) return;
+    await ref.read(resetDbProvider)();
+    await ref.read(sqliteServiceProvider).database;
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const InicioView()),
+      (_) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Lee el progreso de todas las materias desde la BD
@@ -62,7 +92,12 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
               children: [
                 // ── Saludo ──────────────────────────────────────
                 const Padding(
-                  padding: EdgeInsets.only(left: 24, right: 24, top: 14, bottom: 4),
+                  padding: EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 14,
+                    bottom: 4,
+                  ),
                   child: Text(
                     '¡Hola!',
                     style: TextStyle(
@@ -78,7 +113,10 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF3B74FF),
                       borderRadius: BorderRadius.circular(40),
@@ -107,8 +145,10 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                                   ? 'assets/images/bienvenida/pollo feliz 2 (2).png'
                                   : 'assets/images/bienvenida/mono.png',
                               fit: BoxFit.contain,
-                              errorBuilder: (ctx, e, _) =>
-                                  const Icon(Icons.person, color: Color(0xFF3B74FF)),
+                              errorBuilder: (ctx, e, _) => const Icon(
+                                Icons.person,
+                                color: Color(0xFF3B74FF),
+                              ),
                             ),
                           ),
                         ),
@@ -128,7 +168,9 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                         // Grado
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 6),
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
@@ -197,7 +239,8 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                               ),
                             ),
                             error: (e, _) => _buildMaterias(context, {}),
-                            data: (progreso) => _buildMaterias(context, progreso),
+                            data: (progreso) =>
+                                _buildMaterias(context, progreso),
                           ),
                         ),
                       ],
@@ -207,6 +250,21 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
               ],
             ),
           ),
+
+          // ── Botón debug: reiniciar BD (solo en modo debug) ──
+          if (kDebugMode)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.delete_forever,
+                      color: Colors.white54, size: 28),
+                  tooltip: 'Reiniciar base de datos',
+                  onPressed: _confirmarReset,
+                ),
+              ),
+            ),
 
           // ── Barra de navegación inferior ────────────────────
           Align(
@@ -231,15 +289,21 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                   // Inicio (ya estamos aquí — no hace nada)
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(Icons.home_rounded,
-                        color: Colors.white, size: 34),
+                    icon: const Icon(
+                      Icons.home_rounded,
+                      color: Colors.white,
+                      size: 34,
+                    ),
                     tooltip: 'Inicio',
                   ),
                   // Progreso (recarga las barras)
                   IconButton(
                     onPressed: () => ref.invalidate(menuProgresoProvider),
-                    icon: const Icon(Icons.bar_chart_rounded,
-                        color: Colors.white, size: 34),
+                    icon: const Icon(
+                      Icons.bar_chart_rounded,
+                      color: Colors.white,
+                      size: 34,
+                    ),
                     tooltip: 'Actualizar progreso',
                   ),
                   // Configuración
@@ -249,8 +313,11 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                         builder: (_) => const ConfiguracionView(),
                       ),
                     ),
-                    icon: const Icon(Icons.settings_rounded,
-                        color: Colors.white, size: 34),
+                    icon: const Icon(
+                      Icons.settings_rounded,
+                      color: Colors.white,
+                      size: 34,
+                    ),
                     tooltip: 'Configuración',
                   ),
                 ],
@@ -262,8 +329,7 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
     );
   }
 
-  Widget _buildMaterias(
-      BuildContext context, Map<String, double> progreso) {
+  Widget _buildMaterias(BuildContext context, Map<String, double> progreso) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -316,9 +382,9 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
   }
 
   void _irA(BuildContext context, Widget vista) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => vista))
-        .then((_) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => vista)).then((
+      _,
+    ) {
       // Recarga el progreso al volver de cualquier materia
       ref.invalidate(menuProgresoProvider);
     });
@@ -353,8 +419,10 @@ class _MateriaRowState extends State<_MateriaRow>
     vsync: this,
     duration: const Duration(milliseconds: 80),
   );
-  late final Animation<double> _scale =
-      Tween<double>(begin: 1.0, end: 0.97).animate(_ctrl);
+  late final Animation<double> _scale = Tween<double>(
+    begin: 1.0,
+    end: 0.97,
+  ).animate(_ctrl);
 
   @override
   void dispose() {
@@ -448,7 +516,9 @@ class _MateriaRowState extends State<_MateriaRow>
                           value: pct / 100.0,
                           minHeight: 8,
                           backgroundColor: Colors.white.withValues(alpha: 0.3),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -458,8 +528,11 @@ class _MateriaRowState extends State<_MateriaRow>
                 const SizedBox(width: 10),
 
                 // Flecha
-                const Icon(Icons.arrow_forward_ios_rounded,
-                    color: Colors.white, size: 18),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ],
             ),
           ),

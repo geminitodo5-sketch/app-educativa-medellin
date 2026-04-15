@@ -32,7 +32,7 @@ class _CienciasViewState extends ConsumerState<CienciasView> {
           // Fondo
           Positioned.fill(
             child: Image.asset(
-              'assets/images/areas/ciencias_naturales/fondos (1).png',
+              'assets/images/bienvenida/fondos (1).png',
               fit: BoxFit.cover,
               errorBuilder: (ctx, e, _) => Container(color: const Color(0xFFE0F7FA)),
             ),
@@ -137,8 +137,8 @@ class _CienciasViewState extends ConsumerState<CienciasView> {
 
           // Pollito esquina inferior derecha
           Positioned(
-            bottom: 0,
-            right: 16,
+            bottom: -20,
+            left: 30,
             child: Image.asset(
               'assets/images/avatares/pollo feliz 2 (2).png',
               width: 85,
@@ -238,7 +238,7 @@ class _BotonTemaState extends State<_BotonTema>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          height: 86,
+          height: 60,
           decoration: BoxDecoration(
             color: const Color(0xFF3DCC52),
             borderRadius: BorderRadius.circular(15),

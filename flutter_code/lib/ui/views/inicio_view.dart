@@ -1,13 +1,14 @@
 // ─────────────────────────────────────────────────────────────
 //  lib/ui/views/inicio_view.dart
-//  Pantalla de introducción: reproduce inicio.mp4 y luego navega.
+//  Pantalla de introducción: reproduce intro.mp4 y luego navega.
 //  Si existe un estudiante registrado → va al Menú.
 //  Si no existe → va a Bienvenida (registro).
 // ─────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:video_player/video_player.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import '../../data/models/estudiante_model.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
@@ -22,36 +23,29 @@ class InicioView extends ConsumerStatefulWidget {
 }
 
 class _InicioViewState extends ConsumerState<InicioView> {
-  VideoPlayerController? _controller;
+  late final Player _player;
+  late final VideoController _controller;
   bool _navegando = false;
+  bool _inicializado = false;
 
   @override
   void initState() {
     super.initState();
+    _player = Player();
+    _controller = VideoController(_player);
     _inicializarVideo();
   }
 
   Future<void> _inicializarVideo() async {
     try {
-      final ctrl = VideoPlayerController.asset('assets/videos/intro.mp4');
-      await ctrl.initialize();
-      if (!mounted) return;
-      setState(() => _controller = ctrl);
-      ctrl.addListener(_escucharVideo);
-      ctrl.play();
+      await _player.open(Media('asset:///assets/videos/intro.mp4'));
+      _player.stream.completed.listen((completado) {
+        if (completado) _navegarSiguiente();
+      });
+      if (mounted) setState(() => _inicializado = true);
+      await _player.play();
     } catch (_) {
-      // Si el video falla, navega directamente después de un breve delay
       await Future.delayed(const Duration(seconds: 2));
-      _navegarSiguiente();
-    }
-  }
-
-  void _escucharVideo() {
-    final ctrl = _controller;
-    if (ctrl == null) return;
-    final pos = ctrl.value.position;
-    final dur = ctrl.value.duration;
-    if (dur.inMilliseconds > 0 && pos >= dur - const Duration(milliseconds: 200)) {
       _navegarSiguiente();
     }
   }
@@ -60,20 +54,17 @@ class _InicioViewState extends ConsumerState<InicioView> {
     if (_navegando || !mounted) return;
     _navegando = true;
 
-    // Verifica si hay un estudiante registrado
     final repo = ref.read(estudianteRepositoryProvider);
     final todos = await repo.listarTodos();
 
     if (!mounted) return;
 
     if (todos.isNotEmpty) {
-      // Ya existe un estudiante → cargar sesión y ir al menú
       final estudiante = todos.first;
       await repo.actualizarUltimaSesion(estudiante.id!);
       ref.read(estudianteActivoProvider.notifier).state = estudiante;
       _irAMenuDirecto(estudiante);
     } else {
-      // Primera vez → registro
       _irABienvenida();
     }
   }
@@ -106,28 +97,22 @@ class _InicioViewState extends ConsumerState<InicioView> {
 
   @override
   void dispose() {
-    _controller?.removeListener(_escucharVideo);
-    _controller?.dispose();
+    _player.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = _controller;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
         onTap: _navegarSiguiente,
         child: SizedBox.expand(
-          child: ctrl != null && ctrl.value.isInitialized
-              ? FittedBox(
+          child: _inicializado
+              ? Video(
+                  controller: _controller,
+                  controls: NoVideoControls,
                   fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: ctrl.value.size.width,
-                    height: ctrl.value.size.height,
-                    child: VideoPlayer(ctrl),
-                  ),
                 )
               : const Center(
                   child: Column(

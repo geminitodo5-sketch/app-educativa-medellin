@@ -64,11 +64,11 @@ class _EspanolViewState extends ConsumerState<EspanolView> {
 
           // Mono esquina inferior derecha
           Positioned(
-            bottom: 0,
+            bottom: -20,
             right: 0,
             child: Image.asset(
               'assets/images/bienvenida/mono.png',
-              width: 100,
+              width: 140,
               fit: BoxFit.contain,
               errorBuilder: (ctx, e, _) => const SizedBox(),
             ),
@@ -112,7 +112,7 @@ class _EspanolViewState extends ConsumerState<EspanolView> {
                       children: [
                         // Pollito
                         Positioned(
-                          top: -30,
+                          top: -21,
                           left: 10,
                           child: Image.asset(
                             'assets/images/avatares/pollo feliz 2 (2).png',

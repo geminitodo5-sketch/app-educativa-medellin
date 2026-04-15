@@ -35,3 +35,8 @@ final syncQueueRepositoryProvider = Provider<SyncQueueRepository>((ref) {
 final syncServiceProvider = Provider<SyncService>((ref) {
   return SyncService(ref.read(syncQueueRepositoryProvider));
 });
+
+/// Resetea la base de datos completa (solo para desarrollo/debug).
+final resetDbProvider = Provider<Future<void> Function()>((ref) {
+  return () => ref.read(sqliteServiceProvider).resetearBaseDatos();
+});

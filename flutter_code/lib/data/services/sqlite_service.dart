@@ -4,6 +4,7 @@
 //  Crea y administra las 7 tablas de NUMI
 // ─────────────────────────────────────────────────────────────
 
+import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -206,5 +207,17 @@ class SqliteService {
     final db = await database;
     await db.close();
     _database = null;
+  }
+
+  /// Borra el archivo numi.db y reinicia la instancia estática.
+  /// Al llamar [database] de nuevo se recrean las 7 tablas desde cero.
+  Future<void> resetearBaseDatos() async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
+    }
+    final path = join(await getDatabasesPath(), _dbName);
+    final file = File(path);
+    if (await file.exists()) await file.delete();
   }
 }

@@ -57,7 +57,7 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
               right: 0,
               child: Image.asset(
                 'assets/images/avatares/avatar_mono1.jpg',
-                width: 110,
+                width: 140,
                 errorBuilder: (ctx, e, _) => const SizedBox(),
               ),
             ),
@@ -117,11 +117,11 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
                       children: [
                         // Pollo detrás
                         Positioned(
-                          top: -60,
+                          top: -18,
                           left: 10,
                           child: Image.asset(
                             'assets/images/avatares/pollo feliz 2 (2).png',
-                            width: 95,
+                            width: 80,
                             errorBuilder: (ctx, e, _) => const SizedBox(),
                           ),
                         ),
@@ -137,6 +137,7 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
                                   'Los números',
                                   porcentajeCompletado: 100.0),
                             ),
+                            
                             const SizedBox(height: 14),
                             _BotonMateria(
                               rutaIcono: 'assets/images/areas/matematicas/_ (1) (1).png',
