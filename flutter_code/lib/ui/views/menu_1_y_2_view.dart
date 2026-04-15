@@ -345,7 +345,7 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
         _MateriaRow(
           color: const Color(0xFFF9A01B),
           shadowColor: const Color(0xFFCA8216),
-          icono: 'assets/images/menu_materias/globo_1.png',
+          icono: 'assets/images/menu_materias/planta_1.png',
           nombre: 'Ciencias',
           porcentaje: progreso['ciencias'] ?? 0.0,
           onTap: () => _irA(context, const CienciasView()),
@@ -363,7 +363,7 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
         _MateriaRow(
           color: const Color(0xFF4AC338),
           shadowColor: const Color(0xFF389C2A),
-          icono: 'assets/images/menu_materias/planta_1.png',
+          icono: 'assets/images/menu_materias/globo_1.png',
           nombre: 'Sociales',
           porcentaje: progreso['sociales'] ?? 0.0,
           onTap: () => _irA(context, const CienciasSocialesView()),

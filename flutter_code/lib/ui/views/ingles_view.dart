@@ -41,7 +41,7 @@ class _InglesViewState extends ConsumerState<InglesView> {
 
           // Pollito esquina inferior izquierda
           Positioned(
-            bottom: 370,
+            bottom: 530,
             left: 40,
             child: Image.asset(
               'assets/images/bienvenida/pollo feliz 2 (2).png',
@@ -107,7 +107,7 @@ class _InglesViewState extends ConsumerState<InglesView> {
                       color: const Color(0xFF8B5CF6)),
                 ),
 
-                const Spacer(flex: 2),
+                const Spacer(flex: 1),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 35),

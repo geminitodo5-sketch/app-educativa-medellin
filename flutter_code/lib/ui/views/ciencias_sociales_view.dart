@@ -98,7 +98,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                         color: const Color(0xFFF5A623)),
                   ),
 
-                  const Spacer(flex: 1),
+                  const SizedBox(height: 20),
 
                   // Botones
                   Padding(
