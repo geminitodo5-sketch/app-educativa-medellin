@@ -4,7 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/providers/app_state_provider.dart';
 import '../viewmodels/ingles_view_model.dart';
+import 'inlges/ingles_escucha_view.dart';
+import 'inlges/ingles_pareja_view.dart';
+import 'inlges/ingles_tarjetas_view.dart';
+import 'inlges/ingles_congratulations_view.dart';
 
 class InglesView extends ConsumerStatefulWidget {
   const InglesView({super.key});
@@ -25,6 +30,7 @@ class _InglesViewState extends ConsumerState<InglesView> {
   @override
   Widget build(BuildContext context) {
     final vm = ref.watch(inglesViewModelProvider);
+    final syncState = ref.watch(syncListenerProvider);
 
     return Scaffold(
       body: Stack(
@@ -39,7 +45,7 @@ class _InglesViewState extends ConsumerState<InglesView> {
             ),
           ),
 
-          // Pollito esquina inferior izquierda
+          // Pollito esquina superior izquierda
           Positioned(
             bottom: 530,
             left: 40,
@@ -69,19 +75,39 @@ class _InglesViewState extends ConsumerState<InglesView> {
               children: [
                 const SizedBox(height: 10),
 
-                // Flecha volver
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: GestureDetector(
-                      onTap: () {
-                        vm.commandVolver();
-                        Navigator.of(context).maybePop();
-                      },
-                      child: const Icon(Icons.arrow_back_rounded,
-                          size: 35, color: Colors.black87),
-                    ),
+                // Fila superior: volver + sync
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          vm.commandVolver();
+                          Navigator.of(context).maybePop();
+                        },
+                        child: const Icon(Icons.arrow_back_rounded,
+                            size: 35, color: Colors.black87),
+                      ),
+                      syncState.when(
+                        data: (count) => Icon(
+                          count > 0
+                              ? Icons.sync_rounded
+                              : Icons.cloud_done_rounded,
+                          color: Colors.black45,
+                          size: 24,
+                        ),
+                        error: (_, __) => const Icon(
+                          Icons.cloud_off_rounded,
+                          color: Colors.redAccent,
+                        ),
+                        loading: () => const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -118,27 +144,72 @@ class _InglesViewState extends ConsumerState<InglesView> {
                         imagen: 'assets/images/areas/ingles/ingles1.png',
                         texto: 'Escucha',
                         completado: _completado(vm, 'Module 1'),
-                        onTap: () => vm.commandSeleccionarLeccion(
-                            'Module 1',
-                            porcentajeCompletado: 100.0),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => InglesEscuchaView(
+                                onCompleted: () => vm.commandSeleccionarLeccion(
+                                    'Module 1',
+                                    porcentajeCompletado: 100.0),
+                              ),
+                            ),
+                          );
+                          ref
+                              .read(inglesViewModelProvider)
+                              .commandCargarProgreso();
+                        },
                       ),
                       const SizedBox(height: 20),
                       _BotonMateria(
                         imagen: 'assets/images/areas/ingles/ingles2.png',
                         texto: 'Une\nla pareja',
                         completado: _completado(vm, 'Module 2'),
-                        onTap: () => vm.commandSeleccionarLeccion(
-                            'Module 2',
-                            porcentajeCompletado: 100.0),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => InglesParejaView(
+                                onCompleted: () => vm.commandSeleccionarLeccion(
+                                    'Module 2',
+                                    porcentajeCompletado: 100.0),
+                              ),
+                            ),
+                          );
+                          ref
+                              .read(inglesViewModelProvider)
+                              .commandCargarProgreso();
+                        },
                       ),
                       const SizedBox(height: 20),
                       _BotonMateria(
                         imagen: 'assets/images/areas/ingles/ingles3.png',
                         texto: 'Tarjetas',
                         completado: _completado(vm, 'Module 3'),
-                        onTap: () => vm.commandSeleccionarLeccion(
-                            'Module 3',
-                            porcentajeCompletado: 100.0),
+                        onTap: () async {
+                          bool completado = false;
+                          final nav = Navigator.of(context);
+                          await nav.push(
+                            MaterialPageRoute(
+                              builder: (_) => InglesTarjetasView(
+                                onCompleted: () {
+                                  completado = true;
+                                  vm.commandSeleccionarLeccion('Module 3',
+                                      porcentajeCompletado: 100.0);
+                                },
+                              ),
+                            ),
+                          );
+                          await ref
+                              .read(inglesViewModelProvider)
+                              .commandCargarProgreso();
+                          if (completado && mounted) {
+                            nav.push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const InglesCongratulationsView(),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -257,7 +328,7 @@ class _BotonMateriaState extends State<_BotonMateria>
               // Imagen
               Container(
                 margin: const EdgeInsets.all(12),
-                width: 65,
+                width: 56,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -271,7 +342,7 @@ class _BotonMateriaState extends State<_BotonMateria>
                     errorBuilder: (ctx, e, _) => const Icon(
                         Icons.headphones_rounded,
                         color: Color(0xFF8B5CF6),
-                        size: 36),
+                        size: 32),
                   ),
                 ),
               ),

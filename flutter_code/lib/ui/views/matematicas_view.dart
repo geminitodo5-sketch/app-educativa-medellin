@@ -4,7 +4,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/providers/app_state_provider.dart';
+import '../../data/models/estudiante_model.dart';
+import '../../data/models/progreso_model.dart';
 import '../viewmodels/matematicas_view_model.dart';
+import 'matematicas/los_numeros/descubre_numeros_view.dart';
+import 'matematicas/quien_tiene_mas/quien_tiene_mas.dart';
+import 'matematicas/sumar/sumar.dart';
 
 class MatematicasView extends ConsumerStatefulWidget {
   const MatematicasView({super.key});
@@ -25,6 +31,8 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
   @override
   Widget build(BuildContext context) {
     final vm = ref.watch(matematicasViewModelProvider);
+    final syncState = ref.watch(syncListenerProvider);
+    final EstudianteModel? estudiante = ref.watch(estudianteActivoProvider);
 
     return Scaffold(
       body: Container(
@@ -45,7 +53,7 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
               left: 0,
               right: 0,
               child: Image.asset(
-                'assets/images/interfaz/fondos/fondo.jpg',
+                'assets/images/interfaz/fondos/fondo.jpg', 
                 fit: BoxFit.cover,
                 errorBuilder: (ctx, e, _) => const SizedBox(),
               ),
@@ -56,8 +64,8 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
               bottom: 0,
               right: 0,
               child: Image.asset(
-                'assets/images/avatares/avatar_mono1.jpg',
-                width: 140,
+                'assets/images/avatares/avatar_mono1.jpg', 
+                width: 160,
                 errorBuilder: (ctx, e, _) => const SizedBox(),
               ),
             ),
@@ -68,19 +76,43 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
                 children: [
                   const SizedBox(height: 10),
 
-                  // Flecha volver
+                  // Fila Superior: Volver + Sync Status
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () {
-                          vm.commandVolver();
-                          Navigator.of(context).maybePop();
-                        },
-                        child: const Icon(Icons.arrow_back_rounded,
-                            size: 36, color: Colors.black),
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            vm.commandVolver();
+                            Navigator.of(context).maybePop();
+                          },
+                          child: const Icon(
+                            Icons.arrow_back_rounded,
+                            size: 36,
+                            color: Colors.black,
+                          ),
+                        ),
+                        // Indicador de Sincronización Offline (Base de Datos)
+                        syncState.when(
+                          data: (count) => Icon(
+                            count > 0
+                                ? Icons.sync_rounded
+                                : Icons.cloud_done_rounded,
+                            color: Colors.black45,
+                            size: 24,
+                          ),
+                          error: (_, __) => const Icon(
+                            Icons.cloud_off_rounded,
+                            color: Colors.redAccent,
+                          ),
+                          loading: () => const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
@@ -96,11 +128,23 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
                       color: Colors.black,
                     ),
                   ),
+                  if (estudiante != null)
+                    Text(
+                      'Hola, ${estudiante.nombre}',
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
 
                   // Barra de progreso real (actividades completadas / total)
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 4),
+                      horizontal: 40,
+                      vertical: 4,
+                    ),
                     child: _BarraProgreso(
                       porcentaje: vm.progresoTotal,
                       color: const Color(0xFF3475F7),
@@ -130,31 +174,58 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
                           children: [
                             const SizedBox(height: 55),
                             _BotonMateria(
-                              rutaIcono: 'assets/images/areas/matematicas/Group 40 (1) (1).png',
+                              rutaIcono:
+                                  'assets/images/areas/matematicas/Group 40 (1) (1).png',
                               texto: 'Los números',
                               completado: _estaCompletado(vm, 'Los números'),
-                              onTap: () => vm.commandSeleccionarLeccion(
-                                  'Los números',
-                                  porcentajeCompletado: 100.0),
+                              onTap: () async {
+                                // Iniciamos la secuencia de fases
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const DescubreNumerosView(),
+                                  ),
+                                );
+                                // REFRESCAR: Al regresar de 'Terminado', actualizamos la UI con la DB
+                                ref
+                                    .read(matematicasViewModelProvider)
+                                    .commandCargarProgreso();
+                              },
                             ),
-                            
+
                             const SizedBox(height: 14),
                             _BotonMateria(
-                              rutaIcono: 'assets/images/areas/matematicas/_ (1) (1).png',
+                              rutaIcono:
+                                  'assets/images/areas/matematicas/_ (1) (1).png',
                               texto: 'Quien tiene más',
-                              completado: _estaCompletado(vm, 'Quien tiene más'),
-                              onTap: () => vm.commandSeleccionarLeccion(
-                                  'Quien tiene más',
-                                  porcentajeCompletado: 100.0),
+                              completado: _estaCompletado(
+                                vm,
+                                'Quien tiene más',
+                              ),
+                              onTap: () async {
+                                // Iniciamos la secuencia de "Quién tiene más"
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const ComparacionCantidadesView(),
+                                  ),
+                                );
+                                // Al volver de la pantalla de éxito, refrescamos el progreso
+                                ref.read(matematicasViewModelProvider).commandCargarProgreso();
+                              },
                             ),
                             const SizedBox(height: 14),
                             _BotonMateria(
-                              rutaIcono: 'assets/images/areas/matematicas/Group 41 (1) (2).png',
+                              rutaIcono:
+                                  'assets/images/areas/matematicas/Group 41 (1) (2).png',
                               texto: 'Sumar',
                               completado: _estaCompletado(vm, 'Sumar'),
-                              onTap: () => vm.commandSeleccionarLeccion(
-                                  'Sumar',
-                                  porcentajeCompletado: 100.0),
+                              onTap: () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const SumarPatronview(),
+                                  ),
+                                );
+                                ref.read(matematicasViewModelProvider).commandCargarProgreso();
+                              },
                             ),
                           ],
                         ),
@@ -174,7 +245,8 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
 
   bool _estaCompletado(MatematicasViewModel vm, String actividad) {
     return vm.progreso.any(
-        (p) => p.actividad == actividad && p.porcentaje >= 100);
+      (ProgresoModel p) => p.actividad == actividad && p.porcentaje >= 100,
+    );
   }
 }
 
@@ -192,17 +264,23 @@ class _BarraProgreso extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Progreso',
-                style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    color: Colors.black54)),
-            Text('${porcentaje.toInt()}%',
-                style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87)),
+            const Text(
+              'Progreso',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                color: Colors.black54,
+              ),
+            ),
+            Text(
+              '${porcentaje.toInt()}%',
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -211,7 +289,7 @@ class _BarraProgreso extends StatelessWidget {
           child: LinearProgressIndicator(
             value: (porcentaje / 100).clamp(0.0, 1.0),
             minHeight: 10,
-            backgroundColor: Colors.white.withValues(alpha: 0.5),
+            backgroundColor: Colors.white.withOpacity(0.5),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
@@ -244,8 +322,10 @@ class _BotonMateriaState extends State<_BotonMateria>
     vsync: this,
     duration: const Duration(milliseconds: 80),
   );
-  late final Animation<double> _scale =
-      Tween<double>(begin: 1.0, end: 0.96).animate(_ctrl);
+  late final Animation<double> _scale = Tween<double>(
+    begin: 1.0,
+    end: 0.96,
+  ).animate(_ctrl);
 
   @override
   void dispose() {
@@ -318,10 +398,16 @@ class _BotonMateriaState extends State<_BotonMateria>
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: widget.completado
-                    ? const Icon(Icons.check_circle_rounded,
-                        color: Colors.white, size: 28)
-                    : const Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white, size: 22),
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      )
+                    : const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
               ),
             ],
           ),

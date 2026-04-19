@@ -99,6 +99,8 @@ flutter:
   assets:
     - assets/videos/
     - assets/animations/
+    - assets/images/actividad_terminada/
+
     - assets/images/p_inicio/
     - assets/images/menu_materias/
     - assets/images/bienvenida/
@@ -113,6 +115,15 @@ flutter:
     - assets/images/interfaz/fondos/
     - assets/images/actividades/matematicas/
     - assets/images/actividades/ciencias_naturales/
+    - assets/images/actividades/ciencias_naturales/pantalla 1/
+    - assets/images/actividades/ciencias_naturales/pantalla 2/
+    - assets/images/actividades/ciencias_naturales/pantalla 3/
+    - assets/images/actividades/ciencias_naturales/pantalla 4/
+    - assets/images/actividades/ciencias_naturales/pantalla 5/
+    - assets/images/actividades/ciencias_naturales/pantalla 6/
+    - assets/images/actividades/ciencias_naturales/pantalla 10/
+    - assets/images/actividades/ciencias_naturales/pantalla 11/
+    - assets/images/actividades/ciencias_naturales/pantalla 12/
     - assets/images/actividades/ingles/
     - assets/images/actividades/espanol/
     - assets/images/actividades/sociales/

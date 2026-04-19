@@ -1,0 +1,987 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui' as ui;
+import '../../../data/providers/app_state_provider.dart';
+import '../../../data/providers/database_provider.dart';
+import '../../../data/models/sync_queue_model.dart';
+import '../terminado.dart';
+
+const _p10 = 'assets/images/actividades/ciencias_naturales/pantalla 10/';
+const _p11 = 'assets/images/actividades/ciencias_naturales/pantalla 11/';
+const _p12 = 'assets/images/actividades/ciencias_naturales/pantalla 12/';
+
+// ── Popup de retroalimentación ────────────────────────────────────────────
+void _mostrarFeedback(BuildContext context, bool correcto) {
+  final overlay = Overlay.of(context);
+  late OverlayEntry entry;
+  entry = OverlayEntry(
+    builder: (_) => Positioned(
+      top: 0, left: 0, right: 0, bottom: 0,
+      child: IgnorePointer(
+        child: Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              decoration: BoxDecoration(
+                color: correcto ? const Color(0xFF2E7D32) : const Color(0xFFB71C1C),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 4))],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                      color: Colors.white, size: 30),
+                  const SizedBox(width: 10),
+                  Text(correcto ? '¡Correcto!' : '¡Incorrecto!',
+                      style: const TextStyle(color: Colors.white, fontSize: 20,
+                          fontWeight: FontWeight.bold, fontFamily: 'Hiruko')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  overlay.insert(entry);
+  Future.delayed(const Duration(milliseconds: 1100), () {
+    if (entry.mounted) entry.remove();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+class LasPlantasScreen extends ConsumerStatefulWidget {
+  const LasPlantasScreen({super.key});
+  @override
+  ConsumerState<LasPlantasScreen> createState() => _LasPlantasScreenState();
+}
+
+class _LasPlantasScreenState extends ConsumerState<LasPlantasScreen> {
+  final _ctrl = PageController();
+  int _pagina = 0;
+  bool _navegandoATerminado = false;
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  void _siguiente() => _ctrl.nextPage(
+      duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+
+  Future<void> _guardarProgreso() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    if (estudiante == null || estudiante.id == null) return;
+    final repo = ref.read(progresoRepositoryProvider);
+    final queue = ref.read(syncQueueRepositoryProvider);
+    await repo.registrarIntento(
+      estudianteId: estudiante.id!,
+      grado: estudiante.grado,
+      materia: 'ciencias',
+      actividad: 'Las plantas',
+      porcentaje: 100.0,
+    );
+    await queue.encolar(SyncQueueModel(
+      tipoAccion: 'progreso',
+      payload: jsonEncode({
+        'estudianteId': estudiante.id,
+        'grado': estudiante.grado,
+        'materia': 'ciencias',
+        'actividad': 'Las plantas',
+        'porcentaje': 100.0,
+      }),
+      fecha: DateTime.now().toIso8601String(),
+    ));
+  }
+
+  void _irATerminado() {
+    if (_navegandoATerminado || !mounted) return;
+    _navegandoATerminado = true;
+    _guardarProgreso();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ActividadTerminadaScreen(
+          onVolver: () {
+            final nav = Navigator.of(context);
+            nav.pop();
+            nav.pop();
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          PageView(
+            controller: _ctrl,
+            onPageChanged: (i) => setState(() => _pagina = i),
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              _PageCard(
+                title: 'Las plantas',
+                dots: _buildDots(),
+                child: _Actividad1(onNext: _siguiente),
+              ),
+              _PageCard(
+                title: 'Las plantas',
+                dots: _buildDots(),
+                child: _Actividad2(onNext: _siguiente),
+              ),
+              _PageCard(
+                title: 'Las plantas',
+                dots: _buildDots(),
+                child: _Actividad3(onFinish: _irATerminado),
+              ),
+            ],
+          ),
+          // Botón X flotante sobre el header verde
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12, right: 16),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.35),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, color: Colors.white, size: 20),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDots() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14, top: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(3, (i) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            margin: const EdgeInsets.symmetric(horizontal: 5),
+            width: _pagina == i ? 14 : 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: _pagina == i ? const Color(0xFF3DCC52) : const Color(0xFFCCCCCC),
+              borderRadius: BorderRadius.circular(5),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+// ── Componentes compartidos ───────────────────────────────────────────────
+class _Tarjeta extends StatelessWidget {
+  final Widget child;
+  const _Tarjeta({required this.child});
+  @override
+  Widget build(BuildContext context) => child;
+}
+
+class _PageCard extends StatelessWidget {
+  final String title;
+  final Widget child;
+  final Widget dots;
+  const _PageCard({required this.title, required this.child, required this.dots});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Fondo verde que cubre la parte superior
+        Container(color: const Color(0xFF3DCC52)),
+        Column(
+          children: [
+            // Bloque verde — título centrado, extenso
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 18, 52, 48),
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            // Bloque blanco con esquinas superiores redondeadas
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Expanded(child: child),
+                    dots,
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _Instruccion extends StatelessWidget {
+  final String texto;
+  const _Instruccion(this.texto);
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFE8F5E9),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(Icons.volume_up_rounded, color: Color(0xFF3DCC52), size: 22),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            texto,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: Color(0xFF424242),
+              height: 1.3,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACTIVIDAD 1 — Arrastra las fases de crecimiento al slot correcto
+// ═══════════════════════════════════════════════════════════════════════════
+class _Actividad1 extends StatefulWidget {
+  final VoidCallback onNext;
+  const _Actividad1({required this.onNext});
+  @override State<_Actividad1> createState() => _Actividad1State();
+}
+
+class _Actividad1State extends State<_Actividad1> {
+  static const _totalSlots = 5;
+  static const _barajadas = [3, 1, 5, 2, 4];
+
+  final Map<int, int> _colocadas = {}; // slot → fase
+
+  bool get _completo => _colocadas.length == _totalSlots;
+
+  @override
+  Widget build(BuildContext context) {
+    final fasesSinColocar = _barajadas.where((f) => !_colocadas.values.contains(f)).toList();
+
+    void onSlotAccepted(int slot, int fase) {
+      setState(() => _colocadas[slot] = fase);
+      _mostrarFeedback(context, true);
+      if (_completo) Future.delayed(const Duration(milliseconds: 800), widget.onNext);
+    }
+
+    return _Tarjeta(
+      child: Column(
+        children: [
+          _Instruccion('¿Cómo crece una planta? Arrastra cada fase al número correcto'),
+          const SizedBox(height: 8),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Fila 1: slots 1, 2, 3
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [1, 2, 3].expand((slot) => [
+                      _SlotDrop(
+                        slot: slot,
+                        colocada: _colocadas[slot],
+                        onAccepted: (f) => onSlotAccepted(slot, f),
+                        onRejected: () => _mostrarFeedback(context, false),
+                      ),
+                      if (slot < 3)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: Image.asset('${_p10}flecha.png', width: 22,
+                              errorBuilder: (c, e, s) =>
+                                  const Icon(Icons.arrow_forward, size: 22, color: Color(0xFF3DCC52))),
+                        ),
+                    ]).toList(),
+                  ),
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 36),
+                      child: Transform.rotate(
+                        angle: 1.5708,
+                        child: Image.asset('${_p10}flecha.png', width: 22,
+                            errorBuilder: (c, e, s) =>
+                                const Icon(Icons.arrow_downward, size: 22, color: Color(0xFF3DCC52))),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // Fila 2 (inversa): slot 5 ← slot 4
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _SlotDrop(
+                        slot: 5,
+                        colocada: _colocadas[5],
+                        onAccepted: (f) => onSlotAccepted(5, f),
+                        onRejected: () => _mostrarFeedback(context, false),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Image.asset('${_p10}flecha.png', width: 22,
+                            errorBuilder: (c, e, s) =>
+                                const Icon(Icons.arrow_back, size: 22, color: Color(0xFF3DCC52))),
+                      ),
+                      _SlotDrop(
+                        slot: 4,
+                        colocada: _colocadas[4],
+                        onAccepted: (f) => onSlotAccepted(4, f),
+                        onRejected: () => _mostrarFeedback(context, false),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Bandeja de fases arrastrables
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: fasesSinColocar.map((fase) => Draggable<int>(
+                    data: fase,
+                    onDraggableCanceled: (_, __) => _mostrarFeedback(context, false),
+                    feedback: Material(
+                      color: Colors.transparent,
+                      child: _FaseChip(fase: fase, size: 70),
+                    ),
+                    childWhenDragging: _FaseChip(fase: fase, size: 66, opacity: 0.35),
+                    child: _FaseChip(fase: fase, size: 66),
+                  )).toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Slot de destino con DragTarget
+class _SlotDrop extends StatelessWidget {
+  final int slot;
+  final int? colocada;
+  final ValueChanged<int> onAccepted;
+  final VoidCallback onRejected;
+  const _SlotDrop({required this.slot, required this.colocada,
+      required this.onAccepted, required this.onRejected});
+
+  @override
+  Widget build(BuildContext context) {
+    if (colocada != null) {
+      return SizedBox(
+        width: 72, height: 72,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset('${_p10}cuadro verde.png',
+                  fit: BoxFit.fill,
+                  errorBuilder: (c, e, s) => Container(
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF3DCC52),
+                          borderRadius: BorderRadius.circular(12)))),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(6),
+              child: Image.asset('${_p10}fase$colocada.png',
+                  fit: BoxFit.contain,
+                  errorBuilder: (c, e, s) => Center(child: Text('$colocada',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)))),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return DragTarget<int>(
+      onWillAcceptWithDetails: (d) => d.data == slot,
+      onAcceptWithDetails: (d) => onAccepted(d.data),
+      builder: (ctx, candidates, rejected) {
+        final hovering = candidates.isNotEmpty;
+        final isRejected = rejected.isNotEmpty;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: 72, height: 72,
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Opacity(
+                  opacity: hovering ? 1.0 : isRejected ? 0.5 : 0.75,
+                  child: Image.asset('${_p10}cuadro verde.png',
+                      fit: BoxFit.fill,
+                      errorBuilder: (c, e, s) => Container(
+                          decoration: BoxDecoration(
+                              color: hovering ? const Color(0xFF3DCC52)
+                                  : isRejected ? const Color(0xFFB71C1C)
+                                  : const Color(0xFFCCCCCC),
+                              borderRadius: BorderRadius.circular(12)))),
+                ),
+              ),
+              Center(
+                child: Text('$slot',
+                    style: TextStyle(
+                      color: hovering ? Colors.white
+                          : isRejected ? const Color(0xFFB71C1C)
+                          : Colors.white70,
+                      fontWeight: FontWeight.bold, fontSize: 26,
+                      shadows: const [Shadow(color: Color(0x44000000), blurRadius: 2)],
+                    )),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// Chip de fase arrastrable — sin fondo verde, solo la imagen
+class _FaseChip extends StatelessWidget {
+  final int fase;
+  final double size;
+  final double opacity;
+  const _FaseChip({required this.fase, required this.size, this.opacity = 1.0});
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: opacity,
+      child: SizedBox(
+        width: size, height: size,
+        child: Image.asset('${_p10}fase$fase.png',
+            fit: BoxFit.contain,
+            alignment: Alignment.bottomCenter,
+            errorBuilder: (c, e, s) => Center(child: Text('$fase',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)))),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACTIVIDAD 2 — Arrastra las partes de la planta a su zona anatómica
+// ═══════════════════════════════════════════════════════════════════════════
+
+class _PiezaPlanta {
+  final String nombre;
+  final String ruta;
+  final String label;
+  final Rect toleranceRect;
+  final double anchoFraccion;
+  final double altoFraccion;
+
+  const _PiezaPlanta(
+    this.nombre,
+    this.ruta,
+    this.label, {
+    required this.toleranceRect,
+    required this.anchoFraccion,
+    required this.altoFraccion,
+  });
+}
+
+class _PiezaEstado {
+  final String nombre;
+  Offset posicion;
+  bool colocada;
+  _PiezaEstado(this.nombre, {required this.posicion, this.colocada = false});
+}
+
+class _Actividad2 extends StatefulWidget {
+  final VoidCallback onNext;
+  const _Actividad2({required this.onNext});
+
+  @override
+  State<_Actividad2> createState() => _Actividad2State();
+}
+
+class _Actividad2State extends State<_Actividad2> {
+  static const _piezasBase = [
+    _PiezaPlanta('raices', '${_p11}raices.png', 'Raíces',
+        toleranceRect: Rect.fromLTWH(0.00, 0.30, 1.00, 0.70),
+        anchoFraccion: 0.50, altoFraccion: 0.25),
+    _PiezaPlanta('tallo', '${_p11}tallo.png', 'Tallo',
+        toleranceRect: Rect.fromLTWH(0.00, 0.00, 1.00, 1.00),
+        anchoFraccion: 0.25, altoFraccion: 0.45),
+    _PiezaPlanta('hojas', '${_p11}hojas.png', 'Hojas',
+        toleranceRect: Rect.fromLTWH(0.00, 0.10, 1.00, 0.80),
+        anchoFraccion: 0.60, altoFraccion: 0.35),
+    _PiezaPlanta('flor', '${_p11}flor (2).png', 'Flor',
+        toleranceRect: Rect.fromLTWH(0.00, 0.00, 1.00, 0.70),
+        anchoFraccion: 0.45, altoFraccion: 0.35),
+  ];
+
+  static const _renderOrder = ['raices', 'tallo', 'hojas', 'flor'];
+
+  List<_PiezaPlanta> _piezas = List.of(_piezasBase);
+  late List<_PiezaEstado> _estados;
+  bool _verificado = false;
+  bool _imagenesListas = false;
+
+  final _areaKey = GlobalKey();
+  final Map<String, Offset> _touchOffset = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _estados = _piezasBase
+        .map((p) => _PiezaEstado(p.nombre, posicion: const Offset(-999, -999)))
+        .toList();
+    _calcularFracciones();
+  }
+
+  Future<void> _calcularFracciones() async {
+    final Map<String, Size> sizes = {};
+    for (final p in _piezasBase) {
+      final completer = Completer<ui.Image>();
+      final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
+      late ImageStreamListener listener;
+      listener = ImageStreamListener((info, _) {
+        if (!completer.isCompleted) completer.complete(info.image);
+        stream.removeListener(listener);
+      });
+      stream.addListener(listener);
+      final img = await completer.future;
+      sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
+    }
+
+    if (!mounted) return;
+
+    final talloSize = sizes['tallo']!;
+    const talloAnchoFrac = 0.22;
+    final pxPorFraccion = talloSize.width / talloAnchoFrac;
+
+    setState(() {
+      _piezas = _piezasBase.map((p) {
+        final imgSize = sizes[p.nombre]!;
+        double wFinal = imgSize.width / pxPorFraccion;
+        double hFinal = imgSize.height / pxPorFraccion;
+
+        // Escalado proporcional para máxima definición sin deformar
+        if (wFinal > 0.85) {
+          hFinal = (0.85 / wFinal) * hFinal;
+          wFinal = 0.85;
+        }
+        if (hFinal > 0.45) {
+          wFinal = (0.45 / hFinal) * wFinal;
+          hFinal = 0.45;
+        }
+
+        return _PiezaPlanta(
+          p.nombre, p.ruta, p.label,
+          toleranceRect: p.toleranceRect,
+          anchoFraccion: wFinal.clamp(0.1, 0.85),
+          altoFraccion: hFinal.clamp(0.1, 0.45),
+        );
+      }).toList();
+      _imagenesListas = true;
+    });
+  }
+
+  void _colocarPieza(String nombre, Offset globalPointer, Offset touchOff) {
+    final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
+    if (ro == null) return;
+
+    final areaSize = ro.size;
+    final localPos = ro.globalToLocal(globalPointer - touchOff);
+    final p = _piezas.firstWhere((p) => p.nombre == nombre);
+
+    final pxW = areaSize.width * p.anchoFraccion;
+    final pxH = areaSize.height * p.altoFraccion;
+    final centerX = localPos.dx + pxW / 2;
+    final centerY = localPos.dy + pxH / 2;
+
+    if (centerX < -pxW || centerX > areaSize.width + pxW ||
+        centerY < -pxH || centerY > areaSize.height + pxH) return;
+
+    setState(() {
+      final e = _estados.firstWhere((e) => e.nombre == nombre);
+      e.posicion = Offset(
+        (centerX / areaSize.width).clamp(p.anchoFraccion / 2, 1.0 - p.anchoFraccion / 2),
+        (centerY / areaSize.height).clamp(p.altoFraccion / 2, 1.0 - p.altoFraccion / 2),
+      );
+      e.colocada = true;
+      _verificado = false;
+    });
+  }
+
+  bool _esCorrecto(String nombre) {
+    final e = _estados.firstWhere((e) => e.nombre == nombre);
+    final p = _piezas.firstWhere((p) => p.nombre == nombre);
+
+    // 1. El Tallo es el punto de referencia principal (ancla)
+    if (nombre == 'tallo') return p.toleranceRect.contains(e.posicion);
+
+    // 2. Partes que dependen de la conexión con el Tallo
+    final eTallo = _estados.firstWhere((est) => est.nombre == 'tallo');
+    if (!eTallo.colocada) return false;
+
+    final distancia = (e.posicion - eTallo.posicion).distance;
+
+    // Raíces: deben estar cerca y debajo del tallo
+    if (nombre == 'raices') return distancia < 0.35 && e.posicion.dy > eTallo.posicion.dy;
+
+    // Flor: debe estar cerca y arriba del tallo
+    if (nombre == 'flor') return distancia < 0.35 && e.posicion.dy < eTallo.posicion.dy;
+
+    // Hojas: deben estar cerca del tallo (margen lateral)
+    if (nombre == 'hojas') return distancia < 0.30;
+
+    return p.toleranceRect.contains(e.posicion);
+  }
+
+  bool get _todoColocado => _estados.every((e) => e.colocada);
+  bool get _todoOk => _piezas.every((p) => _esCorrecto(p.nombre));
+  Set<String> get _enBandeja =>
+      _piezas.map((p) => p.nombre).where((n) => !_estaEnArea(n)).toSet();
+
+  bool _estaEnArea(String nombre) => _estados.firstWhere((e) => e.nombre == nombre).colocada;
+
+  void _verificar(BuildContext context) {
+    setState(() => _verificado = true);
+    _mostrarFeedback(context, _todoOk);
+    if (_todoOk) Future.delayed(const Duration(seconds: 1), widget.onNext);
+  }
+
+  void _reintentar() {
+    setState(() {
+      for (final e in _estados) {
+        if (!_esCorrecto(e.nombre)) {
+          e.colocada = false;
+          e.posicion = const Offset(-999, -999);
+        }
+      }
+      _verificado = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_imagenesListas) return const Center(child: CircularProgressIndicator());
+
+    return _Tarjeta(
+      child: Column(
+        children: [
+          _Instruccion('Arrastra cada parte de la planta a su lugar para armarla'),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(30, 8, 30, 4),
+              child: LayoutBuilder(builder: (ctx, constraints) {
+                final w = constraints.maxWidth;
+                final h = constraints.maxHeight;
+                return Stack(
+                  key: _areaKey,
+                  clipBehavior: Clip.hardEdge,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FBF9),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
+                      ),
+                      child: _enBandeja.length == _piezas.length
+                        ? const Center(child: Text('⬆ Arrastra las piezas aquí', style: TextStyle(color: Colors.grey, fontSize: 12)))
+                        : null,
+                    ),
+                    ..._renderOrder.map((nombre) {
+                      final e = _estados.firstWhere((st) => st.nombre == nombre);
+                      if (!e.colocada) return const SizedBox.shrink();
+                      final p = _piezas.firstWhere((pz) => pz.nombre == nombre);
+
+                      final pxW = w * p.anchoFraccion;
+                      final pxH = h * p.altoFraccion;
+                      final left = (e.posicion.dx * w - pxW / 2).clamp(0.0, w - pxW);
+                      final top = (e.posicion.dy * h - pxH / 2).clamp(0.0, h - pxH);
+                      final correcto = _verificado ? _esCorrecto(nombre) : null;
+
+                      return Positioned(
+                        left: left, top: top, width: pxW, height: pxH,
+                        child: Listener(
+                          onPointerDown: (ev) => _touchOffset[nombre] = ev.localPosition,
+                          child: Draggable<String>(
+                            data: nombre,
+                            dragAnchorStrategy: pointerDragAnchorStrategy,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: Opacity(
+                                opacity: 0.8,
+                                child: SizedBox(width: pxW, height: pxH,
+                                  child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high)),
+                              ),
+                            ),
+                            childWhenDragging: Opacity(opacity: 0.3,
+                              child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high)),
+                            onDragEnd: (details) => _colocarPieza(nombre, details.offset, _touchOffset[nombre] ?? Offset(pxW/2, pxH/2)),
+                            child: Stack(children: [
+                              Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high),
+                              if (correcto != null)
+                                Positioned.fill(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: correcto ? const Color(0x2200CC44) : const Color(0x33FF0000),
+                                      borderRadius: BorderRadius.circular(8),
+                            ),
+                                    child: Center(
+                                      child: Icon(
+                                        correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                                        color: correcto ? const Color(0xFF2E7D32) : const Color(0xFFB71C1C),
+                                        size: 28,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ]),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                );
+              }),
+            ),
+          ),
+          // ── Botón Verificar / Reintentar ──────────────────────────────
+          if (_todoColocado && !_verificado)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ElevatedButton.icon(
+                onPressed: () => _verificar(context),
+                icon: const Icon(Icons.check_rounded),
+                label: const Text('Verificar',
+                    style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3DCC52),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  elevation: 3,
+                ),
+              ),
+            )
+          else if (_verificado && !_todoOk)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ElevatedButton.icon(
+                onPressed: _reintentar,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Reintentar',
+                    style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE53935),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  elevation: 3,
+                ),
+              ),
+            ),
+
+          if (_enBandeja.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _piezas.where((p) => _enBandeja.contains(p.nombre)).map((p) {
+                  const thumbSize = 64.0;
+                  return Listener(
+                    onPointerDown: (ev) => _touchOffset[p.nombre] = ev.localPosition,
+                    child: Draggable<String>(
+                      data: p.nombre,
+                      dragAnchorStrategy: pointerDragAnchorStrategy,
+                      feedback: Material(
+                        color: Colors.transparent,
+                        child: SizedBox(width: thumbSize, height: thumbSize,
+                            child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high)),
+                      ),
+                      childWhenDragging: Opacity(opacity: 0.3, child: _chipBandeja(p)),
+                      onDragEnd: (details) => _colocarPieza(p.nombre, details.offset, const Offset(thumbSize/2, thumbSize/2)),
+                      child: _chipBandeja(p),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _chipBandeja(_PiezaPlanta p) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 64, height: 64,
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
+              boxShadow: const [BoxShadow(color: Color(0x18000000), blurRadius: 4, offset: Offset(0, 2))],
+            ),
+            child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high,
+              errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.grey)),
+          ),
+          const SizedBox(height: 3),
+          Text(p.label, style: const TextStyle(fontSize: 10, fontFamily: 'Poppins', color: Color(0xFF555555))),
+        ],
+      );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACTIVIDAD 3 — ¿Qué necesita la planta para crecer?
+// ═══════════════════════════════════════════════════════════════════════════
+class _Actividad3 extends StatefulWidget {
+  final VoidCallback onFinish;
+  const _Actividad3({required this.onFinish});
+  @override State<_Actividad3> createState() => _Actividad3State();
+}
+
+class _Actividad3State extends State<_Actividad3> {
+  static const _opciones = [
+    (id: 'sol',     ruta: '${_p12}sol.png',     correcto: true),
+    (id: 'agua',    ruta: '${_p12}agua.png',    correcto: true),
+    (id: 'tierra',  ruta: '${_p12}tierra.png',  correcto: true),
+    (id: 'botella', ruta: '${_p12}botella.png', correcto: false),
+  ];
+  static const _meta = 3;
+
+  final Set<String> _seleccionados = {};
+  String? _error;
+
+  void _tocar(BuildContext context, String id, bool correcto) {
+    if (_seleccionados.contains(id)) return;
+    if (!correcto) {
+      setState(() => _error = id);
+      _mostrarFeedback(context, false);
+      Future.delayed(const Duration(milliseconds: 700),
+          () { if (mounted) setState(() => _error = null); });
+      return;
+    }
+    _mostrarFeedback(context, true);
+    setState(() => _seleccionados.add(id));
+    if (_seleccionados.length >= _meta) {
+      Future.delayed(const Duration(milliseconds: 800), widget.onFinish);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _Tarjeta(
+      child: Column(
+        children: [
+          _Instruccion('Necesito hacer crecer esta planta, elige los elementos que le ayudarán a crecer'),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(40, 12, 40, 8),
+              child: Image.asset('${_p12}planta muerta.png',
+                  fit: BoxFit.contain,
+                  errorBuilder: (c, e, s) => const Icon(Icons.local_florist, size: 80, color: Colors.brown)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: _opciones.map((op) {
+                final sel = _seleccionados.contains(op.id);
+                final err = _error == op.id;
+                return GestureDetector(
+                  onTap: () => _tocar(context, op.id, op.correcto),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 68, height: 68,
+                    decoration: BoxDecoration(
+                      color: sel ? const Color(0xFFE8F5E9)
+                          : err ? const Color(0xFFFFEBEE)
+                          : const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: sel ? const Color(0xFF3DCC52)
+                            : err ? const Color(0xFFB71C1C)
+                            : const Color(0xFFE0E0E0),
+                        width: sel || err ? 3 : 1,
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    child: Image.asset(op.ruta, fit: BoxFit.contain,
+                        errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.grey)),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

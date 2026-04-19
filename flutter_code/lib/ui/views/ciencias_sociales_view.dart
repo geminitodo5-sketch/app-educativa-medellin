@@ -4,7 +4,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/providers/app_state_provider.dart';
 import '../viewmodels/sociales_view_model.dart';
+import 'sociales/heroes_ciudad_screen.dart';
+import 'sociales/detective_objetos_screen.dart';
+import 'sociales/pasado_presente_screen.dart';
+import 'terminado.dart';
 
 class CienciasSocialesView extends ConsumerStatefulWidget {
   const CienciasSocialesView({super.key});
@@ -26,6 +31,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
   @override
   Widget build(BuildContext context) {
     final vm = ref.watch(socialesViewModelProvider);
+    final syncState = ref.watch(syncListenerProvider);
 
     return Scaffold(
       body: Container(
@@ -58,19 +64,39 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                 children: [
                   const SizedBox(height: 10),
 
-                  // Flecha volver
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: GestureDetector(
-                        onTap: () {
-                          vm.commandVolver();
-                          Navigator.of(context).maybePop();
-                        },
-                        child: const Icon(Icons.arrow_back_rounded,
-                            size: 40, color: Colors.black),
-                      ),
+                  // Fila superior: volver + sync
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            vm.commandVolver();
+                            Navigator.of(context).maybePop();
+                          },
+                          child: const Icon(Icons.arrow_back_rounded,
+                              size: 40, color: Colors.black),
+                        ),
+                        syncState.when(
+                          data: (count) => Icon(
+                            count > 0
+                                ? Icons.sync_rounded
+                                : Icons.cloud_done_rounded,
+                            color: Colors.black45,
+                            size: 24,
+                          ),
+                          error: (_, __) => const Icon(
+                            Icons.cloud_off_rounded,
+                            color: Colors.redAccent,
+                          ),
+                          loading: () => const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
@@ -106,33 +132,79 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                     child: Column(
                       children: [
                         _BotonSociales(
-                          imagePath: 'assets/images/areas/sociales/heroes_ciudad.png.png',
+                          imagePath: 'assets/images/areas/sociales/heroes_ciudad.png',
                           fallbackEmoji: '👧',
                           texto: 'Héroes de\nla\nCiudad',
                           completado: _completado(vm, 'Héroes de la Ciudad'),
-                          onTap: () => vm.commandSeleccionarTema(
-                              'Héroes de la Ciudad',
-                              porcentaje: 100.0),
+                          onTap: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => HeroesCiudadScreen(
+                                  onCompleted: () => vm.commandSeleccionarTema(
+                                      'Héroes de la Ciudad',
+                                      porcentaje: 100.0),
+                                ),
+                              ),
+                            );
+                            ref
+                                .read(socialesViewModelProvider)
+                                .commandCargarProgreso();
+                          },
                         ),
                         const SizedBox(height: 18),
                         _BotonSociales(
-                          imagePath: 'assets/images/areas/sociales/detective_objetos.png.png',
+                          imagePath: 'assets/images/areas/sociales/detective_objetos.png',
                           fallbackEmoji: '🐻',
                           texto: 'Detective de\nObjetos',
                           completado: _completado(vm, 'Detective de Objetos'),
-                          onTap: () => vm.commandSeleccionarTema(
-                              'Detective de Objetos',
-                              porcentaje: 100.0),
+                          onTap: () async {
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => DetectiveObjetosScreen(
+                                  onCompleted: () => vm.commandSeleccionarTema(
+                                      'Detective de Objetos',
+                                      porcentaje: 100.0),
+                                ),
+                              ),
+                            );
+                            ref
+                                .read(socialesViewModelProvider)
+                                .commandCargarProgreso();
+                          },
                         ),
                         const SizedBox(height: 18),
                         _BotonSociales(
-                          imagePath: 'assets/images/areas/sociales/pasado_presente.png.png',
+                          imagePath: 'assets/images/areas/sociales/pasado_presente.png',
                           fallbackEmoji: '💡',
                           texto: 'Pasado y\nPresente',
                           completado: _completado(vm, 'Pasado y Presente'),
-                          onTap: () => vm.commandSeleccionarTema(
-                              'Pasado y Presente',
-                              porcentaje: 100.0),
+                          onTap: () async {
+                            bool completado = false;
+                            final nav = Navigator.of(context);
+                            await nav.push(
+                              MaterialPageRoute(
+                                builder: (_) => PasadoPresenteScreen(
+                                  onCompleted: () {
+                                    completado = true;
+                                    vm.commandSeleccionarTema(
+                                        'Pasado y Presente',
+                                        porcentaje: 100.0);
+                                  },
+                                ),
+                              ),
+                            );
+                            await ref
+                                .read(socialesViewModelProvider)
+                                .commandCargarProgreso();
+                            if (completado && mounted) {
+                              nav.push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const ActividadTerminadaScreen(),
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ],
                     ),

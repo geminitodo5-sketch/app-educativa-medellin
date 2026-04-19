@@ -5,6 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../viewmodels/espanol_view_model.dart';
+import 'espanol/palabra_loca/palabra_loca.dart';
+import 'espanol/arma_la_palabra/palabra_loca_2.dart';
+import 'espanol/oraciones/palabra_loca_3.dart';
 
 class EspanolView extends ConsumerStatefulWidget {
   const EspanolView({super.key});
@@ -32,8 +35,11 @@ class _EspanolViewState extends ConsumerState<EspanolView> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded,
-              color: Colors.black, size: 28),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.black,
+            size: 28,
+          ),
           onPressed: () {
             vm.commandVolver();
             Navigator.of(context).maybePop();
@@ -96,10 +102,13 @@ class _EspanolViewState extends ConsumerState<EspanolView> {
                   // Barra de progreso
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 6),
+                      horizontal: 40,
+                      vertical: 6,
+                    ),
                     child: _BarraProgreso(
-                        porcentaje: vm.progresoTotal,
-                        color: const Color(0xFFB83232)),
+                      porcentaje: vm.progresoTotal,
+                      color: const Color(0xFFB83232),
+                    ),
                   ),
 
                   const SizedBox(height: 14),
@@ -127,29 +136,62 @@ class _EspanolViewState extends ConsumerState<EspanolView> {
                             const SizedBox(height: 55),
                             _ActividadCard(
                               texto: 'Palabra\nloca',
-                              imagenLeft: 'assets/images/areas/espanol/palabra_loca.png',
+                              imagenLeft:
+                                  'assets/images/areas/espanol/palabra_loca.png',
                               completado: _completado(vm, 'Palabra loca'),
-                              onTap: () => vm.commandSeleccionarActividad(
-                                  'Palabra loca',
-                                  porcentaje: 100.0),
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const PalabraLocaScreen(),
+                                  ),
+                                );
+                                if (mounted) {
+                                  ref
+                                      .read(espanolViewModelProvider)
+                                      .commandCargarProgreso();
+                                }
+                              },
                             ),
                             const SizedBox(height: 14),
                             _ActividadCard(
                               texto: 'Arma\nla palabra',
-                              imagenLeft: 'assets/images/areas/espanol/arma_palabra.png',
+                              imagenLeft:
+                                  'assets/images/areas/espanol/arma_palabra.png',
                               completado: _completado(vm, 'Arma la palabra'),
-                              onTap: () => vm.commandSeleccionarActividad(
-                                  'Arma la palabra',
-                                  porcentaje: 100.0),
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ArmaLaPalabraScreen(),
+                                  ),
+                                );
+                                if (mounted) {
+                                  ref
+                                      .read(espanolViewModelProvider)
+                                      .commandCargarProgreso();
+                                }
+                              },
                             ),
                             const SizedBox(height: 14),
                             _ActividadCard(
                               texto: 'Oraciones',
-                              imagenLeft: 'assets/images/areas/espanol/gato_con_comida.png',
+                              imagenLeft:
+                                  'assets/images/areas/espanol/gato_con_comida.png',
                               completado: _completado(vm, 'Oraciones'),
-                              onTap: () => vm.commandSeleccionarActividad(
-                                  'Oraciones',
-                                  porcentaje: 100.0),
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const OracionesActivity(),
+                                  ),
+                                );
+                                if (mounted) {
+                                  ref
+                                      .read(espanolViewModelProvider)
+                                      .commandCargarProgreso();
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -184,13 +226,18 @@ class _BarraProgreso extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Progreso',
-                style: TextStyle(fontFamily: 'Poppins', fontSize: 12)),
-            Text('${porcentaje.toInt()}%',
-                style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600)),
+            const Text(
+              'Progreso',
+              style: TextStyle(fontFamily: 'Poppins', fontSize: 12),
+            ),
+            Text(
+              '${porcentaje.toInt()}%',
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -232,8 +279,10 @@ class _ActividadCardState extends State<_ActividadCard>
     vsync: this,
     duration: const Duration(milliseconds: 80),
   );
-  late final Animation<double> _scale =
-      Tween<double>(begin: 1.0, end: 0.96).animate(_ctrl);
+  late final Animation<double> _scale = Tween<double>(
+    begin: 1.0,
+    end: 0.96,
+  ).animate(_ctrl);
 
   @override
   void dispose() {
@@ -307,10 +356,16 @@ class _ActividadCardState extends State<_ActividadCard>
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: widget.completado
-                    ? const Icon(Icons.check_circle_rounded,
-                        color: Colors.white, size: 28)
-                    : const Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white, size: 22),
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      )
+                    : const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
               ),
             ],
           ),
