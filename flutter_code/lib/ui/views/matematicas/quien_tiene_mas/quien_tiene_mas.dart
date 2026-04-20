@@ -5,38 +5,110 @@ import 'quien_tiene_mas_2.dart';
 
 /// Vista de comparación de cantidades — "¿Quién tiene más?"
 /// Responsabilidad: Crosmedia
-class ComparacionCantidadesView extends ConsumerWidget {
+class ComparacionCantidadesView extends ConsumerStatefulWidget {
   const ComparacionCantidadesView({super.key});
+
+  @override
+  ConsumerState<ComparacionCantidadesView> createState() =>
+      _ComparacionCantidadesViewState();
+}
+
+class _ComparacionCantidadesViewState
+    extends ConsumerState<ComparacionCantidadesView> {
+
+  // ✅ Se ejecuta cada vez que la vista entra en pantalla (también al volver atrás)
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        ref
+            .read(comparacionCantidadesViewModelProvider.notifier)
+            .commandNuevaRonda();
+      }
+    });
+  }
 
   // ─── Feedback de respuesta ─────────────────────────────────────────────────
 
-  void _verificarRespuesta(BuildContext context, WidgetRef ref, String nombre) {
-    final notifier = ref.read(comparacionCantidadesViewModelProvider.notifier);
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _verificarRespuesta(String nombre) {
     final state = ref.read(comparacionCantidadesViewModelProvider);
 
     // Evita re-responder en la misma ronda
     if (state.respondido) return;
 
+    final notifier =
+        ref.read(comparacionCantidadesViewModelProvider.notifier);
     final esCorrecto = notifier.validarSeleccion(nombre);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          esCorrecto
-              ? '¡Muy bien! ${state.ganador} tiene más. 🎉'
-              : '¡Casi! Cuenta bien las manzanas.',
-        ),
-        backgroundColor: esCorrecto ? Colors.green : Colors.orange,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-
-    // Si es correcto, pasamos a la fase 2 tras un breve delay
-    Future.delayed(const Duration(seconds: 2), () {
-      if (context.mounted && esCorrecto) {
+    _mostrarFeedback(esCorrecto, () {
+      if (esCorrecto) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const MenosFrutasview()),
         );
+      } else {
+        notifier.commandNuevaRonda();
       }
     });
   }
@@ -44,9 +116,10 @@ class ComparacionCantidadesView extends ConsumerWidget {
   // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final state = ref.watch(comparacionCantidadesViewModelProvider);
-    final notifier = ref.read(comparacionCantidadesViewModelProvider.notifier);
+    final notifier =
+        ref.read(comparacionCantidadesViewModelProvider.notifier);
 
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
@@ -153,16 +226,19 @@ class ComparacionCantidadesView extends ConsumerWidget {
                           imagePath:
                               'assets/images/actividades/matematicas/niño.png',
                           color: const Color(0xFFA7F3FF),
-                          onTap: () =>
-                              _verificarRespuesta(context, ref, 'Juan'),
+                          // ✅ respondido bloquea visualmente el botón
+                          onTap: state.respondido
+                              ? null
+                              : () => _verificarRespuesta('Juan'),
                         ),
                         _SelectionButton(
                           nombre: 'Sara',
                           imagePath:
                               'assets/images/actividades/matematicas/niña.png',
                           color: const Color(0xFFFFC1C1),
-                          onTap: () =>
-                              _verificarRespuesta(context, ref, 'Sara'),
+                          onTap: state.respondido
+                              ? null
+                              : () => _verificarRespuesta('Sara'),
                         ),
                       ],
                     ),
@@ -175,7 +251,6 @@ class ComparacionCantidadesView extends ConsumerWidget {
           ),
 
           // ── Personajes desbordando sobre el panel blanco ────────────────────
-          // Se posicionan sobre la línea de separación azul/blanca
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: 0,
@@ -208,7 +283,7 @@ class ComparacionCantidadesView extends ConsumerWidget {
             ),
           ),
 
-          // ── Botón cerrar — esquina superior derecha ─────────────────────────
+          // ── Botón cerrar ────────────────────────────────────────────────────
           Positioned(
             top: 44,
             right: 16,
@@ -258,8 +333,6 @@ class _PersonCard extends StatelessWidget {
           color: color,
           borderRadius: BorderRadius.circular(25),
         ),
-        // El personaje flota encima (Stack en la vista padre),
-        // aquí solo mostramos las manzanas con espacio reservado arriba
         child: Padding(
           padding: const EdgeInsets.only(
             top: 60,
@@ -293,39 +366,44 @@ class _SelectionButton extends StatelessWidget {
     required this.nombre,
     required this.imagePath,
     required this.color,
-    required this.onTap,
+    required this.onTap, // ✅ Ahora acepta null para desactivarse
   });
 
   final String nombre;
   final String imagePath;
   final Color color;
-  final VoidCallback onTap;
+  final VoidCallback? onTap; // ✅ nullable
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 130,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              nombre,
-              style: const TextStyle(
-                fontSize: 20,
-                fontFamily: 'Hiruko',
-                fontWeight: FontWeight.bold,
+      child: AnimatedOpacity(
+        // ✅ Feedback visual: se opaca cuando está desactivado
+        opacity: onTap == null ? 0.45 : 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          width: 130,
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                nombre,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'Hiruko',
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Image.asset(imagePath, height: 80),
-          ],
+              const SizedBox(height: 6),
+              Image.asset(imagePath, height: 80),
+            ],
+          ),
         ),
       ),
     );

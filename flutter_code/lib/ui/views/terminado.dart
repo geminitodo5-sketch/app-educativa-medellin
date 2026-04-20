@@ -95,7 +95,7 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
                 const Spacer(flex: 3),
 
                 // ── Personajes ──
-                _buildPersonajes(),
+                _buildPersonajes(context), // ✅ pasamos context
 
                 const SizedBox(height: 40),
               ],
@@ -129,12 +129,12 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
           const SizedBox(width: 12),
           const Expanded(
             child: Text(
-              'Completaste las actividades',
+              'Completaste \nlas actividades',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Hiruko',
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black,
                 shadows: [
                   Shadow(
                     color: Colors.black26,
@@ -163,7 +163,7 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
               fontFamily: 'Hiruko',
               fontSize: 36,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
               shadows: [
                 Shadow(
                   color: Colors.black26,
@@ -178,11 +178,16 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
     );
   }
 
-  Widget _buildPersonajes() {
+  // ✅ Recibe context para poder usar MediaQuery
+  Widget _buildPersonajes(BuildContext context) {
+    // ✅ w y h ahora están correctamente definidos
+    final double w = MediaQuery.of(context).size.width;
+    final double h = MediaQuery.of(context).size.height;
+
     return ScaleTransition(
       scale: _scaleAnim,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.38,
+        height: h * 0.38,
         width: double.infinity,
         child: Stack(
           alignment: Alignment.bottomCenter,
@@ -190,32 +195,27 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
           children: [
             // Mono (derecha, más grande)
             Positioned(
-              right: 16,
-              bottom: 0,
+              left: w * 0.25,
+              bottom: h * -0.01,
               child: Image.asset(
-                'assets/images/actividad_terminada/mono_gano.png',
-                height: MediaQuery.of(context).size.height * 0.34,
+                'assets/images/areas/ingles/mono gano.png',
+                width: w * 0.8,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const SizedBox(
-                  height: 200,
-                  width: 140,
-                  child: Icon(Icons.emoji_emotions, size: 80, color: Colors.white),
-                ),
+                errorBuilder: (_, __, ___) => const SizedBox(), // ✅
               ),
             ),
 
             // Pollo (izquierda, ligeramente más pequeño)
             Positioned(
-              left: 0,
-              bottom: 10,
-              child: Image.asset(
-                'assets/images/actividad_terminada/pollo_gano.png',
-                height: MediaQuery.of(context).size.height * 0.26,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const SizedBox(
-                  height: 160,
-                  width: 120,
-                  child: Icon(Icons.emoji_nature, size: 70, color: Colors.white),
+              right: w * 0.7,
+              bottom: h * 0.22,
+              child: Transform.rotate(
+                angle: 0.4,
+                child: Image.asset(
+                  'assets/images/areas/ingles/pollo gano.png',
+                  width: w * 0.38,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const SizedBox(), // ✅
                 ),
               ),
             ),

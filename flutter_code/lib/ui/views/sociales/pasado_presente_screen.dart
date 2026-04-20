@@ -12,12 +12,11 @@ class PasadoPresenteScreen extends StatefulWidget {
 
 class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     with SingleTickerProviderStateMixin {
-  // Par i: _pasado[i] se empareja con _presente[i]
   static const List<String> _pasado = [
     'assets/images/actividades/sociales/vela (1).png',
     'assets/images/actividades/sociales/botella-de-tinta.png',
     'assets/images/actividades/sociales/carruaje.png',
-    'assets/images/actividades/sociales/telefono.png',
+    'assets/images/actividades/sociales/telefono1.png',
   ];
 
   static const List<String> _presente = [
@@ -27,9 +26,9 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     'assets/images/actividades/sociales/telefonos-inteligentes.png',
   ];
 
-  late final List<int> _rightOrder; // orden aleatorio de la columna derecha
-  int? _selectedLeft;               // índice del item izquierdo seleccionado
-  final Set<int> _matched = {};     // índices de pares ya emparejados
+  late final List<int> _rightOrder;
+  int? _selectedLeft;
+  final Set<int> _matched = {};
 
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
@@ -44,15 +43,18 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     );
     _shakeAnim = TweenSequence<Offset>([
       TweenSequenceItem(
-          tween: Tween(begin: Offset.zero, end: const Offset(0.04, 0)),
-          weight: 1),
+        tween: Tween(begin: Offset.zero, end: const Offset(0.04, 0)),
+        weight: 1,
+      ),
       TweenSequenceItem(
-          tween:
-              Tween(begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
-          weight: 2),
+        tween: Tween(
+            begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
+        weight: 2,
+      ),
       TweenSequenceItem(
-          tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
-          weight: 1),
+        tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
+        weight: 1,
+      ),
     ]).animate(_shakeCtrl);
   }
 
@@ -67,6 +69,67 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     setState(() => _selectedLeft = _selectedLeft == index ? null : index);
   }
 
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _onRightTap(int displayRow) {
     final pairIndex = _rightOrder[displayRow];
     if (_matched.contains(pairIndex) || _selectedLeft == null) return;
@@ -77,13 +140,18 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
         _selectedLeft = null;
       });
       if (_matched.length == 4) {
-        Future.delayed(const Duration(milliseconds: 600),
-            () { if (mounted) _showSuccess(); });
+        Future.delayed(const Duration(milliseconds: 600), () {
+          if (mounted) _showSuccess();
+        });
       }
     } else {
-      _shakeCtrl.forward().then((_) => _shakeCtrl.reverse());
-      Future.delayed(const Duration(milliseconds: 400), () {
-        if (mounted) setState(() => _selectedLeft = null);
+      _shakeCtrl.forward().then((_) {
+        _shakeCtrl.reverse();
+        if (mounted) {
+          _mostrarFeedback(false, () {
+            setState(() => _selectedLeft = null);
+          });
+        }
       });
     }
   }
@@ -93,22 +161,28 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
       context: context,
       barrierDismissible: false,
       builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star_rounded,
-                  color: Color(0xFFF5A623), size: 80),
+              const Icon(
+                Icons.star_rounded,
+                color: Color(0xFFF5A623),
+                size: 80,
+              ),
               const SizedBox(height: 12),
-              const Text('¡Excelente!',
-                  style: TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D2B1F),
-                  )),
+              const Text(
+                '¡Excelente!',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF3D2B1F),
+                ),
+              ),
               const SizedBox(height: 8),
               const Text(
                 '¡Emparejaste todos\nlos objetos!',
@@ -128,7 +202,8 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                     backgroundColor: const Color(0xFFF5A623),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 4,
                   ),
@@ -136,16 +211,19 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                     Navigator.of(context).pop();
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (_) => TelefonoGameScreen(onCompleted: widget.onCompleted),
+                        builder: (_) => TelefonoGameScreen(
+                            onCompleted: widget.onCompleted),
                       ),
                     );
                   },
-                  child: const Text('Continuar',
-                      style: TextStyle(
-                        fontFamily: 'Hiruko',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      )),
+                  child: const Text(
+                    'Continuar',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -158,12 +236,24 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5A623),
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(),
-            Expanded(child: _buildBody()),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
+                ),
+                child: _buildBody(),
+              ),
+            ),
           ],
         ),
       ),
@@ -173,32 +263,29 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: const BoxDecoration(color: Color(0xFFF5A623)),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      color: const Color(0xFFF5A623),
       child: Stack(
         alignment: Alignment.center,
         children: [
           const Text(
             'Pasado y Presente',
             style: TextStyle(
-              fontFamily: 'Hiruko',
+              fontFamily: 'Poppins',
               fontSize: 22,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: Colors.white,
-              letterSpacing: 0.5,
+              letterSpacing: 0.3,
             ),
           ),
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFF5A623)),
+              child: const Icon(
+                Icons.close,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -212,7 +299,6 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       child: Column(
         children: [
-          // Título
           const Text(
             'Pasado y Presente\nde los Objetos',
             textAlign: TextAlign.center,
@@ -225,13 +311,12 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
             ),
           ),
           const SizedBox(height: 14),
-
-          // Instrucción
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.volume_up, color: Color(0xFF333333), size: 26),
-              SizedBox(width: 10),
+            children: [
+              const Icon(Icons.volume_up,
+                  color: Color(0xFF333333), size: 26),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Une el pasado con el presente,\ny empareja los objetos.',
@@ -247,8 +332,6 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
             ],
           ),
           const SizedBox(height: 22),
-
-          // Pares
           Expanded(
             child: SlideTransition(
               position: _shakeAnim,
@@ -332,9 +415,10 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
               imagePath,
               fit: BoxFit.contain,
               errorBuilder: (ctx, e, _) => const Icon(
-                  Icons.image_not_supported,
-                  size: 36,
-                  color: Colors.grey),
+                Icons.image_not_supported,
+                size: 36,
+                color: Colors.grey,
+              ),
             ),
             if (isMatched)
               Positioned(

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../terminado.dart'; // ajusta la ruta si está en otra carpeta
 
 void main() => runApp(const _DetectiveApp());
 
@@ -13,7 +14,7 @@ class _DetectiveApp extends StatelessWidget {
 }
 
 const _kBase = 'assets/images/actividades/sociales';
-const _kBoardImage = '$_kBase/Completar_rompecabeza.png';
+const _kBoardImage = '$_kBase/Rompecabezas sin fondo.png';
 
 const _kOrange = Color(0xFFF5A623);
 const _kOrangeDark = Color(0xFFD4881A);
@@ -46,8 +47,7 @@ const List<PuzzlePiece> kPieces = [
 ];
 
 class PuzzleScreen extends StatefulWidget {
-  const PuzzleScreen({super.key, this.onCompleted});
-  final VoidCallback? onCompleted;
+  const PuzzleScreen({super.key});
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
@@ -60,6 +60,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   int? _selectedId;
   bool _completed = false;
   ({int row, int col})? _failCell;
+  String? _feedbackText;
+  Color? _feedbackColor;
 
   late final AnimationController _completeCtrl;
   late final Animation<double> _completeScale;
@@ -127,7 +129,11 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   void _selectTray(PuzzlePiece piece) {
     if (_completed) return;
-    setState(() => _selectedId = (_selectedId == piece.id) ? null : piece.id);
+    setState(() {
+      _selectedId = (_selectedId == piece.id) ? null : piece.id;
+      _feedbackText = null;
+      _feedbackColor = null;
+    });
   }
 
   void _onCellTap(int row, int col) {
@@ -157,6 +163,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
         _board[row][col] = piece.id;
         _tray.removeWhere((p) => p.id == piece.id);
         _selectedId = null;
+        _feedbackText = '¡Correcto!';
+        _feedbackColor = Colors.green.shade700;
       });
       _popCtrl[_popKey(row, col)]?.forward(from: 0);
       _checkCompletion();
@@ -164,6 +172,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
       setState(() {
         _failCell = (row: row, col: col);
         _selectedId = null;
+        _feedbackText = 'Incorrecto';
+        _feedbackColor = Colors.red.shade700;
       });
       _shakeCtrl.forward(from: 0).then((_) {
         if (mounted) setState(() => _failCell = null);
@@ -172,15 +182,22 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   void _checkCompletion() {
-    if (kPieces.every((p) => _board[p.correctRow][p.correctCol] == p.id)) {
-      setState(() => _completed = true);
-      _pulseCtrl.stop();
-      Future.delayed(const Duration(milliseconds: 200), () {
-        if (mounted) _completeCtrl.forward();
-      });
-    }
+  if (kPieces.every((p) => _board[p.correctRow][p.correctCol] == p.id)) {
+    setState(() => _completed = true);
+    _pulseCtrl.stop();
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ActividadTerminadaScreen(
+              onVolver: () => Navigator.of(context).pop(),
+            ),
+          ),
+        );
+      }
+    });
   }
-
+}
   void _reset() {
     for (final c in _popCtrl.values) c.reset();
     setState(() {
@@ -189,6 +206,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
       _selectedId = null;
       _completed = false;
       _failCell = null;
+      _feedbackText = null;
+      _feedbackColor = null;
     });
     _completeCtrl.reset();
     _pulseCtrl.repeat(reverse: true);
@@ -197,31 +216,63 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _kBg,
+      backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    _buildTitle(),
-                    const SizedBox(height: 16),
-                    _buildBoard(),
-                    const SizedBox(height: 16),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 350),
-                      transitionBuilder: (child, anim) =>
-                          FadeTransition(opacity: anim, child: child),
-                      child: _completed ? _buildSuccessBanner() : _buildTray(),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final availableWidth = constraints.maxWidth;
+                    final availableHeight = constraints.maxHeight;
+                    // Título (~80) + feedback (~44) + bandeja (~130) + gaps (~24) = ~278
+                    // Usar fracción del alto disponible para pantallas pequeñas
+                    final reservedHeight = availableHeight * 0.38;
+                    final maxBoardH = availableHeight - reservedHeight;
+                    final boardSide = min(
+                      min(availableWidth - 24, maxBoardH),
+                      400.0,
+                    );
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _buildTitle(),
+                          const SizedBox(height: 8),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: boardSide,
+                              maxHeight: boardSide,
+                            ),
+                            child: _buildBoard(boardSide),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildFeedbackBanner(),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 350),
+                              transitionBuilder: (child, anim) =>
+                                  FadeTransition(opacity: anim, child: child),
+                              child: _buildTray(boardSide),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -234,42 +285,38 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+      padding: const EdgeInsets.fromLTRB(20, 36, 20, 36),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(26)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x40F5A623),
-            blurRadius: 14,
-            offset: Offset(0, 5),
-          ),
-        ],
+        // Sin esquinas redondeadas — el bloque naranja va de borde a borde
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Text(
-            'Detective de Objetos',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.2,
-              shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
+          const Center(
+            child: Text(
+              'Detective de Objetos',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.2,
+                shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
+              ),
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
+          Positioned(
+            right: 0,
             child: GestureDetector(
               onTap: () => Navigator.maybePop(context),
               child: Container(
-                width: 34,
-                height: 34,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.28),
                   shape: BoxShape.circle,
@@ -281,7 +328,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                 child: const Icon(
                   Icons.close_rounded,
                   color: Colors.white,
-                  size: 18,
+                  size: 20,
                 ),
               ),
             ),
@@ -292,86 +339,144 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   Widget _buildTitle() {
-    return Column(
-      children: [
-        const SizedBox(height: 4),
-        const Text(
-          'Rompecabezas de Pancho',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-            color: Color(0xFF2D2010),
-            letterSpacing: -0.3,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _AudioButton(),
-            const SizedBox(width: 8),
-            Text(
-              'Arma la imagen y descubre\nqué está haciendo Pancho.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13.5,
-                color: Colors.brown.shade600,
-                height: 1.45,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBoard() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final boardW = constraints.maxWidth;
-        const imageRatio = 800 / 1000;
-        final boardH = boardW / imageRatio;
-        final cellW = boardW / 4;
-        final cellH = boardH / 4;
-
-        return Container(
-          width: boardW,
-          height: boardH,
-          decoration: BoxDecoration(
-            color: _kWoodFrame,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _kWoodBorder, width: 4),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.20),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+        final w = constraints.maxWidth;
+        final titleSize = (w * 0.058).clamp(16.0, 23.0);
+        final bodySize = (w * 0.038).clamp(12.0, 15.0);
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  'Rompecabezas de Pancho',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1A1A1A),
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _AudioButton(),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Arma la imagen y descubre qué está haciendo Pancho.',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: bodySize,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF555555),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    _kBoardImage,
-                    fit: BoxFit.fill,
-                    errorBuilder: (context, error, stackTrace) =>
-                        Container(color: _kWoodFrame),
+        );
+      },
+    );
+  }
+
+  Widget _buildFeedbackBanner() {
+    if (_completed || _feedbackText == null) return const SizedBox.shrink();
+    return Container(
+      key: ValueKey(_feedbackText),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: _feedbackColor?.withOpacity(0.14) ?? Colors.black12,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _feedbackColor?.withOpacity(0.35) ?? Colors.black12,
+          width: 1.2,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _feedbackText == '¡Correcto!'
+                ? Icons.check_circle_rounded
+                : Icons.cancel_rounded,
+            color: _feedbackColor,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            _feedbackText!,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: _feedbackColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoard(double boardSide) {
+    const frameThickness = 10.0;
+    const frameRadius = 18.0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: _kTrayBg,
+        borderRadius: BorderRadius.circular(frameRadius),
+        border: Border.all(color: _kTrayBorder, width: 2.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(frameThickness),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(frameRadius - frameThickness),
+        child: AspectRatio(
+          aspectRatio: 1.0,
+          child: LayoutBuilder(
+            builder: (context, innerConstraints) {
+              // cellW/cellH siempre derivados del tamaño REAL renderizado
+              final realSide = innerConstraints.maxWidth;
+              final cellW = realSide / 4;
+              final cellH = realSide / 4;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      _kBoardImage,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const ColoredBox(color: Colors.white),
+                    ),
                   ),
-                ),
-                if (!_completed)
                   for (int row = 0; row < 4; row++)
                     for (int col = 0; col < 4; col++)
                       if (isHole(row, col))
                         _buildHoleCell(row, col, cellW, cellH),
-              ],
-            ),
+                ],
+              );
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -385,36 +490,83 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
     if (id != null) {
       final piece = kPieces.firstWhere((p) => p.id == id);
+
+      // Piezas 1,2,3,6: el PNG mide 430x349px.
+      // - Ancho del PNG = ancho real de la celda (sin ajuste en X).
+      // - La pestana izquierda es concava (entra hacia adentro), no agrega ancho.
+      // - La pestana INFERIOR es convexa: agrega ~81px extra hacia abajo.
+      //   Contenido celda = 268px de alto, PNG total = 349px.
+      //   Factor alto = 349/268 = 1.3022 → renderizar mas alto para que encaje.
+      // - OverflowBox + Clip.none permiten que la pestana sobresalga hacia abajo.
+      // Piezas 4,5,7,8: logica original intacta, no se tocan.
+      const tabPieceIds = {1, 2, 3, 6};
+      final hasTab = tabPieceIds.contains(piece.id);
+
+      Widget pieceImage;
+      if (hasTab) {
+        final imgW = cellW;           // ancho exacto de la celda, sin cambio
+        final imgH = cellH * 1.3022;  // escalar alto para que celda = cellH exacto
+        pieceImage = OverflowBox(
+          maxWidth: imgW,
+          maxHeight: imgH,
+          alignment: Alignment.topLeft,
+          child: Image.asset(
+            piece.asset,
+            width: imgW,
+            height: imgH,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (context, error, stackTrace) => Container(
+              width: cellW,
+              height: cellH,
+              color: _kSlotBg,
+              alignment: Alignment.center,
+              child: Text(
+                'P${piece.id}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: _kWoodBorder,
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        pieceImage = SizedBox(
+          width: cellW,
+          height: cellH,
+          child: Image.asset(
+            piece.asset,
+            width: cellW,
+            height: cellH,
+            fit: BoxFit.fill,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (context, error, stackTrace) => Container(
+              width: cellW,
+              height: cellH,
+              color: _kSlotBg,
+              alignment: Alignment.center,
+              child: Text(
+                'P${piece.id}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: _kWoodBorder,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
       inner = FadeTransition(
         opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(parent: _popCtrl[popKey]!, curve: Curves.easeIn),
         ),
         child: GestureDetector(
           onTap: () => _onCellTap(row, col),
-          child: SizedBox(
-            width: cellW,
-            height: cellH,
-            child: Image.asset(
-              piece.asset,
-              width: cellW,
-              height: cellH,
-              fit: BoxFit.fill,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: cellW,
-                height: cellH,
-                color: _kSlotBg,
-                alignment: Alignment.center,
-                child: Text(
-                  'P${piece.id}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: _kWoodBorder,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          child: pieceImage,
         ),
       );
     } else {
@@ -453,6 +605,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     required double cellW,
     required double cellH,
   }) {
+    // Escalar el ícono proporcionalmente al tamaño de celda (referencia: 26 para celda de ~95px)
+    final iconSize = (cellW * 0.27).clamp(14.0, 30.0);
     return Container(
       width: cellW,
       height: cellH,
@@ -461,7 +615,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
               color: _kOrange.withValues(alpha: 0.22 * _pulseAnim.value),
               border: Border.all(
                 color: _kOrange.withValues(alpha: 0.85 * _pulseAnim.value),
-                width: 2.2,
+                width: (cellW * 0.023).clamp(1.2, 2.8),
                 strokeAlign: BorderSide.strokeAlignInside,
               ),
             )
@@ -470,10 +624,10 @@ class _PuzzleScreenState extends State<PuzzleScreen>
           ? Center(
               child: Opacity(
                 opacity: _pulseAnim.value,
-                child: const Icon(
+                child: Icon(
                   Icons.check_circle_outline_rounded,
                   color: _kOrange,
-                  size: 26,
+                  size: iconSize,
                 ),
               ),
             )
@@ -481,20 +635,14 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
-  Widget _buildTray() {
+  Widget _buildTray(double boardSide) {
+    // Escalar piezas del tray proporcionalmente al tablero
+    // Referencia: boardSide 380 → pieza 68×54
+    final pieceW = (boardSide * 0.179).clamp(48.0, 80.0);
+    final pieceH = (boardSide * 0.142).clamp(38.0, 64.0);
+
     if (_tray.isEmpty) {
-      return Container(
-        height: 80,
-        alignment: Alignment.center,
-        child: Text(
-          '¡Casi listo! Coloca todas las piezas.',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.brown.shade400,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     return Container(
@@ -517,20 +665,20 @@ class _PuzzleScreenState extends State<PuzzleScreen>
         spacing: 10,
         runSpacing: 10,
         alignment: WrapAlignment.center,
-        children: _tray.map(_buildTrayPiece).toList(),
+        children: _tray.map((p) => _buildTrayPiece(p, pieceW, pieceH)).toList(),
       ),
     );
   }
 
-  Widget _buildTrayPiece(PuzzlePiece piece) {
+  Widget _buildTrayPiece(PuzzlePiece piece, double pieceW, double pieceH) {
     final selected = _selectedId == piece.id;
     return GestureDetector(
       onTap: () => _selectTray(piece),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOutCubic,
-        width: 80,
-        height: 65,
+        width: pieceW,
+        height: pieceH,
         transform: Matrix4.translationValues(0, selected ? -7 : 0, 0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -553,6 +701,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
           child: Image.asset(
             piece.asset,
             fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
             errorBuilder: (context, error, stackTrace) => Container(
               color: _kSlotBg,
               alignment: Alignment.center,
@@ -617,46 +766,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _reset,
-              icon: const Icon(Icons.refresh_rounded, size: 20),
-              label: const Text('Jugar de nuevo'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: _kOrangeDark,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 12,
-                ),
-                textStyle: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () {
-                widget.onCompleted?.call();
-                Navigator.maybePop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _kOrangeDark,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-              ),
-              child: const Text('Continuar'),
-            ),
+
           ],
         ),
       ),

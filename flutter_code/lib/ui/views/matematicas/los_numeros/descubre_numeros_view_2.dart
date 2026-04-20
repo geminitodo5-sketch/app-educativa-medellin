@@ -156,7 +156,7 @@ class _Header extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'Descubre los números',
+                  'Descubre  los números',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Hiruko', fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white, height: 1.2,

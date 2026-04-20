@@ -46,6 +46,8 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     ),
   ];
 
+  // ── Lógica intacta ────────────────────────────────────────────────────────
+
   @override
   void initState() {
     super.initState();
@@ -58,7 +60,8 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
           tween: Tween(begin: Offset.zero, end: const Offset(0.04, 0)),
           weight: 1),
       TweenSequenceItem(
-          tween: Tween(begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
+          tween: Tween(
+              begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
           weight: 2),
       TweenSequenceItem(
           tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
@@ -87,16 +90,77 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     } else {
       _shakeCtrl.forward().then((_) {
         _shakeCtrl.reverse();
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
+        if (mounted) {
+          _mostrarFeedback(false, () {
             setState(() {
               _selectedIndex = null;
               _isCorrect = null;
             });
-          }
-        });
+          });
+        }
       });
     }
+  }
+
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSuccessDialog() {
@@ -148,7 +212,8 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                     Navigator.of(context).pop();
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (_) => HeroesCiudad2Screen(onCompleted: widget.onCompleted),
+                        builder: (_) => HeroesCiudad2Screen(
+                            onCompleted: widget.onCompleted),
                       ),
                     );
                   },
@@ -169,15 +234,29 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     );
   }
 
+  // ── Build ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(),
-            Expanded(child: _buildBody()),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: _buildBody(),
+              ),
+            ),
           ],
         ),
       ),
@@ -187,35 +266,51 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: const BoxDecoration(
-        color: Color(0xFFF5A623),
+        gradient: LinearGradient(
+          colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Text(
-            'Héroes de la Ciudad',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 0.5,
+          const Center(
+            child: Text(
+              'Héroes de la Ciudad',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 0.5,
+                shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
+              ),
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
+          Positioned(
+            right: 0,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
               child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.28),
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    width: 1.5,
+                  ),
                 ),
-                child: const Icon(Icons.close, size: 18, color: Color(0xFFF5A623)),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -226,44 +321,63 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
 
   Widget _buildBody() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Heroes de la Ciudad',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D2B1F),
+          // Título con Poppins
+          const Center(
+            child: Text(
+              'Héroes de la Ciudad',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1A1A1A),
+              ),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
+
+          // Enunciado con ícono de audio estilo consistente
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.volume_up,
-                color: Color(0xFF333333),
-                size: 32,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5A623).withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFFF5A623).withValues(alpha: 0.40),
+                    width: 1.5,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.volume_up_rounded,
+                  color: Color(0xFFF5A623),
+                  size: 20,
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               const Expanded(
                 child: Text(
-                  'Ayúdame a encontrar a la persona que apaga incendios y usa una manguera',
+                  'Ayúdame a encontrar a la persona que apaga incendios y usa una manguera.',
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                    height: 1.5,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF555555),
+                    height: 1.4,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // Grid de personajes — lógica intacta
           Expanded(
             child: SlideTransition(
               position: _selectedIndex != null && _isCorrect == false
@@ -285,6 +399,8 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
       ),
     );
   }
+
+  // ── Widgets de lógica — sin cambios ───────────────────────────────────────
 
   Widget _buildCard(int index) {
     final char = _chars[index];
@@ -345,7 +461,9 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                     ),
                     child: Center(
                       child: Icon(
-                        correct ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                        correct
+                            ? Icons.check_circle_rounded
+                            : Icons.cancel_rounded,
                         color: Colors.white,
                         size: 56,
                       ),

@@ -5,33 +5,69 @@ class MenosFrutasview extends StatelessWidget {
   const MenosFrutasview({super.key});
 
   void _verificarRespuesta(BuildContext context, int seleccion) {
-    // Lógica: Árbol 1 tiene 4 manzanas, Árbol 2 tiene 5 naranjas.
-    bool esCorrecto = (seleccion == 1);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          esCorrecto
-              ? "¡Excelente! El Árbol 1 tiene menos."
-              : "¡Inténtalo de nuevo! Cuenta las frutas.",
-          style: const TextStyle(fontFamily: 'Poppins'),
+    final esCorrecto = seleccion == 1;
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (esCorrecto) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const QuienTieneMasview3()),
+                    );
+                  }
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
         ),
-        backgroundColor: esCorrecto
-            ? const Color(0xFF59E347)
-            : const Color(0xFFF65757),
-        duration: const Duration(seconds: 1),
       ),
     );
-
-    if (esCorrecto) {
-      Future.delayed(const Duration(seconds: 2), () {
-        if (context.mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const QuienTieneMasview3()),
-          );
-        }
-      });
-    }
   }
 
   @override

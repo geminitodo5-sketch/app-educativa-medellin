@@ -107,6 +107,16 @@ flutter:
     - assets/images/areas/matematicas/
     - assets/images/areas/ciencias_naturales/
     - assets/images/areas/ingles/
+    - assets/images/areas/ingles/juego_1/
+    - assets/images/areas/ingles/juego_1/audios_1/
+    - assets/images/areas/ingles/juego_1/imagenes_1/
+    - assets/images/areas/ingles/juego_2/
+    - assets/images/areas/ingles/juego_3/
+    - assets/images/areas/ingles/pantallas guia/
+    - assets/images/areas/ingles/pantallas guia/juego1/
+    - assets/images/areas/ingles/pantallas guia/juego2/
+    - assets/images/areas/ingles/pantallas guia/juego3/
+    - assets/images/areas/ingles/pantallas guia/parte de atras de las tarjetas/
     - assets/images/areas/espanol/
     - assets/images/areas/sociales/
     - assets/images/avatares/

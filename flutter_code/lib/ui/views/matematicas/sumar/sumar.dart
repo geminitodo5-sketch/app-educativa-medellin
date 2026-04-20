@@ -83,7 +83,7 @@ class SumarPatronview extends ConsumerWidget {
             _buildOptionButton(context, ref, '4+1', azulBoton, Colors.white, true),
             const SizedBox(height: 15),
             // Opción Incorrecta: 4+2 = 6
-            _buildOptionButton(context, ref, '4+2', azulBotonClaro, azulBoton, false),
+            _buildOptionButton(context, ref, '4+2', azulBoton, Colors.white, false),
             const SizedBox(height: 20),
           ],
         ),

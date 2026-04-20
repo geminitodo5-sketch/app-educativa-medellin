@@ -88,16 +88,77 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
     } else {
       _shakeCtrl.forward().then((_) {
         _shakeCtrl.reverse();
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
+        if (mounted) {
+          _mostrarFeedback(false, () {
             setState(() {
               _selectedIndex = null;
               _isCorrect = null;
             });
-          }
-        });
+          });
+        }
       });
     }
+  }
+
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSuccessDialog() {
@@ -175,12 +236,27 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // Fondo amarillo para que el header se integre sin costuras
+      backgroundColor: const Color(0xFFF5A623),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
-            Expanded(child: _buildBody()),
+            // Bloque blanco con esquinas superiores redondeadas
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
+                ),
+                child: _buildBody(),
+              ),
+            ),
           ],
         ),
       ),
@@ -190,8 +266,9 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: const BoxDecoration(color: Color(0xFFF5A623)),
+      // Sin bordes redondeados — color plano amarillo
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      color: const Color(0xFFF5A623),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -226,7 +303,7 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
 
   Widget _buildBody() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -236,35 +313,48 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Hiruko',
-                fontSize: 20,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF3D2B1F),
-                height: 1.4,
+                height: 1.3,
               ),
             ),
           ),
-          const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.volume_up,
-                  color: Color(0xFF333333), size: 32),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Uso uniforme azul, ayudo a las personas en la calle, y cuido que todos estén seguros.',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                    height: 1.5,
+          const SizedBox(height: 16),
+
+          // Enunciado con fuente Hiruko bold, igual que la imagen de referencia
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF8EE),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFF5A623), width: 1.5),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Icon(Icons.volume_up_rounded,
+                    color: Color(0xFFF5A623), size: 28),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Uso uniforme azul, ayudo a las personas en la calle, y cuido que todos estén seguros.',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3D2B1F),
+                      height: 1.55,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+
           const SizedBox(height: 20),
+
           Expanded(
             child: SlideTransition(
               position: _selectedIndex != null && _isCorrect == false

@@ -78,6 +78,67 @@ class _InglesParejaViewState extends State<InglesParejaView> {
     _resetKeys();
   }
 
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _resetKeys() {
     _imgKeys = List.generate(3, (_) => GlobalKey());
     _palKeys = List.generate(3, (_) => GlobalKey());
@@ -127,6 +188,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
             _errorImg = -1;
             _errorPal = -1;
           });
+          _mostrarFeedback(false, () {});
         }
       });
     }
@@ -198,9 +260,9 @@ class _InglesParejaViewState extends State<InglesParejaView> {
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER — mismo estilo que ingles_escucha_view
+            // HEADER — padding reducido para que el recuadro blanco sea más pequeño
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 50, 20, 50),
+              padding: const EdgeInsets.fromLTRB(10, 16, 20, 16), // ← MODIFICADO
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -215,7 +277,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4), // ← MODIFICADO
                   const Text(
                     '¡Une  la pareja!',
                     style: TextStyle(
@@ -225,7 +287,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6), // ← MODIFICADO
                   _buildIndicador(),
                 ],
               ),
@@ -359,9 +421,6 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                                     const Spacer(),
 
                                     // ── PALABRAS ──────────────────────────
-                                    // Ancho fijo para que las flechas lleguen
-                                    // al borde izquierdo de la palabra sin
-                                    // pisarla
                                     SizedBox(
                                       width: 110,
                                       child: Column(
@@ -550,14 +609,10 @@ class _FlechasPainter extends CustomPainter {
       if (posEnPal == -1) continue;
 
       final origen = _localCenter(imgKeys[parIdx], paintBox);
-      // Usamos el borde izquierdo de la palabra para que la flecha
-      // NO pase por encima del texto
       final destinoLeft = _localLeft(palKeys[posEnPal], paintBox);
       if (origen == null || destinoLeft == null) continue;
 
-      // Origen: borde derecho del círculo de imagen
       final o = Offset(origen.dx + 40, origen.dy);
-      // Destino: 8px antes del borde izquierdo de la palabra
       final d = Offset(destinoLeft.dx - 8, destinoLeft.dy);
 
       _flecha(canvas, o, d, _coloresPar[parIdx]);

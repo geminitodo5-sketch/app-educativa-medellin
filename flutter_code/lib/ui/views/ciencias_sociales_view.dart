@@ -9,7 +9,6 @@ import '../viewmodels/sociales_view_model.dart';
 import 'sociales/heroes_ciudad_screen.dart';
 import 'sociales/detective_objetos_screen.dart';
 import 'sociales/pasado_presente_screen.dart';
-import 'terminado.dart';
 
 class CienciasSocialesView extends ConsumerStatefulWidget {
   const CienciasSocialesView({super.key});
@@ -132,7 +131,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                     child: Column(
                       children: [
                         _BotonSociales(
-                          imagePath: 'assets/images/areas/sociales/heroes_ciudad.png',
+                          imagePath: 'assets/images/areas/sociales/heroes_ciudad.png.png',
                           fallbackEmoji: '👧',
                           texto: 'Héroes de\nla\nCiudad',
                           completado: _completado(vm, 'Héroes de la Ciudad'),
@@ -153,7 +152,7 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                         ),
                         const SizedBox(height: 18),
                         _BotonSociales(
-                          imagePath: 'assets/images/areas/sociales/detective_objetos.png',
+                          imagePath: 'assets/images/areas/sociales/detective_objetos.png.png',
                           fallbackEmoji: '🐻',
                           texto: 'Detective de\nObjetos',
                           completado: _completado(vm, 'Detective de Objetos'),
@@ -174,36 +173,23 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
                         ),
                         const SizedBox(height: 18),
                         _BotonSociales(
-                          imagePath: 'assets/images/areas/sociales/pasado_presente.png',
+                          imagePath: 'assets/images/areas/sociales/pasado_presente.png.png',
                           fallbackEmoji: '💡',
                           texto: 'Pasado y\nPresente',
                           completado: _completado(vm, 'Pasado y Presente'),
                           onTap: () async {
-                            bool completado = false;
-                            final nav = Navigator.of(context);
-                            await nav.push(
+                            await Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => PasadoPresenteScreen(
-                                  onCompleted: () {
-                                    completado = true;
-                                    vm.commandSeleccionarTema(
-                                        'Pasado y Presente',
-                                        porcentaje: 100.0);
-                                  },
+                                  onCompleted: () => vm.commandSeleccionarTema(
+                                      'Pasado y Presente',
+                                      porcentaje: 100.0),
                                 ),
                               ),
                             );
-                            await ref
+                            ref
                                 .read(socialesViewModelProvider)
                                 .commandCargarProgreso();
-                            if (completado && mounted) {
-                              nav.push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const ActividadTerminadaScreen(),
-                                ),
-                              );
-                            }
                           },
                         ),
                       ],

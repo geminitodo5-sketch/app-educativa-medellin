@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../terminado.dart';
 
 enum _Tool { casco, placa, zapatillas, cuchara }
 
@@ -138,7 +139,11 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
                   onPressed: () {
                     widget.onCompleted?.call();
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => const ActividadTerminadaScreen(),
+                      ),
+                    );
                   },
                   child: const Text(
                     'Continuar',
@@ -160,7 +165,7 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5A623), // fondo amarillo para que el header se extienda visualmente
       body: SafeArea(
         child: Column(
           children: [
@@ -175,32 +180,31 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: const BoxDecoration(color: Color(0xFFF5A623)),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      // Sin border radius: esquinas completamente rectas
+      color: const Color(0xFFF5A623),
       child: Stack(
         alignment: Alignment.center,
         children: [
           const Text(
             'Héroes de la Ciudad',
             style: TextStyle(
-              fontFamily: 'Hiruko',
+              // Fuente sans-serif bold como en la imagen de referencia
+              fontFamily: 'Poppins',
               fontSize: 22,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: Colors.white,
-              letterSpacing: 0.5,
+              letterSpacing: 0.3,
             ),
           ),
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFF5A623)),
+              child: const Icon(
+                Icons.close,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -210,87 +214,98 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   }
 
   Widget _buildBody() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Título
-          const Text(
-            'Herramientas\ndel Héroe',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D2B1F),
-              height: 1.3,
+    return Container(
+      width: double.infinity,
+      // Esquinas superiores redondeadas, inferiores rectas (como la imagen de referencia)
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(28),
+          topRight: Radius.circular(28),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Título
+            const Text(
+              'Herramientas\ndel Héroe',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3D2B1F),
+                height: 1.3,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          // Instrucción
-          Row(
-            children: const [
-              Icon(Icons.volume_up, color: Color(0xFF333333), size: 26),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Arrastra cada objeto al personaje correcto',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                    height: 1.4,
+            // Instrucción
+            Row(
+              children: const [
+                Icon(Icons.volume_up, color: Color(0xFF333333), size: 26),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Arrastra cada objeto al personaje correcto',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF333333),
+                      height: 1.4,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Fila personajes + drop zones
-          LayoutBuilder(
-            builder: (ctx, constraints) {
-              final cardSize = (constraints.maxWidth - 24) / 4;
-              return Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                        _heroes.length, (i) => _buildHeroCard(i, cardSize)),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                        _heroes.length, (i) => _buildDropZone(i, cardSize)),
-                  ),
-                ],
-              );
-            },
-          ),
-
-          const SizedBox(height: 16),
-          const Divider(thickness: 1.5, color: Color(0xFFEEEEEE)),
-          const SizedBox(height: 12),
-
-          // Zona de herramientas 2x2
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 12,
-              physics: const NeverScrollableScrollPhysics(),
-              children: _tools
-                  .map((t) => _usedTools.contains(t.tool)
-                      ? const SizedBox()
-                      : _buildDraggable(t))
-                  .toList(),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+
+            // Fila personajes + drop zones
+            LayoutBuilder(
+              builder: (ctx, constraints) {
+                final cardSize = (constraints.maxWidth - 24) / 4;
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(
+                          _heroes.length, (i) => _buildHeroCard(i, cardSize)),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(
+                          _heroes.length, (i) => _buildDropZone(i, cardSize)),
+                    ),
+                  ],
+                );
+              },
+            ),
+
+            const SizedBox(height: 16),
+            const Divider(thickness: 1.5, color: Color(0xFFEEEEEE)),
+            const SizedBox(height: 12),
+
+            // Zona de herramientas 2x2
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 12,
+                physics: const NeverScrollableScrollPhysics(),
+                children: _tools
+                    .map((t) => _usedTools.contains(t.tool)
+                        ? const SizedBox()
+                        : _buildDraggable(t))
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

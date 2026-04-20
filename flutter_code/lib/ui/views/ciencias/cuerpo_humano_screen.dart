@@ -14,44 +14,65 @@ const _p5 = 'assets/images/actividades/ciencias_naturales/pantalla 5/';
 const _p6 = 'assets/images/actividades/ciencias_naturales/pantalla 6/';
 
 // ── Popup de retroalimentación ────────────────────────────────────────────
-void _mostrarFeedback(BuildContext context, bool correcto) {
-  final overlay = Overlay.of(context);
-  late OverlayEntry entry;
-  entry = OverlayEntry(
-    builder: (_) => Positioned(
-      top: 0, left: 0, right: 0, bottom: 0,
-      child: IgnorePointer(
-        child: Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              decoration: BoxDecoration(
-                color: correcto ? const Color(0xFF2E7D32) : const Color(0xFFB71C1C),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 4))],
+void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onAction}) {
+  showModalBottomSheet(
+    context: context,
+    isDismissible: false,
+    enableDrag: false,
+    backgroundColor: correcto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (_) => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+            color: correcto ? Colors.green[800] : Colors.red[800],
+            size: 56,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            correcto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+            style: TextStyle(
+              fontFamily: 'Hiruko',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: correcto ? Colors.green[900] : Colors.red[900],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: correcto ? Colors.green[700] : Colors.red[700],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                      color: Colors.white, size: 30),
-                  const SizedBox(width: 10),
-                  Text(correcto ? '¡Correcto!' : '¡Incorrecto!',
-                      style: const TextStyle(color: Colors.white, fontSize: 20,
-                          fontWeight: FontWeight.bold, fontFamily: 'Hiruko')),
-                ],
+              onPressed: () {
+                Navigator.pop(context);
+                onAction?.call();
+              },
+              child: Text(
+                correcto ? 'Continuar' : 'Reintentar',
+                style: const TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+        ],
       ),
     ),
   );
-  overlay.insert(entry);
-  Future.delayed(const Duration(milliseconds: 1100), () {
-    if (entry.mounted) entry.remove();
-  });
 }
 
 // Pantalla principal que contiene las 3 actividades
@@ -315,11 +336,10 @@ class _Actividad1State extends State<_Actividad1>
     final correcto = zona.contiene(normalizado);
 
     setState(() => _acierto = correcto);
-    _mostrarFeedback(context, correcto);
+    if (!correcto) _shake.forward(from: 0);
 
-    if (correcto) {
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (!mounted) return;
+    _mostrarFeedback(context, correcto, onAction: () {
+      if (correcto) {
         setState(() {
           _acierto = null;
           _ronda++;
@@ -327,13 +347,10 @@ class _Actividad1State extends State<_Actividad1>
         if (_ronda >= _preguntas.length) {
           Future.delayed(const Duration(milliseconds: 300), widget.onNext);
         }
-      });
-    } else {
-      _shake.forward(from: 0);
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        if (mounted) setState(() => _acierto = null);
-      });
-    }
+      } else {
+        setState(() => _acierto = null);
+      }
+    });
   }
 
   @override
@@ -441,11 +458,9 @@ class _PageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fondo verde que cubre la mitad superior
         Container(color: const Color(0xFF3DCC52)),
         Column(
           children: [
-            // Bloque verde — título centrado, extenso
             SafeArea(
               bottom: false,
               child: Padding(
@@ -462,7 +477,6 @@ class _PageCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -527,19 +541,13 @@ class _Instruccion extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 2: Armar la niña (Libre posicionamiento)
-//
-// El niño arrastra cada pieza a cualquier parte del área de juego.
-// Al presionar "Verificar", se evalúa si cada pieza está dentro de su
-// zona correcta (toleranceRect). No hay silueta visible como guía.
+// ACTIVIDAD 2
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _PiezaCuerpo {
   final String nombre;
   final String ruta;
   final Rect toleranceRect;
-  // anchoFraccion: fracción del ANCHO del área. altoFraccion: fracción del ALTO.
-  // Definir ambos por separado para respetar la proporción real de cada imagen.
   final double anchoFraccion;
   final double altoFraccion;
   const _PiezaCuerpo(
@@ -551,11 +559,10 @@ class _PiezaCuerpo {
   });
 }
 
-// Posición de cada pieza en el área libre (fracción 0..1 relativa al área).
 class _PiezaEstado {
   final String nombre;
-  Offset posicion; // centro de la pieza (fracción del área)
-  bool colocada;   // true = fue arrastrada al área de juego
+  Offset posicion;
+  bool colocada;
   _PiezaEstado(this.nombre, {required this.posicion, this.colocada = false});
 }
 
@@ -567,9 +574,6 @@ class _Actividad2 extends StatefulWidget {
 }
 
 class _Actividad2State extends State<_Actividad2> {
-  // toleranceRect: zona válida para verificación (fracción del área).
-  // anchoFraccion / altoFraccion: se calculan en initState() a partir de
-  // las dimensiones REALES de cada imagen para que sean siempre proporcionales.
   static const _piezasBase = [
     _PiezaCuerpo('piernas', '${_p5}piernas.png',
         toleranceRect: Rect.fromLTWH(0.00, 0.30, 1.00, 0.70),
@@ -596,9 +600,7 @@ class _Actividad2State extends State<_Actividad2> {
 
   static const _renderOrder = ['cabello', 'piernas', 'manos', 'camisa', 'cabeza', 'ojos', 'boca'];
 
-  // Lista definitiva con fracciones recalculadas según dimensiones reales.
   List<_PiezaCuerpo> _piezas = List.of(_piezasBase);
-
   late List<_PiezaEstado> _estados;
   bool _verificado = false;
   bool _imagenesListas = false;
@@ -613,9 +615,6 @@ class _Actividad2State extends State<_Actividad2> {
     _calcularFraccionesDesdeImagenes();
   }
 
-  // Carga las dimensiones reales de cada imagen y recalcula anchoFraccion /
-  // altoFraccion manteniendo la proporción original de cada asset.
-  // La cabeza se toma como referencia con anchoFraccion = 0.50.
   Future<void> _calcularFraccionesDesdeImagenes() async {
     final Map<String, Size> sizes = {};
 
@@ -625,46 +624,37 @@ class _Actividad2State extends State<_Actividad2> {
         final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
         late ImageStreamListener listener;
         listener = ImageStreamListener((info, _) {
-          if (!completer.isCompleted) {
-            completer.complete(info.image);
-          }
+          if (!completer.isCompleted) completer.complete(info.image);
           stream.removeListener(listener);
         });
         stream.addListener(listener);
         final img = await completer.future;
         sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
       } catch (_) {
-        // Si falla, usar fracciones base
         sizes[p.nombre] = const Size(100, 100);
       }
     }
 
     if (!mounted) return;
 
-    // La cabeza es la referencia: anchoFraccion = 0.50
-    // Todas las demás piezas se escalan proporcionalmente respecto a la cabeza.
     final cabezaSize = sizes['cabeza']!;
     const cabezaAncho = 0.50;
 
     final List<_PiezaCuerpo> nuevas = _piezasBase.map((p) {
       final imgSize = sizes[p.nombre]!;
-      // Factor de escala = ancho de cabeza en px / ancho en fracción
-      // → pixelesPorFraccion = cabezaSize.width / cabezaAncho
-      // → anchoFrac_pieza = imgSize.width / pixelesPorFraccion
       final pixelesPorFraccion = cabezaSize.width / cabezaAncho;
 
-      // Reducción general de tamaño para todas las piezas y ajustes específicos para encaje
-      double escalaEspecial = 0.7; 
+      double escalaEspecial = 0.7;
       if (p.nombre == 'ojos' || p.nombre == 'boca') {
-        escalaEspecial = 0.25; // Ojos y boca muy pequeños para la cara
+        escalaEspecial = 0.25;
       } else if (p.nombre == 'camisa') {
-        escalaEspecial = 0.60; // Camisa un poco más grande para el torso
+        escalaEspecial = 0.60;
       } else if (p.nombre == 'piernas') {
-        escalaEspecial = 0.40; // Piernas ajustadas para proporcionalidad
+        escalaEspecial = 0.40;
       } else if (p.nombre == 'manos') {
-        escalaEspecial = 0.60; // Brazos un poquito más grandes para mejor encaje
+        escalaEspecial = 0.60;
       } else if (p.nombre == 'cabello') {
-        escalaEspecial = 0.85; // Cabello proporcional pero enviado al fondo
+        escalaEspecial = 0.85;
       }
 
       final anchoFrac = (imgSize.width  / pixelesPorFraccion * escalaEspecial).clamp(0.05, 0.95);
@@ -696,39 +686,71 @@ class _Actividad2State extends State<_Actividad2> {
 
   bool get _todoColocado => _estados.every((e) => e.colocada);
 
+  // ✅ MÉTODO CORREGIDO — tolerancias más amplias
   bool _esCorrecto(String nombre) {
     final e = _estados.firstWhere((e) => e.nombre == nombre);
     final p = _piezas.firstWhere((p) => p.nombre == nombre);
 
-    // 1. La Camisa es nuestro punto de referencia principal (ancla)
-    if (nombre == 'camisa') return p.toleranceRect.contains(e.posicion);
-
-    // 2. Partes que dependen de la Camisa (Cabeza, Manos, Piernas)
-    if (nombre == 'cabeza' || nombre == 'manos' || nombre == 'piernas') {
-      final eCamisa = _estados.firstWhere((est) => est.nombre == 'camisa');
-      if (!eCamisa.colocada) return false;
-
-      final diff = e.posicion - eCamisa.posicion;
-      final distancia = diff.distance;
-      
-      if (nombre == 'cabeza') return distancia < 0.25 && diff.dy < -0.12 && diff.dx.abs() < 0.10;
-      if (nombre == 'piernas') return distancia < 0.32 && diff.dy > 0.18 && diff.dx.abs() < 0.10;
-      if (nombre == 'manos') return distancia < 0.25 && diff.dy.abs() < 0.12; 
+    // ── 1. Camisa: ancla principal ─────────────────────────────────────────
+    if (nombre == 'camisa') {
+      return e.posicion.dx >= 0.20 && e.posicion.dx <= 0.80 &&
+             e.posicion.dy >= 0.25 && e.posicion.dy <= 0.75;
     }
 
-    // 3. Partes que dependen de la Cabeza (Ojos, Boca, Cabello)
+    // ── 2. Piezas relativas a la camisa ───────────────────────────────────
+    if (nombre == 'cabeza' || nombre == 'manos' || nombre == 'piernas') {
+      final eCamisa = _estados.firstWhere((est) => est.nombre == 'camisa');
+
+      // Si la camisa no está colocada, validar por zona absoluta
+      if (!eCamisa.colocada) return p.toleranceRect.contains(e.posicion);
+
+      final diff = e.posicion - eCamisa.posicion;
+
+      if (nombre == 'cabeza') {
+        // Encima de la camisa, margen horizontal amplio
+        return diff.dy < -0.08 &&     // arriba de la camisa ✓
+               diff.dy > -0.45 &&     // no demasiado lejos ✓
+               diff.dx.abs() < 0.28;  // centrado horizontalmente ✓
+      }
+
+      if (nombre == 'piernas') {
+        // Debajo de la camisa
+        return diff.dy > 0.10 &&      // debajo de la camisa ✓
+               diff.dy < 0.55 &&      // no demasiado lejos ✓
+               diff.dx.abs() < 0.28;  // centrado horizontalmente ✓
+      }
+
+      if (nombre == 'manos') {
+        // A los lados, misma altura aprox
+        return diff.dy.abs() < 0.25 && // misma altura ✓
+               diff.dx.abs() < 0.50;   // a los lados ✓
+      }
+    }
+
+    // ── 3. Piezas relativas a la cabeza ───────────────────────────────────
     if (nombre == 'ojos' || nombre == 'boca' || nombre == 'cabello') {
       final eCabeza = _estados.firstWhere((estado) => estado.nombre == 'cabeza');
-      if (!eCabeza.colocada) return false;
-      
+
+      // Si la cabeza no está colocada, validar por zona absoluta
+      if (!eCabeza.colocada) return p.toleranceRect.contains(e.posicion);
+
       final diff = e.posicion - eCabeza.posicion;
       final distancia = diff.distance;
 
-      // Ojos y boca ahora exigen estar más al centro de la cara
-      final margen = (nombre == 'cabello') ? 0.22 : 0.14;
-      return distancia < margen && (nombre != 'cabello' || diff.dy < 0);
+      if (nombre == 'cabello') {
+        return distancia < 0.35 && diff.dy <= 0.05;
+      }
+
+      if (nombre == 'ojos') {
+        return distancia < 0.30;
+      }
+
+      if (nombre == 'boca') {
+        return distancia < 0.30;
+      }
     }
 
+    // Fallback
     return p.toleranceRect.contains(e.posicion);
   }
 
@@ -739,8 +761,10 @@ class _Actividad2State extends State<_Actividad2> {
 
   void _verificar(BuildContext context) {
     setState(() => _verificado = true);
-    _mostrarFeedback(context, _todoOk);
-    if (_todoOk) Future.delayed(const Duration(seconds: 1), widget.onNext);
+    _mostrarFeedback(context, _todoOk, onAction: () {
+      if (_todoOk) widget.onNext();
+      else _reintentar();
+    });
   }
 
   void _reintentar() {
@@ -759,7 +783,7 @@ class _Actividad2State extends State<_Actividad2> {
     final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
     if (ro == null) return;
 
-    final areaSize   = ro.size;
+    final areaSize      = ro.size;
     final globalTopLeft = globalPointer - touchOff;
     final localTopLeft  = ro.globalToLocal(globalTopLeft);
 
@@ -853,7 +877,7 @@ class _Actividad2State extends State<_Actividad2> {
                                   child: Opacity(
                                     opacity: 0.9,
                                     child: SizedBox(
-                                      width: pxW, height: pxH, 
+                                      width: pxW, height: pxH,
                                       child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
                                     ),
                                   ),
@@ -861,7 +885,7 @@ class _Actividad2State extends State<_Actividad2> {
                                 childWhenDragging: Opacity(
                                   opacity: 0.25,
                                   child: SizedBox(
-                                    width: pxW, height: pxH, 
+                                    width: pxW, height: pxH,
                                     child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
                                   ),
                                 ),
@@ -979,8 +1003,8 @@ class _Actividad2State extends State<_Actividad2> {
                                 child: Opacity(
                                   opacity: 0.9,
                                   child: SizedBox(
-                                      width: thumbSize, height: thumbSize, 
-                                      child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
+                                    width: thumbSize, height: thumbSize,
+                                    child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
                                   ),
                                 ),
                               ),
@@ -989,7 +1013,6 @@ class _Actividad2State extends State<_Actividad2> {
                                 child: _piezaEnBandeja(p.nombre, p.ruta),
                               ),
                               onDragEnd: (details) {
-                                // Desde la bandeja: compensar el centro del thumbnail
                                 const touch = Offset(thumbSize / 2, thumbSize / 2);
                                 _colocarPieza(p.nombre, details.offset, touch);
                               },
@@ -1037,71 +1060,6 @@ class _Actividad2State extends State<_Actividad2> {
   }
 }
 
-
-// Pintor de debug: muestra los hitRect de cada pieza sobre la silueta.
-// Actívalo con _mostrarDebug = true para calibrar las zonas de drop.
-class _DebugHitPainter extends CustomPainter {
-  final List<_PiezaCuerpo> piezas;
-  final Rect imgRect;
-
-  const _DebugHitPainter({required this.piezas, required this.imgRect});
-
-  static const _colores = [
-    Color(0xFFE53935), // piernas  → rojo
-    Color(0xFF1E88E5), // manos    → azul
-    Color(0xFFFDD835), // camisa   → amarillo
-    Color(0xFFFB8C00), // cabeza   → naranja
-    Color(0xFF8E24AA), // ojos     → morado
-    Color(0xFF00897B), // cabello  → verde azulado
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    for (int i = 0; i < piezas.length; i++) {
-      final p = piezas[i];
-      final color = _colores[i % _colores.length];
-
-      final rect = Rect.fromLTWH(
-        imgRect.left + p.toleranceRect.left * imgRect.width,
-        imgRect.top + p.toleranceRect.top * imgRect.height,
-        p.toleranceRect.width * imgRect.width,
-        p.toleranceRect.height * imgRect.height,
-      );
-
-      canvas.drawRect(
-          rect,
-          Paint()
-            ..color = color.withOpacity(0.15)
-            ..style = PaintingStyle.fill);
-
-      canvas.drawRect(
-          rect,
-          Paint()
-            ..color = color
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 1.5);
-
-      final tp = TextPainter(
-        text: TextSpan(
-          text: p.nombre,
-          style: TextStyle(
-            color: color,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            background: Paint()..color = Colors.white.withOpacity(0.7),
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      tp.paint(canvas, rect.topLeft + const Offset(3, 3));
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DebugHitPainter old) =>
-      old.imgRect != imgRect;
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // ACTIVIDAD 3: Sentidos y funciones
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1135,11 +1093,8 @@ class _Actividad3State extends State<_Actividad3> {
     if (_seleccion != null) return;
     setState(() => _seleccion = id);
     final correcto = id == _preguntas[_ronda]['ans'];
-    _mostrarFeedback(context, correcto);
-
-    if (correcto) {
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (!mounted) return;
+    _mostrarFeedback(context, correcto, onAction: () {
+      if (correcto) {
         if (_ronda < _preguntas.length - 1) {
           setState(() {
             _ronda++;
@@ -1148,12 +1103,10 @@ class _Actividad3State extends State<_Actividad3> {
         } else {
           widget.onFinish();
         }
-      });
-    } else {
-      Future.delayed(const Duration(milliseconds: 900), () {
-        if (mounted) setState(() => _seleccion = null);
-      });
-    }
+      } else {
+        setState(() => _seleccion = null);
+      }
+    });
   }
 
   @override
@@ -1179,16 +1132,16 @@ class _Actividad3State extends State<_Actividad3> {
                     return GestureDetector(
                       onTap: () => _responder(context, b['id'] as String),
                       child: Container(
-                    decoration: BoxDecoration(
-                      color: b['c'] as Color,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: esCorrecto
-                            ? Colors.greenAccent
-                            : (esError ? Colors.red : Colors.transparent),
-                        width: 4,
-                      ),
-                    ),
+                        decoration: BoxDecoration(
+                          color: b['c'] as Color,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: esCorrecto
+                                ? Colors.greenAccent
+                                : (esError ? Colors.red : Colors.transparent),
+                            width: 4,
+                          ),
+                        ),
                         child: Image.asset(b['img'] as String, filterQuality: ui.FilterQuality.high),
                       ),
                     );

@@ -13,44 +13,65 @@ const _p11 = 'assets/images/actividades/ciencias_naturales/pantalla 11/';
 const _p12 = 'assets/images/actividades/ciencias_naturales/pantalla 12/';
 
 // ── Popup de retroalimentación ────────────────────────────────────────────
-void _mostrarFeedback(BuildContext context, bool correcto) {
-  final overlay = Overlay.of(context);
-  late OverlayEntry entry;
-  entry = OverlayEntry(
-    builder: (_) => Positioned(
-      top: 0, left: 0, right: 0, bottom: 0,
-      child: IgnorePointer(
-        child: Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              decoration: BoxDecoration(
-                color: correcto ? const Color(0xFF2E7D32) : const Color(0xFFB71C1C),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 4))],
+void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onAction}) {
+  showModalBottomSheet(
+    context: context,
+    isDismissible: false,
+    enableDrag: false,
+    backgroundColor: correcto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (_) => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+            color: correcto ? Colors.green[800] : Colors.red[800],
+            size: 56,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            correcto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+            style: TextStyle(
+              fontFamily: 'Hiruko',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: correcto ? Colors.green[900] : Colors.red[900],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: correcto ? Colors.green[700] : Colors.red[700],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                      color: Colors.white, size: 30),
-                  const SizedBox(width: 10),
-                  Text(correcto ? '¡Correcto!' : '¡Incorrecto!',
-                      style: const TextStyle(color: Colors.white, fontSize: 20,
-                          fontWeight: FontWeight.bold, fontFamily: 'Hiruko')),
-                ],
+              onPressed: () {
+                Navigator.pop(context);
+                onAction?.call();
+              },
+              child: Text(
+                correcto ? 'Continuar' : 'Reintentar',
+                style: const TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+        ],
       ),
     ),
   );
-  overlay.insert(entry);
-  Future.delayed(const Duration(milliseconds: 1100), () {
-    if (entry.mounted) entry.remove();
-  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -142,7 +163,6 @@ class _LasPlantasScreenState extends ConsumerState<LasPlantasScreen> {
               ),
             ],
           ),
-          // Botón X flotante sobre el header verde
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -208,11 +228,9 @@ class _PageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fondo verde que cubre la parte superior
         Container(color: const Color(0xFF3DCC52)),
         Column(
           children: [
-            // Bloque verde — título centrado, extenso
             SafeArea(
               bottom: false,
               child: Padding(
@@ -229,7 +247,6 @@ class _PageCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -291,7 +308,7 @@ class _Instruccion extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 1 — Arrastra las fases de crecimiento al slot correcto
+// ACTIVIDAD 1
 // ═══════════════════════════════════════════════════════════════════════════
 class _Actividad1 extends StatefulWidget {
   final VoidCallback onNext;
@@ -303,7 +320,7 @@ class _Actividad1State extends State<_Actividad1> {
   static const _totalSlots = 5;
   static const _barajadas = [3, 1, 5, 2, 4];
 
-  final Map<int, int> _colocadas = {}; // slot → fase
+  final Map<int, int> _colocadas = {};
 
   bool get _completo => _colocadas.length == _totalSlots;
 
@@ -313,8 +330,9 @@ class _Actividad1State extends State<_Actividad1> {
 
     void onSlotAccepted(int slot, int fase) {
       setState(() => _colocadas[slot] = fase);
-      _mostrarFeedback(context, true);
-      if (_completo) Future.delayed(const Duration(milliseconds: 800), widget.onNext);
+      _mostrarFeedback(context, true, onAction: () {
+        if (_completo) widget.onNext();
+      });
     }
 
     return _Tarjeta(
@@ -329,7 +347,6 @@ class _Actividad1State extends State<_Actividad1> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Fila 1: slots 1, 2, 3
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [1, 2, 3].expand((slot) => [
@@ -362,7 +379,6 @@ class _Actividad1State extends State<_Actividad1> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  // Fila 2 (inversa): slot 5 ← slot 4
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -390,7 +406,6 @@ class _Actividad1State extends State<_Actividad1> {
               ),
             ),
           ),
-          // Bandeja de fases arrastrables
           Expanded(
             flex: 2,
             child: Padding(
@@ -424,7 +439,6 @@ class _Actividad1State extends State<_Actividad1> {
   }
 }
 
-// Slot de destino con DragTarget
 class _SlotDrop extends StatelessWidget {
   final int slot;
   final int? colocada;
@@ -435,6 +449,7 @@ class _SlotDrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ FIX: imagen centrada con Positioned.fill + Center
     if (colocada != null) {
       return SizedBox(
         width: 72, height: 72,
@@ -448,12 +463,20 @@ class _SlotDrop extends StatelessWidget {
                           color: const Color(0xFF3DCC52),
                           borderRadius: BorderRadius.circular(12)))),
             ),
-            Padding(
-              padding: const EdgeInsets.all(6),
-              child: Image.asset('${_p10}fase$colocada.png',
-                  fit: BoxFit.contain,
-                  errorBuilder: (c, e, s) => Center(child: Text('$colocada',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)))),
+            Positioned.fill(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Image.asset('${_p10}fase$colocada.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (c, e, s) => Center(
+                          child: Text('$colocada',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22)))),
+                ),
+              ),
             ),
           ],
         ),
@@ -503,7 +526,6 @@ class _SlotDrop extends StatelessWidget {
   }
 }
 
-// Chip de fase arrastrable — sin fondo verde, solo la imagen
 class _FaseChip extends StatelessWidget {
   final int fase;
   final double size;
@@ -527,7 +549,7 @@ class _FaseChip extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 2 — Arrastra las partes de la planta a su zona anatómica
+// ACTIVIDAD 2
 // ═══════════════════════════════════════════════════════════════════════════
 
 class _PiezaPlanta {
@@ -567,7 +589,7 @@ class _Actividad2State extends State<_Actividad2> {
   static const _piezasBase = [
     _PiezaPlanta('raices', '${_p11}raices.png', 'Raíces',
         toleranceRect: Rect.fromLTWH(0.00, 0.30, 1.00, 0.70),
-        anchoFraccion: 0.50, altoFraccion: 0.25),
+        anchoFraccion: 0.35, altoFraccion: 0.18),
     _PiezaPlanta('tallo', '${_p11}tallo.png', 'Tallo',
         toleranceRect: Rect.fromLTWH(0.00, 0.00, 1.00, 1.00),
         anchoFraccion: 0.25, altoFraccion: 0.45),
@@ -599,52 +621,56 @@ class _Actividad2State extends State<_Actividad2> {
   }
 
   Future<void> _calcularFracciones() async {
-    final Map<String, Size> sizes = {};
-    for (final p in _piezasBase) {
-      final completer = Completer<ui.Image>();
-      final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
-      late ImageStreamListener listener;
-      listener = ImageStreamListener((info, _) {
-        if (!completer.isCompleted) completer.complete(info.image);
-        stream.removeListener(listener);
-      });
-      stream.addListener(listener);
-      final img = await completer.future;
-      sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
-    }
-
-    if (!mounted) return;
-
-    final talloSize = sizes['tallo']!;
-    const talloAnchoFrac = 0.22;
-    final pxPorFraccion = talloSize.width / talloAnchoFrac;
-
-    setState(() {
-      _piezas = _piezasBase.map((p) {
-        final imgSize = sizes[p.nombre]!;
-        double wFinal = imgSize.width / pxPorFraccion;
-        double hFinal = imgSize.height / pxPorFraccion;
-
-        // Escalado proporcional para máxima definición sin deformar
-        if (wFinal > 0.85) {
-          hFinal = (0.85 / wFinal) * hFinal;
-          wFinal = 0.85;
-        }
-        if (hFinal > 0.45) {
-          wFinal = (0.45 / hFinal) * wFinal;
-          hFinal = 0.45;
-        }
-
-        return _PiezaPlanta(
-          p.nombre, p.ruta, p.label,
-          toleranceRect: p.toleranceRect,
-          anchoFraccion: wFinal.clamp(0.1, 0.85),
-          altoFraccion: hFinal.clamp(0.1, 0.45),
-        );
-      }).toList();
-      _imagenesListas = true;
+  final Map<String, Size> sizes = {};
+  for (final p in _piezasBase) {
+    final completer = Completer<ui.Image>();
+    final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
+    late ImageStreamListener listener;
+    listener = ImageStreamListener((info, _) {
+      if (!completer.isCompleted) completer.complete(info.image);
+      stream.removeListener(listener);
     });
+    stream.addListener(listener);
+    final img = await completer.future;
+    sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
   }
+
+  if (!mounted) return;
+
+  final talloSize = sizes['tallo']!;
+  const talloAnchoFrac = 0.22;
+  final pxPorFraccion = talloSize.width / talloAnchoFrac;
+
+  setState(() {
+    _piezas = _piezasBase.map((p) {
+      final imgSize = sizes[p.nombre]!;
+      double wFinal = imgSize.width / pxPorFraccion;
+      double hFinal = imgSize.height / pxPorFraccion;
+
+      if (wFinal > 0.85) {
+        hFinal = (0.85 / wFinal) * hFinal;
+        wFinal = 0.85;
+      }
+      if (hFinal > 0.45) {
+        wFinal = (0.45 / hFinal) * wFinal;
+        hFinal = 0.45;
+      }
+
+      if (p.nombre == 'raices') {
+        wFinal = wFinal * 0.65;
+        hFinal = hFinal * 0.65;
+      }
+
+      return _PiezaPlanta(
+        p.nombre, p.ruta, p.label,
+        toleranceRect: p.toleranceRect,
+        anchoFraccion: wFinal.clamp(0.1, 0.85),
+        altoFraccion: hFinal.clamp(0.1, 0.45),
+      );
+    }).toList();
+    _imagenesListas = true;
+  });
+}
 
   void _colocarPieza(String nombre, Offset globalPointer, Offset touchOff) {
     final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
@@ -677,23 +703,34 @@ class _Actividad2State extends State<_Actividad2> {
     final e = _estados.firstWhere((e) => e.nombre == nombre);
     final p = _piezas.firstWhere((p) => p.nombre == nombre);
 
-    // 1. El Tallo es el punto de referencia principal (ancla)
-    if (nombre == 'tallo') return p.toleranceRect.contains(e.posicion);
+    if (nombre == 'tallo') {
+      return e.posicion.dx >= 0.15 && e.posicion.dx <= 0.85 &&
+             e.posicion.dy >= 0.15 && e.posicion.dy <= 0.85;
+    }
 
-    // 2. Partes que dependen de la conexión con el Tallo
     final eTallo = _estados.firstWhere((est) => est.nombre == 'tallo');
-    if (!eTallo.colocada) return false;
 
-    final distancia = (e.posicion - eTallo.posicion).distance;
+    if (!eTallo.colocada) return p.toleranceRect.contains(e.posicion);
 
-    // Raíces: deben estar cerca y debajo del tallo
-    if (nombre == 'raices') return distancia < 0.35 && e.posicion.dy > eTallo.posicion.dy;
+    final diff = e.posicion - eTallo.posicion;
+    final distancia = diff.distance;
 
-    // Flor: debe estar cerca y arriba del tallo
-    if (nombre == 'flor') return distancia < 0.35 && e.posicion.dy < eTallo.posicion.dy;
+    if (nombre == 'raices') {
+      return diff.dy > 0.08 &&
+             diff.dy < 0.70 &&
+             diff.dx.abs() < 0.50;
+    }
 
-    // Hojas: deben estar cerca del tallo (margen lateral)
-    if (nombre == 'hojas') return distancia < 0.30;
+    if (nombre == 'flor') {
+      return diff.dy < -0.08 &&
+             diff.dy > -0.65 &&
+             diff.dx.abs() < 0.40;
+    }
+
+    if (nombre == 'hojas') {
+      return distancia < 0.55 &&
+             diff.dy.abs() < 0.45;
+    }
 
     return p.toleranceRect.contains(e.posicion);
   }
@@ -703,12 +740,15 @@ class _Actividad2State extends State<_Actividad2> {
   Set<String> get _enBandeja =>
       _piezas.map((p) => p.nombre).where((n) => !_estaEnArea(n)).toSet();
 
-  bool _estaEnArea(String nombre) => _estados.firstWhere((e) => e.nombre == nombre).colocada;
+  bool _estaEnArea(String nombre) =>
+      _estados.firstWhere((e) => e.nombre == nombre).colocada;
 
   void _verificar(BuildContext context) {
     setState(() => _verificado = true);
-    _mostrarFeedback(context, _todoOk);
-    if (_todoOk) Future.delayed(const Duration(seconds: 1), widget.onNext);
+    _mostrarFeedback(context, _todoOk, onAction: () {
+      if (_todoOk) widget.onNext();
+      else _reintentar();
+    });
   }
 
   void _reintentar() {
@@ -749,7 +789,8 @@ class _Actividad2State extends State<_Actividad2> {
                         border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
                       ),
                       child: _enBandeja.length == _piezas.length
-                        ? const Center(child: Text('⬆ Arrastra las piezas aquí', style: TextStyle(color: Colors.grey, fontSize: 12)))
+                        ? const Center(child: Text('⬆ Arrastra las piezas aquí',
+                            style: TextStyle(color: Colors.grey, fontSize: 12)))
                         : null,
                     ),
                     ..._renderOrder.map((nombre) {
@@ -775,25 +816,35 @@ class _Actividad2State extends State<_Actividad2> {
                               child: Opacity(
                                 opacity: 0.8,
                                 child: SizedBox(width: pxW, height: pxH,
-                                  child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high)),
+                                  child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                      filterQuality: ui.FilterQuality.high)),
                               ),
                             ),
                             childWhenDragging: Opacity(opacity: 0.3,
-                              child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high)),
-                            onDragEnd: (details) => _colocarPieza(nombre, details.offset, _touchOffset[nombre] ?? Offset(pxW/2, pxH/2)),
+                              child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                  filterQuality: ui.FilterQuality.high)),
+                            onDragEnd: (details) => _colocarPieza(nombre, details.offset,
+                                _touchOffset[nombre] ?? Offset(pxW / 2, pxH / 2)),
                             child: Stack(children: [
-                              Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high),
+                              Image.asset(p.ruta, fit: BoxFit.contain,
+                                  filterQuality: ui.FilterQuality.high),
                               if (correcto != null)
                                 Positioned.fill(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: correcto ? const Color(0x2200CC44) : const Color(0x33FF0000),
+                                      color: correcto
+                                          ? const Color(0x2200CC44)
+                                          : const Color(0x33FF0000),
                                       borderRadius: BorderRadius.circular(8),
-                            ),
+                                    ),
                                     child: Center(
                                       child: Icon(
-                                        correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                                        color: correcto ? const Color(0xFF2E7D32) : const Color(0xFFB71C1C),
+                                        correcto
+                                            ? Icons.check_circle_rounded
+                                            : Icons.cancel_rounded,
+                                        color: correcto
+                                            ? const Color(0xFF2E7D32)
+                                            : const Color(0xFFB71C1C),
                                         size: 28,
                                       ),
                                     ),
@@ -809,7 +860,6 @@ class _Actividad2State extends State<_Actividad2> {
               }),
             ),
           ),
-          // ── Botón Verificar / Reintentar ──────────────────────────────
           if (_todoColocado && !_verificado)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -817,7 +867,8 @@ class _Actividad2State extends State<_Actividad2> {
                 onPressed: () => _verificar(context),
                 icon: const Icon(Icons.check_rounded),
                 label: const Text('Verificar',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: TextStyle(fontFamily: 'Poppins', fontSize: 16,
+                        fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3DCC52),
                   foregroundColor: Colors.white,
@@ -834,7 +885,8 @@ class _Actividad2State extends State<_Actividad2> {
                 onPressed: _reintentar,
                 icon: const Icon(Icons.refresh_rounded),
                 label: const Text('Reintentar',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: TextStyle(fontFamily: 'Poppins', fontSize: 16,
+                        fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE53935),
                   foregroundColor: Colors.white,
@@ -850,24 +902,32 @@ class _Actividad2State extends State<_Actividad2> {
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 14),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: _piezas.where((p) => _enBandeja.contains(p.nombre)).map((p) {
-                  const thumbSize = 64.0;
-                  return Listener(
-                    onPointerDown: (ev) => _touchOffset[p.nombre] = ev.localPosition,
-                    child: Draggable<String>(
-                      data: p.nombre,
-                      dragAnchorStrategy: pointerDragAnchorStrategy,
-                      feedback: Material(
-                        color: Colors.transparent,
-                        child: SizedBox(width: thumbSize, height: thumbSize,
-                            child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high)),
-                      ),
-                      childWhenDragging: Opacity(opacity: 0.3, child: _chipBandeja(p)),
-                      onDragEnd: (details) => _colocarPieza(p.nombre, details.offset, const Offset(thumbSize/2, thumbSize/2)),
-                      child: _chipBandeja(p),
-                    ),
-                  );
-                }).toList(),
+                children: _piezas
+                    .where((p) => _enBandeja.contains(p.nombre))
+                    .map((p) {
+                      const thumbSize = 64.0;
+                      return Listener(
+                        onPointerDown: (ev) => _touchOffset[p.nombre] = ev.localPosition,
+                        child: Draggable<String>(
+                          data: p.nombre,
+                          dragAnchorStrategy: pointerDragAnchorStrategy,
+                          feedback: Material(
+                            color: Colors.transparent,
+                            child: SizedBox(
+                              width: thumbSize, height: thumbSize,
+                              child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                  filterQuality: ui.FilterQuality.high),
+                            ),
+                          ),
+                          childWhenDragging: Opacity(opacity: 0.3, child: _chipBandeja(p)),
+                          onDragEnd: (details) => _colocarPieza(
+                              p.nombre, details.offset,
+                              const Offset(thumbSize / 2, thumbSize / 2)),
+                          child: _chipBandeja(p),
+                        ),
+                      );
+                    })
+                    .toList(),
               ),
             ),
         ],
@@ -876,28 +936,31 @@ class _Actividad2State extends State<_Actividad2> {
   }
 
   Widget _chipBandeja(_PiezaPlanta p) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 64, height: 64,
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
-              boxShadow: const [BoxShadow(color: Color(0x18000000), blurRadius: 4, offset: Offset(0, 2))],
-            ),
-            child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high,
-              errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.grey)),
-          ),
-          const SizedBox(height: 3),
-          Text(p.label, style: const TextStyle(fontSize: 10, fontFamily: 'Poppins', color: Color(0xFF555555))),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        width: 64, height: 64,
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
+          boxShadow: const [BoxShadow(color: Color(0x18000000), blurRadius: 4, offset: Offset(0, 2))],
+        ),
+        child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: ui.FilterQuality.high,
+            errorBuilder: (c, e, s) =>
+                const Icon(Icons.image_not_supported, color: Colors.grey)),
+      ),
+      const SizedBox(height: 3),
+      Text(p.label,
+          style: const TextStyle(fontSize: 10, fontFamily: 'Poppins',
+              color: Color(0xFF555555))),
+    ],
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 3 — ¿Qué necesita la planta para crecer?
+// ACTIVIDAD 3
 // ═══════════════════════════════════════════════════════════════════════════
 class _Actividad3 extends StatefulWidget {
   final VoidCallback onFinish;
@@ -921,16 +984,15 @@ class _Actividad3State extends State<_Actividad3> {
     if (_seleccionados.contains(id)) return;
     if (!correcto) {
       setState(() => _error = id);
-      _mostrarFeedback(context, false);
-      Future.delayed(const Duration(milliseconds: 700),
-          () { if (mounted) setState(() => _error = null); });
+      _mostrarFeedback(context, false, onAction: () {
+        if (mounted) setState(() => _error = null);
+      });
       return;
     }
-    _mostrarFeedback(context, true);
     setState(() => _seleccionados.add(id));
-    if (_seleccionados.length >= _meta) {
-      Future.delayed(const Duration(milliseconds: 800), widget.onFinish);
-    }
+    _mostrarFeedback(context, true, onAction: () {
+      if (_seleccionados.length >= _meta) widget.onFinish();
+    });
   }
 
   @override
@@ -945,7 +1007,8 @@ class _Actividad3State extends State<_Actividad3> {
               padding: const EdgeInsets.fromLTRB(40, 12, 40, 8),
               child: Image.asset('${_p12}planta muerta.png',
                   fit: BoxFit.contain,
-                  errorBuilder: (c, e, s) => const Icon(Icons.local_florist, size: 80, color: Colors.brown)),
+                  errorBuilder: (c, e, s) =>
+                      const Icon(Icons.local_florist, size: 80, color: Colors.brown)),
             ),
           ),
           Padding(
@@ -974,7 +1037,8 @@ class _Actividad3State extends State<_Actividad3> {
                     ),
                     padding: const EdgeInsets.all(8),
                     child: Image.asset(op.ruta, fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.grey)),
+                        errorBuilder: (c, e, s) =>
+                            const Icon(Icons.image_not_supported, color: Colors.grey)),
                   ),
                 );
               }).toList(),

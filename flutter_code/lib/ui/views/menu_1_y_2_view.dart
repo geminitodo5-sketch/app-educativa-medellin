@@ -343,8 +343,8 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
         ),
         const SizedBox(height: 12),
         _MateriaRow(
-          color: const Color(0xFFF9A01B),
-          shadowColor: const Color(0xFFCA8216),
+          color: const Color(0xFF3DCC52),
+          shadowColor: const Color(0xFF22A45D),
           icono: 'assets/images/menu_materias/planta_1.png',
           nombre: 'Ciencias',
           porcentaje: progreso['ciencias'] ?? 0.0,
@@ -352,8 +352,8 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
         ),
         const SizedBox(height: 12),
         _MateriaRow(
-          color: const Color(0xFFBC26F6),
-          shadowColor: const Color(0xFF961ED0),
+          color: const Color(0xFFB83232),
+          shadowColor: const Color(0xFF8B1A1A),
           icono: 'assets/images/menu_materias/alfabeto_1.png',
           nombre: 'Español',
           porcentaje: progreso['español'] ?? 0.0,
@@ -361,8 +361,8 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
         ),
         const SizedBox(height: 12),
         _MateriaRow(
-          color: const Color(0xFF4AC338),
-          shadowColor: const Color(0xFF389C2A),
+          color: const Color(0xFFF5A623),
+          shadowColor: const Color(0xFFB8710A),
           icono: 'assets/images/menu_materias/globo_1.png',
           nombre: 'Sociales',
           porcentaje: progreso['sociales'] ?? 0.0,
@@ -370,8 +370,8 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
         ),
         const SizedBox(height: 12),
         _MateriaRow(
-          color: const Color(0xFFEF5353),
-          shadowColor: const Color(0xFFC04343),
+          color: const Color(0xFF8B5CF6),
+          shadowColor: const Color(0xFF6A3592),
           icono: 'assets/images/menu_materias/libros_1.png',
           nombre: 'Inglés',
           porcentaje: progreso['ingles'] ?? 0.0,

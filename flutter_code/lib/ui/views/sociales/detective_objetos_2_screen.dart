@@ -38,6 +38,8 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     ),
   ];
 
+  // ── Lógica intacta ────────────────────────────────────────────────────────
+
   @override
   void initState() {
     super.initState();
@@ -80,16 +82,77 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     } else {
       _shakeCtrl.forward().then((_) {
         _shakeCtrl.reverse();
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
+        if (mounted) {
+          _mostrarFeedback(false, () {
             setState(() {
               _selected = null;
               _isCorrect = null;
             });
-          }
-        });
+          });
+        }
       });
     }
+  }
+
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showSuccess() {
@@ -143,7 +206,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
                     Navigator.of(context).pop();
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (_) => PuzzleScreen(onCompleted: widget.onCompleted),
+                        builder: (_) => const PuzzleScreen(),
                       ),
                     );
                   },
@@ -164,15 +227,31 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     );
   }
 
+  // ── Build ─────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // Fondo naranja para que las esquinas redondeadas del blanco se vean sobre él
+      backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(),
-            Expanded(child: _buildBody()),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  // Solo esquinas superiores redondeadas
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: _buildBody(),
+              ),
+            ),
           ],
         ),
       ),
@@ -182,32 +261,52 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: const BoxDecoration(color: Color(0xFFF5A623)),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      // Sin esquinas redondeadas — el bloque naranja va de borde a borde
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Text(
-            'Detective de Objetos',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 0.5,
+          const Center(
+            child: Text(
+              'Detective de Objetos',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 0.5,
+                shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
+              ),
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
+          Positioned(
+            right: 0,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
               child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFF5A623)),
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.28),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    width: 1.5,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
@@ -218,44 +317,59 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
 
   Widget _buildBody() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: Column(
         children: [
-          // Título
+          // Título con Poppins
           const Text(
-            'La Caja\nSecreta',
+            'La Caja Secreta',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D2B1F),
-              height: 1.2,
+              fontFamily: 'Poppins',
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1A1A1A),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
 
-          // Instrucción
+          // Instrucción — ícono de audio estilo pantalla 3
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.volume_up, color: Color(0xFF333333), size: 26),
-              SizedBox(width: 10),
-              Expanded(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5A623).withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFFF5A623).withValues(alpha: 0.40),
+                    width: 1.5,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.volume_up_rounded,
+                  color: Color(0xFFF5A623),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
                 child: Text(
                   'Metí la mano en una caja...\nse siente raro, ¿qué será?\nEs redondo, es suave, y rebota.',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF555555),
                     height: 1.5,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           // Caja imagen grande
           Expanded(
@@ -318,6 +432,8 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
       ),
     );
   }
+
+  // ── Widgets de lógica — sin cambios ───────────────────────────────────────
 
   Widget _buildOption(int index) {
     final opt = _options[index];

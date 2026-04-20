@@ -20,6 +20,67 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
 
   bool _navegandoATerminado = false;
 
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -84,11 +145,23 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
       if (!prev.completado && next.completado) {
         _errorController.reset();
         _successController.forward();
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            _mostrarFeedback(true, () {
+              _successController.reset();
+              notifier.commandSiguientePalabra();
+            });
+          }
+        });
       }
       if (!prev.error && next.error) {
         _successController.reset();
         _errorController.forward().then((_) {
-          notifier.commandLimpiarError();
+          if (mounted) {
+            _mostrarFeedback(false, () {
+              notifier.commandLimpiarRespuestas();
+            });
+          }
         });
       }
       if (prev.palabraIndex != next.palabraIndex) {
@@ -161,41 +234,11 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                               ),
                             ),
                             const SizedBox(height: 16),
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 300),
-                              transitionBuilder: (child, anim) =>
-                                  SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: const Offset(0, 0.3),
-                                  end: Offset.zero,
-                                ).animate(anim),
-                                child: FadeTransition(
-                                    opacity: anim, child: child),
-                              ),
-                              child: state.error
-                                  ? _BannerError(
-                                      key: const ValueKey('error'),
-                                      onIntentar:
-                                          notifier.commandLimpiarRespuestas,
-                                    )
-                                  : const SizedBox.shrink(
-                                      key: ValueKey('empty'),
-                                    ),
-                            ),
-                            const SizedBox(height: 16),
                           ],
                         ),
                       ),
                     ),
-                    if (state.completado)
-                      _BotonSiguiente(
-                        onTap: () {
-                          _successController.reset();
-                          notifier.commandSiguientePalabra();
-                        },
-                      )
-                    else
-                      _GridSilabas(
+                    _GridSilabas(
                         opciones: palabra.opcionesMezcladas,
                         disponibles: state.opcionesDisponibles,
                         silabasColocadas: state.silabasColocadas,
@@ -231,7 +274,7 @@ class _Header extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           const Text(
-            'Arma la palabra',
+            'Arma  la palabra',
             style: TextStyle(
               fontFamily: 'Hiruko',
               fontSize: 22,
@@ -478,64 +521,6 @@ class _RecuadrosRespuesta extends StatelessWidget {
   }
 }
 
-class _BannerError extends StatelessWidget {
-  final VoidCallback onIntentar;
-  const _BannerError({super.key, required this.onIntentar});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFEBEB),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFFF5252), width: 1.5),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.sentiment_dissatisfied_rounded,
-              color: Color(0xFFD32F2F), size: 28),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              '¡Casi! Toca una sílaba\npara quitarla e intentar de nuevo.',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFFD32F2F),
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: onIntentar,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFD32F2F),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                'Reintentar',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _GridSilabas extends StatelessWidget {
   final List<String> opciones;
   final List<bool> disponibles;
@@ -693,51 +678,3 @@ class _SilabaChip extends StatelessWidget {
   }
 }
 
-class _BotonSiguiente extends StatelessWidget {
-  final VoidCallback onTap;
-  const _BotonSiguiente({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: double.infinity,
-          height: 56,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF4CAF50), Color(0xFF2E7D32)],
-            ),
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF4CAF50).withOpacity(0.4),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Text(
-                '¡Muy bien! Siguiente',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(width: 8),
-              Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 22),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

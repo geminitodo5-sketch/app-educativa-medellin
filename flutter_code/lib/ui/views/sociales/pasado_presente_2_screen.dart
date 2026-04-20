@@ -24,13 +24,11 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
   // T E _ É _ O _ O
   List<String?> userSlots = ['T', 'E', null, 'É', null, 'O', null, 'O'];
 
-  // 1. MODIFICACIÓN: Lista con tus rutas de imágenes
   final List<Map<String, dynamic>> keyboardLetters = [
     {'letter': 'A', 'image': 'assets/images/actividades/sociales/Botón letra 9.png'},
     {'letter': 'U', 'image': 'assets/images/actividades/sociales/Botón letra 2.png'},
     {'letter': 'M', 'image': 'assets/images/actividades/sociales/letra m.png'},
-     
-    {'letter': 'E', 'image': 'assets/images/actividades/sociales/Botón letra 5.png', },
+    {'letter': 'E', 'image': 'assets/images/actividades/sociales/Botón letra 5.png'},
     {'letter': 'C', 'image': 'assets/images/actividades/sociales/Botón letra 4_1.png'},
     {'letter': 'L', 'image': 'assets/images/actividades/sociales/Botón letra 4.png'},
     {'letter': 'N', 'image': 'assets/images/actividades/sociales/Botón letra 6.png'},
@@ -85,69 +83,75 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Fondo amarillo para que el header se integre sin costuras
       backgroundColor: const Color(0xFFF39C12),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 30),
-                  const Text(
-                    'Pasado y Presente',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.maybePop(context),
-                    child: const Icon(Icons.close, color: Colors.white, size: 30),
-                  ),
-                ],
-              ),
-            ),
-
+            _buildHeader(),
+            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
                   ),
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(25.0),
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                     child: Column(
                       children: [
+                        // Título
                         const Text(
-                          '¿Cómo se  llama?',
+                          '¿Cómo se llama?',
                           style: TextStyle(
+                            fontFamily: 'Hiruko',
                             fontSize: 26,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF3D2B1F),
+                            letterSpacing: 0.5,
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            const Icon(Icons.volume_up_rounded, size: 40),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'Toca  las  letras que faltan para\ncompletar  la  palabra',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
+                        const SizedBox(height: 16),
+
+                        // Enunciado con fuente Hiruko bold igual que la imagen de referencia
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF8EE),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: const Color(0xFFF5A623), width: 1.5),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Icon(Icons.volume_up_rounded,
+                                  color: Color(0xFFF5A623), size: 28),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Toca las letras que faltan para\ncompletar la palabra',
+                                  style: TextStyle(
+                                    fontFamily: 'Hiruko',
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF3D2B1F),
+                                    height: 1.55,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 24),
 
                         // Imagen del teléfono
                         Image.asset(
@@ -157,7 +161,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                               const Icon(Icons.image, size: 100),
                         ),
 
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 32),
 
                         // Slots de la palabra
                         Row(
@@ -192,9 +196,9 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                             );
                           }),
                         ),
-                        const SizedBox(height: 50),
+                        const SizedBox(height: 40),
 
-                        // 2. MODIFICACIÓN: GridView usando las imágenes
+                        // GridView de letras
                         SizedBox(
                           width: 280,
                           child: GridView.builder(
@@ -202,11 +206,11 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  mainAxisSpacing: 15,
-                                  crossAxisSpacing: 15,
-                                  childAspectRatio: 1.0,
-                                ),
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 15,
+                              crossAxisSpacing: 15,
+                              childAspectRatio: 1.0,
+                            ),
                             itemCount: keyboardLetters.length,
                             itemBuilder: (context, index) {
                               return LetterButton(
@@ -229,9 +233,47 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
       ),
     );
   }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      // Sin bordes redondeados — color plano amarillo
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      color: const Color(0xFFF39C12),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Text(
+            'Pasado y Presente',
+            style: TextStyle(
+              fontFamily: 'Hiruko',
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 0.5,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => Navigator.maybePop(context),
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                    color: Colors.white, shape: BoxShape.circle),
+                child: const Icon(Icons.close,
+                    size: 18, color: Color(0xFFF39C12)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-// 3. MODIFICACIÓN: Widget que muestra tus PNGs
+// Widget que muestra los PNGs de letras
 class LetterButton extends StatelessWidget {
   final String imagePath;
   final VoidCallback onTap;

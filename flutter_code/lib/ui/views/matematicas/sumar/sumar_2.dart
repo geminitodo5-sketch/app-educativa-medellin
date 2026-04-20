@@ -245,7 +245,7 @@ class _BotonOpcion extends StatelessWidget {
         width: 80,
         height: 70,
         decoration: BoxDecoration(
-          color: seleccionado ? kColorAzulNumi : kColorAzulClaro,
+          color: seleccionado ? kColorAzulNumi : kColorAzulNumi,
           borderRadius: BorderRadius.circular(15),
         ),
         alignment: Alignment.center,

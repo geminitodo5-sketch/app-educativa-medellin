@@ -77,6 +77,67 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
     }
   }
 
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _seleccionar(int i) {
     if (_respondido) return;
     setState(() {
@@ -85,6 +146,21 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
       if (i == _correcta) _puntos++;
     });
     _play(_opciones[i]['audio'] as String);
+    final esCorrecto = i == _correcta;
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) {
+        _mostrarFeedback(esCorrecto, () {
+          if (esCorrecto) {
+            _siguiente();
+          } else {
+            setState(() {
+              _seleccion = -1;
+              _respondido = false;
+            });
+          }
+        });
+      }
+    });
   }
 
   void _siguiente() {
@@ -143,17 +219,14 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
 
   @override
   Widget build(BuildContext context) {
-    final acerto = _respondido && _seleccion == _correcta;
-    final erro = _respondido && _seleccion != _correcta;
-
     return Scaffold(
       backgroundColor: const Color(0xFF8B2FC9),
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER
+            // ── HEADER ── reducido para dar más espacio al grid
             Padding(
-              padding: const EdgeInsets.fromLTRB(30, 50, 20, 50),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -168,23 +241,23 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   const Text(
                     '¡Aprende escuchando!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       color: Colors.white,
-                      fontSize: 26,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   _buildIndicador(),
                 ],
               ),
             ),
 
-            // CONTENIDO
+            // ── CONTENIDO ──
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -196,16 +269,13 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 26, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
                   child: Column(
                     children: [
+                      // Instrucción
                       Row(
                         children: const [
-                          Icon(
-                            Icons.volume_up,
-                            color: Colors.black87,
-                            size: 20,
-                          ),
+                          Icon(Icons.volume_up, color: Colors.black87, size: 20),
                           SizedBox(width: 8),
                           Text(
                             'Escucha y elige el correcto',
@@ -218,31 +288,33 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                         ],
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
 
+                      // Botón de audio — más pequeño
                       GestureDetector(
                         onTap: () => _play(_data['pregunta'] as String),
                         child: Image.asset(
                           '${_img}altavoz 1.png',
-                          width: 75,
-                          height: 75,
+                          width: 56,
+                          height: 56,
                           color: Colors.black87,
                         ),
                       ),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 16),
 
+                      // Grid de opciones — ocupa todo el espacio restante
                       Expanded(
                         child: GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: 4,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 20,
-                                mainAxisSpacing: 20,
-                                childAspectRatio: 1.0,
-                              ),
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 14,
+                            mainAxisSpacing: 14,
+                            childAspectRatio: 1.0,
+                          ),
                           itemBuilder: (context, i) {
                             final op = _opciones[i];
                             final esCorrecta = i == _correcta;
@@ -273,7 +345,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                                 ),
                                 child: Center(
                                   child: Padding(
-                                    padding: const EdgeInsets.all(24),
+                                    padding: const EdgeInsets.all(18),
                                     child: Image.asset(op['img'] as String),
                                   ),
                                 ),
@@ -283,84 +355,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                         ),
                       ),
 
-                      // BOTÓN NEXT
-                      if (acerto)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 20, top: 12),
-                          child: ElevatedButton(
-                            onPressed: _siguiente,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF8B2FC9),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 48,
-                                vertical: 14,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: Text(
-                              _nivel < 2 ? 'Next' : 'Finish!',
-                              style: const TextStyle(
-                                fontFamily: 'Hiruko',
-                                fontSize: 17,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      // BOTÓN TRY AGAIN
-                      if (erro)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 20, top: 12),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Try again!',
-                                style: TextStyle(
-                                  fontFamily: 'Hiruko',
-                                  fontSize: 16,
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              TextButton(
-                                onPressed: () => setState(() {
-                                  _seleccion = -1;
-                                  _respondido = false;
-                                }),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    side: const BorderSide(
-                                      color: Color(0xFF8B2FC9),
-                                      width: 1.2,
-                                    ),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Try again',
-                                  style: TextStyle(
-                                    fontFamily: 'Hiruko',
-                                    fontSize: 15,
-                                    color: Color(0xFF8B2FC9),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      if (!_respondido) const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),

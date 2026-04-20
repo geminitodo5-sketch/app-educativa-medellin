@@ -47,67 +47,64 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   }
 
   void _mostrarMensaje(bool esCorrecto, {VoidCallback? onContinue}) {
-    // Guardamos el contexto del padre ANTES de abrir el modal
-    final parentContext = context;
-
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,       // evita que se cierre tocando afuera
-      enableDrag: false,          // evita que se cierre arrastrando
-      builder: (modalContext) => Container(
-        height: 280,
-        decoration: BoxDecoration(
-          color: esCorrecto
-              ? const Color(0xFFE8F5E9)
-              : const Color(0xFFFFEBEE),
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(40)),
-        ),
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              esCorrecto
-                  ? Icons.check_circle_rounded
-                  : Icons.help_outline_rounded,
-              size: 90,
-              color: esCorrecto ? Colors.green : Colors.red,
+              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
+              color: esCorrecto ? Colors.green[800] : Colors.red[800],
+              size: 56,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
-              esCorrecto ? "¡LO LOGRASTE!" : "¡INTÉNTALO OTRA VEZ!",
+              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
               style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                fontFamily: 'Behove',
-                color: esCorrecto ? Colors.green[800] : Colors.red[800],
+                fontFamily: 'Hiruko',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: esCorrecto ? Colors.green[900] : Colors.red[900],
               ),
             ),
             const SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                // 1. Cerramos el modal usando su propio contexto
-                Navigator.of(modalContext).pop();
-
-                // 2. Si hay callback, lo llamamos en el siguiente frame
-                //    para que el modal ya esté cerrado antes de navegar
-                if (onContinue != null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    onContinue();
-                  });
-                }
-              },
-              child: Text(
-                "CONTINUAR",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (onContinue != null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      onContinue();
+                    });
+                  }
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -117,7 +114,7 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1EB9D8),
+      backgroundColor: const Color(0xFF59E347),
       body: SafeArea(
         bottom: false,
         child: Column(

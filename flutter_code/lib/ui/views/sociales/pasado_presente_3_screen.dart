@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../terminado.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -16,17 +17,14 @@ class EscuchaYEligePage extends StatefulWidget {
 }
 
 class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
-  
-  // Lista de animales con sus colores y la validación de victoria
   final List<Map<String, dynamic>> animals = [
     {'image': 'assets/images/actividades/sociales/gato.png', 'color': const Color(0xFFA1E296), 'isCorrect': false},
-    {'image': 'assets/images/actividades/sociales/Cocodrilo.png', 'color': const Color(0xFFFFE082), 'isCorrect': true}, // CORRECTO
+    {'image': 'assets/images/actividades/sociales/Cocodrilo.png', 'color': const Color(0xFFFFE082), 'isCorrect': true},
     {'image': 'assets/images/actividades/sociales/pato.png', 'color': const Color(0xFFEF9A9A), 'isCorrect': false},
     {'image': 'assets/images/actividades/sociales/pollo.png', 'color': const Color(0xFFCE93D8), 'isCorrect': false},
   ];
 
   void _onPlayButtonPressed() {
-    // Aquí puedes añadir la lógica de audio más tarde
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Reproduciendo sonido de Cocodrilo...'),
@@ -63,7 +61,11 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
               onPressed: () {
                 widget.onCompleted?.call();
                 Navigator.pop(context);
-                Navigator.maybePop(context);
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => const ActividadTerminadaScreen(),
+                  ),
+                );
               },
               child: const Text("Continuar", style: TextStyle(color: Colors.white)),
             ),
@@ -76,104 +78,154 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // Fondo amarillo para que el header se integre sin costuras
+      backgroundColor: const Color(0xFFF39C12),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            // --- ENCABEZADO NARANJA ---
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF39C12),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 30),
-                  const Text(
-                    'Pasado y Presente',
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.maybePop(context),
-                    child: const Icon(Icons.close, color: Colors.white, size: 30),
-                  ),
-                ],
-              ),
-            ),
-            
+            _buildHeader(),
+            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 30.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Escucha y elige',
-                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.black87),
-                    ),
-                    const SizedBox(height: 20),
-                    
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.volume_up_rounded, size: 35, color: Colors.black87),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Text(
-                            'Escucha y elige al animal\ncorrecto',
-                            style: TextStyle(fontSize: 16, color: Colors.black54, height: 1.3),
-                          ),
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
+                  child: Column(
+                    children: [
+                      // Título
+                      const Text(
+                        'Escucha y elige',
+                        style: TextStyle(
+                          fontFamily: 'Hiruko',
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3D2B1F),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    
-                    // --- CUADRÍCULA DE ANIMALES ---
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                        childAspectRatio: 1.0,
                       ),
-                      itemCount: animals.length,
-                      itemBuilder: (context, index) {
-                        return AnimalCard(
-                          imagePath: animals[index]['image'],
-                          backgroundColor: animals[index]['color'],
-                          onTap: () => _onAnimalSelected(index),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 100), // Espacio para que el botón no tape el grid
-                  ],
+                      const SizedBox(height: 16),
+
+                      // Enunciado con fuente Hiruko bold
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF8EE),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: const Color(0xFFF5A623), width: 1.5),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Icon(Icons.volume_up_rounded,
+                                color: Color(0xFFF5A623), size: 28),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Escucha y elige al animal\ncorrecto',
+                                style: TextStyle(
+                                  fontFamily: 'Hiruko',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF3D2B1F),
+                                  height: 1.55,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+
+                      // Cuadrícula de animales
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 20,
+                          childAspectRatio: 1.0,
+                        ),
+                        itemCount: animals.length,
+                        itemBuilder: (context, index) {
+                          return AnimalCard(
+                            imagePath: animals[index]['image'],
+                            backgroundColor: animals[index]['color'],
+                            onTap: () => _onAnimalSelected(index),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
-      
-      // --- BOTÓN VERDE DE REPRODUCIR ---
+
+      // Botón verde de reproducir
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: GestureDetector(
           onTap: _onPlayButtonPressed,
           child: Image.asset(
-            'assets/images/actividades/sociales/Botón.png', // Tu imagen del botón verde
+            'assets/images/actividades/sociales/Botón.png',
             height: 90,
             width: 90,
             fit: BoxFit.contain,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      // Sin bordes redondeados — color plano amarillo
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      color: const Color(0xFFF39C12),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Text(
+            'Pasado y Presente',
+            style: TextStyle(
+              fontFamily: 'Hiruko',
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 0.5,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => Navigator.maybePop(context),
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                    color: Colors.white, shape: BoxShape.circle),
+                child: const Icon(Icons.close,
+                    size: 18, color: Color(0xFFF39C12)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
