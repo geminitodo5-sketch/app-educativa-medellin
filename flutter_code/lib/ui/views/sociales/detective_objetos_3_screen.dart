@@ -224,7 +224,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
         _selectedId = null;
       });
       _popCtrl[_popKey(row, col)]?.forward(from: 0);
-      _mostrarFeedback(true, _checkCompletion);
+      _checkCompletion();
     } else {
       setState(() {
         _failCell = (row: row, col: col);
@@ -243,16 +243,17 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     _pulseCtrl.stop();
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) {
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement( // ← pushReplacement para que no vuelva al puzzle
           MaterialPageRoute(
-            builder: (_) => ActividadTerminadaScreen(
-              onVolver: () => Navigator.of(context).pop(),
+            builder: (newContext) => ActividadTerminadaScreen(
+              onVolver: () => Navigator.of(newContext).popUntil((route) => route.isFirst),
             ),
           ),
         );
       }
     });
   }
+
 }
   void _reset() {
     for (final c in _popCtrl.values) c.reset();

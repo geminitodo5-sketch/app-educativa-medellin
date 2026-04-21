@@ -148,15 +148,10 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
     if (_navegandoATerminado || !mounted) return;
     _navegandoATerminado = true;
     _guardarProgreso();
-    Navigator.push(
-      context,
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => ActividadTerminadaScreen(
-          onVolver: () {
-            final nav = Navigator.of(context);
-            nav.pop();
-            nav.pop();
-          },
+        builder: (newContext) => ActividadTerminadaScreen(
+          onVolver: () => Navigator.of(newContext).popUntil((route) => route.isFirst),
         ),
       ),
     );
@@ -168,7 +163,6 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // PageView ocupa toda la pantalla
           PageView(
             controller: _ctrl,
             onPageChanged: (i) => setState(() => _pagina = i),
@@ -191,7 +185,6 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
               ),
             ],
           ),
-          // Botón X flotante sobre todo, en la esquina superior derecha
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -241,7 +234,7 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
   }
 }
 
-// ── Tarjeta (passthrough — el estilo lo provee _PageCard) ────────────────
+// ── Tarjeta (passthrough) ─────────────────────────────────────────────────
 class _Tarjeta extends StatelessWidget {
   final Widget child;
   const _Tarjeta({required this.child});
@@ -261,12 +254,9 @@ class _PageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fondo verde que cubre la mitad superior
         Container(color: const Color(0xFF3DCC52)),
-        // Columna principal
         Column(
           children: [
-            // Bloque verde — título centrado, más alto
             SafeArea(
               bottom: false,
               child: Padding(
@@ -283,7 +273,6 @@ class _PageCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -378,14 +367,15 @@ class _Actividad1State extends State<_Actividad1>
     if (_seleccion != null) return;
     setState(() => _seleccion = opcion);
     final correcto = opcion == 'vivo';
-    if (!correcto) _shake.forward(from: 0);
-    _mostrarFeedback(context, correcto, () {
-      if (correcto) {
-        widget.onNext();
-      } else {
+    if (!correcto) {
+      _shake.forward(from: 0);
+      _mostrarFeedback(context, false, () {
         setState(() => _seleccion = null);
-      }
-    });
+      });
+      return;
+    }
+    // ✅ Correcto: avanza directo sin feedback
+    widget.onNext();
   }
 
   @override
@@ -394,8 +384,7 @@ class _Actividad1State extends State<_Actividad1>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _Instruccion(
-              'Ayúdame a decidir si estos son seres vivos o no vivos'),
+          _Instruccion('Ayúdame a decidir si estos son seres vivos o no vivos'),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -403,9 +392,7 @@ class _Actividad1State extends State<_Actividad1>
                 '${_p1}cocodrilo.png',
                 fit: BoxFit.contain,
                 errorBuilder: (ctx, e, s) => const Icon(
-                    Icons.image_not_supported,
-                    size: 80,
-                    color: Colors.grey),
+                    Icons.image_not_supported, size: 80, color: Colors.grey),
               ),
             ),
           ),
@@ -519,7 +506,6 @@ class _Actividad2 extends StatefulWidget {
 }
 
 class _Actividad2State extends State<_Actividad2> {
-  // índice 0 = pato (correcto)
   static const _nombres = ['pato', 'roca', 'libro', 'globo'];
   static const _rutas = [
     '${_p2}pato.png',
@@ -535,13 +521,14 @@ class _Actividad2State extends State<_Actividad2> {
     if (_seleccionado != null) return;
     setState(() => _seleccionado = idx);
     final correcto = idx == _indexCorrecto;
-    _mostrarFeedback(context, correcto, () {
-      if (correcto) {
-        widget.onNext();
-      } else {
+    if (!correcto) {
+      _mostrarFeedback(context, false, () {
         setState(() => _seleccionado = null);
-      }
-    });
+      });
+      return;
+    }
+    // ✅ Correcto: avanza directo sin feedback
+    widget.onNext();
   }
 
   @override
@@ -550,10 +537,8 @@ class _Actividad2State extends State<_Actividad2> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Instrucción al tope del bloque blanco
           const SizedBox(height: 20),
           _Instruccion('Elige el ser vivo entre los no vivos'),
-          // Grid centrado en el espacio restante
           Expanded(
             child: Center(
               child: Padding(
@@ -651,13 +636,13 @@ class _Actividad3State extends State<_Actividad3> {
     final item = _items.firstWhere((i) => i.nombre == nombre);
     if (_colocados.contains(nombre)) return;
     if (!item.esVida) {
+      // ✅ Error: sigue mostrando feedback
       _mostrarFeedback(context, false, () {});
       return;
     }
     setState(() => _colocados.add(nombre));
-    _mostrarFeedback(context, true, () {
-      if (_completado) widget.onFinish();
-    });
+    // ✅ Correcto: sin feedback, solo navega al completar
+    if (_completado) widget.onFinish();
   }
 
   @override
@@ -666,99 +651,95 @@ class _Actividad3State extends State<_Actividad3> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Instrucción al tope del bloque blanco
           const SizedBox(height: 20),
           _Instruccion(
               'Arrastra dentro del cuadro los elementos más importantes para vivir'),
-          // Contenido centrado en el espacio restante
           Expanded(
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Zona de drop — ancho completo, más alta
                   Padding(
                     padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
                     child: AspectRatio(
                       aspectRatio: 1.1,
                       child: DragTarget<String>(
-                onWillAcceptWithDetails: (_) {
-                  setState(() => _hovering = true);
-                  return true;
-                },
-                onLeave: (_) => setState(() => _hovering = false),
-                onAcceptWithDetails: (d) {
-                  setState(() => _hovering = false);
-                  _onDrop(context, d.data);
-                },
-                builder: (ctx, candidates, rejected) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: _hovering
-                            ? const Color(0xFF3DCC52)
-                            : const Color(0xFFBDBDBD),
-                        width: _hovering ? 3 : 1.5,
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset(
-                            '${_p3}cuadro.png',
-                            fit: BoxFit.cover,
-                            alignment: Alignment.center,
-                            errorBuilder: (ctx, e, s) =>
-                                Container(color: const Color(0xFFE3F2FD)),
-                          ),
-                          if (_colocados.isNotEmpty)
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Wrap(
-                                  spacing: 4,
-                                  runSpacing: 4,
-                                  children: _colocados.map((n) {
-                                    final it = _items
-                                        .firstWhere((i) => i.nombre == n);
-                                    return Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xCCFFFFFF),
-                                        borderRadius:
-                                            BorderRadius.circular(8),
+                        onWillAcceptWithDetails: (_) {
+                          setState(() => _hovering = true);
+                          return true;
+                        },
+                        onLeave: (_) => setState(() => _hovering = false),
+                        onAcceptWithDetails: (d) {
+                          setState(() => _hovering = false);
+                          _onDrop(context, d.data);
+                        },
+                        builder: (ctx, candidates, rejected) {
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: _hovering
+                                    ? const Color(0xFF3DCC52)
+                                    : const Color(0xFFBDBDBD),
+                                width: _hovering ? 3 : 1.5,
+                              ),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Image.asset(
+                                    '${_p3}cuadro.png',
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                    errorBuilder: (ctx, e, s) =>
+                                        Container(color: const Color(0xFFE3F2FD)),
+                                  ),
+                                  if (_colocados.isNotEmpty)
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Wrap(
+                                          spacing: 4,
+                                          runSpacing: 4,
+                                          children: _colocados.map((n) {
+                                            final it = _items
+                                                .firstWhere((i) => i.nombre == n);
+                                            return Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xCCFFFFFF),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              padding: const EdgeInsets.all(4),
+                                              child: Image.asset(it.ruta,
+                                                  fit: BoxFit.contain),
+                                            );
+                                          }).toList(),
+                                        ),
                                       ),
-                                      padding: const EdgeInsets.all(4),
-                                      child: Image.asset(it.ruta,
-                                          fit: BoxFit.contain),
-                                    );
-                                  }).toList(),
-                                ),
+                                    ),
+                                  if (_completado)
+                                    Container(
+                                      color: const Color(0x554CAF50),
+                                      child: const Center(
+                                        child: Icon(Icons.check_circle_rounded,
+                                            color: Colors.white, size: 56),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                          if (_completado)
-                            Container(
-                              color: const Color(0x554CAF50),
-                              child: const Center(
-                                child: Icon(Icons.check_circle_rounded,
-                                    color: Colors.white, size: 56),
-                              ),
-                            ),
-                        ],
+                          );
+                        },
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
-                  // Bandeja de elementos arrastrables
+                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: Container(
@@ -793,9 +774,7 @@ class _Actividad3State extends State<_Actividad3> {
                                 child: Image.asset(item.ruta,
                                     fit: BoxFit.contain,
                                     errorBuilder: (ctx, e, s) => const Icon(
-                                        Icons.image,
-                                        size: 40,
-                                        color: Colors.grey)),
+                                        Icons.image, size: 40, color: Colors.grey)),
                               ),
                             ),
                             childWhenDragging: Container(
