@@ -14,44 +14,72 @@ const _p2 = 'assets/images/actividades/ciencias_naturales/pantalla 2/';
 const _p3 = 'assets/images/actividades/ciencias_naturales/pantalla 3/';
 
 // ── Popup de retroalimentación ────────────────────────────────────────────
-void _mostrarFeedback(BuildContext context, bool correcto) {
-  final overlay = Overlay.of(context);
-  late OverlayEntry entry;
-  entry = OverlayEntry(
-    builder: (_) => Positioned(
-      top: 0, left: 0, right: 0, bottom: 0,
-      child: IgnorePointer(
-        child: Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              decoration: BoxDecoration(
-                color: correcto ? const Color(0xFF2E7D32) : const Color(0xFFB71C1C),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 4))],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                      color: Colors.white, size: 30),
-                  const SizedBox(width: 10),
-                  Text(correcto ? '¡Correcto!' : '¡Incorrecto!',
-                      style: const TextStyle(color: Colors.white, fontSize: 20,
-                          fontWeight: FontWeight.bold, fontFamily: 'Hiruko')),
-                ],
-              ),
-            ),
+void _mostrarFeedback(BuildContext context, bool esCorrecto, VoidCallback onAction) {
+  showModalBottomSheet(
+    context: context,
+    isDismissible: false,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
         ),
-      ),
-    ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  esCorrecto ? Icons.check_circle : Icons.cancel,
+                  color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  size: 40,
+                ),
+                const SizedBox(width: 15),
+                Text(
+                  esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
   );
-  overlay.insert(entry);
-  Future.delayed(const Duration(milliseconds: 1100), () {
-    if (entry.mounted) entry.remove();
-  });
 }
 
 class _Item {
@@ -350,15 +378,14 @@ class _Actividad1State extends State<_Actividad1>
     if (_seleccion != null) return;
     setState(() => _seleccion = opcion);
     final correcto = opcion == 'vivo';
-    _mostrarFeedback(context, correcto);
-    if (correcto) {
-      Future.delayed(const Duration(milliseconds: 1100), widget.onNext);
-    } else {
-      _shake.forward(from: 0);
-      Future.delayed(const Duration(milliseconds: 1100), () {
-        if (mounted) setState(() => _seleccion = null);
-      });
-    }
+    if (!correcto) _shake.forward(from: 0);
+    _mostrarFeedback(context, correcto, () {
+      if (correcto) {
+        widget.onNext();
+      } else {
+        setState(() => _seleccion = null);
+      }
+    });
   }
 
   @override
@@ -508,14 +535,13 @@ class _Actividad2State extends State<_Actividad2> {
     if (_seleccionado != null) return;
     setState(() => _seleccionado = idx);
     final correcto = idx == _indexCorrecto;
-    _mostrarFeedback(context, correcto);
-    if (correcto) {
-      Future.delayed(const Duration(milliseconds: 1100), widget.onNext);
-    } else {
-      Future.delayed(const Duration(milliseconds: 1100), () {
-        if (mounted) setState(() => _seleccionado = null);
-      });
-    }
+    _mostrarFeedback(context, correcto, () {
+      if (correcto) {
+        widget.onNext();
+      } else {
+        setState(() => _seleccionado = null);
+      }
+    });
   }
 
   @override
@@ -625,14 +651,13 @@ class _Actividad3State extends State<_Actividad3> {
     final item = _items.firstWhere((i) => i.nombre == nombre);
     if (_colocados.contains(nombre)) return;
     if (!item.esVida) {
-      _mostrarFeedback(context, false);
+      _mostrarFeedback(context, false, () {});
       return;
     }
-    _mostrarFeedback(context, true);
     setState(() => _colocados.add(nombre));
-    if (_completado) {
-      Future.delayed(const Duration(milliseconds: 1400), widget.onFinish);
-    }
+    _mostrarFeedback(context, true, () {
+      if (_completado) widget.onFinish();
+    });
   }
 
   @override

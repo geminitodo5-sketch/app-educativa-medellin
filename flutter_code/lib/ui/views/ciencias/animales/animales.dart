@@ -57,12 +57,12 @@ class PantallaActividadAnimales extends ConsumerWidget {
                                 val,
                                 'pinguino',
                               );
-                              _showFeedbackSheet(
+                              _mostrarFeedback(
                                 context,
                                 esCorrecto,
-                                onContinue: (esCorrecto && viewModel.completado)
-                                    ? onCompletado
-                                    : null,
+                                () {
+                                  if (esCorrecto && viewModel.completado) onCompletado();
+                                },
                               );
                             },
                           ),
@@ -75,12 +75,12 @@ class PantallaActividadAnimales extends ConsumerWidget {
                                 val,
                                 'cocodrilo',
                               );
-                              _showFeedbackSheet(
+                              _mostrarFeedback(
                                 context,
                                 esCorrecto,
-                                onContinue: (esCorrecto && viewModel.completado)
-                                    ? onCompletado
-                                    : null,
+                                () {
+                                  if (esCorrecto && viewModel.completado) onCompletado();
+                                },
                               );
                             },
                           ),
@@ -286,11 +286,11 @@ class _AnimalDraggable extends StatelessWidget {
   }
 }
 
-void _showFeedbackSheet(
+void _mostrarFeedback(
   BuildContext context,
-  bool esCorrecto, {
-  VoidCallback? onContinue,
-}) {
+  bool esCorrecto,
+  VoidCallback onAction,
+) {
   showModalBottomSheet(
     context: context,
     isDismissible: false,
@@ -300,7 +300,10 @@ void _showFeedbackSheet(
         padding: const EdgeInsets.all(30),
         decoration: BoxDecoration(
           color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -309,7 +312,7 @@ void _showFeedbackSheet(
               children: [
                 Icon(
                   esCorrecto ? Icons.check_circle : Icons.cancel,
-                  color: esCorrecto ? kColorVerdeNumi : kColorRojoNumi,
+                  color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
                   size: 40,
                 ),
                 const SizedBox(width: 15),
@@ -330,21 +333,19 @@ void _showFeedbackSheet(
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: esCorrecto
-                      ? kColorVerdeNumi
-                      : kColorRojoNumi,
+                  backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  onContinue?.call();
+                  onAction();
                 },
                 child: Text(
                   esCorrecto ? 'Continuar' : 'Reintentar',
                   style: const TextStyle(
-                    color: kColorBlanco,
+                    color: Colors.white,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
                     fontSize: 18,

@@ -17,60 +17,67 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
   showModalBottomSheet(
     context: context,
     isDismissible: false,
-    enableDrag: false,
-    backgroundColor: correcto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
-    builder: (_) => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            correcto ? Icons.check_circle_rounded : Icons.cancel_rounded,
-            color: correcto ? Colors.green[800] : Colors.red[800],
-            size: 56,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: correcto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
-          const SizedBox(height: 12),
-          Text(
-            correcto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: correcto ? Colors.green[900] : Colors.red[900],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  correcto ? Icons.check_circle : Icons.cancel,
+                  color: correcto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  size: 40,
+                ),
+                const SizedBox(width: 15),
+                Text(
+                  correcto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: correcto ? Colors.green[900] : Colors.red[900],
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: correcto ? Colors.green[700] : Colors.red[700],
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-                onAction?.call();
-              },
-              child: Text(
-                correcto ? 'Continuar' : 'Reintentar',
-                style: const TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: correcto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction?.call();
+                },
+                child: Text(
+                  correcto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    ),
+          ],
+        ),
+      );
+    },
   );
 }
 

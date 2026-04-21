@@ -65,6 +65,74 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
     ),
   ];
 
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    size: 40,
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onAction();
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _onDrop(int heroIndex, _Tool tool) {
     final hero = _heroes[heroIndex];
     if (tool == hero.correctTool) {
@@ -74,92 +142,19 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
       });
       if (_placed.length == _heroes.length) {
         Future.delayed(const Duration(milliseconds: 600), () {
-          if (mounted) _showSuccessDialog();
+          if (mounted) {
+            _mostrarFeedback(true, () {
+              widget.onCompleted?.call();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const ActividadTerminadaScreen()),
+              );
+            });
+          }
         });
       }
     } else {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Inténtalo de nuevo!',
-              style: TextStyle(fontFamily: 'Poppins')),
-          duration: Duration(milliseconds: 900),
-          backgroundColor: Color(0xFFE57373),
-        ),
-      );
+      _mostrarFeedback(false, () {});
     }
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.star_rounded,
-                  color: Color(0xFFF5A623), size: 80),
-              const SizedBox(height: 12),
-              const Text(
-                '¡Excelente!',
-                style: TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3D2B1F),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '¡Emparejaste todas las\nherramientas correctamente!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 15,
-                  color: Color(0xFF555555),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF5A623),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    elevation: 4,
-                  ),
-                  onPressed: () {
-                    widget.onCompleted?.call();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (_) => const ActividadTerminadaScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Continuar',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override

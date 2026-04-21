@@ -57,27 +57,82 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     }
   }
 
-  void _showSuccessDialog() {
-    showDialog(
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("¡Muy bien!"),
-        content: const Text("Completaste la palabra."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (_) => EscuchaYEligePage(onCompleted: widget.onCompleted),
-                ),
-              );
-            },
-            child: const Text("Siguiente"),
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
           ),
-        ],
-      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    size: 40,
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onAction();
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
+  }
+
+  void _showSuccessDialog() {
+    _mostrarFeedback(true, () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => EscuchaYEligePage(onCompleted: widget.onCompleted),
+        ),
+      );
+    });
   }
 
   @override

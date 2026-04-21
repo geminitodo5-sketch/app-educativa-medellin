@@ -24,55 +24,87 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
     {'image': 'assets/images/actividades/sociales/pollo.png', 'color': const Color(0xFFCE93D8), 'isCorrect': false},
   ];
 
-  void _onPlayButtonPressed() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Reproduciendo sonido de Cocodrilo...'),
-        duration: Duration(milliseconds: 800),
-      ),
+  void _onPlayButtonPressed() {}
+
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    size: 40,
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onAction();
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   void _onAnimalSelected(int index) {
     if (animals[index]['isCorrect']) {
-      _showSuccessDialog();
+      _mostrarFeedback(true, () {
+        widget.onCompleted?.call();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ActividadTerminadaScreen()),
+        );
+      });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('¡Inténtalo de nuevo!'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      _mostrarFeedback(false, () {});
     }
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("¡Excelente!", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
-        content: const Text("¡Has encontrado al animal correcto!", textAlign: TextAlign.center),
-        actions: [
-          Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF39C12)),
-              onPressed: () {
-                widget.onCompleted?.call();
-                Navigator.pop(context);
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (_) => const ActividadTerminadaScreen(),
-                  ),
-                );
-              },
-              child: const Text("Continuar", style: TextStyle(color: Colors.white)),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override

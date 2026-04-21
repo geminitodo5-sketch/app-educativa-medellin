@@ -18,12 +18,13 @@ class QuienTieneMasview3 extends ConsumerWidget {
   static const String _penguinPath =
       'assets/images/actividades/matematicas/pinguino.png';
 
+  // Colores del Manual de Marca
+  static const Color verdeNumi = Color(0xFF59E347);
+  static const Color rojoNumi = Color(0xFFF65757);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final esCorrecto = ref.watch(respuestaProvider);
-
     return Scaffold(
-      // Usando el azul del manual de marca si es necesario
       backgroundColor: const Color(0xFF3475F7),
       body: SafeArea(
         bottom: false,
@@ -31,7 +32,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
           children: [
             _buildTopBar(context, ref),
             const SizedBox(height: 10),
-            Expanded(child: _buildWhiteCanvas(context, ref, esCorrecto)),
+            Expanded(child: _buildWhiteCanvas(context, ref)),
           ],
         ),
       ),
@@ -45,7 +46,10 @@ class QuienTieneMasview3 extends ConsumerWidget {
           alignment: Alignment.topRight,
           child: IconButton(
             icon: const Icon(Icons.close, color: Colors.white, size: 30),
-            onPressed: () => ref.read(respuestaProvider.notifier).state = null,
+            onPressed: () {
+              ref.read(respuestaProvider.notifier).state = null;
+              Navigator.of(context).pop();
+            },
           ),
         ),
         const Text(
@@ -53,7 +57,6 @@ class QuienTieneMasview3 extends ConsumerWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 32,
-            // Aplicando Hiruko Bold para el título principal
             fontFamily: 'Hiruko',
             fontWeight: FontWeight.bold,
           ),
@@ -62,11 +65,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
     );
   }
 
-  Widget _buildWhiteCanvas(
-    BuildContext context,
-    WidgetRef ref,
-    bool? esCorrecto,
-  ) {
+  Widget _buildWhiteCanvas(BuildContext context, WidgetRef ref) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -83,10 +82,6 @@ class QuienTieneMasview3 extends ConsumerWidget {
           children: [
             _buildCountingGrid(),
             const SizedBox(height: 40),
-
-            // Feedback Visual en Pantalla
-            if (esCorrecto != null) _buildFeedback(context, ref, esCorrecto),
-
             Row(
               children: [
                 const Icon(
@@ -100,7 +95,6 @@ class QuienTieneMasview3 extends ConsumerWidget {
                     '¿Cuál de estos animales hay en mayor cantidad?',
                     style: TextStyle(
                       fontSize: 18,
-                      // Poppins para textos de lectura/instrucciones
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
@@ -110,34 +104,29 @@ class QuienTieneMasview3 extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 30),
-
             _OptionButton(
               image: _crocPath,
               letter: 'A)',
               name: 'Cocodrilo',
-              onTap: () => ref.read(respuestaProvider.notifier).state = true,
-              isSelected: esCorrecto == true,
+              onTap: () => _showFeedbackSheet(context, ref, true),
             ),
             _OptionButton(
               image: _elephantPath,
               letter: 'B)',
               name: 'Elefante',
-              onTap: () => ref.read(respuestaProvider.notifier).state = false,
-              isSelected: false, // Lógica simple para ejemplo
+              onTap: () => _showFeedbackSheet(context, ref, false),
             ),
             _OptionButton(
               image: _duckPath,
               letter: 'C)',
               name: 'Pato',
-              onTap: () => ref.read(respuestaProvider.notifier).state = false,
-              isSelected: false,
+              onTap: () => _showFeedbackSheet(context, ref, false),
             ),
             _OptionButton(
               image: _penguinPath,
               letter: 'D)',
               name: 'Pingüino',
-              onTap: () => ref.read(respuestaProvider.notifier).state = false,
-              isSelected: false,
+              onTap: () => _showFeedbackSheet(context, ref, false),
             ),
           ],
         ),
@@ -145,65 +134,91 @@ class QuienTieneMasview3 extends ConsumerWidget {
     );
   }
 
-  Widget _buildFeedback(BuildContext context, WidgetRef ref, bool esCorrecto) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(15),
-      margin: const EdgeInsets.only(bottom: 25),
-      decoration: BoxDecoration(
-        color: esCorrecto
-            ? const Color(0xFF59E347).withOpacity(0.2)
-            : const Color(0xFFF65757).withOpacity(0.2),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            esCorrecto ? Icons.check_circle : Icons.error,
+  // ─── Pestaña intermitente igual a sumar_patron_view.dart ───────────────────
+  void _showFeedbackSheet(BuildContext context, WidgetRef ref, bool esCorrecto) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
             color: esCorrecto
-                ? const Color(0xFF59E347)
-                : const Color(0xFFF65757),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              esCorrecto
-                  ? "¡Excelente! El cocodrilo es el mayor"
-                  : "¡Inténtalo de nuevo!",
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: esCorrecto ? Colors.green[900] : Colors.red[900],
-              ),
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
           ),
-          if (esCorrecto)
-            IconButton(
-              icon: const Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Colors.green,
-              ),
-              onPressed: () {
-                // Guardar progreso en SQLite y Sync Queue (Offline-first)
-                ref
-                    .read(comparacionCantidadesViewModelProvider.notifier)
-                    .commandGuardarProgresoFinal('Quien tiene más');
-
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (_) => const ActividadTerminadaScreen(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto ? verdeNumi : rojoNumi,
+                    size: 40,
                   ),
-                );
-              },
-            ),
-        ],
-      ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto
+                          ? Colors.green[900]
+                          : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context); // cierra la pestaña
+                    if (esCorrecto) {
+                      // Guardar progreso en SQLite y Sync Queue (Offline-first)
+                      ref
+                          .read(comparacionCantidadesViewModelProvider.notifier)
+                          .commandGuardarProgresoFinal('Quien tiene más');
+
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => const ActividadTerminadaScreen(),
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
+  // ───────────────────────────────────────────────────────────────────────────
 
   Widget _buildCountingGrid() {
     return Column(
@@ -239,14 +254,12 @@ class _OptionButton extends StatelessWidget {
   final String letter;
   final String name;
   final VoidCallback onTap;
-  final bool isSelected;
 
   const _OptionButton({
     required this.image,
     required this.letter,
     required this.name,
     required this.onTap,
-    required this.isSelected,
   });
 
   @override
@@ -259,15 +272,8 @@ class _OptionButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isSelected
-                ? const Color(0xFF59E347).withOpacity(0.1)
-                : Colors.white,
-            border: Border.all(
-              color: isSelected
-                  ? const Color(0xFF59E347)
-                  : Colors.grey.shade300,
-              width: 2,
-            ),
+            color: Colors.white,
+            border: Border.all(color: Colors.grey.shade300, width: 2),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
@@ -278,7 +284,7 @@ class _OptionButton extends StatelessWidget {
                 letter,
                 style: const TextStyle(
                   fontSize: 20,
-                  fontFamily: 'Hiruko', // Letras de opción en Hiruko
+                  fontFamily: 'Hiruko',
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -287,7 +293,7 @@ class _OptionButton extends StatelessWidget {
                 name,
                 style: const TextStyle(
                   fontSize: 18,
-                  fontFamily: 'Poppins', // Nombre del animal en Poppins
+                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                 ),
               ),

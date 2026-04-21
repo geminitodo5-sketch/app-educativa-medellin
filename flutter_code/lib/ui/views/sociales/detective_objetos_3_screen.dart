@@ -60,11 +60,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   int? _selectedId;
   bool _completed = false;
   ({int row, int col})? _failCell;
-  String? _feedbackText;
-  Color? _feedbackColor;
 
   late final AnimationController _completeCtrl;
-  late final Animation<double> _completeScale;
   late final AnimationController _shakeCtrl;
   late final Animation<double> _shakeAnim;
   late final AnimationController _pulseCtrl;
@@ -82,10 +79,6 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     _completeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
-    );
-    _completeScale = CurvedAnimation(
-      parent: _completeCtrl,
-      curve: Curves.elasticOut,
     );
 
     _shakeCtrl = AnimationController(
@@ -127,12 +120,78 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     super.dispose();
   }
 
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    size: 40,
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onAction();
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _selectTray(PuzzlePiece piece) {
     if (_completed) return;
     setState(() {
       _selectedId = (_selectedId == piece.id) ? null : piece.id;
-      _feedbackText = null;
-      _feedbackColor = null;
     });
   }
 
@@ -163,21 +222,18 @@ class _PuzzleScreenState extends State<PuzzleScreen>
         _board[row][col] = piece.id;
         _tray.removeWhere((p) => p.id == piece.id);
         _selectedId = null;
-        _feedbackText = '¡Correcto!';
-        _feedbackColor = Colors.green.shade700;
       });
       _popCtrl[_popKey(row, col)]?.forward(from: 0);
-      _checkCompletion();
+      _mostrarFeedback(true, _checkCompletion);
     } else {
       setState(() {
         _failCell = (row: row, col: col);
         _selectedId = null;
-        _feedbackText = 'Incorrecto';
-        _feedbackColor = Colors.red.shade700;
       });
       _shakeCtrl.forward(from: 0).then((_) {
         if (mounted) setState(() => _failCell = null);
       });
+      _mostrarFeedback(false, () {});
     }
   }
 
@@ -206,8 +262,6 @@ class _PuzzleScreenState extends State<PuzzleScreen>
       _selectedId = null;
       _completed = false;
       _failCell = null;
-      _feedbackText = null;
-      _feedbackColor = null;
     });
     _completeCtrl.reset();
     _pulseCtrl.repeat(reverse: true);
@@ -257,8 +311,6 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                             ),
                             child: _buildBoard(boardSide),
                           ),
-                          const SizedBox(height: 8),
-                          _buildFeedbackBanner(),
                           const SizedBox(height: 8),
                           Expanded(
                             child: AnimatedSwitcher(
@@ -389,43 +441,6 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
-  Widget _buildFeedbackBanner() {
-    if (_completed || _feedbackText == null) return const SizedBox.shrink();
-    return Container(
-      key: ValueKey(_feedbackText),
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: _feedbackColor?.withOpacity(0.14) ?? Colors.black12,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _feedbackColor?.withOpacity(0.35) ?? Colors.black12,
-          width: 1.2,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            _feedbackText == '¡Correcto!'
-                ? Icons.check_circle_rounded
-                : Icons.cancel_rounded,
-            color: _feedbackColor,
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            _feedbackText!,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: _feedbackColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildBoard(double boardSide) {
     const frameThickness = 10.0;
@@ -720,58 +735,6 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
-  Widget _buildSuccessBanner() {
-    return ScaleTransition(
-      key: const ValueKey('banner'),
-      scale: _completeScale,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFEE9A10), Color(0xFFFFD166)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(26),
-          boxShadow: [
-            BoxShadow(
-              color: _kOrange.withValues(alpha: 0.45),
-              blurRadius: 22,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            const Text('🎉', style: TextStyle(fontSize: 44)),
-            const SizedBox(height: 6),
-            const Text(
-              '¡Muy bien!',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              '¡Armaste el rompecabezas de Pancho!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                height: 1.5,
-              ),
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _AudioButton extends StatelessWidget {

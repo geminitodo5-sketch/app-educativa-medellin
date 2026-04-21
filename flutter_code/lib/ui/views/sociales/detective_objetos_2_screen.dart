@@ -98,133 +98,76 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     showModalBottomSheet(
       context: context,
       isDismissible: false,
-      enableDrag: false,
-      backgroundColor: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              esCorrecto ? Icons.check_circle_rounded : Icons.cancel_rounded,
-              color: esCorrecto ? Colors.green[800] : Colors.red[800],
-              size: 56,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
-            const SizedBox(height: 12),
-            Text(
-              esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: esCorrecto ? Colors.green[900] : Colors.red[900],
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: esCorrecto ? Colors.green[700] : Colors.red[700],
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  onAction();
-                },
-                child: Text(
-                  esCorrecto ? 'Continuar' : 'Reintentar',
-                  style: const TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showSuccess() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Dialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(28),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star_rounded,
-                  color: Color(0xFFF5A623), size: 80),
-              const SizedBox(height: 12),
-              const Text(
-                '¡Correcto!',
-                style: TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3D2B1F),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '¡Era el balón!\nRedondo, suave y rebota.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 15,
-                  color: Color(0xFF555555),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF5A623),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    elevation: 4,
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    size: 40,
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (_) => const PuzzleScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Continuar',
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
-                      fontSize: 22,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onAction();
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                 ),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  void _showSuccess() {
+    _mostrarFeedback(true, () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const PuzzleScreen()),
+      );
+    });
   }
 
   // ── Build ─────────────────────────────────────────────────────────────────
