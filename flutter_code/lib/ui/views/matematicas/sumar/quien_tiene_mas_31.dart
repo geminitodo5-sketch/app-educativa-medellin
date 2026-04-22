@@ -1,45 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ Importante
 import '../../terminado.dart';
-import '../../../viewmodels/comparacion_cantidades_view_model.dart';
+import '../../../viewmodels/matematicas_view_model.dart';
 
 // Proveedor de estado para feedback visual
 final respuestaProvider = StateProvider<bool?>((ref) => null);
 
-class QuienTieneMasview3 extends ConsumerWidget {
+class QuienTieneMasview3 extends ConsumerStatefulWidget {
   const QuienTieneMasview3({super.key});
 
-  static const String _crocPath =
-      'assets/images/actividades/matematicas/cocodrilo.png';
-  static const String _elephantPath =
-      'assets/images/actividades/matematicas/elefante.png';
-  static const String _duckPath =
-      'assets/images/actividades/matematicas/pato.png';
-  static const String _penguinPath =
-      'assets/images/actividades/matematicas/pinguino.png';
+  @override
+  ConsumerState<QuienTieneMasview3> createState() => _QuienTieneMasview3State();
+}
 
-  // Colores del Manual de Marca
+class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
+  // ✅ Controlador del reproductor
+  Player? _player;
+
+  static const String _crocPath = 'assets/images/actividades/matematicas/cocodrilo.png';
+  static const String _elephantPath = 'assets/images/actividades/matematicas/elefante.png';
+  static const String _duckPath = 'assets/images/actividades/matematicas/pato.png';
+  static const String _penguinPath = 'assets/images/actividades/matematicas/pinguino.png';
+
   static const Color verdeNumi = Color(0xFF59E347);
   static const Color rojoNumi = Color(0xFFF65757);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _player = Player();
+    // Reproducción automática al iniciar la vista
+    Future.microtask(() => _reproducirInstruccion());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Limpieza de recursos
+    super.dispose();
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///assets/Audio/Matematicas/audio mate6_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildTopBar(context, ref),
+            _buildTopBar(context),
             const SizedBox(height: 10),
-            Expanded(child: _buildWhiteCanvas(context, ref)),
+            Expanded(child: _buildWhiteCanvas(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTopBar(BuildContext context, WidgetRef ref) {
+  Widget _buildTopBar(BuildContext context) {
     return Column(
       children: [
         Align(
@@ -65,7 +93,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
     );
   }
 
-  Widget _buildWhiteCanvas(BuildContext context, WidgetRef ref) {
+  Widget _buildWhiteCanvas(BuildContext context) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -82,11 +110,16 @@ class QuienTieneMasview3 extends ConsumerWidget {
           children: [
             _buildCountingGrid(),
             const SizedBox(height: 40),
-            const Row(
+            Row(
               children: [
-                Icon(Icons.volume_up_rounded, size: 45, color: Color(0xFF3475F7)),
-                SizedBox(width: 15),
-                Expanded(
+                // ✅ Botón de volumen funcional para repetir la instrucción
+                IconButton(
+                  icon: const Icon(Icons.volume_up_rounded, size: 45),
+                  color: const Color(0xFF3475F7),
+                  onPressed: _reproducirInstruccion,
+                ),
+                const SizedBox(width: 15),
+                const Expanded(
                   child: Text(
                     '¿Cuál de estos animales hay en mayor cantidad?',
                     style: TextStyle(
@@ -104,25 +137,25 @@ class QuienTieneMasview3 extends ConsumerWidget {
               image: _crocPath,
               letter: 'A)',
               name: 'Cocodrilo',
-              onTap: () => _showFeedbackSheet(context, ref, true),
+              onTap: () => _showFeedbackSheet(context, true),
             ),
             _OptionButton(
               image: _elephantPath,
               letter: 'B)',
               name: 'Elefante',
-              onTap: () => _showFeedbackSheet(context, ref, false),
+              onTap: () => _showFeedbackSheet(context, false),
             ),
             _OptionButton(
               image: _duckPath,
               letter: 'C)',
               name: 'Pato',
-              onTap: () => _showFeedbackSheet(context, ref, false),
+              onTap: () => _showFeedbackSheet(context, false),
             ),
             _OptionButton(
               image: _penguinPath,
               letter: 'D)',
               name: 'Pingüino',
-              onTap: () => _showFeedbackSheet(context, ref, false),
+              onTap: () => _showFeedbackSheet(context, false),
             ),
           ],
         ),
@@ -130,8 +163,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
     );
   }
 
-  // ─── Pestaña intermitente igual a sumar_patron_view.dart ───────────────────
-  void _showFeedbackSheet(BuildContext context, WidgetRef ref, bool esCorrecto) {
+  void _showFeedbackSheet(BuildContext context, bool esCorrecto) {
     showModalBottomSheet(
       context: context,
       isDismissible: false,
@@ -140,9 +172,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto
-                ? const Color(0xFFD7FFD3)
-                : const Color(0xFFFFD3D3),
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -177,16 +207,14 @@ class QuienTieneMasview3 extends ConsumerWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
-                    Navigator.pop(context); // cierra la pestaña
+                    Navigator.pop(context);
                     if (esCorrecto) {
-                      // Guardar progreso en SQLite y Sync Queue (Offline-first)
                       ref
-                          .read(comparacionCantidadesViewModelProvider.notifier)
-                          .commandGuardarProgresoFinal('Quien tiene más');
+                          .read(matematicasViewModelProvider)
+                          .commandSeleccionarLeccion('Sumar');
 
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
@@ -212,7 +240,6 @@ class QuienTieneMasview3 extends ConsumerWidget {
       },
     );
   }
-  // ───────────────────────────────────────────────────────────────────────────
 
   Widget _buildCountingGrid() {
     return Column(

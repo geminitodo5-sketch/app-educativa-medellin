@@ -4,10 +4,14 @@ import 'dart:convert';
 import 'dart:math' show sin, pi;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ media_kit reemplaza just_audio
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
 import '../../../data/models/sync_queue_model.dart';
 import '../terminado.dart';
+
+// ── Eliminado: _resolverAudioPath ya no es necesario.
+// media_kit lee assets directamente con Media('asset:///...') en todas las plataformas.
 
 const _p1 = 'assets/images/actividades/ciencias_naturales/pantalla 1/';
 const _p2 = 'assets/images/actividades/ciencias_naturales/pantalla 2/';
@@ -104,6 +108,10 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
   int _pagina = 0;
   bool _navegandoATerminado = false;
 
+  final _key1 = GlobalKey<_Actividad1State>();
+  final _key2 = GlobalKey<_Actividad2State>();
+  final _key3 = GlobalKey<_Actividad3State>();
+
   @override
   void dispose() {
     _ctrl.dispose();
@@ -165,23 +173,42 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
         children: [
           PageView(
             controller: _ctrl,
-            onPageChanged: (i) => setState(() => _pagina = i),
+            onPageChanged: (i) {
+              // ✅ Detener audios previos para que no se traslapen
+              _key1.currentState?.stopAudio();
+              _key2.currentState?.stopAudio();
+              _key3.currentState?.stopAudio();
+
+              setState(() => _pagina = i);
+
+              if (i == 0) {
+                _key1.currentState?.playAudio();
+              } else if (i == 1) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _key2.currentState?.playAudio();
+                });
+              } else if (i == 2) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _key3.currentState?.playAudio();
+                });
+              }
+            },
             physics: const NeverScrollableScrollPhysics(),
             children: [
               _PageCard(
                 title: '¿Vivo o no Vivo?',
                 dots: _buildDots(),
-                child: _Actividad1(onNext: _siguiente),
+                child: _Actividad1(key: _key1, onNext: _siguiente),
               ),
               _PageCard(
                 title: '¿Vivo o no Vivo?',
                 dots: _buildDots(),
-                child: _Actividad2(onNext: _siguiente),
+                child: _Actividad2(key: _key2, onNext: _siguiente),
               ),
               _PageCard(
                 title: '¿Vivo o no Vivo?',
                 dots: _buildDots(),
-                child: _Actividad3(onFinish: _irATerminado),
+                child: _Actividad3(key: _key3, onFinish: _irATerminado),
               ),
             ],
           ),
@@ -299,9 +326,30 @@ class _PageCard extends StatelessWidget {
 }
 
 // ── Fila de instrucción ───────────────────────────────────────────────────
+// ✅ Ahora recibe Player? en lugar de AudioPlayer?
+// ✅ El path del asset usa el formato 'asset:///...' que media_kit entiende nativamente
 class _Instruccion extends StatelessWidget {
   final String texto;
-  const _Instruccion(this.texto);
+  final Player? player;       // ✅ media_kit Player
+  final String? audioAsset;   // ✅ path del asset, ej: 'assets/audio/xxx.mp3'
+
+  const _Instruccion(
+    this.texto, {
+    this.player,
+    this.audioAsset,
+  });
+
+  Future<void> _reproducir() async {
+    if (player == null || audioAsset == null) return;
+    try {
+      // ✅ Mismo patrón que el código de referencia: open(Media('asset:///...'))
+      await player!.open(
+        Media('asset:///$audioAsset'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -310,15 +358,11 @@ class _Instruccion extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8F5E9),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.volume_up_rounded,
-                color: Color(0xFF3DCC52), size: 22),
+          // ✅ Botón de volumen — mismo estilo visual, misma lógica que el código de referencia
+          IconButton(
+            icon: const Icon(Icons.volume_up_rounded, size: 36),
+            color: Colors.black87,
+            onPressed: _reproducir,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -343,30 +387,80 @@ class _Instruccion extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════════════════
 class _Actividad1 extends StatefulWidget {
   final VoidCallback onNext;
-  const _Actividad1({required this.onNext});
+  const _Actividad1({super.key, required this.onNext});
 
   @override
   State<_Actividad1> createState() => _Actividad1State();
 }
 
+class _ItemClasifica {
+  final String ruta;
+  final bool esVivo;
+  final double escala;
+  const _ItemClasifica(this.ruta, this.esVivo, {this.escala = 1.0});
+}
+
 class _Actividad1State extends State<_Actividad1>
     with SingleTickerProviderStateMixin {
+
+  static const _items = [
+    _ItemClasifica('${_p1}elefante.png', true),
+    _ItemClasifica('${_p1}gato.png',     true),
+    _ItemClasifica('${_p1}mono.png',     true),
+    _ItemClasifica('${_p1}roca.png',     false, escala: 0.55),
+    _ItemClasifica('${_p1}arbol.png',    true,  escala: 0.72),
+  ];
+
+  int _ronda = 0;
   String? _seleccion;
+
   late final AnimationController _shake = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 500),
   );
 
+  // ✅ Player de media_kit — mismo patrón que el código de referencia
+  Player? _player;
+
+  static const _audioAsset =
+      'assets/images/actividades/ciencias_naturales/audios/audio_naturales1_mezcla.mp3';
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+    // ✅ Reproducción automática al entrar, igual que en el código de referencia
+    Future.microtask(() => playAudio());
+  }
+
   @override
   void dispose() {
     _shake.dispose();
+    _player?.dispose(); // ✅ Liberar memoria
     super.dispose();
+  }
+
+  Future<void> playAudio() async {
+    try {
+      // ✅ Mismo patrón: open(Media('asset:///...'))
+      await _player?.open(
+        Media('asset:///$_audioAsset'),
+      );
+    } catch (e) {
+      debugPrint('Error playAudio actividad1: $e');
+    }
+  }
+
+  Future<void> stopAudio() async {
+    await _player?.stop(); // ✅ media_kit usa stop()
   }
 
   void _responder(BuildContext context, String opcion) {
     if (_seleccion != null) return;
     setState(() => _seleccion = opcion);
-    final correcto = opcion == 'vivo';
+    final item = _items[_ronda];
+    final correcto = (opcion == 'vivo') == item.esVivo;
+
     if (!correcto) {
       _shake.forward(from: 0);
       _mostrarFeedback(context, false, () {
@@ -374,32 +468,81 @@ class _Actividad1State extends State<_Actividad1>
       });
       return;
     }
-    // ✅ Correcto: avanza directo sin feedback
-    widget.onNext();
+
+    final siguiente = _ronda + 1;
+    if (siguiente >= _items.length) {
+      widget.onNext();
+    } else {
+      setState(() {
+        _ronda = siguiente;
+        _seleccion = null;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final item = _items[_ronda];
     return _Tarjeta(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _Instruccion('Ayúdame a decidir si estos son seres vivos o no vivos'),
+          // ✅ Se pasa _player y _audioAsset a _Instruccion
+          _Instruccion(
+            'Ayúdame a decidir si estos son seres vivos o no vivos',
+            player: _player,
+            audioAsset: _audioAsset,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(_items.length, (i) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: _ronda == i ? 12 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: i < _ronda
+                        ? const Color(0xFF3DCC52)
+                        : (_ronda == i
+                            ? const Color(0xFF2E7D32)
+                            : const Color(0xFFCCCCCC)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                );
+              }),
+            ),
+          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: Image.asset(
-                '${_p1}cocodrilo.png',
-                fit: BoxFit.contain,
-                errorBuilder: (ctx, e, s) => const Icon(
-                    Icons.image_not_supported, size: 80, color: Colors.grey),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: Align(
+                  key: ValueKey(item.ruta),
+                  alignment: Alignment.center,
+                  child: FractionallySizedBox(
+                    widthFactor: item.escala,
+                    heightFactor: item.escala,
+                    child: Image.asset(
+                      item.ruta,
+                      fit: BoxFit.contain,
+                      errorBuilder: (ctx, e, s) => const Icon(
+                          Icons.image_not_supported, size: 80, color: Colors.grey),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
           AnimatedBuilder(
             animation: _shake,
             builder: (_, child) {
-              final dx = _seleccion == 'no_vivo'
+              final esRespuestaIncorrecta = _seleccion != null &&
+                  ((_seleccion == 'vivo') != item.esVivo);
+              final dx = esRespuestaIncorrecta
                   ? 8.0 * sin(_shake.value * pi * 5)
                   : 0.0;
               return Transform.translate(offset: Offset(dx, 0), child: child);
@@ -499,7 +642,7 @@ class _BtnClasifica extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════════════════
 class _Actividad2 extends StatefulWidget {
   final VoidCallback onNext;
-  const _Actividad2({required this.onNext});
+  const _Actividad2({super.key, required this.onNext});
 
   @override
   State<_Actividad2> createState() => _Actividad2State();
@@ -515,7 +658,39 @@ class _Actividad2State extends State<_Actividad2> {
   ];
   static const _indexCorrecto = 0;
 
+  static const _audioAsset =
+      'assets/images/actividades/ciencias_naturales/audios/audio_naturales2_mezcla.mp3';
+
   int? _seleccionado;
+
+  // ✅ Player de media_kit
+  Player? _player;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> playAudio() async {
+    try {
+      await _player?.open(
+        Media('asset:///$_audioAsset'),
+      );
+    } catch (e) {
+      debugPrint('Error playAudio actividad2: $e');
+    }
+  }
+
+  Future<void> stopAudio() async {
+    await _player?.stop();
+  }
 
   void _seleccionar(BuildContext context, int idx) {
     if (_seleccionado != null) return;
@@ -527,7 +702,6 @@ class _Actividad2State extends State<_Actividad2> {
       });
       return;
     }
-    // ✅ Correcto: avanza directo sin feedback
     widget.onNext();
   }
 
@@ -538,7 +712,12 @@ class _Actividad2State extends State<_Actividad2> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 20),
-          _Instruccion('Elige el ser vivo entre los no vivos'),
+          // ✅ Se pasa _player y _audioAsset
+          _Instruccion(
+            'Elige el ser vivo entre los no vivos',
+            player: _player,
+            audioAsset: _audioAsset,
+          ),
           Expanded(
             child: Center(
               child: Padding(
@@ -606,7 +785,7 @@ class _Actividad2State extends State<_Actividad2> {
 // ═══════════════════════════════════════════════════════════════════════════
 class _Actividad3 extends StatefulWidget {
   final VoidCallback onFinish;
-  const _Actividad3({required this.onFinish});
+  const _Actividad3({super.key, required this.onFinish});
 
   @override
   State<_Actividad3> createState() => _Actividad3State();
@@ -627,21 +806,51 @@ class _Actividad3State extends State<_Actividad3> {
 
   static const int _meta = 5;
 
+  static const _audioAsset =
+      'assets/images/actividades/ciencias_naturales/audios/audio_naturales3_mezcla.mp3';
+
+  // ✅ Player de media_kit
+  Player? _player;
+
   final Set<String> _colocados = {};
   bool _hovering = false;
 
   bool get _completado => _colocados.length >= _meta;
 
+  @override
+  void initState() {
+    super.initState();
+    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> playAudio() async {
+    try {
+      await _player?.open(
+        Media('asset:///$_audioAsset'),
+      );
+    } catch (e) {
+      debugPrint('Error playAudio actividad3: $e');
+    }
+  }
+
+  Future<void> stopAudio() async {
+    await _player?.stop();
+  }
+
   void _onDrop(BuildContext context, String nombre) {
     final item = _items.firstWhere((i) => i.nombre == nombre);
     if (_colocados.contains(nombre)) return;
     if (!item.esVida) {
-      // ✅ Error: sigue mostrando feedback
       _mostrarFeedback(context, false, () {});
       return;
     }
     setState(() => _colocados.add(nombre));
-    // ✅ Correcto: sin feedback, solo navega al completar
     if (_completado) widget.onFinish();
   }
 
@@ -652,8 +861,12 @@ class _Actividad3State extends State<_Actividad3> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 20),
+          // ✅ Se pasa _player y _audioAsset
           _Instruccion(
-              'Arrastra dentro del cuadro los elementos más importantes para vivir'),
+            'Arrastra dentro del cuadro los elementos más importantes para vivir',
+            player: _player,
+            audioAsset: _audioAsset,
+          ),
           Expanded(
             child: Center(
               child: Column(

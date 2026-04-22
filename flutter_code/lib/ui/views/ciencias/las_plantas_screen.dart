@@ -1,12 +1,22 @@
+// lib/ui/views/ciencias/las_plantas_screen.dart
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ media_kit reemplaza just_audio
 import 'dart:ui' as ui;
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
 import '../../../data/models/sync_queue_model.dart';
 import '../terminado.dart';
+
+// ✅ Eliminado: dart:io, package:just_audio, package:path_provider
+// ✅ Eliminado: _resolverAudioPath — media_kit lee assets con Media('asset:///...') nativamente
+
+const _audio10 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales10_mezcla.mp3';
+const _audio11 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales11_mezcla.mp3';
+const _audio12 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales12_mezcla.mp3';
 
 const _p10 = 'assets/images/actividades/ciencias_naturales/pantalla 10/';
 const _p11 = 'assets/images/actividades/ciencias_naturales/pantalla 11/';
@@ -279,23 +289,38 @@ class _PageCard extends StatelessWidget {
   }
 }
 
+// ── Fila de instrucción ───────────────────────────────────────────────────
+// ✅ Recibe Player? (media_kit) y audioAsset en lugar de AudioPlayer? y audioPath
 class _Instruccion extends StatelessWidget {
   final String texto;
-  const _Instruccion(this.texto);
+  final Player? player;      // ✅ media_kit Player
+  final String? audioAsset;  // ✅ path del asset, ej: 'assets/audio/xxx.mp3'
+
+  const _Instruccion(this.texto, {this.player, this.audioAsset});
+
+  Future<void> _reproducir() async {
+    if (player == null || audioAsset == null) return;
+    try {
+      // ✅ Mismo patrón que el código de referencia: open(Media('asset:///...'))
+      await player!.open(
+        Media('asset:///$audioAsset'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8F5E9),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: const Icon(Icons.volume_up_rounded, color: Color(0xFF3DCC52), size: 22),
+        // ✅ Botón de volumen — mismo estilo e IconButton que el código de referencia
+        IconButton(
+          icon: const Icon(Icons.volume_up_rounded, size: 36),
+          color: Colors.black87,
+          onPressed: _reproducir,
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -329,7 +354,35 @@ class _Actividad1State extends State<_Actividad1> {
 
   final Map<int, int> _colocadas = {};
 
+  // ✅ Player de media_kit — mismo patrón que el código de referencia
+  Player? _player;
+
   bool get _completo => _colocadas.length == _totalSlots;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+    // ✅ Reproducción automática al entrar
+    Future.microtask(() => _playAudio());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> _playAudio() async {
+    try {
+      // ✅ Mismo patrón: open(Media('asset:///...'))
+      await _player?.open(
+        Media('asset:///$_audio10'),
+      );
+    } catch (e) {
+      debugPrint('Error playAudio actividad1: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -337,15 +390,22 @@ class _Actividad1State extends State<_Actividad1> {
 
     void onSlotAccepted(int slot, int fase) {
       setState(() => _colocadas[slot] = fase);
-      _mostrarFeedback(context, true, onAction: () {
-        if (_completo) widget.onNext();
-      });
+      if (_completo) {
+        _mostrarFeedback(context, true, onAction: () {
+          widget.onNext();
+        });
+      }
     }
 
     return _Tarjeta(
       child: Column(
         children: [
-          _Instruccion('¿Cómo crece una planta? Arrastra cada fase al número correcto'),
+          // ✅ Se pasa _player y _audio10 como audioAsset
+          _Instruccion(
+            '¿Cómo crece una planta? Pon sus fases en el orden correcto',
+            player: _player,
+            audioAsset: _audio10,
+          ),
           const SizedBox(height: 8),
           Expanded(
             flex: 3,
@@ -363,44 +423,29 @@ class _Actividad1State extends State<_Actividad1> {
                         onAccepted: (f) => onSlotAccepted(slot, f),
                         onRejected: () => _mostrarFeedback(context, false),
                       ),
-                      if (slot < 3)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2),
-                          child: Image.asset('${_p10}flecha.png', width: 22,
-                              errorBuilder: (c, e, s) =>
-                                  const Icon(Icons.arrow_forward, size: 22, color: Color(0xFF3DCC52))),
-                        ),
+                      if (slot < 3) const _FlechaEstilizada(),
                     ]).toList(),
                   ),
-                  const SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 36),
-                      child: Transform.rotate(
-                        angle: 1.5708,
-                        child: Image.asset('${_p10}flecha.png', width: 22,
-                            errorBuilder: (c, e, s) =>
-                                const Icon(Icons.arrow_downward, size: 22, color: Color(0xFF3DCC52))),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const SizedBox(width: 200 + 36 - 10),
+                      const _FlechaEstilizada(direccion: _DirFlecha.abajo),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: 100),
                       _SlotDrop(
                         slot: 5,
                         colocada: _colocadas[5],
                         onAccepted: (f) => onSlotAccepted(5, f),
                         onRejected: () => _mostrarFeedback(context, false),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: Image.asset('${_p10}flecha.png', width: 22,
-                            errorBuilder: (c, e, s) =>
-                                const Icon(Icons.arrow_back, size: 22, color: Color(0xFF3DCC52))),
-                      ),
+                      const _FlechaEstilizada(direccion: _DirFlecha.izquierda),
                       _SlotDrop(
                         slot: 4,
                         colocada: _colocadas[4],
@@ -446,6 +491,81 @@ class _Actividad1State extends State<_Actividad1> {
   }
 }
 
+// ── Flecha estilizada ─────────────────────────────────────────────────────
+enum _DirFlecha { derecha, izquierda, abajo }
+
+class _FlechaEstilizada extends StatelessWidget {
+  final _DirFlecha direccion;
+  const _FlechaEstilizada({this.direccion = _DirFlecha.derecha});
+
+  @override
+  Widget build(BuildContext context) {
+    final esVertical = direccion == _DirFlecha.abajo;
+    return SizedBox(
+      width: esVertical ? 20 : 28,
+      height: esVertical ? 28 : 20,
+      child: CustomPaint(painter: _FlechaPainter(direccion)),
+    );
+  }
+}
+
+class _FlechaPainter extends CustomPainter {
+  final _DirFlecha direccion;
+  const _FlechaPainter(this.direccion);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black87
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.fill;
+
+    final linePaint = Paint()
+      ..color = Colors.black87
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    switch (direccion) {
+      case _DirFlecha.derecha:
+        canvas.drawLine(Offset(2, size.height / 2),
+            Offset(size.width - 7, size.height / 2), linePaint);
+        final path = Path()
+          ..moveTo(size.width, size.height / 2)
+          ..lineTo(size.width - 8, size.height / 2 - 5)
+          ..lineTo(size.width - 8, size.height / 2 + 5)
+          ..close();
+        canvas.drawPath(path, paint);
+        break;
+      case _DirFlecha.izquierda:
+        canvas.drawLine(Offset(7, size.height / 2),
+            Offset(size.width - 2, size.height / 2), linePaint);
+        final path = Path()
+          ..moveTo(0, size.height / 2)
+          ..lineTo(8, size.height / 2 - 5)
+          ..lineTo(8, size.height / 2 + 5)
+          ..close();
+        canvas.drawPath(path, paint);
+        break;
+      case _DirFlecha.abajo:
+        canvas.drawLine(Offset(size.width / 2, 2),
+            Offset(size.width / 2, size.height - 7), linePaint);
+        final path = Path()
+          ..moveTo(size.width / 2, size.height)
+          ..lineTo(size.width / 2 - 5, size.height - 8)
+          ..lineTo(size.width / 2 + 5, size.height - 8)
+          ..close();
+        canvas.drawPath(path, paint);
+        break;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FlechaPainter old) => old.direccion != direccion;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 class _SlotDrop extends StatelessWidget {
   final int slot;
   final int? colocada;
@@ -456,7 +576,6 @@ class _SlotDrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ FIX: imagen centrada con Positioned.fill + Center
     if (colocada != null) {
       return SizedBox(
         width: 72, height: 72,
@@ -558,7 +677,6 @@ class _FaseChip extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 2
 // ═══════════════════════════════════════════════════════════════════════════
-
 class _PiezaPlanta {
   final String nombre;
   final String ruta;
@@ -618,66 +736,88 @@ class _Actividad2State extends State<_Actividad2> {
   final _areaKey = GlobalKey();
   final Map<String, Offset> _touchOffset = {};
 
+  // ✅ Player de media_kit
+  Player? _player;
+
   @override
   void initState() {
     super.initState();
+    _player = Player(); // ✅ Inicializar igual que en el código de referencia
     _estados = _piezasBase
         .map((p) => _PiezaEstado(p.nombre, posicion: const Offset(-999, -999)))
         .toList();
     _calcularFracciones();
+    // ✅ Reproducción automática al entrar
+    Future.microtask(() => _playAudio());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> _playAudio() async {
+    try {
+      await _player?.open(
+        Media('asset:///$_audio11'),
+      );
+    } catch (e) {
+      debugPrint('Error playAudio actividad2: $e');
+    }
   }
 
   Future<void> _calcularFracciones() async {
-  final Map<String, Size> sizes = {};
-  for (final p in _piezasBase) {
-    final completer = Completer<ui.Image>();
-    final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
-    late ImageStreamListener listener;
-    listener = ImageStreamListener((info, _) {
-      if (!completer.isCompleted) completer.complete(info.image);
-      stream.removeListener(listener);
+    final Map<String, Size> sizes = {};
+    for (final p in _piezasBase) {
+      final completer = Completer<ui.Image>();
+      final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
+      late ImageStreamListener listener;
+      listener = ImageStreamListener((info, _) {
+        if (!completer.isCompleted) completer.complete(info.image);
+        stream.removeListener(listener);
+      });
+      stream.addListener(listener);
+      final img = await completer.future;
+      sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
+    }
+
+    if (!mounted) return;
+
+    final talloSize = sizes['tallo']!;
+    const talloAnchoFrac = 0.22;
+    final pxPorFraccion = talloSize.width / talloAnchoFrac;
+
+    setState(() {
+      _piezas = _piezasBase.map((p) {
+        final imgSize = sizes[p.nombre]!;
+        double wFinal = imgSize.width / pxPorFraccion;
+        double hFinal = imgSize.height / pxPorFraccion;
+
+        if (wFinal > 0.85) {
+          hFinal = (0.85 / wFinal) * hFinal;
+          wFinal = 0.85;
+        }
+        if (hFinal > 0.45) {
+          wFinal = (0.45 / hFinal) * wFinal;
+          hFinal = 0.45;
+        }
+
+        if (p.nombre == 'raices') {
+          wFinal = wFinal * 0.65;
+          hFinal = hFinal * 0.65;
+        }
+
+        return _PiezaPlanta(
+          p.nombre, p.ruta, p.label,
+          toleranceRect: p.toleranceRect,
+          anchoFraccion: wFinal.clamp(0.1, 0.85),
+          altoFraccion: hFinal.clamp(0.1, 0.45),
+        );
+      }).toList();
+      _imagenesListas = true;
     });
-    stream.addListener(listener);
-    final img = await completer.future;
-    sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
   }
-
-  if (!mounted) return;
-
-  final talloSize = sizes['tallo']!;
-  const talloAnchoFrac = 0.22;
-  final pxPorFraccion = talloSize.width / talloAnchoFrac;
-
-  setState(() {
-    _piezas = _piezasBase.map((p) {
-      final imgSize = sizes[p.nombre]!;
-      double wFinal = imgSize.width / pxPorFraccion;
-      double hFinal = imgSize.height / pxPorFraccion;
-
-      if (wFinal > 0.85) {
-        hFinal = (0.85 / wFinal) * hFinal;
-        wFinal = 0.85;
-      }
-      if (hFinal > 0.45) {
-        wFinal = (0.45 / hFinal) * wFinal;
-        hFinal = 0.45;
-      }
-
-      if (p.nombre == 'raices') {
-        wFinal = wFinal * 0.65;
-        hFinal = hFinal * 0.65;
-      }
-
-      return _PiezaPlanta(
-        p.nombre, p.ruta, p.label,
-        toleranceRect: p.toleranceRect,
-        anchoFraccion: wFinal.clamp(0.1, 0.85),
-        altoFraccion: hFinal.clamp(0.1, 0.45),
-      );
-    }).toList();
-    _imagenesListas = true;
-  });
-}
 
   void _colocarPieza(String nombre, Offset globalPointer, Offset touchOff) {
     final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
@@ -716,27 +856,19 @@ class _Actividad2State extends State<_Actividad2> {
     }
 
     final eTallo = _estados.firstWhere((est) => est.nombre == 'tallo');
-
     if (!eTallo.colocada) return p.toleranceRect.contains(e.posicion);
 
     final diff = e.posicion - eTallo.posicion;
     final distancia = diff.distance;
 
     if (nombre == 'raices') {
-      return diff.dy > 0.08 &&
-             diff.dy < 0.70 &&
-             diff.dx.abs() < 0.50;
+      return diff.dy > 0.08 && diff.dy < 0.70 && diff.dx.abs() < 0.50;
     }
-
     if (nombre == 'flor') {
-      return diff.dy < -0.08 &&
-             diff.dy > -0.65 &&
-             diff.dx.abs() < 0.40;
+      return diff.dy < -0.08 && diff.dy > -0.65 && diff.dx.abs() < 0.40;
     }
-
     if (nombre == 'hojas') {
-      return distancia < 0.55 &&
-             diff.dy.abs() < 0.45;
+      return distancia < 0.55 && diff.dy.abs() < 0.45;
     }
 
     return p.toleranceRect.contains(e.posicion);
@@ -777,7 +909,12 @@ class _Actividad2State extends State<_Actividad2> {
     return _Tarjeta(
       child: Column(
         children: [
-          _Instruccion('Arrastra cada parte de la planta a su lugar para armarla'),
+          // ✅ Se pasa _player y _audio11 como audioAsset
+          _Instruccion(
+            'Arma la planta con todos sus elementos, arrastralos al cuadro',
+            player: _player,
+            audioAsset: _audio11,
+          ),
           Expanded(
             flex: 3,
             child: Padding(
@@ -987,6 +1124,33 @@ class _Actividad3State extends State<_Actividad3> {
   final Set<String> _seleccionados = {};
   String? _error;
 
+  // ✅ Player de media_kit
+  Player? _player;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+    // ✅ Reproducción automática al entrar
+    Future.microtask(() => _playAudio());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> _playAudio() async {
+    try {
+      await _player?.open(
+        Media('asset:///$_audio12'),
+      );
+    } catch (e) {
+      debugPrint('Error playAudio actividad3: $e');
+    }
+  }
+
   void _tocar(BuildContext context, String id, bool correcto) {
     if (_seleccionados.contains(id)) return;
     if (!correcto) {
@@ -997,9 +1161,11 @@ class _Actividad3State extends State<_Actividad3> {
       return;
     }
     setState(() => _seleccionados.add(id));
-    _mostrarFeedback(context, true, onAction: () {
-      if (_seleccionados.length >= _meta) widget.onFinish();
-    });
+    if (_seleccionados.length >= _meta) {
+      _mostrarFeedback(context, true, onAction: () {
+        widget.onFinish();
+      });
+    }
   }
 
   @override
@@ -1007,7 +1173,12 @@ class _Actividad3State extends State<_Actividad3> {
     return _Tarjeta(
       child: Column(
         children: [
-          _Instruccion('Necesito hacer crecer esta planta, elige los elementos que le ayudarán a crecer'),
+          // ✅ Se pasa _player y _audio12 como audioAsset
+          _Instruccion(
+            'Necesito hacer crecer esta planta, elige los elementos que le ayudarán a crecer',
+            player: _player,
+            audioAsset: _audio12,
+          ),
           Expanded(
             flex: 3,
             child: Padding(

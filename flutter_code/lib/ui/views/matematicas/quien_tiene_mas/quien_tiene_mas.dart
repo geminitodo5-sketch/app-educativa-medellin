@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import '../../../viewmodels/comparacion_cantidades_view_model.dart';
 import 'quien_tiene_mas_2.dart';
 
 /// Vista de comparación de cantidades — "¿Quién tiene más?"
-/// Responsabilidad: Crosmedia
 class ComparacionCantidadesView extends ConsumerStatefulWidget {
   const ComparacionCantidadesView({super.key});
 
@@ -15,18 +15,39 @@ class ComparacionCantidadesView extends ConsumerStatefulWidget {
 
 class _ComparacionCantidadesViewState
     extends ConsumerState<ComparacionCantidadesView> {
+  
+  Player? _player;
 
-  // ✅ Se ejecuta cada vez que la vista entra en pantalla (también al volver atrás)
   @override
   void initState() {
     super.initState();
+    _player = Player();
+
     Future.microtask(() {
       if (mounted) {
         ref
             .read(comparacionCantidadesViewModelProvider.notifier)
             .commandNuevaRonda();
+        
+        _reproducirInstruccion();
       }
     });
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///assets/Audio/Matematicas/audio mate4_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose();
+    super.dispose();
   }
 
   // ─── Feedback de respuesta ─────────────────────────────────────────────────
@@ -101,12 +122,9 @@ class _ComparacionCantidadesViewState
 
   void _verificarRespuesta(String nombre) {
     final state = ref.read(comparacionCantidadesViewModelProvider);
-
-    // Evita re-responder en la misma ronda
     if (state.respondido) return;
 
-    final notifier =
-        ref.read(comparacionCantidadesViewModelProvider.notifier);
+    final notifier = ref.read(comparacionCantidadesViewModelProvider.notifier);
     final esCorrecto = notifier.validarSeleccion(nombre);
 
     _mostrarFeedback(esCorrecto, () {
@@ -120,19 +138,14 @@ class _ComparacionCantidadesViewState
     });
   }
 
-  // ─── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(comparacionCantidadesViewModelProvider);
-    final notifier =
-        ref.read(comparacionCantidadesViewModelProvider.notifier);
 
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
       body: Stack(
         children: [
-          // ── Título ──────────────────────────────────────────────────────────
           const Positioned(
             top: 60,
             left: 0,
@@ -149,7 +162,6 @@ class _ComparacionCantidadesViewState
             ),
           ),
 
-          // ── Panel blanco principal ──────────────────────────────────────────
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -164,10 +176,7 @@ class _ComparacionCantidadesViewState
               ),
               child: Column(
                 children: [
-                  // Espacio para que los personajes desborden hacia arriba
                   const SizedBox(height: 50),
-
-                  // ── Tarjetas de personajes ──────────────────────────────────
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.42,
                     child: Padding(
@@ -176,15 +185,13 @@ class _ComparacionCantidadesViewState
                         children: [
                           _PersonCard(
                             color: const Color(0xFFA7F3FF),
-                            imagePath:
-                                'assets/images/actividades/matematicas/niño.png',
+                            imagePath: 'assets/images/actividades/matematicas/niño.png',
                             cantidadManzanas: state.manzanasJuan,
                           ),
                           const SizedBox(width: 2),
                           _PersonCard(
                             color: const Color(0xFFFFC1C1),
-                            imagePath:
-                                'assets/images/actividades/matematicas/niña.png',
+                            imagePath: 'assets/images/actividades/matematicas/niña.png',
                             cantidadManzanas: state.manzanasSara,
                           ),
                         ],
@@ -192,17 +199,13 @@ class _ComparacionCantidadesViewState
                     ),
                   ),
 
-                  // ── Pregunta + Audio ────────────────────────────────────────
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 28,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 28),
                     child: Row(
                       children: [
                         IconButton(
                           icon: const Icon(Icons.volume_up_rounded, size: 50),
-                          onPressed: notifier.commandReproducirInstruccion,
+                          onPressed: _reproducirInstruccion,
                           color: const Color(0xFF1E293B),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -222,42 +225,32 @@ class _ComparacionCantidadesViewState
                     ),
                   ),
 
-                  // ── Botones de selección ────────────────────────────────────
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _SelectionButton(
                           nombre: 'Juan',
-                          imagePath:
-                              'assets/images/actividades/matematicas/niño.png',
+                          imagePath: 'assets/images/actividades/matematicas/niño.png',
                           color: const Color(0xFFA7F3FF),
-                          // ✅ respondido bloquea visualmente el botón
-                          onTap: state.respondido
-                              ? null
-                              : () => _verificarRespuesta('Juan'),
+                          onTap: state.respondido ? null : () => _verificarRespuesta('Juan'),
                         ),
                         _SelectionButton(
                           nombre: 'Sara',
-                          imagePath:
-                              'assets/images/actividades/matematicas/niña.png',
+                          imagePath: 'assets/images/actividades/matematicas/niña.png',
                           color: const Color(0xFFFFC1C1),
-                          onTap: state.respondido
-                              ? null
-                              : () => _verificarRespuesta('Sara'),
+                          onTap: state.respondido ? null : () => _verificarRespuesta('Sara'),
                         ),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
 
-          // ── Personajes desbordando sobre el panel blanco ────────────────────
+          // Personajes desbordando
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: 0,
@@ -290,7 +283,7 @@ class _ComparacionCantidadesViewState
             ),
           ),
 
-          // ── Botón cerrar ────────────────────────────────────────────────────
+          // Botón cerrar
           Positioned(
             top: 44,
             right: 16,
@@ -304,11 +297,7 @@ class _ComparacionCantidadesViewState
                     color: Colors.white.withOpacity(0.25),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.close_rounded,
-                    color: Colors.white,
-                    size: 22,
-                  ),
+                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 22),
                 ),
               ),
             ),
@@ -319,7 +308,7 @@ class _ComparacionCantidadesViewState
   }
 }
 
-// ─── Tarjeta de personaje ──────────────────────────────────────────────────
+// ─── Widgets de apoyo (Asegúrate que los nombres coincidan con los de arriba) ───
 
 class _PersonCard extends StatelessWidget {
   const _PersonCard({
@@ -341,12 +330,7 @@ class _PersonCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(25),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(
-            top: 60,
-            left: 8,
-            right: 8,
-            bottom: 10,
-          ),
+          padding: const EdgeInsets.only(top: 60, left: 8, right: 8, bottom: 10),
           child: Wrap(
             spacing: 4,
             runSpacing: 4,
@@ -366,27 +350,24 @@ class _PersonCard extends StatelessWidget {
   }
 }
 
-// ─── Botón de selección ────────────────────────────────────────────────────
-
 class _SelectionButton extends StatelessWidget {
   const _SelectionButton({
     required this.nombre,
     required this.imagePath,
     required this.color,
-    required this.onTap, // ✅ Ahora acepta null para desactivarse
+    required this.onTap,
   });
 
   final String nombre;
   final String imagePath;
   final Color color;
-  final VoidCallback? onTap; // ✅ nullable
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedOpacity(
-        // ✅ Feedback visual: se opaca cuando está desactivado
         opacity: onTap == null ? 0.45 : 1.0,
         duration: const Duration(milliseconds: 300),
         child: Container(

@@ -1,23 +1,103 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../viewmodels/animales_clasificacion_view_model.dart';
 
-// --- Paleta de Colores NUMI (según manual pág. 9) ---
+const _audio8 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales8_mezcla.mp3';
+
+// --- Paleta de Colores NUMI ---
 const Color kColorAzulNumi = Color(0xFF3475F7);
-const Color kColorVerdeNumi = Color(0xFF59E347); //
-const Color kColorRojoNumi = Color(0xFFF65757); //
+const Color kColorVerdeNumi = Color(0xFF59E347);
+const Color kColorRojoNumi = Color(0xFFF65757);
 const Color kColorBlanco = Colors.white;
 
-class PantallaClasificacionAnimales extends ConsumerWidget {
+const _listaAnimales = [
+  {
+    'imagen': 'assets/images/actividades/ciencias_naturales/gato.png',
+    'respuestaCorrecta': 'domestico',
+  },
+  {
+    'imagen': 'assets/images/actividades/ciencias_naturales/perro.png',
+    'respuestaCorrecta': 'domestico',
+  },
+  {
+    'imagen': 'assets/images/actividades/ciencias_naturales/elefante.png',
+    'respuestaCorrecta': 'salvaje',
+  },
+  {
+    'imagen': 'assets/images/actividades/ciencias_naturales/mono.png',
+    'respuestaCorrecta': 'salvaje',
+  },
+];
+
+class PantallaClasificacionAnimales extends ConsumerStatefulWidget {
   final VoidCallback onCompletado;
   const PantallaClasificacionAnimales({super.key, required this.onCompletado});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final viewModel = ref.watch(animalesClasificacionViewModelProvider);
+  ConsumerState<PantallaClasificacionAnimales> createState() =>
+      _PantallaClasificacionAnimalesState();
+}
+
+class _PantallaClasificacionAnimalesState
+    extends ConsumerState<PantallaClasificacionAnimales> {
+
+  Player? _player;
+  int _indiceActual = 0;
+  late final List<Map<String, String>> _animalesAleatorios;
+
+  @override
+  void initState() {
+    super.initState();
+    _animalesAleatorios = List.from(_listaAnimales)..shuffle(Random());
+    _player = Player();
+    Future.microtask(() => _reproducirInstruccion());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///$_audio8'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio clasificacion: $e');
+    }
+  }
+
+  void _responder(String respuesta) {
+    final animal = _animalesAleatorios[_indiceActual];
+    final esCorrecto = respuesta == animal['respuestaCorrecta'];
+    final esUltimo = _indiceActual == _animalesAleatorios.length - 1;
+
+    _showFeedbackSheet(
+      context,
+      esCorrecto,
+      onContinue: esCorrecto
+          ? () {
+              if (esUltimo) {
+                widget.onCompletado();
+              } else {
+                setState(() => _indiceActual++);
+              }
+            }
+          : null,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(animalesClasificacionViewModelProvider);
+    final animal = _animalesAleatorios[_indiceActual];
 
     return Scaffold(
-      backgroundColor: kColorVerdeNumi,
+      backgroundColor: const Color(0xFF3DCC52),
       body: SafeArea(
         child: Column(
           children: [
@@ -27,57 +107,44 @@ class PantallaClasificacionAnimales extends ConsumerWidget {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: kColorBlanco,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
                       _InstruccionAudio(
-                        texto:
-                            "Decide si estos animales son domésticos o salvajes",
-                        onPressed: () =>
-                            viewModel.commandReproducirInstruccion(),
+                        texto: "Decide si estos animales son domésticos o salvajes",
+                        onReproducir: _reproducirInstruccion,
                       ),
                       const Spacer(),
-                      // Imagen del animal actual
                       Image.asset(
-                        'assets/images/actividades/ciencias_naturales/gato.png',
+                        animal['imagen']!,
                         height: 220,
+                        fit: BoxFit.contain,
                       ),
                       const Spacer(),
-                      // Botones con lógica de selección
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _BotonOpcion(
-                            imagenPath:
-                                'assets/images/actividades/ciencias_naturales/boton_domestico.png',
-                            onPressed: () {
-                              final esCorrecto = viewModel.validarRespuesta(
-                                'domestico',
-                              );
-                              _showFeedbackSheet(
-                                context,
-                                esCorrecto,
-                                onContinue: esCorrecto ? onCompletado : null,
-                              );
-                            },
+                            imagenPath: 'assets/images/actividades/ciencias_naturales/boton_domestico.png',
+                            onPressed: () => _responder('domestico'),
                           ),
                           _BotonOpcion(
-                            imagenPath:
-                                'assets/images/actividades/ciencias_naturales/boton_salvaje.png',
-                            onPressed: () {
-                              final esCorrecto = viewModel.validarRespuesta(
-                                'salvaje',
-                              );
-                              _showFeedbackSheet(context, esCorrecto);
-                            },
+                            imagenPath: 'assets/images/actividades/ciencias_naturales/boton_salvaje.png',
+                            onPressed: () => _responder('salvaje'),
                           ),
                         ],
                       ),
                       const Spacer(),
-                      const _IndicadorProgreso(),
+                      _IndicadorProgreso(
+                        indiceActual: _indiceActual,
+                        total: _animalesAleatorios.length,
+                      ),
                     ],
                   ),
                 ),
@@ -130,33 +197,51 @@ class _HeaderActividad extends StatelessWidget {
 
 class _InstruccionAudio extends StatelessWidget {
   final String texto;
-  final VoidCallback onPressed;
-  const _InstruccionAudio({required this.texto, required this.onPressed});
+  final VoidCallback onReproducir;
+
+  const _InstruccionAudio({
+    required this.texto,
+    required this.onReproducir,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconButton(
-          icon: const Icon(
-            Icons.volume_up_rounded,
-            size: 45,
-            color: Colors.black87,
-          ),
-          onPressed: onPressed,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            texto,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
+          GestureDetector(
+            onTap: onReproducir,
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.volume_up_rounded,
+                color: Color(0xFF3DCC52),
+                size: 22,
+              ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              texto,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                color: Color(0xFF424242),
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -180,19 +265,23 @@ class _BotonOpcion extends StatelessWidget {
 }
 
 class _IndicadorProgreso extends StatelessWidget {
-  const _IndicadorProgreso();
+  final int indiceActual;
+  final int total;
+  const _IndicadorProgreso({required this.indiceActual, required this.total});
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        3,
+        total,
         (index) => Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 15,
           height: 15,
           decoration: BoxDecoration(
-            color: kColorVerdeNumi.withOpacity(index == 1 ? 1.0 : 0.4),
+            color: const Color(0xFF3DCC52)
+                .withOpacity(index == indiceActual ? 1.0 : 0.4),
             shape: BoxShape.circle,
           ),
         ),
@@ -201,7 +290,7 @@ class _IndicadorProgreso extends StatelessWidget {
   }
 }
 
-// --- Pestaña de Retroalimentación (Feedback Sheet) ---
+// --- Pestaña de Retroalimentación ---
 
 void _showFeedbackSheet(
   BuildContext context,
@@ -229,7 +318,7 @@ void _showFeedbackSheet(
               children: [
                 Icon(
                   esCorrecto ? Icons.check_circle : Icons.cancel,
-                  color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  color: esCorrecto ? kColorVerdeNumi : kColorRojoNumi,
                   size: 40,
                 ),
                 const SizedBox(width: 15),
@@ -250,7 +339,7 @@ void _showFeedbackSheet(
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  backgroundColor: esCorrecto ? kColorVerdeNumi : kColorRojoNumi,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),

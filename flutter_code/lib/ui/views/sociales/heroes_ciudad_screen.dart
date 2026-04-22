@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'heroes_ciudad_2_screen.dart';
 
 class HeroesCiudadScreen extends StatefulWidget {
@@ -16,7 +17,10 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
 
-  // Bombero (índice 0) es la respuesta correcta
+  // ── Audio ─────────────────────────────────────────────────────────────────
+  late final Player _player;
+  bool _isPlayingAudio = false;
+
   static const int _correctIndex = 0;
 
   static const List<_CharData> _chars = [
@@ -46,34 +50,70 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     ),
   ];
 
-  // ── Lógica intacta ────────────────────────────────────────────────────────
+  // ── Init / Dispose ────────────────────────────────────────────────────────
 
   @override
   void initState() {
     super.initState();
+
+    // Shake animation
     _shakeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
     _shakeAnim = TweenSequence<Offset>([
       TweenSequenceItem(
-          tween: Tween(begin: Offset.zero, end: const Offset(0.04, 0)),
-          weight: 1),
+        tween: Tween(begin: Offset.zero, end: const Offset(0.04, 0)),
+        weight: 1,
+      ),
       TweenSequenceItem(
-          tween: Tween(
-              begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
-          weight: 2),
+        tween: Tween(begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
+        weight: 2,
+      ),
       TweenSequenceItem(
-          tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
-          weight: 1),
+        tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
+        weight: 1,
+      ),
     ]).animate(_shakeCtrl);
+
+    // Audio setup + reproducción automática
+    _player = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales1_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error cargando audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
   }
 
   @override
   void dispose() {
     _shakeCtrl.dispose();
+    _player.dispose();
     super.dispose();
   }
+
+  // ── Lógica de juego ───────────────────────────────────────────────────────
 
   void _onCardTapped(int index) {
     if (_isCorrect == true) return;
@@ -111,7 +151,9 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -124,7 +166,9 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -145,8 +189,12 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -212,7 +260,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
@@ -225,7 +273,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
         children: [
           const Center(
             child: Text(
-              'Héroes de la Ciudad',
+              'Héroes de  la Ciudad',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Hiruko',
@@ -241,22 +289,10 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
             right: 0,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.28),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.close_rounded,
-                  size: 20,
-                  color: Colors.white,
-                ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -271,7 +307,6 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Título con Poppins
           const Center(
             child: Text(
               'Héroes de la Ciudad',
@@ -285,25 +320,36 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
           ),
           const SizedBox(height: 12),
 
-          // Enunciado con ícono de audio estilo consistente
+          // ── Enunciado con botón de audio interactivo ──────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5A623).withValues(alpha: 0.14),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFF5A623).withValues(alpha: 0.40),
-                    width: 1.5,
+              GestureDetector(
+                onTap: _toggleAudio,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: _isPlayingAudio
+                        ? const Color(0xFFF5A623).withValues(alpha: 0.25)
+                        : const Color(0xFFF5A623).withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _isPlayingAudio
+                          ? const Color(0xFFF5A623)
+                          : const Color(0xFFF5A623).withValues(alpha: 0.40),
+                      width: 1.5,
+                    ),
                   ),
-                ),
-                child: const Icon(
-                  Icons.volume_up_rounded,
-                  color: Color(0xFFF5A623),
-                  size: 20,
+                  child: Icon(
+                    _isPlayingAudio
+                        ? Icons
+                              .pause_rounded // pausa mientras suena
+                        : Icons.volume_up_rounded, // play cuando está pausado
+                    color: const Color(0xFFF5A623),
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -323,7 +369,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
           ),
           const SizedBox(height: 16),
 
-          // Grid de personajes — lógica intacta
+          // Grid de personajes
           Expanded(
             child: SlideTransition(
               position: _selectedIndex != null && _isCorrect == false
@@ -334,10 +380,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,
                 physics: const NeverScrollableScrollPhysics(),
-                children: List.generate(
-                  _chars.length,
-                  (i) => _buildCard(i),
-                ),
+                children: List.generate(_chars.length, (i) => _buildCard(i)),
               ),
             ),
           ),
@@ -345,8 +388,6 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
       ),
     );
   }
-
-  // ── Widgets de lógica — sin cambios ───────────────────────────────────────
 
   Widget _buildCard(int index) {
     final char = _chars[index];
@@ -364,8 +405,8 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
             color: correct == true
                 ? Colors.green.shade400
                 : correct == false
-                    ? Colors.red.shade400
-                    : Colors.transparent,
+                ? Colors.red.shade400
+                : Colors.transparent,
             width: 4,
           ),
           boxShadow: [

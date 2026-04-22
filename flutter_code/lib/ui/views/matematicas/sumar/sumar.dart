@@ -1,33 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ Importante
 import 'sumar_2.dart';
 
 // Proveedor para manejar el estado de la respuesta
 final respuestaSumarProvider = StateProvider<bool?>((ref) => null);
 
-class SumarPatronview extends ConsumerWidget {
+class SumarPatronview extends ConsumerStatefulWidget {
   const SumarPatronview({super.key});
+
+  @override
+  ConsumerState<SumarPatronview> createState() => _SumarPatronviewState();
+}
+
+class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
+  // ✅ Definición del reproductor
+  Player? _player;
 
   // Colores del Manual de Marca 
   static const Color azulPrincipal = Color(0xFF3475F7);
   static const Color azulBoton = Color(0xFF3878FA);
-  static const Color azulBotonClaro = Color(0xFFC4D7FF);
   static const Color rojoNumi = Color(0xFFF65757);
   static const Color naranjaNumi = Color(0xFFEF9325);
   static const Color verdeNumi = Color(0xFF59E347);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _player = Player();
+    
+    // Reproducción automática al entrar
+    Future.microtask(() => _reproducirInstruccion());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///assets/Audio/Matematicas/audio mate7_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: azulPrincipal,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildTopBar(context, ref),
+            _buildTopBar(context),
             const SizedBox(height: 10),
             Expanded(
-              child: _buildMainContent(context, ref),
+              child: _buildMainContent(context),
             ),
           ],
         ),
@@ -35,7 +68,7 @@ class SumarPatronview extends ConsumerWidget {
     );
   }
 
-  Widget _buildTopBar(BuildContext context, WidgetRef ref) {
+  Widget _buildTopBar(BuildContext context) {
     return Column(
       children: [
         Align(
@@ -53,7 +86,7 @@ class SumarPatronview extends ConsumerWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 34,
-            fontFamily: 'Hiruko', // Tipografía principal 
+            fontFamily: 'Hiruko',
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -61,7 +94,7 @@ class SumarPatronview extends ConsumerWidget {
     );
   }
 
-  Widget _buildMainContent(BuildContext context, WidgetRef ref) {
+  Widget _buildMainContent(BuildContext context) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -79,11 +112,9 @@ class SumarPatronview extends ConsumerWidget {
             const SizedBox(height: 40),
             _buildPatternTable(),
             const Spacer(),
-            // Opción Correcta: 4+1 = 5
-            _buildOptionButton(context, ref, '4+1', azulBoton, Colors.white, true),
+            _buildOptionButton(context, '4+1', azulBoton, Colors.white, true),
             const SizedBox(height: 15),
-            // Opción Incorrecta: 4+2 = 6
-            _buildOptionButton(context, ref, '4+2', azulBoton, Colors.white, false),
+            _buildOptionButton(context, '4+2', azulBoton, Colors.white, false),
             const SizedBox(height: 20),
           ],
         ),
@@ -94,13 +125,18 @@ class SumarPatronview extends ConsumerWidget {
   Widget _buildInstruction() {
     return Row(
       children: [
-        const Icon(Icons.volume_up_rounded, size: 50, color: Colors.black87),
+        // ✅ Botón de volumen funcional
+        IconButton(
+          icon: const Icon(Icons.volume_up_rounded, size: 50),
+          color: Colors.black87,
+          onPressed: _reproducirInstruccion,
+        ),
         const SizedBox(width: 15),
         const Text(
           'Continua el patrón',
           style: TextStyle(
             fontSize: 20,
-            fontFamily: 'Poppins', // Tipografía secundaria 
+            fontFamily: 'Poppins',
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -157,8 +193,7 @@ class SumarPatronview extends ConsumerWidget {
     );
   }
 
-  // Lógica del botón con pestaña inferior (Bottom Sheet)
-  Widget _buildOptionButton(BuildContext context, WidgetRef ref, String text, Color bgColor, Color textColor, bool esCorrecto) {
+  Widget _buildOptionButton(BuildContext context, String text, Color bgColor, Color textColor, bool esCorrecto) {
     return SizedBox(
       width: double.infinity,
       height: 60,

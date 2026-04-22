@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'heroes_ciudad_3_screen.dart';
 
 class HeroesCiudad2Screen extends StatefulWidget {
@@ -15,6 +16,10 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   bool? _isCorrect;
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
+
+  // ── Audio ─────────────────────────────────────────────────────────────────
+  late final Player _player;
+  bool _isPlayingAudio = false;
 
   // Policía (índice 3) es la respuesta correcta
   static const int _correctIndex = 3;
@@ -65,11 +70,40 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
           tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
           weight: 1),
     ]).animate(_shakeCtrl);
+
+    _player = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales2_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error cargando audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
   }
 
   @override
   void dispose() {
     _shakeCtrl.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -181,14 +215,12 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fondo amarillo para que el header se integre sin costuras
       backgroundColor: const Color(0xFFF5A623),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             _buildHeader(),
-            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -211,14 +243,13 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      // Sin bordes redondeados — color plano amarillo
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 50, 20, 60),
       color: const Color(0xFFF5A623),
       child: Stack(
         alignment: Alignment.center,
         children: [
           const Text(
-            'Héroes de la Ciudad',
+            'Héroes de  la Ciudad',
             style: TextStyle(
               fontFamily: 'Hiruko',
               fontSize: 22,
@@ -231,13 +262,10 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFF5A623)),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -267,35 +295,32 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
           ),
           const SizedBox(height: 16),
 
-          // Enunciado con fuente Hiruko bold, igual que la imagen de referencia
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF8EE),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFF5A623), width: 1.5),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Icon(Icons.volume_up_rounded,
-                    color: Color(0xFFF5A623), size: 28),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Uso uniforme azul, ayudo a las personas en la calle, y cuido que todos estén seguros.',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF3D2B1F),
-                      height: 1.55,
-                    ),
+          // Enunciado sin cuadro — solo ícono de audio y texto
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: _toggleAudio,
+                child: Icon(
+                  _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up_rounded,
+                  color: const Color(0xFFF5A623),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Uso uniforme azul, ayudo a  las personas  en  la  calle, y cuido que todos estén seguros.',
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3D2B1F),
+                    height: 1.55,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 20),

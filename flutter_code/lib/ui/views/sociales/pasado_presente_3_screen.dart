@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import '../terminado.dart';
 
 void main() {
@@ -18,13 +19,71 @@ class EscuchaYEligePage extends StatefulWidget {
 
 class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
   final List<Map<String, dynamic>> animals = [
-    {'image': 'assets/images/actividades/sociales/gato.png', 'color': const Color(0xFFA1E296), 'isCorrect': false},
-    {'image': 'assets/images/actividades/sociales/Cocodrilo.png', 'color': const Color(0xFFFFE082), 'isCorrect': true},
-    {'image': 'assets/images/actividades/sociales/pato.png', 'color': const Color(0xFFEF9A9A), 'isCorrect': false},
-    {'image': 'assets/images/actividades/sociales/pollo.png', 'color': const Color(0xFFCE93D8), 'isCorrect': false},
+    {'image': 'assets/images/actividades/sociales/gato.png',      'color': const Color(0xFFA1E296), 'isCorrect': false, 'audio': 'asset:///assets/Audio/Sociales/gato.mp3'},
+    {'image': 'assets/images/actividades/sociales/Cocodrilo.png', 'color': const Color(0xFFFFE082), 'isCorrect': true,  'audio': 'asset:///assets/Audio/Sociales/cocodrilo.mp3'},
+    {'image': 'assets/images/actividades/sociales/pato.png',      'color': const Color(0xFFEF9A9A), 'isCorrect': false, 'audio': 'asset:///assets/Audio/Sociales/pato.mp3'},
+    {'image': 'assets/images/actividades/sociales/pollo.png',     'color': const Color(0xFFCE93D8), 'isCorrect': false, 'audio': 'asset:///assets/Audio/Sociales/pollo.mp3'},
   ];
 
-  void _onPlayButtonPressed() {}
+  late final Player _player;
+  bool _isPlayingAudio = false;
+  late final Player _animalPlayer;
+  bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+    _animalPlayer = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      _player.stream.completed.listen((completed) {
+        if (completed && mounted) _playCocodrilo();
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales9l_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  Future<void> _playCocodrilo() async {
+    try {
+      await _animalPlayer.open(
+          Media('asset:///assets/Audio/Sociales/cocodrilo.mp3'));
+      await _animalPlayer.play();
+    } catch (e) {
+      debugPrint('Error cocodrilo audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    _animalPlayer.dispose();
+    super.dispose();
+  }
+
+  void _onPlayButtonPressed() => _playCocodrilo();
 
   void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
     showModalBottomSheet(
@@ -35,7 +94,9 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -48,7 +109,9 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -58,7 +121,9 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      color: esCorrecto
+                          ? Colors.green[900]
+                          : Colors.red[900],
                     ),
                   ),
                 ],
@@ -69,8 +134,11 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -95,29 +163,40 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
   }
 
   void _onAnimalSelected(int index) {
-    if (animals[index]['isCorrect']) {
-      _mostrarFeedback(true, () {
-        widget.onCompleted?.call();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const ActividadTerminadaScreen()),
-        );
-      });
-    } else {
-      _mostrarFeedback(false, () {});
-    }
+    if (_isProcessing) return;
+    _isProcessing = true;
+
+    final audio = animals[index]['audio'] as String;
+
+    _player.pause();
+    _animalPlayer.open(Media(audio)).then((_) => _animalPlayer.play());
+
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      _isProcessing = false;
+      if (animals[index]['isCorrect']) {
+        _mostrarFeedback(true, () {
+          widget.onCompleted?.call();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (_) => const ActividadTerminadaScreen()),
+          );
+        });
+      } else {
+        _mostrarFeedback(false, () {});
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fondo amarillo para que el header se integre sin costuras
       backgroundColor: const Color(0xFFF39C12),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             _buildHeader(),
-            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -129,10 +208,9 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
                   ),
                 ),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 60),
                   child: Column(
                     children: [
-                      // Título
                       const Text(
                         'Escucha y elige',
                         style: TextStyle(
@@ -144,41 +222,36 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Enunciado con fuente Hiruko bold
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8EE),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                              color: const Color(0xFFF5A623), width: 1.5),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Icon(Icons.volume_up_rounded,
-                                color: Color(0xFFF5A623), size: 28),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Escucha y elige al animal\ncorrecto',
-                                style: TextStyle(
-                                  fontFamily: 'Hiruko',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF3D2B1F),
-                                  height: 1.55,
-                                ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: _toggleAudio,
+                            child: Icon(
+                              _isPlayingAudio
+                                  ? Icons.pause_rounded
+                                  : Icons.volume_up_rounded,
+                              color: const Color(0xFFF5A623),
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Escucha y elige al animal\ncorrecto',
+                              style: TextStyle(
+                                fontFamily: 'Hiruko',
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF3D2B1F),
+                                height: 1.55,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 28),
 
-                      // Cuadrícula de animales
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -206,8 +279,6 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
           ],
         ),
       ),
-
-      // Botón verde de reproducir
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 10.0),
@@ -224,11 +295,14 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
     );
   }
 
+  // ✅ Botón X simple blanco sin círculo
+  // 👇 Mueve el recuadro blanco cambiando el último valor del padding:
+  //    Subir recuadro → número menor (ej: 8, 10)
+  //    Bajar recuadro → número mayor (ej: 24, 36)
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      // Sin bordes redondeados — color plano amarillo
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 80), // ← ajusta el 14
       color: const Color(0xFFF39C12),
       child: Stack(
         alignment: Alignment.center,
@@ -243,17 +317,15 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
               letterSpacing: 0.5,
             ),
           ),
+          // ✅ X simple sin fondo circular
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () => Navigator.maybePop(context),
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFF39C12)),
+              child: const Icon(
+                Icons.close,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),

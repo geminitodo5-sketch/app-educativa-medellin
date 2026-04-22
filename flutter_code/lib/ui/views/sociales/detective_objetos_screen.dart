@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'detective_objetos_2_screen.dart';
 
 enum _Item { balon, libro, manzana, pizarra }
@@ -14,6 +15,47 @@ class DetectiveObjetosScreen extends StatefulWidget {
 class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
   final Map<_Zone, _Item> _placed = {};
   final Set<_Item> _used = {};
+
+  late final Player _player;
+  bool _isPlayingAudio = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales4_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
 
   static const Map<_Zone, _Item> _correct = {
     _Zone.estanteria: _Item.libro,
@@ -33,24 +75,10 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
   static const List<_ItemData> _items = [
     _ItemData(_Item.balon, 'assets/images/actividades/sociales/balon.png', '⚽'),
-    _ItemData(
-      _Item.libro,
-      'assets/images/actividades/sociales/libro.png',
-      '📕',
-    ),
-    _ItemData(
-      _Item.manzana,
-      'assets/images/actividades/sociales/Manzana.png',
-      '🍎',
-    ),
-    _ItemData(
-      _Item.pizarra,
-      'assets/images/actividades/sociales/Pizarra.png',
-      '🖼️',
-    ),
+    _ItemData(_Item.libro, 'assets/images/actividades/sociales/libro.png', '📕'),
+    _ItemData(_Item.manzana, 'assets/images/actividades/sociales/Manzana.png', '🍎'),
+    _ItemData(_Item.pizarra, 'assets/images/actividades/sociales/Pizarra.png', '🖼️'),
   ];
-
-  // ── Lógica intacta ────────────────────────────────────────────────────────
 
   void _onDrop(_Zone zone, _Item item) {
     if (_correct[zone] == item) {
@@ -77,7 +105,9 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -90,7 +120,9 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -100,7 +132,9 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      color: esCorrecto
+                          ? Colors.green[900]
+                          : Colors.red[900],
                     ),
                   ),
                 ],
@@ -111,8 +145,11 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -140,18 +177,16 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
     _mostrarFeedback(true, () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => DetectiveObjetos2Screen(onCompleted: widget.onCompleted),
+          builder: (_) =>
+              DetectiveObjetos2Screen(onCompleted: widget.onCompleted),
         ),
       );
     });
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fondo naranja para que las esquinas redondeadas del blanco se vean sobre él
       backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
         child: Column(
@@ -162,7 +197,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  // Solo esquinas superiores redondeadas
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -177,11 +211,14 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
     );
   }
 
+  // ✅ Botón X simple blanco sin círculo ni borde
+  // 👇 Mueve el recuadro blanco cambiando el valor de "vertical":
+  //    Subir recuadro → número menor (ej: 10, 12)
+  //    Bajar recuadro → número mayor (ej: 28, 36)
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      // Sin esquinas redondeadas — el bloque naranja va de borde a borde
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20), // ← ajusta "vertical"
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
@@ -206,26 +243,15 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
               ),
             ),
           ),
+          // ✅ X simple sin fondo circular
           Positioned(
             right: 0,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.28),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.close_rounded,
-                  size: 20,
-                  color: Colors.white,
-                ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -240,7 +266,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Título con Poppins
           const Center(
             child: Text(
               'Ordena con Pancho',
@@ -253,25 +278,34 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          // Enunciado con ícono de audio — igual que pantalla 3
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5A623).withValues(alpha: 0.14),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFF5A623).withValues(alpha: 0.40),
-                    width: 1.5,
+              GestureDetector(
+                onTap: _toggleAudio,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: _isPlayingAudio
+                        ? const Color(0xFFF5A623).withValues(alpha: 0.25)
+                        : const Color(0xFFF5A623).withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _isPlayingAudio
+                          ? const Color(0xFFF5A623)
+                          : const Color(0xFFF5A623).withValues(alpha: 0.40),
+                      width: 1.5,
+                    ),
                   ),
-                ),
-                child: const Icon(
-                  Icons.volume_up_rounded,
-                  color: Color(0xFFF5A623),
-                  size: 20,
+                  child: Icon(
+                    _isPlayingAudio
+                        ? Icons.pause_rounded
+                        : Icons.volume_up_rounded,
+                    color: const Color(0xFFF5A623),
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -291,7 +325,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
           ),
           const SizedBox(height: 12),
 
-          // ── Escena ────────────────────────────────────────────────────────
           Expanded(
             flex: 3,
             child: AspectRatio(
@@ -322,10 +355,8 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                               errorBuilder: (ctx, e, _) => Container(
                                 color: const Color(0xFFF5E6C8),
                                 child: const Center(
-                                  child: Text(
-                                    '🏫',
-                                    style: TextStyle(fontSize: 80),
-                                  ),
+                                  child: Text('🏫',
+                                      style: TextStyle(fontSize: 80)),
                                 ),
                               ),
                             ),
@@ -337,10 +368,8 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                             child: Image.asset(
                               'assets/images/actividades/sociales/Oso Pancho.png',
                               fit: BoxFit.contain,
-                              errorBuilder: (ctx, e, _) => const Text(
-                                '🐻',
-                                style: TextStyle(fontSize: 40),
-                              ),
+                              errorBuilder: (ctx, e, _) => const Text('🐻',
+                                  style: TextStyle(fontSize: 40)),
                             ),
                           ),
                           ..._zones.entries.map((entry) {
@@ -370,7 +399,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
           const SizedBox(height: 12),
 
-          // ── Bandeja objetos ───────────────────────────────────────────────
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
@@ -400,8 +428,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
     );
   }
 
-  // ── Widgets de lógica — sin cambios ───────────────────────────────────────
-
   Widget _buildDropZone(
     _Zone zone,
     double width,
@@ -428,13 +454,14 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
             color: placed != null
                 ? Colors.white.withOpacity(0.90)
                 : hovering
-                ? Colors.white.withOpacity(0.50)
-                : Colors.transparent,
+                    ? Colors.white.withOpacity(0.50)
+                    : Colors.transparent,
             border: placed != null
                 ? Border.all(color: Colors.green.shade400, width: 2.5)
                 : hovering
-                ? Border.all(color: const Color(0xFFF5A623), width: 2.5)
-                : null,
+                    ? Border.all(
+                        color: const Color(0xFFF5A623), width: 2.5)
+                    : null,
           ),
           child: placed != null
               ? Padding(
@@ -463,9 +490,8 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
       child: Image.asset(
         data.path,
         fit: BoxFit.contain,
-        errorBuilder: (ctx, e, _) => Center(
-          child: Text(data.emoji, style: const TextStyle(fontSize: 36)),
-        ),
+        errorBuilder: (ctx, e, _) =>
+            Center(child: Text(data.emoji, style: const TextStyle(fontSize: 36))),
       ),
     );
 

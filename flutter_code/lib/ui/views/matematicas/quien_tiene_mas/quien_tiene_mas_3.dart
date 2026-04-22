@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ Importante
 import '../../terminado.dart';
 import '../../../viewmodels/comparacion_cantidades_view_model.dart';
 
 // Proveedor de estado para feedback visual
 final respuestaProvider = StateProvider<bool?>((ref) => null);
 
-class QuienTieneMasview3 extends ConsumerWidget {
+class QuienTieneMasview3 extends ConsumerStatefulWidget {
   const QuienTieneMasview3({super.key});
+
+  @override
+  ConsumerState<QuienTieneMasview3> createState() => _QuienTieneMasview3State();
+}
+
+class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
+  // ✅ Definición del reproductor
+  Player? _player;
 
   static const String _crocPath =
       'assets/images/actividades/matematicas/cocodrilo.png';
@@ -18,12 +27,36 @@ class QuienTieneMasview3 extends ConsumerWidget {
   static const String _penguinPath =
       'assets/images/actividades/matematicas/pinguino.png';
 
-  // Colores del Manual de Marca
   static const Color verdeNumi = Color(0xFF59E347);
   static const Color rojoNumi = Color(0xFFF65757);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _player = Player();
+    
+    // Reproducir automáticamente al entrar a la pantalla
+    Future.microtask(() => _reproducirInstruccion());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Limpieza de memoria
+    super.dispose();
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///assets/Audio/Matematicas/audio mate6_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
       body: SafeArea(
@@ -84,10 +117,11 @@ class QuienTieneMasview3 extends ConsumerWidget {
             const SizedBox(height: 40),
             Row(
               children: [
-                const Icon(
-                  Icons.volume_up_rounded,
-                  size: 45,
-                  color: Color(0xFF3475F7),
+                // ✅ Icono convertido a botón para repetir el audio
+                IconButton(
+                  icon: const Icon(Icons.volume_up_rounded, size: 45),
+                  color: const Color(0xFF3475F7),
+                  onPressed: _reproducirInstruccion,
                 ),
                 const SizedBox(width: 15),
                 const Expanded(
@@ -134,7 +168,6 @@ class QuienTieneMasview3 extends ConsumerWidget {
     );
   }
 
-  // ─── Pestaña intermitente igual a sumar_patron_view.dart ───────────────────
   void _showFeedbackSheet(BuildContext context, WidgetRef ref, bool esCorrecto) {
     showModalBottomSheet(
       context: context,
@@ -144,9 +177,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto
-                ? const Color(0xFFD7FFD3)
-                : const Color(0xFFFFD3D3),
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -169,9 +200,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto
-                          ? Colors.green[900]
-                          : Colors.red[900],
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
@@ -183,13 +212,11 @@ class QuienTieneMasview3 extends ConsumerWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
-                    Navigator.pop(context); // cierra la pestaña
+                    Navigator.pop(context);
                     if (esCorrecto) {
-                      // Guardar progreso en SQLite y Sync Queue (Offline-first)
                       ref
                           .read(comparacionCantidadesViewModelProvider.notifier)
                           .commandGuardarProgresoFinal('Quien tiene más');
@@ -218,7 +245,6 @@ class QuienTieneMasview3 extends ConsumerWidget {
       },
     );
   }
-  // ───────────────────────────────────────────────────────────────────────────
 
   Widget _buildCountingGrid() {
     return Column(
@@ -249,6 +275,7 @@ class QuienTieneMasview3 extends ConsumerWidget {
   Widget _img(String p) => Image.asset(p, width: 60, height: 60);
 }
 
+// Widget de botón de opción (Sin cambios)
 class _OptionButton extends StatelessWidget {
   final String image;
   final String letter;

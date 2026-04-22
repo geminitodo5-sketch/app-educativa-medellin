@@ -1,4 +1,14 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
+
+const _audio9 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales9_mezcla.mp3';
+
+const List<Color> _coloresParejas = [
+  Color(0xFFE53935),
+  Color(0xFF1E88E5),
+  Color(0xFF43A047),
+];
 
 class JuegoAnimalesScreen extends StatefulWidget {
   final VoidCallback onCompletado;
@@ -11,15 +21,24 @@ class JuegoAnimalesScreen extends StatefulWidget {
 class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   final String path = 'assets/images/actividades/ciencias_naturales';
 
+  Player? _player;
+
   final Map<String, String> parejas = {
     'mono': 'banano',
     'perro': 'comida_para_perro',
     'elefante': 'pasto',
   };
 
+  final Map<String, int> _indiceColor = {
+    'mono': 0,
+    'perro': 1,
+    'elefante': 2,
+  };
+
+  String? _seleccionado;
   List<ConnectionModel> conexionesFijas = [];
-  Offset? cursorMovil;
-  String? animalActivo;
+  final Map<String, Color> _colorConectado = {};
+  final Set<String> _yaConectados = {};
 
   final Map<String, GlobalKey> keys = {
     'mono': GlobalKey(),
@@ -30,17 +49,86 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
     'pasto': GlobalKey(),
   };
 
-  void _validarUnion(String animal, String comida) {
+  late final List<String> _animalesOrden;
+  late final List<String> _comidasOrden;
+  final GlobalKey _stackKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    final rng = Random();
+    _animalesOrden = ['mono', 'perro', 'elefante']..shuffle(rng);
+    _comidasOrden = ['comida_para_perro', 'banano', 'pasto']..shuffle(rng);
+    _player = Player();
+    Future.microtask(() => _reproducirInstruccion());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///$_audio9'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio animales3: $e');
+    }
+  }
+
+  bool _esAnimal(String id) => parejas.containsKey(id);
+
+  void _onItemTap(String id) {
+    if (_yaConectados.contains(id)) return;
+
+    if (_seleccionado == null) {
+      setState(() => _seleccionado = id);
+      return;
+    }
+
+    if (_seleccionado == id) {
+      setState(() => _seleccionado = null);
+      return;
+    }
+
+    final String first = _seleccionado!;
+    final String second = id;
+
+    String? animal;
+    String? comida;
+    if (_esAnimal(first) && !_esAnimal(second)) {
+      animal = first;
+      comida = second;
+    } else if (_esAnimal(second) && !_esAnimal(first)) {
+      animal = second;
+      comida = first;
+    } else {
+      setState(() => _seleccionado = second);
+      return;
+    }
+
+    setState(() => _seleccionado = null);
+
     if (parejas[animal] == comida) {
+      final color = _coloresParejas[_indiceColor[animal]!];
       setState(() {
+        _colorConectado[animal!] = color;
+        _colorConectado[comida!] = color;
+        _yaConectados.add(animal);
+        _yaConectados.add(comida);
         conexionesFijas.add(ConnectionModel(
           startKey: keys[animal]!,
           endKey: keys[comida]!,
+          color: color,
         ));
       });
       final esUltimo = conexionesFijas.length == parejas.length;
-      // ── FIX: pasamos el callback SOLO si es el último ──
-      _mostrarMensaje(true, onContinue: esUltimo ? widget.onCompletado : null);
+      if (esUltimo) {
+        _mostrarMensaje(true, onContinue: widget.onCompletado);
+      }
     } else {
       _mostrarMensaje(false);
     }
@@ -55,7 +143,9 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -68,7 +158,9 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -89,15 +181,17 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
                     if (onContinue != null) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        onContinue();
-                      });
+                      WidgetsBinding.instance
+                          .addPostFrameCallback((_) => onContinue());
                     }
                   },
                   child: Text(
@@ -121,7 +215,7 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF59E347),
+      backgroundColor: const Color(0xFF3DCC52),
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -132,43 +226,35 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(45)),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  ),
                 ),
                 child: Stack(
+                  key: _stackKey,
                   children: [
-                    // Capa de líneas (siempre detrás de las imágenes)
                     Positioned.fill(
                       child: CustomPaint(
-                        painter: LinePainter(
+                        painter: ArrowPainter(
                           conexiones: conexionesFijas,
-                          cursor: cursorMovil,
-                          activeKey: animalActivo != null
-                              ? keys[animalActivo]
-                              : null,
-                          context: context,
+                          stackKey: _stackKey,
                         ),
                       ),
                     ),
-
-                    // Capa de UI
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 35, vertical: 30),
                       child: Column(
                         children: [
                           _buildInstruction(),
-                          const SizedBox(height: 50),
+                          const SizedBox(height: 30),
                           Expanded(
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _buildColumn(
-                                    ['mono', 'perro', 'elefante'], true),
-                                _buildColumn(
-                                    ['comida_para_perro', 'banano', 'pasto'],
-                                    false),
+                                _buildColumn(_animalesOrden),
+                                _buildColumn(_comidasOrden),
                               ],
                             ),
                           ),
@@ -211,18 +297,35 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   }
 
   Widget _buildInstruction() {
-    return const Row(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(Icons.volume_up_rounded, size: 45, color: Colors.black87),
-        SizedBox(width: 15),
-        Expanded(
+        // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
+        GestureDetector(
+          onTap: _reproducirInstruccion,
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.volume_up_rounded,
+              color: Color(0xFF3DCC52),
+              size: 22,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        const Expanded(
           child: Text(
-            'Une al animal a su comida',
+            'Une el animal con su comida',
             style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',
-              color: Colors.black87,
+              fontSize: 13,
+              color: Color(0xFF424242),
+              height: 1.3,
             ),
           ),
         ),
@@ -230,107 +333,140 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
     );
   }
 
-  Widget _buildColumn(List<String> items, bool isAnimal) {
+  Widget _buildColumn(List<String> items) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: items.map((id) {
-        return Draggable<String>(
-          data: id,
-          feedback: _buildItemImage(id, true),
-          childWhenDragging:
-              Opacity(opacity: 0.3, child: _buildItemImage(id, false)),
-          onDragStarted: () =>
-              setState(() => animalActivo = isAnimal ? id : null),
-          onDragUpdate: (details) =>
-              setState(() => cursorMovil = details.globalPosition),
-          onDragEnd: (_) => setState(() {
-            animalActivo = null;
-            cursorMovil = null;
-          }),
-          child: DragTarget<String>(
-            onAccept: (animalId) => _validarUnion(animalId, id),
-            builder: (context, _, __) => _buildItemImage(id, false),
-          ),
-        );
-      }).toList(),
+      children: items.map((id) => _buildItemCircle(id)).toList(),
     );
   }
 
-  Widget _buildItemImage(String id, bool isFloating) {
-    return Image.asset(
-      '$path/$id.png',
-      key: isFloating ? null : keys[id],
-      width: isFloating ? 130 : 110,
-      height: isFloating ? 130 : 110,
-      fit: BoxFit.contain,
+  Widget _buildItemCircle(String id) {
+    final bool seleccionado = _seleccionado == id;
+    final bool conectado = _yaConectados.contains(id);
+    final Color borderColor = conectado
+        ? _colorConectado[id]!
+        : seleccionado
+            ? const Color(0xFF3DCC52)
+            : const Color(0xFFCCCCCC);
+
+    return GestureDetector(
+      onTap: () => _onItemTap(id),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        key: keys[id],
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          border: Border.all(color: borderColor, width: seleccionado ? 5 : 4),
+          boxShadow: [
+            BoxShadow(
+              color: seleccionado
+                  ? const Color(0xFF3DCC52).withOpacity(0.35)
+                  : borderColor.withOpacity(0.15),
+              blurRadius: seleccionado ? 12 : 8,
+              spreadRadius: seleccionado ? 3 : 2,
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Image.asset('$path/$id.png', fit: BoxFit.contain),
+        ),
+      ),
     );
   }
 }
 
-// Modelo de datos para las líneas
+// --- Modelo ---
 class ConnectionModel {
   final GlobalKey startKey;
   final GlobalKey endKey;
-  ConnectionModel({required this.startKey, required this.endKey});
+  final Color color;
+  ConnectionModel({
+    required this.startKey,
+    required this.endKey,
+    required this.color,
+  });
 }
 
-// El "Pintor" que dibuja las líneas desde el centro exacto de cada imagen
-class LinePainter extends CustomPainter {
+// --- Painter ---
+class ArrowPainter extends CustomPainter {
   final List<ConnectionModel> conexiones;
-  final Offset? cursor;
-  final GlobalKey? activeKey;
-  final BuildContext context;
+  final GlobalKey stackKey;
 
-  LinePainter({
-    required this.conexiones,
-    this.cursor,
-    this.activeKey,
-    required this.context,
-  });
+  ArrowPainter({required this.conexiones, required this.stackKey});
+
+  static const double _arrowHeadSize = 18.0;
+  static const double _arrowHeadAngle = 0.42;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFEF9325)
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.round;
+    final RenderBox? stackBox =
+        stackKey.currentContext?.findRenderObject() as RenderBox?;
+    if (stackBox == null) return;
 
-    final RenderBox? container =
-        context.findRenderObject() as RenderBox?;
-    if (container == null) return;
+    for (final conn in conexiones) {
+      final dataA = _getCenterAndRadius(conn.startKey, stackBox);
+      final dataB = _getCenterAndRadius(conn.endKey, stackBox);
+      if (dataA == null || dataB == null) continue;
 
-    // 1. Dibujar líneas ya completadas
-    for (var conn in conexiones) {
-      final p1 = _getCenter(conn.startKey, container);
-      final p2 = _getCenter(conn.endKey, container);
-      if (p1 == Offset.zero || p2 == Offset.zero) continue;
-      canvas.drawLine(p1, p2, paint);
-    }
+      final centerA = dataA.$1;
+      final radiusA = dataA.$2;
+      final centerB = dataB.$1;
+      final radiusB = dataB.$2;
 
-    // 2. Dibujar línea elástica mientras se arrastra
-    if (activeKey != null && cursor != null) {
-      final p1 = _getCenter(activeKey!, container);
-      if (p1 != Offset.zero) {
-        final p2 = container.globalToLocal(cursor!);
-        canvas.drawLine(
-          p1,
-          p2,
-          paint..color = const Color(0xFFEF9325).withOpacity(0.6),
-        );
-      }
+      final delta = centerB - centerA;
+      final dist = delta.distance;
+      if (dist == 0) continue;
+      final unit = delta / dist;
+
+      final p1 = centerA + unit * radiusA;
+      final p2 = centerB - unit * radiusB;
+
+      canvas.drawLine(
+        p1,
+        p2,
+        Paint()
+          ..color = conn.color
+          ..strokeWidth = 5
+          ..strokeCap = StrokeCap.round
+          ..style = PaintingStyle.stroke,
+      );
+      _drawArrowHead(canvas, p1, p2, conn.color);
     }
   }
 
-  Offset _getCenter(GlobalKey key, RenderBox container) {
+  void _drawArrowHead(Canvas canvas, Offset from, Offset to, Color color) {
+    final angle = atan2((to - from).dy, (to - from).dx);
+    final path = Path()
+      ..moveTo(to.dx, to.dy)
+      ..lineTo(
+        to.dx - _arrowHeadSize * cos(angle - _arrowHeadAngle),
+        to.dy - _arrowHeadSize * sin(angle - _arrowHeadAngle),
+      )
+      ..lineTo(
+        to.dx - _arrowHeadSize * cos(angle + _arrowHeadAngle),
+        to.dy - _arrowHeadSize * sin(angle + _arrowHeadAngle),
+      )
+      ..close();
+    canvas.drawPath(
+        path, Paint()..color = color..style = PaintingStyle.fill);
+  }
+
+  (Offset, double)? _getCenterAndRadius(GlobalKey key, RenderBox stackBox) {
     final RenderBox? box =
         key.currentContext?.findRenderObject() as RenderBox?;
-    if (box == null) return Offset.zero;
-    final Offset centerGlobal = box.localToGlobal(
+    if (box == null) return null;
+    final centerGlobal = box.localToGlobal(
       Offset(box.size.width / 2, box.size.height / 2),
     );
-    return container.globalToLocal(centerGlobal);
+    final centerLocal = stackBox.globalToLocal(centerGlobal);
+    final radius = box.size.shortestSide / 2;
+    return (centerLocal, radius);
   }
 
   @override
-  bool shouldRepaint(LinePainter oldDelegate) => true;
+  bool shouldRepaint(ArrowPainter oldDelegate) => true;
 }

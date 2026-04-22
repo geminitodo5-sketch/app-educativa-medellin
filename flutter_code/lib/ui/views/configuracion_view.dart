@@ -280,8 +280,6 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                         color: Colors.white)),
                 const SizedBox(height: 8),
                 _buildRadioOption('Español'),
-                const SizedBox(height: 12),
-                _buildRadioOption('Inglés'),
               ],
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'pasado_presente_3_screen.dart';
 
 void main() {
@@ -19,10 +20,51 @@ class TelefonoGameScreen extends StatefulWidget {
 }
 
 class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
+  late final Player _player;
+  bool _isPlayingAudio = false;
+
   final String targetWord = "TELÉFONO";
 
   // T E _ É _ O _ O
   List<String?> userSlots = ['T', 'E', null, 'É', null, 'O', null, 'O'];
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales8_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
 
   final List<Map<String, dynamic>> keyboardLetters = [
     {'letter': 'A', 'image': 'assets/images/actividades/sociales/Botón letra 9.png'},
@@ -66,7 +108,9 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -79,7 +123,9 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -89,7 +135,9 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      color: esCorrecto
+                          ? Colors.green[900]
+                          : Colors.red[900],
                     ),
                   ),
                 ],
@@ -100,8 +148,11 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -129,7 +180,8 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     _mostrarFeedback(true, () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => EscuchaYEligePage(onCompleted: widget.onCompleted),
+          builder: (_) =>
+              EscuchaYEligePage(onCompleted: widget.onCompleted),
         ),
       );
     });
@@ -138,14 +190,12 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fondo amarillo para que el header se integre sin costuras
       backgroundColor: const Color(0xFFF39C12),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             _buildHeader(),
-            // Bloque blanco con esquinas superiores redondeadas
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -158,12 +208,11 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
                     child: Column(
                       children: [
-                        // Título
                         const Text(
-                          '¿Cómo se llama?',
+                          '¿Cómo se  llama?',
                           style: TextStyle(
                             fontFamily: 'Hiruko',
                             fontSize: 26,
@@ -174,41 +223,36 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Enunciado con fuente Hiruko bold igual que la imagen de referencia
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF8EE),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: const Color(0xFFF5A623), width: 1.5),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Icon(Icons.volume_up_rounded,
-                                  color: Color(0xFFF5A623), size: 28),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Toca las letras que faltan para\ncompletar la palabra',
-                                  style: TextStyle(
-                                    fontFamily: 'Hiruko',
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF3D2B1F),
-                                    height: 1.55,
-                                  ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: _toggleAudio,
+                              child: Icon(
+                                _isPlayingAudio
+                                    ? Icons.pause_rounded
+                                    : Icons.volume_up_rounded,
+                                color: const Color(0xFFF5A623),
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Toca  las  letras que faltan para\ncompletar la palabra',
+                                style: TextStyle(
+                                  fontFamily: 'Hiruko',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF3D2B1F),
+                                  height: 1.55,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 24),
 
-                        // Imagen del teléfono
                         Image.asset(
                           'assets/images/actividades/sociales/telefono1.png',
                           height: 180,
@@ -218,7 +262,6 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
 
                         const SizedBox(height: 32),
 
-                        // Slots de la palabra
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(userSlots.length, (index) {
@@ -253,7 +296,6 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                         ),
                         const SizedBox(height: 40),
 
-                        // GridView de letras
                         SizedBox(
                           width: 280,
                           child: GridView.builder(
@@ -289,11 +331,12 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     );
   }
 
+  // ✅ Header ajustado: botón X simple blanco + padding reducido para bajar recuadro
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      // Sin bordes redondeados — color plano amarillo
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      // 👇 Sube recuadro → reduce el último valor | Baja recuadro → auméntalo
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
       color: const Color(0xFFF39C12),
       child: Stack(
         alignment: Alignment.center,
@@ -308,17 +351,15 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
               letterSpacing: 0.5,
             ),
           ),
+          // ✅ Botón X simple sin círculo blanco
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () => Navigator.maybePop(context),
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.close,
-                    size: 18, color: Color(0xFFF39C12)),
+              child: const Icon(
+                Icons.close,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -328,7 +369,6 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
   }
 }
 
-// Widget que muestra los PNGs de letras
 class LetterButton extends StatelessWidget {
   final String imagePath;
   final VoidCallback onTap;

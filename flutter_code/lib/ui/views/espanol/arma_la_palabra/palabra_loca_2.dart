@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import '../../../viewmodels/palabra_loca_view_model.dart';
 import '../../terminado.dart';
 
@@ -7,12 +8,13 @@ class ArmaLaPalabraScreen extends ConsumerStatefulWidget {
   const ArmaLaPalabraScreen({super.key});
 
   @override
-  ConsumerState<ArmaLaPalabraScreen> createState() =>
-      _ArmaLaPalabraScreenState();
+  ConsumerState<ArmaLaPalabraScreen> createState() => _ArmaLaPalabraScreenState();
 }
 
 class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
     with TickerProviderStateMixin {
+  
+  late final Player _player;
   late AnimationController _successController;
   late Animation<double> _successScale;
   late AnimationController _errorController;
@@ -20,77 +22,11 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
 
   bool _navegandoATerminado = false;
 
-  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    size: 40,
-                  ),
-                  const SizedBox(width: 15),
-                  Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    onAction();
-                  },
-                  child: Text(
-                    esCorrecto ? 'Continuar' : 'Reintentar',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
+    _player = Player();
+    _reproducirAudio();
 
     _successController = AnimationController(
       vsync: this,
@@ -117,11 +53,78 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
     ));
   }
 
+  Future<void> _reproducirAudio() async {
+    try {
+      await _player.open(
+        Media('asset:///assets/Audio/espanol/audio_espanol2_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint("Error de audio: $e");
+    }
+  }
+
   @override
   void dispose() {
+    _player.dispose();
     _successController.dispose();
     _errorController.dispose();
     super.dispose();
+  }
+
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  esCorrecto ? Icons.check_circle : Icons.cancel,
+                  color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  size: 40,
+                ),
+                const SizedBox(width: 15),
+                Text(
+                  esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onAction();
+                },
+                child: Text(esCorrecto ? 'Continuar' : 'Reintentar', 
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _irATerminado() {
@@ -132,9 +135,8 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
       MaterialPageRoute(
         builder: (_) => ActividadTerminadaScreen(
           onVolver: () {
-            final nav = Navigator.of(context);
-            nav.pop(); // cierra terminado
-            nav.pop(); // cierra ArmaLaPalabraScreen
+            Navigator.pop(context);
+            Navigator.pop(context);
           },
         ),
       ),
@@ -150,41 +152,24 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
     ref.listen(armaLaPalabraViewModelProvider, (prev, next) {
       if (prev == null) return;
       if (!prev.completado && next.completado) {
-        _errorController.reset();
         _successController.forward();
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
-            _mostrarFeedback(true, () {
-              _successController.reset();
-              notifier.commandSiguientePalabra();
-            });
-          }
+          if (mounted) _mostrarFeedback(true, () => notifier.commandSiguientePalabra());
         });
       }
       if (!prev.error && next.error) {
-        _successController.reset();
         _errorController.forward().then((_) {
-          if (mounted) {
-            _mostrarFeedback(false, () {
-              notifier.commandLimpiarRespuestas();
-            });
-          }
+          if (mounted) _mostrarFeedback(false, () => notifier.commandLimpiarRespuestas());
         });
       }
-      if (prev.palabraIndex != next.palabraIndex) {
-        _successController.reset();
-        _errorController.reset();
-      }
       if (!prev.actividadCompletada && next.actividadCompletada) {
-        WidgetsBinding.instance
-            .addPostFrameCallback((_) => _irATerminado());
+        _irATerminado();
       }
     });
 
     return Scaffold(
       backgroundColor: const Color(0xFFF65757),
       body: SafeArea(
-        bottom: false,
         child: Column(
           children: [
             _Header(onClose: () => Navigator.maybePop(context)),
@@ -193,10 +178,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
                 ),
                 child: Column(
                   children: [
@@ -206,8 +188,9 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                         child: Column(
                           children: [
                             const SizedBox(height: 32),
-                            const _InstruccionRow(
-                              texto: 'Arma la palabra de la imagen.',
+                            _InstruccionRow(
+                              texto: 'Arma la palabra de  la imagen.',
+                              onPlay: _reproducirAudio,
                             ),
                             const SizedBox(height: 32),
                             _ImagenAnimal(
@@ -228,30 +211,21 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                                 cantidadSilabas: palabra.silabas.length,
                                 completado: state.completado,
                                 error: state.error,
-                                opcionesMezcladas: palabra.opcionesMezcladas,
+                                onQuitarSilaba: notifier.commandQuitarSilaba,
+                                onColocarSilaba: notifier.commandColocarSilaba,
                                 opcionesDisponibles: state.opcionesDisponibles,
-                                onColocarSilaba:
-                                    (state.completado || state.error)
-                                        ? null
-                                        : notifier.commandColocarSilaba,
-                                onQuitarSilaba:
-                                    (state.completado || state.error)
-                                        ? null
-                                        : notifier.commandQuitarSilaba,
                               ),
                             ),
-                            const SizedBox(height: 16),
                           ],
                         ),
                       ),
                     ),
                     _GridSilabas(
-                        opciones: palabra.opcionesMezcladas,
-                        disponibles: state.opcionesDisponibles,
-                        silabasColocadas: state.silabasColocadas,
-                        cantidadRecuadros: palabra.silabas.length,
-                        onTap: notifier.commandColocarSilaba,
-                      ),
+                      opciones: palabra.opcionesMezcladas,
+                      disponibles: state.opcionesDisponibles,
+                      silabasColocadas: state.silabasColocadas,
+                      onTap: (idx, target) => notifier.commandColocarSilaba(idx, target),
+                    ),
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -264,9 +238,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// Widgets auxiliares
-// ══════════════════════════════════════════════════════════
+// --- WIDGETS AUXILIARES ---
 
 class _Header extends StatelessWidget {
   final VoidCallback onClose;
@@ -274,65 +246,59 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180,
-      width: double.infinity,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Arma  la palabra',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 0.2,
+    return Stack(
+      children: [
+        SizedBox(
+          height: 80,
+          child: Center(
+            child: const Text(
+              'Arma la palabra',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Hiruko',
+              ),
             ),
           ),
-          Positioned(
-            top: 12,
-            right: 8,
+        ),
+        Positioned(
+          top: 0,
+          right: 4,
+          bottom: 0,
+          child: Align(
+            alignment: Alignment.centerRight,
             child: IconButton(
-              icon: const Icon(Icons.close_rounded,
-                  color: Colors.white, size: 28),
+              icon: const Icon(Icons.close, color: Colors.white),
               onPressed: onClose,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class _InstruccionRow extends StatelessWidget {
   final String texto;
-  const _InstruccionRow({required this.texto});
+  final VoidCallback onPlay;
+  const _InstruccionRow({required this.texto, required this.onPlay});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF0F4FF),
-            borderRadius: BorderRadius.circular(12),
+        GestureDetector(
+          onTap: onPlay,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: const Color(0xFFF0F4FF), borderRadius: BorderRadius.circular(12)),
+            child: const Icon(Icons.volume_up_rounded, color: Color(0xFF3475F7), size: 22),
           ),
-          child: const Icon(Icons.volume_up_rounded,
-              color: Color(0xFF3475F7), size: 22),
         ),
         const SizedBox(width: 10),
-        Text(
-          texto,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF444444),
-          ),
-        ),
+        Text(texto, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF444444))),
       ],
     );
   }
@@ -344,54 +310,21 @@ class _ImagenAnimal extends StatelessWidget {
   final bool error;
   final Animation<double> scaleAnimation;
 
-  const _ImagenAnimal({
-    required this.asset,
-    required this.completado,
-    required this.error,
-    required this.scaleAnimation,
-  });
+  const _ImagenAnimal({required this.asset, required this.completado, required this.error, required this.scaleAnimation});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: scaleAnimation,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: completado ? (0.9 + 0.1 * scaleAnimation.value) : 1.0,
-          child: child,
-        );
-      },
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: error ? 172 : 0,
-            height: error ? 172 : 0,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFFFEBEB),
-              border: error
-                  ? Border.all(color: const Color(0xFFFF5252), width: 3)
-                  : null,
-            ),
-          ),
-          Image.asset(
-            asset,
-            width: 160,
-            height: 160,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => Container(
-              width: 160,
-              height: 160,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(Icons.pets, size: 80, color: Color(0xFFCCCCCC)),
-            ),
-          ),
-        ],
+    return ScaleTransition(
+      scale: completado ? scaleAnimation : const AlwaysStoppedAnimation(1.0),
+      child: Container(
+        width: 160, height: 160,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: error ? const Color(0xFFFFEBEB) : Colors.transparent,
+          border: error ? Border.all(color: const Color(0xFFFF5252), width: 3) : null,
+        ),
+        child: Image.asset(asset, fit: BoxFit.contain),
       ),
     );
   }
@@ -402,20 +335,14 @@ class _RecuadrosRespuesta extends StatelessWidget {
   final int cantidadSilabas;
   final bool completado;
   final bool error;
-  final List<String> opcionesMezcladas;
+  final Function(int) onQuitarSilaba;
+  final Function(int, int) onColocarSilaba;
   final List<bool> opcionesDisponibles;
-  final void Function(int opcionIndex, int recuadroIndex)? onColocarSilaba;
-  final void Function(int recuadroIndex)? onQuitarSilaba;
 
   const _RecuadrosRespuesta({
-    required this.silabas,
-    required this.cantidadSilabas,
-    required this.completado,
-    required this.error,
-    required this.opcionesMezcladas,
+    required this.silabas, required this.cantidadSilabas, required this.completado, 
+    required this.error, required this.onQuitarSilaba, required this.onColocarSilaba,
     required this.opcionesDisponibles,
-    required this.onColocarSilaba,
-    required this.onQuitarSilaba,
   });
 
   @override
@@ -423,104 +350,23 @@ class _RecuadrosRespuesta extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(cantidadSilabas, (i) {
-        final silabaActual = silabas[i];
-        final estaLleno = silabaActual != null;
-
-        final Color lineaColor = completado
-            ? const Color(0xFF4CAF50)
-            : error
-                ? const Color(0xFFFF5252)
-                : const Color(0xFF9E9E9E);
-        final Color bgColor = completado
-            ? const Color(0xFFE8F8EE)
-            : error
-                ? const Color(0xFFFFEBEB)
-                : estaLleno
-                    ? Colors.white
-                    : Colors.transparent;
-        final Color textColor = completado
-            ? const Color(0xFF2E7D32)
-            : error
-                ? const Color(0xFFD32F2F)
-                : const Color(0xFF222222);
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          child: DragTarget<int>(
-            onWillAcceptWithDetails: (details) =>
-                !completado && !error && opcionesDisponibles[details.data],
-            onAcceptWithDetails: (details) {
-              onColocarSilaba?.call(details.data, i);
-            },
-            builder: (context, candidateData, rejectedData) {
-              final isHovered = candidateData.isNotEmpty;
-              return GestureDetector(
-                onTap: (estaLleno && !completado && !error)
-                    ? () => onQuitarSilaba?.call(i)
-                    : null,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  width: 72,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: isHovered ? const Color(0xFFEEF4FF) : bgColor,
-                    border: Border(
-                      bottom: BorderSide(
-                        color: isHovered
-                            ? const Color(0xFF3475F7)
-                            : lineaColor,
-                        width: 2.5,
-                      ),
-                    ),
-                    borderRadius: (estaLleno || isHovered)
-                        ? BorderRadius.circular(10)
-                        : null,
-                    boxShadow: estaLleno
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  alignment: Alignment.center,
-                  child: estaLleno
-                      ? Stack(
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.none,
-                          children: [
-                            Text(
-                              silabaActual,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                color: textColor,
-                              ),
-                            ),
-                            if (!completado && !error)
-                              Positioned(
-                                top: -4,
-                                right: -4,
-                                child: Container(
-                                  width: 16,
-                                  height: 16,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade400,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.close,
-                                      size: 10, color: Colors.white),
-                                ),
-                              ),
-                          ],
-                        )
-                      : null,
-                ),
-              );
-            },
+        final silaba = silabas[i];
+        return DragTarget<int>(
+          onWillAcceptWithDetails: (details) => !completado && !error && opcionesDisponibles[details.data],
+          onAcceptWithDetails: (details) => onColocarSilaba(details.data, i),
+          builder: (context, _, __) => GestureDetector(
+            onTap: (silaba != null && !completado && !error) ? () => onQuitarSilaba(i) : null,
+            child: Container(
+              width: 70, height: 55,
+              margin: const EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                color: silaba != null ? Colors.white : Colors.grey[100],
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: error ? Colors.red : (completado ? Colors.green : Colors.grey[300]!), width: 2),
+              ),
+              alignment: Alignment.center,
+              child: Text(silaba ?? '', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
           ),
         );
       }),
@@ -532,81 +378,29 @@ class _GridSilabas extends StatelessWidget {
   final List<String> opciones;
   final List<bool> disponibles;
   final List<String?> silabasColocadas;
-  final int cantidadRecuadros;
-  final void Function(int opcionIndex, int recuadroIndex) onTap;
+  final Function(int, int) onTap;
 
-  const _GridSilabas({
-    required this.opciones,
-    required this.disponibles,
-    required this.silabasColocadas,
-    required this.cantidadRecuadros,
-    required this.onTap,
-  });
-
-  int? get _primerRecuadroVacio {
-    for (int i = 0; i < silabasColocadas.length; i++) {
-      if (silabasColocadas[i] == null) return i;
-    }
-    return null;
-  }
+  const _GridSilabas({required this.opciones, required this.disponibles, required this.silabasColocadas, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Wrap(
+      spacing: 12, runSpacing: 12,
+      alignment: WrapAlignment.center,
+      children: List.generate(opciones.length, (i) {
+        return Draggable<int>(
+          data: i,
+          feedback: _SilabaChip(texto: opciones[i], disponible: true),
+          childWhenDragging: _SilabaChip(texto: opciones[i], disponible: false, opacity: 0.3),
+          child: GestureDetector(
+            onTap: disponibles[i] ? () {
+              int emptyIdx = silabasColocadas.indexOf(null);
+              if (emptyIdx != -1) onTap(i, emptyIdx);
+            } : null,
+            child: _SilabaChip(texto: opciones[i], disponible: disponibles[i]),
           ),
-        ],
-      ),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        alignment: WrapAlignment.center,
-        children: List.generate(opciones.length, (i) {
-          final disponible = disponibles[i];
-          final silaba = opciones[i];
-
-          return Draggable<int>(
-            data: i,
-            feedback: Material(
-              color: Colors.transparent,
-              child: _SilabaChip(
-                texto: silaba,
-                disponible: true,
-                isDragging: true,
-              ),
-            ),
-            childWhenDragging: _SilabaChip(
-              texto: silaba,
-              disponible: false,
-              isDragging: false,
-              isPlaceholder: true,
-            ),
-            child: GestureDetector(
-              onTap: disponible
-                  ? () {
-                      final recuadro = _primerRecuadroVacio;
-                      if (recuadro != null) onTap(i, recuadro);
-                    }
-                  : null,
-              child: _SilabaChip(
-                texto: silaba,
-                disponible: disponible,
-                isDragging: false,
-              ),
-            ),
-          );
-        }),
-      ),
+        );
+      }),
     );
   }
 }
@@ -614,74 +408,24 @@ class _GridSilabas extends StatelessWidget {
 class _SilabaChip extends StatelessWidget {
   final String texto;
   final bool disponible;
-  final bool isDragging;
-  final bool isPlaceholder;
-
-  const _SilabaChip({
-    required this.texto,
-    required this.disponible,
-    required this.isDragging,
-    this.isPlaceholder = false,
-  });
+  final double opacity;
+  const _SilabaChip({required this.texto, required this.disponible, this.opacity = 1.0});
 
   @override
   Widget build(BuildContext context) {
-    final Color bgColor = isPlaceholder
-        ? const Color(0xFFF5F5F5)
-        : disponible
-            ? Colors.white
-            : const Color(0xFFF0F0F0);
-    final Color textColor = isPlaceholder
-        ? Colors.transparent
-        : disponible
-            ? const Color(0xFF222222)
-            : const Color(0xFFBBBBBB);
-    final List<BoxShadow> shadows = isDragging
-        ? [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ]
-        : disponible && !isPlaceholder
-            ? [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : [];
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
-      width: 72,
-      height: 52,
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isPlaceholder
-              ? const Color(0xFFE0E0E0)
-              : disponible
-                  ? const Color(0xFFDDDDDD)
-                  : const Color(0xFFEEEEEE),
-          width: 1.5,
+    return Opacity(
+      opacity: disponible ? opacity : 0.2,
+      child: Container(
+        width: 72, height: 52,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[300]!, width: 1.5),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2))],
         ),
-        boxShadow: shadows,
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        texto,
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 19,
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
+        alignment: Alignment.center,
+        child: Text(texto, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ),
     );
   }
 }
-

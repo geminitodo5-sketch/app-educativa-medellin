@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../terminado.dart'; // ajusta la ruta si está en otra carpeta
+import 'package:media_kit/media_kit.dart';
+import '../terminado.dart';
 
 void main() => runApp(const _DetectiveApp());
 
@@ -47,7 +48,8 @@ const List<PuzzlePiece> kPieces = [
 ];
 
 class PuzzleScreen extends StatefulWidget {
-  const PuzzleScreen({super.key});
+  const PuzzleScreen({super.key, this.onCompleted});
+  final VoidCallback? onCompleted;
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
@@ -68,7 +70,9 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   late final Animation<double> _pulseAnim;
   final Map<String, AnimationController> _popCtrl = {};
 
-  // ✅ Key unificada: siempre "row_col"
+  late final Player _player;
+  bool _isPlayingAudio = false;
+
   String _popKey(int row, int col) => '${row}_$col';
 
   @override
@@ -102,12 +106,39 @@ class _PuzzleScreenState extends State<PuzzleScreen>
       end: 1.0,
     ).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
 
-    // ✅ Usar _popKey() para inicializar consistentemente
     for (final p in kPieces) {
       _popCtrl[_popKey(p.correctRow, p.correctCol)] = AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 350),
       );
+    }
+
+    _player = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales6_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error audio: $e');
     }
   }
 
@@ -116,6 +147,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     _completeCtrl.dispose();
     _shakeCtrl.dispose();
     _pulseCtrl.dispose();
+    _player.dispose();
     for (final c in _popCtrl.values) c.dispose();
     super.dispose();
   }
@@ -243,7 +275,8 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     _pulseCtrl.stop();
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) {
-        Navigator.of(context).pushReplacement( // ← pushReplacement para que no vuelva al puzzle
+        widget.onCompleted?.call();
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (newContext) => ActividadTerminadaScreen(
               onVolver: () => Navigator.of(newContext).popUntil((route) => route.isFirst),
@@ -367,22 +400,10 @@ class _PuzzleScreenState extends State<PuzzleScreen>
             right: 0,
             child: GestureDetector(
               onTap: () => Navigator.maybePop(context),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.28),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.close_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -419,7 +440,31 @@ class _PuzzleScreenState extends State<PuzzleScreen>
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _AudioButton(),
+                  GestureDetector(
+                    onTap: _toggleAudio,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: _isPlayingAudio
+                            ? _kOrange.withValues(alpha: 0.25)
+                            : _kOrange.withValues(alpha: 0.14),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: _isPlayingAudio
+                              ? _kOrange
+                              : _kOrange.withValues(alpha: 0.40),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up_rounded,
+                        color: _kOrange,
+                        size: 20,
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -736,20 +781,4 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
-}
-
-class _AudioButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: _kOrange.withValues(alpha: 0.14),
-        shape: BoxShape.circle,
-        border: Border.all(color: _kOrange.withValues(alpha: 0.40), width: 1.5),
-      ),
-      child: const Icon(Icons.volume_up_rounded, color: _kOrange, size: 20),
-    );
-  }
 }

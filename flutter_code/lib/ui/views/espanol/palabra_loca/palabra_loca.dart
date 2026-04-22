@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import '../../../../data/models/sync_queue_model.dart';
 import '../../../../data/providers/app_state_provider.dart'
     show estudianteActivoProvider;
@@ -91,7 +92,6 @@ class PalabraLocaViewModel extends StateNotifier<PalabraLocaState> {
 
   void commandResponder(bool eligioCorrecto) {
     if (state.respondida) return;
-
     final correcto = eligioCorrecto == preguntaActual.estaCorrecta;
     state = state.copyWith(
       respuesta: correcto
@@ -162,6 +162,8 @@ class PalabraLocaScreen extends ConsumerStatefulWidget {
 
 class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
     with TickerProviderStateMixin {
+
+  late final Player _player;
   late AnimationController _feedbackController;
   late Animation<double> _feedbackScale;
   late AnimationController _shakeController;
@@ -169,77 +171,16 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
 
   bool _navegandoATerminado = false;
 
-  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    size: 40,
-                  ),
-                  const SizedBox(width: 15),
-                  Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    onAction();
-                  },
-                  child: Text(
-                    esCorrecto ? 'Continuar' : 'Reintentar',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  static const Map<int, String> _audioFraseMap = {
+    0: 'el_mono_sonrriente_esta.mp3',
+    1: 'la_manzana_es_roja.mp3',
+    2: 'los_pinguinos_de_tres_son.mp3',
+  };
 
   @override
   void initState() {
     super.initState();
+    _player = Player();
 
     _feedbackController = AnimationController(
       vsync: this,
@@ -264,13 +205,136 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
       parent: _shakeController,
       curve: Curves.easeInOut,
     ));
+
+    _reproducirAudioInicial();
+  }
+
+  /// Reproduce la instrucción general y al terminar encadena el audio de la frase 0
+  Future<void> _reproducirAudioInicial() async {
+    try {
+      await _player.open(
+        Media('asset:///assets/Audio/espanol/audio_espanol3_mezcla.mp3'),
+      );
+      await _player.play();
+
+      // Espera a que el primer audio termine antes de reproducir el de la frase
+      await _player.stream.completed.firstWhere((done) => done);
+
+      if (mounted) await _reproducirAudioFrase(0);
+    } catch (e) {
+      debugPrint('Error en audio inicial: $e');
+    }
+  }
+
+  /// Audio del ícono de volumen: repite solo la instrucción general
+  Future<void> _reproducirAudio() async {
+    try {
+      await _player.open(
+        Media('asset:///assets/Audio/espanol/audio_espanol3_mezcla.mp3'),
+      );
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error de audio: $e');
+    }
+  }
+
+  /// Reproduce el audio de la frase correspondiente al índice
+  Future<void> _reproducirAudioFrase(int index) async {
+    final archivo = _audioFraseMap[index];
+    if (archivo == null) return;
+    try {
+      await _player.open(
+        Media('asset:///assets/Audio/espanol/$archivo'),
+      );
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error reproduciendo audio de frase $index: $e');
+    }
   }
 
   @override
   void dispose() {
+    _player.dispose();
     _feedbackController.dispose();
     _shakeController.dispose();
     super.dispose();
+  }
+
+  void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    size: 40,
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto
+                          ? Colors.green[900]
+                          : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onAction();
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _irATerminado() {
@@ -282,8 +346,8 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
         builder: (_) => ActividadTerminadaScreen(
           onVolver: () {
             final nav = Navigator.of(context);
-            nav.pop(); // cierra terminado
-            nav.pop(); // cierra PalabraLocaScreen
+            nav.pop();
+            nav.pop();
           },
         ),
       ),
@@ -292,12 +356,13 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(palabraLocaViewModelProvider);
+    final state    = ref.watch(palabraLocaViewModelProvider);
     final notifier = ref.read(palabraLocaViewModelProvider.notifier);
     final pregunta = notifier.preguntaActual;
 
     ref.listen(palabraLocaViewModelProvider, (prev, next) {
       if (prev == null) return;
+
       if (prev.respuesta == RespuestaEstado.ninguna &&
           next.respuesta != RespuestaEstado.ninguna) {
         final esCorrecto = next.respuesta == RespuestaEstado.correcta;
@@ -313,12 +378,16 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
           }
         });
       }
+
       if (prev.preguntaIndex != next.preguntaIndex) {
         _feedbackController.reset();
         _shakeController.reset();
+        _reproducirAudioFrase(next.preguntaIndex);
       }
+
       if (!prev.actividadFinalizada && next.actividadFinalizada) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _irATerminado());
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => _irATerminado());
       }
     });
 
@@ -343,18 +412,21 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
                           children: [
                             const SizedBox(height: 32),
-                            const _InstruccionRow(
+                            _InstruccionRow(
                               texto:
                                   'Elige si la frase está\nbien escrita o mal escrita.',
+                              onPlay: _reproducirAudio,
                             ),
                             const SizedBox(height: 36),
                             AnimatedBuilder(
                               animation: _shake,
-                              builder: (context, child) => Transform.translate(
+                              builder: (context, child) =>
+                                  Transform.translate(
                                 offset: Offset(_shake.value, 0),
                                 child: child,
                               ),
@@ -369,8 +441,7 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
                               frase: pregunta.frase,
                               respuesta: state.respuesta,
                             ),
-                            const SizedBox(height: 32),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 48),
                           ],
                         ),
                       ),
@@ -378,7 +449,8 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
                     if (!state.respondida)
                       _BotonesRespuesta(
                         onCorrecto: () => notifier.commandResponder(true),
-                        onIncorrecto: () => notifier.commandResponder(false),
+                        onIncorrecto: () =>
+                            notifier.commandResponder(false),
                       ),
                     const SizedBox(height: 28),
                   ],
@@ -435,7 +507,9 @@ class _Header extends StatelessWidget {
 
 class _InstruccionRow extends StatelessWidget {
   final String texto;
-  const _InstruccionRow({required this.texto});
+  final VoidCallback onPlay;
+
+  const _InstruccionRow({required this.texto, required this.onPlay});
 
   @override
   Widget build(BuildContext context) {
@@ -443,14 +517,17 @@ class _InstruccionRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF0F4FF),
-            borderRadius: BorderRadius.circular(12),
+        GestureDetector(
+          onTap: onPlay,
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F4FF),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.volume_up_rounded,
+                color: Color(0xFF3475F7), size: 22),
           ),
-          child: const Icon(Icons.volume_up_rounded,
-              color: Color(0xFF3475F7), size: 22),
         ),
         const SizedBox(width: 10),
         Text(
@@ -645,4 +722,3 @@ class _BotonOpcion extends StatelessWidget {
     );
   }
 }
-

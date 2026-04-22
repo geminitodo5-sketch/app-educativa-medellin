@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ Reemplaza just_audio
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
 import 'menu_1_y_2_view.dart';
@@ -20,8 +21,36 @@ class SeleccionGradoView extends ConsumerStatefulWidget {
 class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   bool _cargando = false;
 
+  // ✅ Mismo patrón que el código de referencia
+  Player? _player;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+
+    // ✅ Reproducción automática igual que en SumarPatronview
+    Future.microtask(() => _reproducirAudio());
+  }
+
+  // ✅ Mismo método de reproducción que el código de referencia
+  Future<void> _reproducirAudio() async {
+    try {
+      await _player?.open(
+        Media('asset:///assets/audio/sociales/audio generalsi_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint('Error reproduciendo audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
   Future<void> _onGradeSelected(int grade) async {
-    // Grados 3, 4 y 5 aún no disponibles
     if (grade > 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -42,7 +71,6 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
       final estudiante = ref.read(estudianteActivoProvider);
       if (estudiante == null) return;
 
-      // Actualiza el grado del estudiante en la BD
       final repo = ref.read(estudianteRepositoryProvider);
       final actualizado = estudiante.copyWith(grado: grade);
       await repo.actualizar(actualizado);
@@ -76,7 +104,7 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
       backgroundColor: const Color(0xFFA1E7E6),
       body: Stack(
         children: [
-          // Personaje: Pollito (inferior izquierda, cortado)
+          // Personaje: Pollito (inferior izquierda)
           Positioned(
             left: -20,
             bottom: -(characterHeight * 0.4),
@@ -94,7 +122,7 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
             ),
           ),
 
-          // Personaje: Monito (inferior derecha, cortado)
+          // Personaje: Monito (inferior derecha)
           Positioned(
             right: -20,
             bottom: -(characterHeight * 0.4),
@@ -126,23 +154,48 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
               children: [
                 SizedBox(height: screenSize.height * 0.06),
 
-                // Título
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Text(
-                    '¿A qué grado perteneces?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
-                      letterSpacing: 0.5,
-                    ),
+                // ── Título + ícono altavoz pegado ───────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Enunciado
+                      const Text(
+                        '¿A qué grado perteneces?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Hiruko',
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
+                      const SizedBox(height: 4),
+                      GestureDetector(
+                        onTap: _reproducirAudio,
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE3F2FD),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.volume_up_rounded,
+                            color: Color(0xFF1E293B),
+                            size: 22,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                // ───────────────────────────────────────────────
 
-                SizedBox(height: screenSize.height * 0.05),
+                SizedBox(height: screenSize.height * 0.04),
 
                 // Cuadrícula de botones
                 Expanded(
@@ -152,7 +205,7 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         children: [
-                          // Fila 1 y 2 (activos)
+                          // Fila 1° y 2° (activos)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -173,7 +226,7 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Fila 3 y 4 (próximamente)
+                          // Fila 3° y 4° (próximamente)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -194,7 +247,7 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Grado 5 (próximamente)
+                          // Grado 5° (próximamente)
                           GradeButton(
                             text: '5°',
                             color: const Color(0xFFF65757),

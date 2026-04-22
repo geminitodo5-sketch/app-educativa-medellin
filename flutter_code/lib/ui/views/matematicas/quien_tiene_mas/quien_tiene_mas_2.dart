@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ Importante
 import 'quien_tiene_mas_3.dart';
 
-class MenosFrutasview extends StatelessWidget {
+class MenosFrutasview extends StatefulWidget {
   const MenosFrutasview({super.key});
+
+  @override
+  State<MenosFrutasview> createState() => _MenosFrutasviewState();
+}
+
+class _MenosFrutasviewState extends State<MenosFrutasview> {
+  // ✅ Definición del reproductor
+  Player? _player;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+    
+    // Reproducir automáticamente al entrar
+    Future.microtask(() => _reproducirInstruccion());
+  }
+
+  @override
+  void dispose() {
+    _player?.dispose(); // ✅ Liberar memoria
+    super.dispose();
+  }
+
+  Future<void> _reproducirInstruccion() async {
+    try {
+      await _player?.open(
+        Media('asset:///assets/Audio/Matematicas/audio mate5_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
 
   void _mostrarFeedback(BuildContext context, bool esCorrecto, VoidCallback onAction) {
     showModalBottomSheet(
@@ -86,10 +120,9 @@ class MenosFrutasview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3475F7), // Azul oficial NUMI [cite: 64]
+      backgroundColor: const Color(0xFF3475F7),
       body: Stack(
         children: [
-          // 1. Título Superior - Tipografía Hiruko [cite: 70]
           const Positioned(
             top: 70,
             left: 0,
@@ -106,7 +139,6 @@ class MenosFrutasview extends StatelessWidget {
             ),
           ),
 
-          // 2. Panel Blanco Principal
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -120,48 +152,38 @@ class MenosFrutasview extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 40,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 40),
                 child: Column(
                   children: [
-                    // Área de Árboles con números decorativos
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         _buildTreeDisplay(
-                          imagePath:
-                              'assets/images/actividades/matematicas/arbol_manzana.png',
+                          imagePath: 'assets/images/actividades/matematicas/arbol_manzana.png',
                           index: '1',
-                          indexColor: const Color(
-                            0xFFF65757,
-                          ), // Rojo oficial [cite: 64]
+                          indexColor: const Color(0xFFF65757),
                         ),
                         _buildTreeDisplay(
-                          imagePath:
-                              'assets/images/actividades/matematicas/arbol_naranjas.png',
+                          imagePath: 'assets/images/actividades/matematicas/arbol_naranjas.png',
                           index: '2',
-                          indexColor: const Color(
-                            0xFFEF9325,
-                          ), // Naranja oficial [cite: 64]
+                          indexColor: const Color(0xFFEF9325),
                         ),
                       ],
                     ),
 
                     const Spacer(),
 
-                    // Fila de Instrucción - Tipografía Poppins [cite: 71]
-                    const Row(
+                    // Fila de Instrucción con botón de audio funcional
+                    Row(
                       children: [
-                        Icon(
-                          Icons.volume_up_outlined,
-                          size: 60,
+                        IconButton(
+                          icon: const Icon(Icons.volume_up_outlined, size: 60),
                           color: Colors.black87,
+                          onPressed: _reproducirInstruccion, // ✅ Acción de audio
                         ),
-                        SizedBox(width: 15),
-                        Expanded(
+                        const SizedBox(width: 15),
+                        const Expanded(
                           child: Text(
                             '¿Cuál árbol tiene menos frutas?',
                             style: TextStyle(
@@ -177,7 +199,6 @@ class MenosFrutasview extends StatelessWidget {
 
                     const SizedBox(height: 40),
 
-                    // Botones de Opción con texto negro y Poppins
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -190,7 +211,7 @@ class MenosFrutasview extends StatelessWidget {
                         _buildActionButton(
                           context,
                           label: 'Árbol 2',
-                          color: const Color(0xFFC6D8FF),
+                          color: const Color(0xFF3475F7),
                           onPressed: () => _verificarRespuesta(context, 2),
                         ),
                       ],
@@ -202,7 +223,6 @@ class MenosFrutasview extends StatelessWidget {
             ),
           ),
 
-          // Botón de Cerrar
           Positioned(
             top: 35,
             right: 15,
@@ -216,7 +236,6 @@ class MenosFrutasview extends StatelessWidget {
     );
   }
 
-  // Widget para mostrar el árbol con el número (Behove) [cite: 65, 66]
   Widget _buildTreeDisplay({
     required String imagePath,
     required String index,
@@ -239,7 +258,6 @@ class MenosFrutasview extends StatelessWidget {
     );
   }
 
-  // Botones profesionales con texto color negro y Poppins
   Widget _buildActionButton(
     BuildContext context, {
     required String label,
@@ -253,7 +271,7 @@ class MenosFrutasview extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          foregroundColor: Colors.black, // Texto color negro
+          foregroundColor: Colors.black,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

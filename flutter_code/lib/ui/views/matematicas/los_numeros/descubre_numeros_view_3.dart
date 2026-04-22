@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import '../../../../data/providers/app_state_provider.dart';
 import '../../../viewmodels/descubre_globos_view_model.dart';
 import '../../terminado.dart';
 
-/// Vista de búsqueda del número correcto con globos en movimiento
-/// Tipografía Numi: Hiruko (títulos) + Poppins (textos)
-/// Colores Numi: Azul #3475F7, Verde #59E347, Rojo #F65757
 class DescubreGlobosView extends ConsumerStatefulWidget {
   const DescubreGlobosView({super.key});
 
@@ -16,30 +14,40 @@ class DescubreGlobosView extends ConsumerStatefulWidget {
 
 class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     with TickerProviderStateMixin {
-  // ── Controlador de movimiento horizontal (bucle infinito) ──────────────
+  late final Player _player;
   late final AnimationController _moveController;
-
-  // ── Controladores de flotación vertical (uno por globo, desfasados) ───
   late final List<AnimationController> _floatControllers;
   late final List<Animation<double>> _floatAnimations;
 
   final double _balloonWidth = 120.0;
-
-  // Desfase de fase para que cada globo flote diferente
   final List<double> _floatPhases = [0.0, 0.33, 0.66];
+
+  static const Map<int, String> _audioMap = {
+    1:  'audio_mate_globo1_mezcla.mp3',
+    2:  'audio_mate_globo2_mezcla.mp3',
+    3:  'audio_mate_globo3_mezcla.mp3',
+    4:  'audio_mate_globo4_mezcla.mp3',
+    5:  'audio_mate_globo5_mezcla.mp3',
+    6:  'audio_mate_globo6_mezcla.mp3',
+    7:  'audio_mate_globo7_mezcla.mp3',
+    8:  'audio_mate_globo8_mezcla.mp3',
+    9:  'audio_mate_globo9_mezcla.mp3',
+    10: 'audio_mate_globo10_mezcla.mp3',
+  };
+
+  int? _ultimoNumeroReproducido;
 
   @override
   void initState() {
     super.initState();
 
-    // Movimiento horizontal continuo
+    _player = Player();
+
     _moveController = AnimationController(
       duration: const Duration(seconds: 7),
       vsync: this,
     )..repeat();
 
-    // Flotación vertical: cada globo tiene su propio controller con distinta duración
-    // para que no suban y bajen todos al mismo tiempo
     final durations = [
       const Duration(milliseconds: 1800),
       const Duration(milliseconds: 2200),
@@ -48,24 +56,126 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
 
     _floatControllers = List.generate(
       3,
-      (i) =>
-          AnimationController(duration: durations[i], vsync: this)
-            ..repeat(reverse: true),
+      (i) => AnimationController(duration: durations[i], vsync: this)
+        ..repeat(reverse: true),
     );
 
-    // Cada animación sube y baja entre -14 y 14 píxeles
     _floatAnimations = _floatControllers
         .map(
-          (c) => Tween<double>(
-            begin: -14,
-            end: 14,
-          ).animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)),
+          (c) => Tween<double>(begin: -14, end: 14)
+              .animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)),
         )
         .toList();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final vm = ref.read(descubreGlobosViewModelProvider);
+      _reproducirAudioNumero(vm.numeroObjetivo);
+    });
+  }
+
+  Future<void> _reproducirAudioNumero(int numero) async {
+    if (_ultimoNumeroReproducido == numero) return;
+    _ultimoNumeroReproducido = numero;
+
+    final archivo = _audioMap[numero];
+    if (archivo == null) {
+      debugPrint('No hay audio para el número $numero');
+      return;
+    }
+
+    try {
+      await _player.open(
+        Media('asset:///assets/Audio/Matematicas/$archivo'),
+      );
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error reproduciendo audio del globo $numero: $e');
+    }
+  }
+
+  void _showFeedbackSheet(bool esCorrecto, dynamic notifier) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    esCorrecto ? Icons.check_circle : Icons.cancel,
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    size: 40,
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    if (esCorrecto) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (_) => const ActividadTerminadaScreen()),
+                      );
+                    } else {
+                      notifier.commandIntentarDeNuevo();
+                    }
+                  },
+                  child: Text(
+                    esCorrecto ? 'Continuar' : 'Reintentar',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   void dispose() {
+    _player.dispose();
     _moveController.dispose();
     for (final c in _floatControllers) {
       c.dispose();
@@ -79,6 +189,23 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     final notifier = ref.read(descubreGlobosViewModelProvider.notifier);
     final screenWidth = MediaQuery.of(context).size.width;
 
+    ref.listen(descubreGlobosViewModelProvider, (prev, next) {
+      if (prev?.numeroObjetivo != next.numeroObjetivo) {
+        _reproducirAudioNumero(next.numeroObjetivo);
+      }
+      if (prev?.feedback != next.feedback &&
+          next.feedback != FeedbackEstadoGlobos.esperando) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _showFeedbackSheet(
+              next.feedback == FeedbackEstadoGlobos.correcto,
+              ref.read(descubreGlobosViewModelProvider.notifier),
+            );
+          }
+        });
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
       body: SafeArea(
@@ -86,13 +213,10 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
         bottom: false,
         child: Column(
           children: [
-            // ── ENCABEZADO AZUL ──────────────────────────────────────────
             _Header(
               onClose: () => Navigator.of(context).pop(),
-              progreso: 1.0, // Fase 3 de 3 (Final)
+              progreso: 1.0,
             ),
-
-            // ── CUERPO PRINCIPAL ─────────────────────────────────────────
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -111,18 +235,15 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // ── Tarjeta de instrucción ──────────────────
                             _InstruccionCard(
                               numeroObjetivo: vm.numeroObjetivo,
-                              onAudio: notifier.commandReproducirInstruccion,
+                              onAudio: () =>
+                                  _reproducirAudioNumero(vm.numeroObjetivo),
                             ),
                             const SizedBox(height: 32),
-
-                            // ── Área de globos animados ──────────────────
                             Expanded(
                               child: ClipRect(
                                 child: AnimatedBuilder(
-                                  // Escucha todos los controllers a la vez
                                   animation: Listenable.merge([
                                     _moveController,
                                     ..._floatControllers,
@@ -136,15 +257,16 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                                           screenWidth: screenWidth,
                                           relativeOffset: i / 3,
                                           numero: vm.numerosEnGlobos[i],
-                                          floatValue: _floatAnimations[i].value,
+                                          floatValue:
+                                              _floatAnimations[i].value,
                                           yaRespondioCorrectamente:
                                               vm.yaRespondioCorrectamente,
                                           onTap: vm.yaRespondioCorrectamente
                                               ? null
                                               : () => notifier
-                                                    .commandValidarRespuesta(
-                                                      vm.numerosEnGlobos[i],
-                                                    ),
+                                                  .commandValidarRespuesta(
+                                                    vm.numerosEnGlobos[i],
+                                                  ),
                                         ),
                                       ),
                                     );
@@ -156,14 +278,6 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                         ),
                       ),
                     ),
-
-                    // ── PANEL DE FEEDBACK ────────────────────────────────
-                    _FeedbackPanel(
-                      estado: vm.feedback,
-                      numeroObjetivo: vm.numeroObjetivo,
-                      onNuevoReto: notifier.commandNuevoReto,
-                      onIntentarDeNuevo: notifier.commandIntentarDeNuevo,
-                    ),
                   ],
                 ),
               ),
@@ -174,7 +288,6 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     );
   }
 
-  /// Construye un globo con movimiento horizontal en bucle + flotación vertical
   Widget _buildLoopedBalloon({
     required double screenWidth,
     required double relativeOffset,
@@ -185,7 +298,6 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
   }) {
     final double totalDistance = screenWidth + _balloonWidth;
 
-    // Posición X: bucle infinito de derecha a izquierda
     double xPos =
         (screenWidth -
                 (_moveController.value * totalDistance) +
@@ -193,22 +305,18 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
             totalDistance -
         _balloonWidth;
 
-    // Posición Y: centro del área + flotación individual
-    final double yBase = 20;
+    const double yBase = 20;
 
     return Positioned(
       left: xPos,
-      top: yBase + floatValue, // flotación arriba/abajo
+      top: yBase + floatValue,
       child: _BalloonWidget(numero: numero, onTap: onTap),
     );
   }
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// WIDGETS INTERNOS
-// ────────────────────────────────────────────────────────────────────────────
+// ── WIDGETS ──────────────────────────────────────────────────────────────────
 
-/// Encabezado unificado con barra de progreso y sync status
 class _Header extends ConsumerWidget {
   final VoidCallback onClose;
   final double progreso;
@@ -234,18 +342,13 @@ class _Header extends ConsumerWidget {
                 color: Colors.white.withOpacity(0.7),
                 size: 22,
               ),
-              error: (_, __) => const Icon(
-                Icons.cloud_off_rounded,
-                color: Colors.white30,
-                size: 22,
-              ),
+              error: (_, __) => const Icon(Icons.cloud_off_rounded,
+                  color: Colors.white30, size: 22),
               loading: () => const SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white30,
-                ),
+                    strokeWidth: 2, color: Colors.white30),
               ),
             ),
           ),
@@ -281,11 +384,8 @@ class _Header extends ConsumerWidget {
             top: 12,
             right: 8,
             child: IconButton(
-              icon: const Icon(
-                Icons.close_rounded,
-                color: Colors.white,
-                size: 28,
-              ),
+              icon: const Icon(Icons.close_rounded,
+                  color: Colors.white, size: 28),
               onPressed: onClose,
             ),
           ),
@@ -311,12 +411,14 @@ class _Header extends ConsumerWidget {
   }
 }
 
-/// Tarjeta de instrucción con número objetivo resaltado
 class _InstruccionCard extends StatelessWidget {
   final int numeroObjetivo;
   final VoidCallback onAudio;
 
-  const _InstruccionCard({required this.numeroObjetivo, required this.onAudio});
+  const _InstruccionCard({
+    required this.numeroObjetivo,
+    required this.onAudio,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -335,7 +437,6 @@ class _InstruccionCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Botón audio
           GestureDetector(
             onTap: onAudio,
             child: Container(
@@ -345,16 +446,11 @@ class _InstruccionCard extends StatelessWidget {
                 color: const Color(0xFFEEF2FF),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
-                Icons.volume_up_rounded,
-                color: Color(0xFF3475F7),
-                size: 26,
-              ),
+              child: const Icon(Icons.volume_up_rounded,
+                  color: Color(0xFF3475F7), size: 26),
             ),
           ),
           const SizedBox(width: 14),
-
-          // Texto con el número resaltado en azul
           Expanded(
             child: RichText(
               text: TextSpan(
@@ -366,7 +462,8 @@ class _InstruccionCard extends StatelessWidget {
                   height: 1.3,
                 ),
                 children: [
-                  const TextSpan(text: 'Presiona el globo cuando salga el '),
+                  const TextSpan(
+                      text: 'Presiona el globo cuando salga el '),
                   TextSpan(
                     text: '$numeroObjetivo',
                     style: const TextStyle(
@@ -385,7 +482,6 @@ class _InstruccionCard extends StatelessWidget {
   }
 }
 
-/// Globo individual: imagen de fondo + número perfectamente centrado
 class _BalloonWidget extends StatelessWidget {
   final int numero;
   final VoidCallback? onTap;
@@ -401,21 +497,16 @@ class _BalloonWidget extends StatelessWidget {
         height: 160,
         child: Stack(
           children: [
-            // Globo de fondo
             Positioned.fill(
               child: Image.asset(
                 'assets/images/actividades/matematicas/globo.png',
                 fit: BoxFit.contain,
               ),
             ),
-
-            // Número centrado dentro del "cuerpo" del globo
-            // El cuerpo del globo ocupa ~75% de la altura total (sin el nudo ni hilo)
             Positioned(
               top: 0,
               left: 0,
               right: 0,
-              // El 75% superior es la parte redonda del globo
               bottom: 160 * 0.25,
               child: Center(
                 child: Text(
@@ -444,245 +535,3 @@ class _BalloonWidget extends StatelessWidget {
   }
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// PANEL DE FEEDBACK (pestaña inferior)
-// ────────────────────────────────────────────────────────────────────────────
-
-class _FeedbackPanel extends StatelessWidget {
-  final FeedbackEstadoGlobos estado;
-  final int numeroObjetivo;
-  final VoidCallback onNuevoReto;
-  final VoidCallback onIntentarDeNuevo;
-
-  const _FeedbackPanel({
-    required this.estado,
-    required this.numeroObjetivo,
-    required this.onNuevoReto,
-    required this.onIntentarDeNuevo,
-  });
-
-  Color get _bgColor {
-    switch (estado) {
-      case FeedbackEstadoGlobos.correcto:
-        return const Color(0xFF59E347);
-      case FeedbackEstadoGlobos.incorrecto:
-        return const Color(0xFFF65757);
-      case FeedbackEstadoGlobos.esperando:
-        return Colors.white;
-    }
-  }
-
-  String get _icono {
-    switch (estado) {
-      case FeedbackEstadoGlobos.correcto:
-        return '⭐';
-      case FeedbackEstadoGlobos.incorrecto:
-        return '💡';
-      case FeedbackEstadoGlobos.esperando:
-        return '🎈';
-    }
-  }
-
-  String get _mensaje {
-    switch (estado) {
-      case FeedbackEstadoGlobos.correcto:
-        return '¡Excelente! Encontraste el $numeroObjetivo. ¡Muy bien!';
-      case FeedbackEstadoGlobos.incorrecto:
-        return 'Ese no es el $numeroObjetivo. ¡Sigue buscando!';
-      case FeedbackEstadoGlobos.esperando:
-        return 'Observa los globos y toca el que tenga el $numeroObjetivo.';
-    }
-  }
-
-  Color get _textoColor {
-    return estado == FeedbackEstadoGlobos.esperando
-        ? const Color(0xFF94A3B8)
-        : Colors.white;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: _bgColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.fromLTRB(
-        20,
-        18,
-        20,
-        MediaQuery.of(context).padding.bottom + 18,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ── Ícono + Mensaje ─────────────────────────────────────────
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: estado == FeedbackEstadoGlobos.esperando
-                      ? const Color(0xFFEEF2FF)
-                      : Colors.white.withOpacity(0.3),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(_icono, style: const TextStyle(fontSize: 22)),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  _mensaje,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: _textoColor,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // ── Botones según estado ────────────────────────────────────
-          if (estado == FeedbackEstadoGlobos.esperando)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              decoration: BoxDecoration(
-                color: const Color(0xFF3475F7).withOpacity(0.08),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Text(
-                'Toca el globo correcto para responder',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF3475F7),
-                ),
-              ),
-            )
-          else if (estado == FeedbackEstadoGlobos.correcto)
-            _BotonPrincipal(
-              texto: '¡Completar actividad! 🏆',
-              bgColor: Colors.white,
-              textoColor: const Color(0xFF59E347),
-              onTap: () {
-                // Usamos pushReplacement para que la pantalla de felicitación tome el lugar
-                // de la actividad en la pila de navegación. Al no pasar un callback 'onVolver',
-                // la pantalla usará su comportamiento por defecto: pop().
-                // Como MatematicasView fue quien inició la secuencia, volveremos ahí directamente.
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const ActividadTerminadaScreen()),
-                );
-              },
-            )
-          else ...[
-            _BotonPrincipal(
-              texto: 'Intentar de nuevo',
-              bgColor: Colors.white,
-              textoColor: const Color(0xFFF65757),
-              onTap: onIntentarDeNuevo,
-            ),
-            const SizedBox(height: 10),
-            _BotonSecundario(texto: 'Cambiar reto', onTap: onNuevoReto),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _BotonPrincipal extends StatelessWidget {
-  final String texto;
-  final Color bgColor;
-  final Color textoColor;
-  final VoidCallback onTap;
-
-  const _BotonPrincipal({
-    required this.texto,
-    required this.bgColor,
-    required this.textoColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          foregroundColor: textoColor,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Text(
-          texto,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BotonSecundario extends StatelessWidget {
-  final String texto;
-  final VoidCallback onTap;
-
-  const _BotonSecundario({required this.texto, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        onPressed: onTap,
-        style: TextButton.styleFrom(
-          backgroundColor: Colors.white.withOpacity(0.25),
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-        child: Text(
-          texto,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-}

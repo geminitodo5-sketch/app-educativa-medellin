@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import '../terminado.dart';
 
 enum _Tool { casco, placa, zapatillas, cuchara }
@@ -14,6 +15,10 @@ class HeroesCiudad3Screen extends StatefulWidget {
 class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   final Map<int, _Tool> _placed = {};
   final Set<_Tool> _usedTools = {};
+
+  // ── Audio ─────────────────────────────────────────────────────────────────
+  late final Player _player;
+  bool _isPlayingAudio = false;
 
   static const List<_HeroData> _heroes = [
     _HeroData(
@@ -64,6 +69,44 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
       fallbackEmoji: '🪖',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales3_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error cargando audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error al reproducir audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
 
   void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
     showModalBottomSheet(
@@ -175,7 +218,7 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       // Sin border radius: esquinas completamente rectas
       color: const Color(0xFFF5A623),
       child: Stack(
@@ -240,10 +283,17 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
 
             // Instrucción
             Row(
-              children: const [
-                Icon(Icons.volume_up, color: Color(0xFF333333), size: 26),
-                SizedBox(width: 10),
-                Expanded(
+              children: [
+                GestureDetector(
+                  onTap: _toggleAudio,
+                  child: Icon(
+                    _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up,
+                    color: const Color(0xFF333333),
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
                   child: Text(
                     'Arrastra cada objeto al personaje correcto',
                     style: TextStyle(

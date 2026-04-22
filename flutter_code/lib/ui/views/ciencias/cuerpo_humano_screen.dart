@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math' show sin, pi;
+import 'dart:math' show sin, pi, Random;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart'; // ✅ media_kit en lugar de just_audio
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
 import '../../../data/models/sync_queue_model.dart';
@@ -12,6 +15,31 @@ import '../terminado.dart';
 const _p4 = 'assets/images/actividades/ciencias_naturales/pantalla 4/';
 const _p5 = 'assets/images/actividades/ciencias_naturales/pantalla 5/';
 const _p6 = 'assets/images/actividades/ciencias_naturales/pantalla 6/';
+
+// ── Rutas de audio ───────────────────────────────────────────────────────────
+const _audio4 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_mezcla.mp3';
+const _audio5 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales5_mezcla.mp3';
+const _audio6 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_mezcla.mp3';
+
+// Audios por parte del cuerpo (Actividad 1)
+const _audioOjos    = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_ojos_mezcla.mp3';
+const _audioManos   = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_manos_mezcla.mp3';
+const _audioPiernas = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_piernas_mezcla.mp3';
+
+// Audios por pregunta (Actividad 3)
+const _audioAct3Vista  = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_arcoiris_mezcla.mp3';
+const _audioAct3Oido   = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_musica_mezcla.mp3';
+const _audioAct3Tacto  = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_objetos_mezcla.mp3';
+const _audioAct3Gusto  = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_alimentos_mezcla.mp3';
+
+// ── Helper: reproduce un asset con media_kit ─────────────────────────────────
+Future<void> _playAsset(Player player, String assetPath) async {
+  try {
+    await player.open(Media('asset:///$assetPath'));
+  } catch (e) {
+    debugPrint('Error al reproducir audio ($assetPath): $e');
+  }
+}
 
 // ── Popup de retroalimentación ────────────────────────────────────────────
 void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onAction}) {
@@ -82,7 +110,10 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 // Pantalla principal que contiene las 3 actividades
+// ─────────────────────────────────────────────────────────────────────────────
+
 class CuerpoHumanoScreen extends ConsumerStatefulWidget {
   const CuerpoHumanoScreen({super.key});
 
@@ -181,7 +212,6 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
               ),
             ],
           ),
-          // Botón X flotante sobre el header verde
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -280,15 +310,46 @@ class _Actividad1State extends State<_Actividad1>
   Size? _imageSize;
   Size _containerSize = Size.zero;
 
+  final Player _playerInstruccion = Player();
+  final Player _playerParte       = Player();
+
+  static const _audioPorParte = {
+    'ojos':    _audioOjos,
+    'manos':   _audioManos,
+    'piernas': _audioPiernas,
+  };
+
   late final AnimationController _shake = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 500),
   );
 
+  Future<void> _playAudioParte(String parte) async {
+    final assetPath = _audioPorParte[parte];
+    if (assetPath == null) return;
+    await _playAsset(_playerParte, assetPath);
+  }
+
   @override
   void initState() {
     super.initState();
     _cargarTamanioImagen();
+
+    // ✅ CORRECCIÓN: espera a que termine _audio4 antes de reproducir
+    // el audio de la primera parte del cuerpo (ojos).
+    Future.microtask(() async {
+      if (!mounted) return;
+
+      // 1. Reproduce la instrucción general
+      await _playAsset(_playerInstruccion, _audio4);
+
+      // 2. Espera a que el stream confirme que terminó de reproducirse
+      await _playerInstruccion.stream.completed
+          .firstWhere((done) => done);
+
+      // 3. Solo entonces reproduce el audio de la primera parte
+      if (mounted) await _playAudioParte(_preguntas[0]);
+    });
   }
 
   Future<void> _cargarTamanioImagen() async {
@@ -353,6 +414,8 @@ class _Actividad1State extends State<_Actividad1>
         });
         if (_ronda >= _preguntas.length) {
           Future.delayed(const Duration(milliseconds: 300), widget.onNext);
+        } else {
+          _playAudioParte(_preguntas[_ronda]);
         }
       } else {
         setState(() => _acierto = null);
@@ -363,6 +426,8 @@ class _Actividad1State extends State<_Actividad1>
   @override
   void dispose() {
     _shake.dispose();
+    _playerInstruccion.dispose();
+    _playerParte.dispose();
     super.dispose();
   }
 
@@ -374,7 +439,11 @@ class _Actividad1State extends State<_Actividad1>
     return _Tarjeta(
       child: Column(
         children: [
-          const _Instruccion('Toca la parte del cuerpo'),
+          _Instruccion(
+            'Toca la parte del cuerpo',
+            player: _playerInstruccion,
+            audioPath: _audio4,
+          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -509,9 +578,39 @@ class _PageCard extends StatelessWidget {
   }
 }
 
-class _Instruccion extends StatelessWidget {
+class _Instruccion extends StatefulWidget {
   final String texto;
-  const _Instruccion(this.texto);
+  final Player? player;
+  final String? audioPath;
+  const _Instruccion(this.texto, {this.player, this.audioPath});
+
+  @override
+  State<_Instruccion> createState() => _InstruccionState();
+}
+
+class _InstruccionState extends State<_Instruccion> {
+  bool _reproduciendo = false;
+
+  Future<void> _reproducir() async {
+    if (widget.player == null || widget.audioPath == null) return;
+
+    if (_reproduciendo) {
+      await widget.player!.stop();
+      if (mounted) setState(() => _reproduciendo = false);
+      return;
+    }
+
+    if (mounted) setState(() => _reproduciendo = true);
+    try {
+      await widget.player!.open(Media('asset:///${widget.audioPath!}'));
+      await widget.player!.stream.completed.firstWhere((done) => done);
+    } catch (e) {
+      debugPrint('Error reproduciendo audio: $e');
+    } finally {
+      if (mounted) setState(() => _reproduciendo = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -519,20 +618,29 @@ class _Instruccion extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8F5E9),
-              borderRadius: BorderRadius.circular(10),
+          GestureDetector(
+            onTap: _reproducir,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: _reproduciendo
+                    ? const Color(0xFF3DCC52)
+                    : const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.volume_up_rounded,
+                color: _reproduciendo ? Colors.white : const Color(0xFF3DCC52),
+                size: 22,
+              ),
             ),
-            child: const Icon(Icons.volume_up_rounded,
-                color: Color(0xFF3DCC52), size: 22),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              texto,
+              widget.texto,
               style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 13,
@@ -615,11 +723,20 @@ class _Actividad2State extends State<_Actividad2> {
   final _areaKey = GlobalKey();
   final Map<String, Offset> _touchOffset = {};
 
+  final Player _player = Player();
+
+  Future<void> _playAudio() async {
+    await _playAsset(_player, _audio5);
+  }
+
   @override
   void initState() {
     super.initState();
     _inicializarEstados();
     _calcularFraccionesDesdeImagenes();
+    Future.microtask(() {
+      if (mounted) _playAudio();
+    });
   }
 
   Future<void> _calcularFraccionesDesdeImagenes() async {
@@ -693,71 +810,40 @@ class _Actividad2State extends State<_Actividad2> {
 
   bool get _todoColocado => _estados.every((e) => e.colocada);
 
-  // ✅ MÉTODO CORREGIDO — tolerancias más amplias
   bool _esCorrecto(String nombre) {
     final e = _estados.firstWhere((e) => e.nombre == nombre);
     final p = _piezas.firstWhere((p) => p.nombre == nombre);
 
-    // ── 1. Camisa: ancla principal ─────────────────────────────────────────
     if (nombre == 'camisa') {
       return e.posicion.dx >= 0.20 && e.posicion.dx <= 0.80 &&
              e.posicion.dy >= 0.25 && e.posicion.dy <= 0.75;
     }
 
-    // ── 2. Piezas relativas a la camisa ───────────────────────────────────
     if (nombre == 'cabeza' || nombre == 'manos' || nombre == 'piernas') {
       final eCamisa = _estados.firstWhere((est) => est.nombre == 'camisa');
-
-      // Si la camisa no está colocada, validar por zona absoluta
       if (!eCamisa.colocada) return p.toleranceRect.contains(e.posicion);
-
       final diff = e.posicion - eCamisa.posicion;
-
       if (nombre == 'cabeza') {
-        // Encima de la camisa, margen horizontal amplio
-        return diff.dy < -0.08 &&     // arriba de la camisa ✓
-               diff.dy > -0.45 &&     // no demasiado lejos ✓
-               diff.dx.abs() < 0.28;  // centrado horizontalmente ✓
+        return diff.dy < -0.08 && diff.dy > -0.45 && diff.dx.abs() < 0.28;
       }
-
       if (nombre == 'piernas') {
-        // Debajo de la camisa
-        return diff.dy > 0.10 &&      // debajo de la camisa ✓
-               diff.dy < 0.55 &&      // no demasiado lejos ✓
-               diff.dx.abs() < 0.28;  // centrado horizontalmente ✓
+        return diff.dy > 0.10 && diff.dy < 0.55 && diff.dx.abs() < 0.28;
       }
-
       if (nombre == 'manos') {
-        // A los lados, misma altura aprox
-        return diff.dy.abs() < 0.25 && // misma altura ✓
-               diff.dx.abs() < 0.50;   // a los lados ✓
+        return diff.dy.abs() < 0.25 && diff.dx.abs() < 0.50;
       }
     }
 
-    // ── 3. Piezas relativas a la cabeza ───────────────────────────────────
     if (nombre == 'ojos' || nombre == 'boca' || nombre == 'cabello') {
       final eCabeza = _estados.firstWhere((estado) => estado.nombre == 'cabeza');
-
-      // Si la cabeza no está colocada, validar por zona absoluta
       if (!eCabeza.colocada) return p.toleranceRect.contains(e.posicion);
-
       final diff = e.posicion - eCabeza.posicion;
       final distancia = diff.distance;
-
-      if (nombre == 'cabello') {
-        return distancia < 0.35 && diff.dy <= 0.05;
-      }
-
-      if (nombre == 'ojos') {
-        return distancia < 0.30;
-      }
-
-      if (nombre == 'boca') {
-        return distancia < 0.30;
-      }
+      if (nombre == 'cabello') return distancia < 0.35 && diff.dy <= 0.05;
+      if (nombre == 'ojos')    return distancia < 0.30;
+      if (nombre == 'boca')    return distancia < 0.30;
     }
 
-    // Fallback
     return p.toleranceRect.contains(e.posicion);
   }
 
@@ -818,14 +904,23 @@ class _Actividad2State extends State<_Actividad2> {
   }
 
   @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final enBandeja = _enBandeja;
 
     return _Tarjeta(
       child: Column(
         children: [
-          const _Instruccion('¡Arma la niña! Arrastra cada parte a su lugar'),
-
+          _Instruccion(
+            'Ayudame a armar la niña poniendo las partes en el lugar correcto',
+            player: _player,
+            audioPath: _audio5,
+          ),
           Expanded(
             flex: 5,
             child: Padding(
@@ -856,7 +951,6 @@ class _Actividad2State extends State<_Actividad2> {
                                     fontSize: 13,
                                     fontFamily: 'Poppins')),
                           ),
-
                         ..._renderOrder.map((nombre) {
                           final e = _estados.firstWhere((e) => e.nombre == nombre);
                           if (!e.colocada) return const SizedBox.shrink();
@@ -1067,9 +1161,9 @@ class _Actividad2State extends State<_Actividad2> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 3: Sentidos y funciones
-// ─────────────────────────────────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════════════════════
 
 class _Actividad3 extends StatefulWidget {
   final VoidCallback onFinish;
@@ -1079,12 +1173,14 @@ class _Actividad3 extends StatefulWidget {
 }
 
 class _Actividad3State extends State<_Actividad3> {
-  final _preguntas = [
-    {'txt': '¿Con qué parte del cuerpo puedo mirar el arcoíris?', 'ans': 'vista'},
-    {'txt': '¿Con qué parte del cuerpo escucho música?', 'ans': 'oido'},
-    {'txt': '¿Con qué parte del cuerpo siento si algo está caliente?', 'ans': 'tacto'},
-    {'txt': '¿Con qué parte del cuerpo saboreo un helado?', 'ans': 'gusto'},
-  ];
+  static const _audioPorRespuesta = {
+    'vista': _audioAct3Vista,
+    'oido':  _audioAct3Oido,
+    'tacto': _audioAct3Tacto,
+    'gusto': _audioAct3Gusto,
+  };
+
+  late final List<Map<String, String>> _preguntas;
 
   final _botones = [
     {'id': 'vista', 'img': '${_p6}boton vista.png', 'c': const Color(0xFF1565C0)},
@@ -1095,6 +1191,30 @@ class _Actividad3State extends State<_Actividad3> {
 
   int _ronda = 0;
   String? _seleccion;
+
+  final Player _player = Player();
+
+  String get _audioRondaActual =>
+      _audioPorRespuesta[_preguntas[_ronda]['ans']]!;
+
+  Future<void> _playAudioRonda() async {
+    await _playAsset(_player, _audioRondaActual);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final lista = [
+      {'txt': '¿Con qué parte del cuerpo puedo mirar los colores del arcoíris?', 'ans': 'vista'},
+      {'txt': '¿Con qué parte del cuerpo escucho música?', 'ans': 'oido'},
+      {'txt': '¿Con qué parte del cuerpo toco los objetos?', 'ans': 'tacto'},
+      {'txt': '¿Con qué parte del cuerpo saboreo los alimentos?', 'ans': 'gusto'},
+    ]..shuffle(Random());
+    _preguntas = lista;
+    Future.microtask(() {
+      if (mounted) _playAudioRonda();
+    });
+  }
 
   void _responder(BuildContext context, String id) {
     if (_seleccion != null) return;
@@ -1107,6 +1227,7 @@ class _Actividad3State extends State<_Actividad3> {
             _ronda++;
             _seleccion = null;
           });
+          _playAudioRonda();
         } else {
           widget.onFinish();
         }
@@ -1117,11 +1238,21 @@ class _Actividad3State extends State<_Actividad3> {
   }
 
   @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _Tarjeta(
       child: Column(
         children: [
-          _Instruccion(_preguntas[_ronda]['txt']!),
+          _Instruccion(
+            _preguntas[_ronda]['txt']!,
+            player: _player,
+            audioPath: _audioRondaActual,
+          ),
           Expanded(
             child: Center(
               child: Padding(

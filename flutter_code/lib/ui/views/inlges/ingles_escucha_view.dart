@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:media_kit/media_kit.dart';
 import 'ingles_congratulations_view.dart';
 
 const _img = 'assets/images/areas/ingles/juego_1/imagenes_1/';
@@ -47,6 +47,9 @@ const _colores = [
 
 const _etiquetas = ['Fruits', 'Numbers', 'Animals'];
 
+// Ruta del audio de instrucción general
+const _audioInstruccion = 'assets/images/areas/ingles/juego_1/audios_1/audio.mp3';
+
 class InglesEscuchaView extends StatefulWidget {
   const InglesEscuchaView({super.key, this.onCompleted});
   final VoidCallback? onCompleted;
@@ -56,7 +59,7 @@ class InglesEscuchaView extends StatefulWidget {
 }
 
 class _InglesEscuchaViewState extends State<InglesEscuchaView> {
-  final _player = AudioPlayer();
+  late final Player _player;
 
   int _nivel = 0;
   int _seleccion = -1;
@@ -67,10 +70,36 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
   int get _correcta => _data['correcta'] as int;
   List get _opciones => _data['opciones'] as List;
 
-  Future<void> _play(String path) async {
+  @override
+  void initState() {
+    super.initState();
+    _player = Player();
+    // Reproduce instrucción automáticamente al entrar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reproducirInstruccion();
+    });
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  /// Reproduce el audio de instrucción general
+  Future<void> _reproducirInstruccion() async {
     try {
-      await _player.stop();
-      await _player.setAudioSource(AudioSource.asset(path));
+      await _player.open(Media('asset:///$_audioInstruccion'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio instrucción: $e');
+    }
+  }
+
+  /// Reproduce cualquier audio por ruta
+  Future<void> _play(String assetPath) async {
+    try {
+      await _player.open(Media('asset:///$assetPath'));
       await _player.play();
     } catch (e) {
       debugPrint('Audio error: $e');
@@ -86,7 +115,9 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -99,7 +130,9 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -109,7 +142,9 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      color: esCorrecto
+                          ? Colors.green[900]
+                          : Colors.red[900],
                     ),
                   ),
                 ],
@@ -120,8 +155,12 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -186,12 +225,6 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
     }
   }
 
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
-  }
-
   Widget _buildIndicador() {
     return Column(
       children: [
@@ -231,7 +264,6 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
       body: SafeArea(
         child: Column(
           children: [
-            // ── HEADER ── reducido para dar más espacio al grid
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
@@ -263,8 +295,6 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                 ],
               ),
             ),
-
-            // ── CONTENIDO ──
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -279,25 +309,38 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                   padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
                   child: Column(
                     children: [
-                      // Instrucción
-                      Row(
-                        children: const [
-                          Icon(Icons.volume_up, color: Colors.black87, size: 20),
-                          SizedBox(width: 8),
-                          Text(
-                            'Escucha y elige el correcto',
-                            style: TextStyle(
-                              fontFamily: 'Hiruko',
-                              fontSize: 15,
-                              color: Colors.black87,
+                      // Instrucción con ícono tappable
+                      GestureDetector(
+                        onTap: _reproducirInstruccion,
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF0F4FF),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.volume_up_rounded,
+                                color: Color(0xFF3475F7),
+                                size: 22,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Escucha y elige el correcto',
+                              style: TextStyle(
+                                fontFamily: 'Hiruko',
+                                fontSize: 15,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-
                       const SizedBox(height: 16),
 
-                      // Botón de audio — más pequeño
+                      // Botón de audio de la pregunta
                       GestureDetector(
                         onTap: () => _play(_data['pregunta'] as String),
                         child: Image.asset(
@@ -307,10 +350,9 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                           color: Colors.black87,
                         ),
                       ),
-
                       const SizedBox(height: 16),
 
-                      // Grid de opciones — ocupa todo el espacio restante
+                      // Grid de opciones
                       Expanded(
                         child: GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -361,7 +403,6 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                           },
                         ),
                       ),
-
                       const SizedBox(height: 16),
                     ],
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:media_kit/media_kit.dart';
 import '../../../viewmodels/palabra_loca_3_view_model.dart';
 import '../../terminado.dart';
 
@@ -14,12 +15,16 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
     with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   late Animation<double> _scaleAnim;
+  late final Player _player;
 
   bool _navegandoATerminado = false;
 
   @override
   void initState() {
     super.initState();
+    _player = Player();
+    _reproducirAudio();
+
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -28,8 +33,19 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
         CurvedAnimation(parent: _animController, curve: Curves.elasticOut);
   }
 
+  Future<void> _reproducirAudio() async {
+    try {
+      await _player.open(
+        Media('asset:///assets/Audio/espanol/audio_espanol4_mezcla.mp3'),
+      );
+    } catch (e) {
+      debugPrint("Error de audio: $e");
+    }
+  }
+
   @override
   void dispose() {
+    _player.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -43,8 +59,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
         builder: (_) => ActividadTerminadaScreen(
           onVolver: () {
             final nav = Navigator.of(context);
-            nav.pop(); // cierra terminado
-            nav.pop(); // cierra OracionesActivity
+            nav.pop();
+            nav.pop();
           },
         ),
       ),
@@ -68,16 +84,13 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF65757), // Rojo Numi
+      backgroundColor: const Color(0xFFF65757),
       body: SafeArea(
         bottom: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ① Header (130 de alto)
             _buildHeader(),
-
-            // ② Panel Blanco Redondeado
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -101,7 +114,6 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
                                 children: [
                                   _buildZonaRespuesta(state, notifier, ejercicio),
                                   const SizedBox(height: 10),
-                                  
                                 ],
                               ),
                             ),
@@ -123,8 +135,6 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
       ),
     );
   }
-
-  // ── Widgets ──────────────────────────────────────────────────
 
   Widget _buildHeader() {
     return Container(
@@ -163,10 +173,20 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.volume_up_rounded,
-                color: Color(0xFFF65757),
-                size: 26,
+              GestureDetector(
+                onTap: _reproducirAudio,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F4FF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.volume_up_rounded,
+                    color: Color(0xFF3475F7),
+                    size: 26,
+                  ),
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -182,7 +202,6 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
               ),
             ],
           ),
-
           const SizedBox(height: 16),
           SizedBox(
             height: 180,
@@ -264,8 +283,6 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
       ),
     );
   }
-
-  
 
   Widget _buildBancoPalabras(OracionesEstado state, OracionesViewModel notifier) {
     return Padding(

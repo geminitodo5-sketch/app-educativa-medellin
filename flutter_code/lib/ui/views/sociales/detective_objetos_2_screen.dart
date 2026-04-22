@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'detective_objetos_3_screen.dart';
+
 
 class DetectiveObjetos2Screen extends StatefulWidget {
   const DetectiveObjetos2Screen({super.key, this.onCompleted});
@@ -16,6 +18,9 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   bool? _isCorrect;
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
+
+  late final Player _player;
+  bool _isPlayingAudio = false;
 
   // Índice 2 = balón es la respuesta correcta
   static const int _correctIndex = 2;
@@ -43,6 +48,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   @override
   void initState() {
     super.initState();
+    _player = Player();
     _shakeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
@@ -59,11 +65,39 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
           tween: Tween(begin: const Offset(-0.04, 0), end: Offset.zero),
           weight: 1),
     ]).animate(_shakeCtrl);
+
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales5_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
   }
 
   @override
   void dispose() {
     _shakeCtrl.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -165,7 +199,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   void _showSuccess() {
     _mostrarFeedback(true, () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PuzzleScreen()),
+        MaterialPageRoute(builder: (_) => PuzzleScreen(onCompleted: widget.onCompleted)),
       );
     });
   }
@@ -204,8 +238,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      // Sin esquinas redondeadas — el bloque naranja va de borde a borde
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
@@ -234,22 +267,10 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
             right: 0,
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.28),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.close_rounded,
-                  size: 20,
-                  color: Colors.white,
-                ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 22,
+                color: Colors.white,
               ),
             ),
           ),
@@ -280,21 +301,29 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5A623).withValues(alpha: 0.14),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFF5A623).withValues(alpha: 0.40),
-                    width: 1.5,
+              GestureDetector(
+                onTap: _toggleAudio,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: _isPlayingAudio
+                        ? const Color(0xFFF5A623).withValues(alpha: 0.25)
+                        : const Color(0xFFF5A623).withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _isPlayingAudio
+                          ? const Color(0xFFF5A623)
+                          : const Color(0xFFF5A623).withValues(alpha: 0.40),
+                      width: 1.5,
+                    ),
                   ),
-                ),
-                child: const Icon(
-                  Icons.volume_up_rounded,
-                  color: Color(0xFFF5A623),
-                  size: 20,
+                  child: Icon(
+                    _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up_rounded,
+                    color: const Color(0xFFF5A623),
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),

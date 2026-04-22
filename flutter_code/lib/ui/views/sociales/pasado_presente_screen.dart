@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:media_kit/media_kit.dart';
 import 'pasado_presente_2_screen.dart';
 
 class PasadoPresenteScreen extends StatefulWidget {
@@ -33,9 +34,13 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
 
+  late final Player _player;
+  bool _isPlayingAudio = false;
+
   @override
   void initState() {
     super.initState();
+    _player = Player();
     _rightOrder = List.generate(4, (i) => i)..shuffle(Random());
     _shakeCtrl = AnimationController(
       vsync: this,
@@ -56,11 +61,38 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
         weight: 1,
       ),
     ]).animate(_shakeCtrl);
+    _initAndPlayAudio();
+  }
+
+  Future<void> _initAndPlayAudio() async {
+    try {
+      _player.stream.playing.listen((playing) {
+        if (mounted) setState(() => _isPlayingAudio = playing);
+      });
+      await _player.open(
+          Media('asset:///assets/Audio/Sociales/audio_sociales7_mezcla.mp3'));
+      await _player.play();
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    try {
+      if (_player.state.playing) {
+        await _player.pause();
+      } else {
+        await _player.play();
+      }
+    } catch (e) {
+      debugPrint('Error audio: $e');
+    }
   }
 
   @override
   void dispose() {
     _shakeCtrl.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -112,8 +144,11 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -203,7 +238,8 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      // ✅ Aumentado de 20 a 36 para bajar el recuadro blanco
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
       color: const Color(0xFFF5A623),
       child: Stack(
         alignment: Alignment.center,
@@ -240,7 +276,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
       child: Column(
         children: [
           const Text(
-            'Pasado y Presente\nde los Objetos',
+            'Pasado y Presente\nde  los Objetos',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Hiruko',
@@ -254,10 +290,16 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.volume_up,
-                  color: Color(0xFF333333), size: 26),
+              GestureDetector(
+                onTap: _toggleAudio,
+                child: Icon(
+                  _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up,
+                  color: const Color(0xFF333333),
+                  size: 26,
+                ),
+              ),
               const SizedBox(width: 10),
-              Expanded(
+              const Expanded(
                 child: Text(
                   'Une el pasado con el presente,\ny empareja los objetos.',
                   style: TextStyle(
@@ -371,8 +413,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                     color: Color(0xFF4CAF50),
                     shape: BoxShape.circle,
                   ),
-                  child:
-                      const Icon(Icons.check, size: 14, color: Colors.white),
+                  child: const Icon(Icons.check, size: 14, color: Colors.white),
                 ),
               ),
           ],
