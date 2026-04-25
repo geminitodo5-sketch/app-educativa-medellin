@@ -1,0 +1,79 @@
+{
+  "materia": "sociales",
+  "version": "1.0.0",
+  "descripcion": "Base de conocimiento de Ciencias Sociales para grados 1 a 5 — currículo colombiano",
+  "contenido": [
+    {
+      "id": "soc_g1_001", "grado": 1, "tema": "familia",
+      "pregunta": "¿Qué es la familia?",
+      "respuesta": "La familia es el grupo de personas con las que vivimos y nos queremos. Existen diferentes tipos de familia: nuclear (papá, mamá e hijos), extensa (incluye abuelos, tíos, primos), monoparental (solo mamá o solo papá con los hijos) y adoptiva. Todas las familias son especiales e importantes. En la familia aprendemos valores como el respeto y el amor.",
+      "palabras_clave": ["familia", "familias", "padres", "mamá", "papá", "hijos", "abuelos", "tipos", "nuclear", "hogar", "casa"]
+    },
+    {
+      "id": "soc_g1_002", "grado": 1, "tema": "Medellín",
+      "pregunta": "¿Qué es Medellín?",
+      "respuesta": "Medellín es la capital del departamento de Antioquia, en Colombia. Es conocida como la 'Ciudad de la Eterna Primavera' por su clima agradable. Está ubicada en el Valle de Aburrá. Su río principal es el Río Medellín. Tiene el Metro, el tranvía y el Metrocable. Es famosa por su cultura, innovación y las flores del Festival de las Flores.",
+      "palabras_clave": ["Medellín", "ciudad", "Antioquia", "capital", "Valle de Aburrá", "Metro", "Colombia", "flores", "primavera"]
+    },
+    {
+      "id": "soc_g1_003", "grado": 1, "tema": "barrio",
+      "pregunta": "¿Qué es un barrio?",
+      "respuesta": "Un barrio es una división de la ciudad donde viven muchas familias y hay lugares como escuelas, parques, tiendas, iglesias y hospitales. En Medellín hay barrios en todos sus 16 comunas. Vivir en comunidad nos enseña a respetar a los vecinos, cuidar los espacios públicos y ayudarnos mutuamente.",
+      "palabras_clave": ["barrio", "barrios", "comunidad", "vecinos", "ciudad", "comuna", "parque", "escuela", "Medellín", "vivir"]
+    },
+    {
+      "id": "soc_g2_001", "grado": 2, "tema": "Colombia",
+      "pregunta": "¿Dónde está Colombia?",
+      "respuesta": "Colombia está ubicada en el noroccidente de América del Sur. Limita al norte con el Mar Caribe y Panamá, al oriente con Venezuela y Brasil, al sur con Ecuador y Perú, y al occidente con el Océano Pacífico. Es el único país de América del Sur con costas en dos océanos. Su capital es Bogotá D.C. Tiene 32 departamentos.",
+      "palabras_clave": ["Colombia", "ubicación", "América del Sur", "Bogotá", "capital", "departamentos", "océano", "caribe", "pacífico", "límites", "fronteras"]
+    },
+    {
+      "id": "soc_g2_002", "grado": 2, "tema": "derechos y deberes",
+      "pregunta": "¿Cuáles son los derechos de los niños?",
+      "respuesta": "Los derechos de los niños están protegidos en Colombia y el mundo. Los principales son: derecho a la vida y la salud, a la educación, a tener una familia, a la alimentación, a jugar y al descanso, a la protección contra el maltrato y el trabajo infantil, y a la participación. La Constitución colombiana y la UNICEF protegen estos derechos.",
+      "palabras_clave": ["derechos", "niños", "infancia", "educación", "salud", "familia", "protección", "UNICEF", "Colombia", "Constitución", "deberes"]
+    },
+    {
+      "id": "soc_g2_003", "grado": 2, "tema": "símbolos patrios",
+      "pregunta": "¿Cuáles son los símbolos patrios de Colombia?",
+      "respuesta": "Los símbolos patrios de Colombia son: La Bandera (amarilla, azul y roja — el amarillo representa la riqueza, el azul los mares y el rojo la sangre de los héroes), el Escudo (con el cóndor, el istmo de Panamá y la cornucopia), y el Himno Nacional (compuesto por Oreste Síndici con letra de Rafael Núñez). También son símbolos el cóndor (ave nacional) y la orquídea (flor nacional).",
+      "palabras_clave": ["símbolos patrios", "bandera", "escudo", "himno", "Colombia", "amarillo", "azul", "rojo", "cóndor", "orquídea", "nacional"]
+    },
+    {
+      "id": "soc_g3_001", "grado": 3, "tema": "regiones de Colombia",
+      "pregunta": "¿Cuáles son las regiones naturales de Colombia?",
+      "respuesta": "Colombia tiene 6 regiones naturales: 1) Caribe: costa norte, playas, Barranquilla y Cartagena. 2) Pacífica: costa oeste, selvas lluviosas, Buenaventura. 3) Andina: cordillera de los Andes, Bogotá, Medellín, Cali. 4) Orinoquía: llanos orientales, ríos y ganado. 5) Amazonía: selva tropical, Leticia, biodiversidad. 6) Insular: islas como San Andrés y Providencia.",
+      "palabras_clave": ["regiones", "Colombia", "Caribe", "Pacífica", "Andina", "Orinoquía", "Amazonía", "Insular", "geografía", "zona", "área"]
+    },
+    {
+      "id": "soc_g3_002", "grado": 3, "tema": "mapas",
+      "pregunta": "¿Qué es un mapa y cuáles son sus partes?",
+      "respuesta": "Un mapa es la representación gráfica de la Tierra o una parte de ella sobre una superficie plana. Las partes de un mapa son: título (qué representa), escala (relación entre el mapa y la realidad), rosa de los vientos (norte, sur, este, oeste), leyenda (explica los símbolos y colores) y las referencias geográficas (ríos, montañas, ciudades).",
+      "palabras_clave": ["mapa", "mapas", "cartografía", "escala", "rosa de los vientos", "leyenda", "norte", "sur", "este", "oeste", "título", "geografía"]
+    },
+    {
+      "id": "soc_g4_001", "grado": 4, "tema": "historia de Colombia",
+      "pregunta": "¿Qué fue la independencia de Colombia?",
+      "respuesta": "La independencia de Colombia se celebra el 20 de julio de 1810, cuando los criollos de Bogotá iniciaron el proceso de independencia de España. El grito de Independencia fue motivado por un conflicto por un florero prestado. El proceso culminó el 7 de agosto de 1819 con la Batalla de Boyacá, liderada por Simón Bolívar y Francisco de Paula Santander, que garantizó la libertad definitiva.",
+      "palabras_clave": ["independencia", "Colombia", "20 de julio", "1810", "España", "Bolívar", "Santander", "Boyacá", "Bogotá", "criollos", "libertad"]
+    },
+    {
+      "id": "soc_g4_002", "grado": 4, "tema": "historia de Colombia",
+      "pregunta": "¿Quién fue Simón Bolívar?",
+      "respuesta": "Simón Bolívar (1783-1830) fue un militar y político venezolano conocido como 'El Libertador'. Lideró las guerras de independencia de Venezuela, Colombia, Ecuador, Perú y Bolivia. En Colombia venció en la Batalla de Boyacá (1819). Soñaba con crear una gran nación llamada la Gran Colombia que uniera a todos los países liberados. Es el héroe más importante de la historia latinoamericana.",
+      "palabras_clave": ["Bolívar", "Simón Bolívar", "Libertador", "independencia", "Boyacá", "Venezuela", "Gran Colombia", "héroe", "guerra", "historia", "1819"]
+    },
+    {
+      "id": "soc_g5_001", "grado": 5, "tema": "democracia",
+      "pregunta": "¿Qué es la democracia?",
+      "respuesta": "La democracia es el sistema de gobierno donde el poder viene del pueblo. En una democracia, los ciudadanos eligen a sus gobernantes mediante el voto. En Colombia, la Constitución de 1991 establece que es una república democrática, participativa y pluralista. Los colombianos mayores de 18 años tienen derecho a votar. Los tres poderes del Estado son: Ejecutivo (Presidente), Legislativo (Congreso) y Judicial (Cortes).",
+      "palabras_clave": ["democracia", "gobierno", "pueblo", "voto", "votar", "Colombia", "Constitución", "presidente", "congreso", "poderes", "ciudadanos", "participación"]
+    },
+    {
+      "id": "soc_g5_002", "grado": 5, "tema": "Latinoamérica",
+      "pregunta": "¿Qué es América Latina?",
+      "respuesta": "América Latina o Latinoamérica es la región del continente americano donde se hablan lenguas derivadas del latín (español y portugués principalmente). Comprende 20 países desde México hasta Argentina. Colombia comparte frontera y cultura con Venezuela, Ecuador y Perú. Las características comunes son: historia colonial española/portuguesa, mestizaje cultural, diversidad natural y biodiversidad extraordinaria.",
+      "palabras_clave": ["América Latina", "Latinoamérica", "países", "español", "portugués", "México", "Argentina", "Brasil", "cultura", "región", "continente"]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "materia": "espanol",
+  "version": "1.0.0",
+  "descripcion": "Base de conocimiento de Español (Lengua Castellana) para grados 1 a 5 — currículo colombiano",
+  "contenido": [
+    {
+      "id": "esp_g1_001", "grado": 1, "tema": "vocales",
+      "pregunta": "¿Cuáles son las vocales del español?",
+      "respuesta": "Las vocales del español son cinco: A, E, I, O, U. Se llaman vocales porque cuando las pronunciamos el aire sale libremente por la boca sin ningún obstáculo. Las vocales son la base del idioma español y todas las palabras tienen al menos una vocal. Ejemplo: árbol, elefante, iglú, oso, uva.",
+      "palabras_clave": ["vocales", "vocal", "a", "e", "i", "o", "u", "pronunciar", "letras", "alfabeto"]
+    },
+    {
+      "id": "esp_g1_002", "grado": 1, "tema": "consonantes",
+      "pregunta": "¿Qué son las consonantes?",
+      "respuesta": "Las consonantes son las demás letras del alfabeto (además de las vocales). Son 22 consonantes en español: B, C, D, F, G, H, J, K, L, M, N, Ñ, P, Q, R, S, T, V, W, X, Y, Z. Para pronunciarlas necesitamos las vocales. Las consonantes y las vocales juntas forman las sílabas y las palabras.",
+      "palabras_clave": ["consonantes", "consonante", "letras", "alfabeto", "sílaba", "pronunciar", "b", "m", "n", "p", "s", "t"]
+    },
+    {
+      "id": "esp_g1_003", "grado": 1, "tema": "sílabas",
+      "pregunta": "¿Qué es una sílaba?",
+      "respuesta": "Una sílaba es cada golpe de voz al pronunciar una palabra. Para identificar las sílabas puedes palmear mientras dices la palabra. Ejemplo: 'ma-ri-po-sa' tiene 4 sílabas. 'ca-sa' tiene 2 sílabas. 'sol' tiene 1 sílaba. Las palabras de una sílaba se llaman monosílabas, de dos: bisílabas, de tres: trisílabas.",
+      "palabras_clave": ["sílaba", "sílabas", "palmear", "golpe", "monosílaba", "bisílaba", "trisílaba", "dividir", "separar"]
+    },
+    {
+      "id": "esp_g1_004", "grado": 1, "tema": "lectura",
+      "pregunta": "¿Para qué sirve leer?",
+      "respuesta": "Leer sirve para aprender, imaginar, entretenerse y comunicarse. Cuando leemos desarrollamos el vocabulario, la imaginación y la capacidad de pensar. Leer cuentos, libros y textos nos ayuda a conocer el mundo, a entender otras ideas y a escribir mejor. La lectura es una de las habilidades más importantes en la vida.",
+      "palabras_clave": ["leer", "lectura", "libro", "cuento", "aprender", "imaginar", "vocabulario", "comprender", "texto"]
+    },
+    {
+      "id": "esp_g2_001", "grado": 2, "tema": "oraciones",
+      "pregunta": "¿Qué es una oración?",
+      "respuesta": "Una oración es un conjunto de palabras que tiene sentido completo. Toda oración tiene dos partes: el sujeto (de quién se habla) y el predicado (lo que se dice del sujeto). Ejemplo: 'El niño juega en el parque'. El sujeto es 'El niño' y el predicado es 'juega en el parque'. Siempre empieza con mayúscula y termina con punto.",
+      "palabras_clave": ["oración", "oraciones", "sujeto", "predicado", "sentido", "mayúscula", "punto", "palabras", "significado"]
+    },
+    {
+      "id": "esp_g2_002", "grado": 2, "tema": "signos de puntuación",
+      "pregunta": "¿Para qué sirven el punto y la coma?",
+      "respuesta": "El punto (.) indica el final de una oración. Después del punto se escribe con mayúscula. La coma (,) indica una pausa breve dentro de la oración para separar ideas, hacer listas o en enumeraciones. Ejemplo: 'Compré manzanas, peras, uvas y bananos.' Estos signos nos ayudan a entender mejor lo que leemos.",
+      "palabras_clave": ["punto", "coma", "signos de puntuación", "pausa", "final", "oración", "lista", "enumeración", "mayúscula"]
+    },
+    {
+      "id": "esp_g2_003", "grado": 2, "tema": "tipos de texto",
+      "pregunta": "¿Qué es un cuento?",
+      "respuesta": "Un cuento es un texto narrativo corto que cuenta una historia con personajes, un lugar y una situación. Los cuentos tienen tres partes: inicio (se presentan los personajes y el problema), nudo (el problema se complica) y desenlace (el problema se resuelve). Los cuentos pueden ser reales o fantásticos. Ejemplo clásico: 'Caperucita Roja'.",
+      "palabras_clave": ["cuento", "cuentos", "narrativo", "personajes", "historia", "inicio", "nudo", "desenlace", "fantástico", "real"]
+    },
+    {
+      "id": "esp_g3_001", "grado": 3, "tema": "sinónimos y antónimos",
+      "pregunta": "¿Qué son los sinónimos?",
+      "respuesta": "Los sinónimos son palabras que tienen el mismo significado o un significado muy parecido. Por ejemplo: feliz y alegre son sinónimos, rápido y veloz son sinónimos, grande y enorme son sinónimos. Usar sinónimos nos ayuda a no repetir siempre la misma palabra y hace que los textos sean más variados y ricos.",
+      "palabras_clave": ["sinónimos", "sinónimo", "significado", "igual", "parecido", "feliz", "alegre", "rápido", "veloz", "vocabulario"]
+    },
+    {
+      "id": "esp_g3_002", "grado": 3, "tema": "sinónimos y antónimos",
+      "pregunta": "¿Qué son los antónimos?",
+      "respuesta": "Los antónimos son palabras que tienen significados opuestos o contrarios. Por ejemplo: frío y caliente, grande y pequeño, rápido y lento, subir y bajar, claro y oscuro. Los antónimos nos ayudan a comparar y contrastar ideas. Son muy útiles en la escritura para crear contraste.",
+      "palabras_clave": ["antónimos", "antónimo", "contrario", "opuesto", "frío", "caliente", "grande", "pequeño", "significado", "contraste"]
+    },
+    {
+      "id": "esp_g3_003", "grado": 3, "tema": "párrafo",
+      "pregunta": "¿Qué es un párrafo?",
+      "respuesta": "Un párrafo es un conjunto de oraciones que tratan sobre una misma idea o tema. Empieza con sangría (pequeño espacio) o con una línea en blanco y termina con punto aparte. Todo párrafo tiene: oración principal (la idea más importante) y oraciones secundarias (que explican o amplían la idea principal).",
+      "palabras_clave": ["párrafo", "párrafos", "oración", "idea", "sangría", "texto", "escribir", "organizar", "principal", "secundaria"]
+    },
+    {
+      "id": "esp_g4_001", "grado": 4, "tema": "tipos de texto",
+      "pregunta": "¿Cuáles son los principales tipos de texto?",
+      "respuesta": "Los principales tipos de texto son: narrativo (cuenta historias: cuentos, novelas), descriptivo (describe cómo son las cosas o personas), expositivo (informa y explica sobre un tema: artículos, enciclopedias), argumentativo (defiende una opinión con razones: ensayos, editoriales) y poético (usa el lenguaje de forma artística: poemas, canciones).",
+      "palabras_clave": ["tipos de texto", "narrativo", "descriptivo", "expositivo", "argumentativo", "poético", "cuento", "poema", "ensayo", "texto"]
+    },
+    {
+      "id": "esp_g4_002", "grado": 4, "tema": "comprensión lectora",
+      "pregunta": "¿Qué es la comprensión lectora?",
+      "respuesta": "La comprensión lectora es la capacidad de entender lo que se lee. Tiene tres niveles: literal (entiendes lo que dice el texto directamente), inferencial (descubres ideas que no están escritas pero se pueden deducir) y crítico (evalúas y opinas sobre el texto). Para mejorarla, lee con atención, identifica la idea principal y hazte preguntas sobre el texto.",
+      "palabras_clave": ["comprensión", "lectora", "leer", "entender", "literal", "inferencial", "crítico", "idea principal", "deducir", "analizar"]
+    },
+    {
+      "id": "esp_g5_001", "grado": 5, "tema": "literatura colombiana",
+      "pregunta": "¿Quién fue Gabriel García Márquez?",
+      "respuesta": "Gabriel García Márquez fue un escritor colombiano nacido en Aracataca (1927-2014), ganador del Premio Nobel de Literatura en 1982. Es conocido como 'Gabo'. Su obra más famosa es 'Cien años de soledad', novela que cuenta la historia de la familia Buendía en el pueblo imaginario de Macondo. García Márquez es el representante más importante del realismo mágico en Colombia.",
+      "palabras_clave": ["García Márquez", "Gabo", "Colombia", "Nobel", "Cien años de soledad", "Macondo", "realismo mágico", "escritor", "literatura", "novela"]
+    },
+    {
+      "id": "esp_g5_002", "grado": 5, "tema": "elementos narrativos",
+      "pregunta": "¿Qué son los elementos de la narración?",
+      "respuesta": "Los elementos de la narración son: el narrador (quien cuenta la historia, puede ser en primera o tercera persona), los personajes (protagonista, antagonista, secundarios), el tiempo (cuándo ocurre la historia), el espacio (dónde ocurre), la trama o argumento (qué pasa: inicio, nudo y desenlace) y el tema (la idea central de la historia).",
+      "palabras_clave": ["narración", "narrador", "personajes", "protagonista", "antagonista", "tiempo", "espacio", "trama", "argumento", "tema", "historia"]
+    },
+    {
+      "id": "esp_g5_003", "grado": 5, "tema": "escritura",
+      "pregunta": "¿Cómo se escribe un buen texto?",
+      "respuesta": "Para escribir un buen texto sigue estos pasos: 1) Planear: define el tema, a quién va dirigido y qué tipo de texto es. 2) Escribir: desarrolla las ideas en párrafos organizados. 3) Revisar: verifica la ortografía, la puntuación y que las ideas estén claras. 4) Corregir: mejora lo que sea necesario. Un buen texto tiene coherencia (ideas en orden) y cohesión (bien conectadas).",
+      "palabras_clave": ["escribir", "escritura", "texto", "planear", "revisar", "corregir", "coherencia", "cohesión", "párrafo", "ortografía"]
+    }
+  ]
+}

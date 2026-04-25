@@ -1,0 +1,157 @@
+{
+  "materia": "matematicas",
+  "version": "1.0.0",
+  "descripcion": "Base de conocimiento de Matemáticas para grados 1 a 5 — currículo colombiano",
+  "contenido": [
+    {
+      "id": "mat_g1_001", "grado": 1, "tema": "números",
+      "pregunta": "¿Qué son los números naturales?",
+      "respuesta": "Los números naturales son los que usamos para contar: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 y así sucesivamente. El cero (0) también forma parte de este conjunto. Con ellos contamos objetos, personas y animales.",
+      "palabras_clave": ["número", "números", "naturales", "contar", "uno", "dos", "tres", "cuatro", "cinco"]
+    },
+    {
+      "id": "mat_g1_002", "grado": 1, "tema": "números",
+      "pregunta": "¿Cómo se escribe el número diez?",
+      "respuesta": "El número diez se escribe con dos dígitos: 1 y 0, es decir 10. Es el primer número de dos cifras que aprendemos. Representa diez unidades, como diez dedos de las manos.",
+      "palabras_clave": ["diez", "10", "escribir", "cifra", "dígito", "manos", "dedos"]
+    },
+    {
+      "id": "mat_g1_003", "grado": 1, "tema": "suma",
+      "pregunta": "¿Qué es la suma o adición?",
+      "respuesta": "La suma es juntar dos o más cantidades para obtener un total. El signo de la suma es el más (+). Por ejemplo: 3 + 2 = 5. Esto significa que si tienes 3 manzanas y te dan 2 más, ahora tienes 5 manzanas.",
+      "palabras_clave": ["suma", "sumar", "adición", "más", "agregar", "total", "resultado", "juntar"]
+    },
+    {
+      "id": "mat_g1_004", "grado": 1, "tema": "resta",
+      "pregunta": "¿Qué es la resta o sustracción?",
+      "respuesta": "La resta es quitar una cantidad de otra. El signo de la resta es el menos (−). Por ejemplo: 5 − 2 = 3. Si tienes 5 caramelos y te comes 2, te quedan 3 caramelos.",
+      "palabras_clave": ["resta", "restar", "sustracción", "menos", "quitar", "diferencia", "quedan"]
+    },
+    {
+      "id": "mat_g1_005", "grado": 1, "tema": "figuras geométricas",
+      "pregunta": "¿Cuáles son las figuras geométricas básicas?",
+      "respuesta": "Las figuras geométricas básicas son: el círculo (redondo, sin lados), el triángulo (3 lados), el cuadrado (4 lados iguales) y el rectángulo (4 lados, dos largos y dos cortos). Las vemos en objetos de la vida cotidiana.",
+      "palabras_clave": ["figura", "figuras", "geométrica", "círculo", "triángulo", "cuadrado", "rectángulo", "lados", "forma"]
+    },
+    {
+      "id": "mat_g1_006", "grado": 1, "tema": "comparación",
+      "pregunta": "¿Qué significa mayor que y menor que?",
+      "respuesta": "Mayor que (>) significa que un número es más grande. Menor que (<) significa que un número es más pequeño. Ejemplo: 7 > 4 (siete es mayor que cuatro) y 3 < 8 (tres es menor que ocho). El símbolo siempre apunta al número más pequeño.",
+      "palabras_clave": ["mayor", "menor", "comparar", "más grande", "más pequeño", "símbolo", "mayor que", "menor que"]
+    },
+    {
+      "id": "mat_g1_007", "grado": 1, "tema": "números",
+      "pregunta": "¿Qué son los números pares e impares?",
+      "respuesta": "Los números pares son los que se pueden dividir exactamente entre 2: 2, 4, 6, 8, 10... Los números impares no se pueden dividir exactamente entre 2: 1, 3, 5, 7, 9... Una forma fácil de recordarlo: los pares terminan en 0, 2, 4, 6 u 8.",
+      "palabras_clave": ["pares", "impares", "par", "impar", "dividir", "dos", "terminar"]
+    },
+    {
+      "id": "mat_g2_001", "grado": 2, "tema": "suma con reagrupación",
+      "pregunta": "¿Cómo sumo números de dos cifras?",
+      "respuesta": "Para sumar números de dos cifras, alinea las unidades con unidades y las decenas con decenas. Primero suma las unidades. Si el resultado es 10 o más, llevas una decena. Luego suma las decenas más lo que llevaste. Ejemplo: 38 + 47 = primero 8+7=15, escribes 5 y llevas 1; luego 3+4+1=8. Resultado: 85.",
+      "palabras_clave": ["suma", "dos cifras", "reagrupación", "llevar", "unidades", "decenas", "dos dígitos"]
+    },
+    {
+      "id": "mat_g2_002", "grado": 2, "tema": "multiplicación",
+      "pregunta": "¿Qué es la multiplicación?",
+      "respuesta": "La multiplicación es una suma repetida. El signo es × o ·. Ejemplo: 3 × 4 significa sumar 3 cuatro veces: 3+3+3+3 = 12. El resultado se llama producto. Los números que se multiplican se llaman factores.",
+      "palabras_clave": ["multiplicación", "multiplicar", "producto", "factores", "tablas", "por", "veces"]
+    },
+    {
+      "id": "mat_g2_003", "grado": 2, "tema": "tabla del 2",
+      "pregunta": "¿Cómo es la tabla del 2?",
+      "respuesta": "La tabla del 2: 2×1=2, 2×2=4, 2×3=6, 2×4=8, 2×5=10, 2×6=12, 2×7=14, 2×8=16, 2×9=18, 2×10=20. Los resultados siempre son números pares. Un truco: multiplica por 2 es lo mismo que sumar el número consigo mismo.",
+      "palabras_clave": ["tabla", "dos", "2", "tabla del 2", "multiplicación", "pares"]
+    },
+    {
+      "id": "mat_g2_004", "grado": 2, "tema": "tabla del 5",
+      "pregunta": "¿Cómo es la tabla del 5?",
+      "respuesta": "La tabla del 5: 5×1=5, 5×2=10, 5×3=15, 5×4=20, 5×5=25, 5×6=30, 5×7=35, 5×8=40, 5×9=45, 5×10=50. Los resultados siempre terminan en 0 o en 5. ¡Es muy fácil de recordar!",
+      "palabras_clave": ["tabla", "cinco", "5", "tabla del 5", "multiplicación", "cero", "terminar"]
+    },
+    {
+      "id": "mat_g2_005", "grado": 2, "tema": "tabla del 10",
+      "pregunta": "¿Cómo es la tabla del 10?",
+      "respuesta": "La tabla del 10: 10×1=10, 10×2=20, 10×3=30, 10×4=40, 10×5=50, 10×6=60, 10×7=70, 10×8=80, 10×9=90, 10×10=100. Multiplicar por 10 es muy fácil: solo agrega un cero al número.",
+      "palabras_clave": ["tabla", "diez", "10", "tabla del 10", "multiplicación", "cero", "cien"]
+    },
+    {
+      "id": "mat_g2_006", "grado": 2, "tema": "unidades y decenas",
+      "pregunta": "¿Qué son las unidades y las decenas?",
+      "respuesta": "Las unidades son las posiciones del 1 al 9. Las decenas agrupan conjuntos de 10 unidades. En el número 45: el 5 es la cifra de las unidades y el 4 es la cifra de las decenas (que vale 40). Las centenas agrupan 10 decenas (100).",
+      "palabras_clave": ["unidades", "decenas", "centenas", "posición", "valor posicional", "cifra", "lugar"]
+    },
+    {
+      "id": "mat_g3_001", "grado": 3, "tema": "tablas de multiplicar",
+      "pregunta": "¿Cómo aprendo las tablas de multiplicar?",
+      "respuesta": "Las tablas de multiplicar van del 1 al 10. Un truco útil: la tabla del 9 tiene una regla especial: suma de dígitos del resultado siempre da 9 (9×2=18 → 1+8=9). Para la tabla del 3: suma 3 cada vez. Practícalas en orden y luego al revés. La repetición y los juegos ayudan a memorizarlas.",
+      "palabras_clave": ["tablas", "multiplicar", "memorizar", "aprender", "truco", "tabla del 3", "tabla del 9"]
+    },
+    {
+      "id": "mat_g3_002", "grado": 3, "tema": "división",
+      "pregunta": "¿Qué es la división?",
+      "respuesta": "La división es repartir una cantidad en partes iguales. El signo es ÷ o /. En 12 ÷ 3 = 4: el 12 es el dividendo, el 3 es el divisor y el 4 es el cociente. Significa que si repartes 12 entre 3 personas, cada una recibe 4. La división es la operación inversa de la multiplicación.",
+      "palabras_clave": ["división", "dividir", "dividendo", "divisor", "cociente", "repartir", "partes iguales"]
+    },
+    {
+      "id": "mat_g3_003", "grado": 3, "tema": "fracciones",
+      "pregunta": "¿Qué es una fracción?",
+      "respuesta": "Una fracción representa una parte de un todo. Se escribe con dos números separados por una línea: el numerador (arriba) indica cuántas partes tomamos y el denominador (abajo) indica en cuántas partes está dividido el todo. Ejemplo: 3/4 significa que tomamos 3 partes de un total de 4 partes iguales.",
+      "palabras_clave": ["fracción", "fracciones", "numerador", "denominador", "parte", "entero", "mitad", "tercio", "cuarto"]
+    },
+    {
+      "id": "mat_g3_004", "grado": 3, "tema": "fracciones",
+      "pregunta": "¿Qué son fracciones equivalentes?",
+      "respuesta": "Las fracciones equivalentes representan la misma cantidad aunque se escriban diferente. Por ejemplo: 1/2, 2/4 y 4/8 son equivalentes porque todas representan la mitad. Para encontrar fracciones equivalentes multiplica o divide el numerador y el denominador por el mismo número.",
+      "palabras_clave": ["fracciones equivalentes", "equivalente", "mismo valor", "mitad", "igual", "simplificar"]
+    },
+    {
+      "id": "mat_g4_001", "grado": 4, "tema": "decimales",
+      "pregunta": "¿Qué son los números decimales?",
+      "respuesta": "Los números decimales tienen una parte entera y una parte decimal separadas por una coma (o punto). Ejemplo: 3,5 tiene la parte entera 3 y la parte decimal 5 (que vale 5 décimas = 5/10). Los decimales sirven para expresar medidas exactas, precios y magnitudes que no son números enteros.",
+      "palabras_clave": ["decimal", "decimales", "coma", "décimas", "centésimas", "milésimas", "parte decimal", "número decimal"]
+    },
+    {
+      "id": "mat_g4_002", "grado": 4, "tema": "área y perímetro",
+      "pregunta": "¿Qué es el perímetro?",
+      "respuesta": "El perímetro es la suma de todos los lados de una figura geométrica. Es como medir el borde exterior. Por ejemplo, el perímetro de un cuadrado de lado 5 cm es 5+5+5+5 = 20 cm. El perímetro de un rectángulo es 2×largo + 2×ancho.",
+      "palabras_clave": ["perímetro", "borde", "lados", "medir", "suma", "cuadrado", "rectángulo", "triángulo"]
+    },
+    {
+      "id": "mat_g4_003", "grado": 4, "tema": "área y perímetro",
+      "pregunta": "¿Qué es el área?",
+      "respuesta": "El área es la medida de la superficie interior de una figura. Se mide en unidades cuadradas (cm², m²). El área de un rectángulo es largo × ancho. El área de un cuadrado es lado × lado (lado²). El área de un triángulo es (base × altura) ÷ 2.",
+      "palabras_clave": ["área", "superficie", "cuadrado", "cm²", "m²", "largo", "ancho", "base", "altura", "medir"]
+    },
+    {
+      "id": "mat_g4_004", "grado": 4, "tema": "fracciones",
+      "pregunta": "¿Cómo se suman fracciones con el mismo denominador?",
+      "respuesta": "Para sumar fracciones con el mismo denominador, suma solo los numeradores y conserva el denominador. Ejemplo: 2/7 + 3/7 = 5/7. No sumas los denominadores. Si son diferentes, primero debes encontrar el denominador común (mínimo común múltiplo) y convertir las fracciones.",
+      "palabras_clave": ["sumar fracciones", "denominador común", "numerador", "fracción", "mínimo común múltiplo", "MCM"]
+    },
+    {
+      "id": "mat_g5_001", "grado": 5, "tema": "porcentajes",
+      "pregunta": "¿Qué es un porcentaje?",
+      "respuesta": "Un porcentaje representa una fracción de 100. El símbolo es %. Por ejemplo, 25% significa 25 de cada 100 partes, es decir 25/100 = 0,25. Para calcular el 20% de 80: multiplica 80 × 0,20 = 16. Los porcentajes se usan en descuentos, estadísticas y calificaciones.",
+      "palabras_clave": ["porcentaje", "porciento", "por ciento", "%", "descuento", "fracción", "cien", "calcular"]
+    },
+    {
+      "id": "mat_g5_002", "grado": 5, "tema": "potencias",
+      "pregunta": "¿Qué es una potencia?",
+      "respuesta": "Una potencia es la multiplicación de un número por sí mismo varias veces. Se escribe con una base y un exponente. Ejemplo: 2³ = 2×2×2 = 8 (la base es 2 y el exponente es 3). 5² = 5×5 = 25, que se lee 'cinco al cuadrado'. Cualquier número elevado a 0 es igual a 1.",
+      "palabras_clave": ["potencia", "potencias", "exponente", "base", "cuadrado", "cubo", "elevar", "multiplicar"]
+    },
+    {
+      "id": "mat_g5_003", "grado": 5, "tema": "estadística",
+      "pregunta": "¿Qué es la media aritmética?",
+      "respuesta": "La media aritmética (promedio) es la suma de todos los datos dividida entre la cantidad de datos. Ejemplo: las notas 3, 4, 5, 4, 4. Suma: 3+4+5+4+4 = 20. Divides entre 5 datos: 20÷5 = 4. La media es 4. El promedio se usa mucho en calificaciones y estadísticas.",
+      "palabras_clave": ["media", "promedio", "aritmética", "estadística", "datos", "suma", "dividir", "nota", "calificación"]
+    },
+    {
+      "id": "mat_g5_004", "grado": 5, "tema": "geometría",
+      "pregunta": "¿Qué es el volumen de un cuerpo?",
+      "respuesta": "El volumen es el espacio que ocupa un cuerpo tridimensional. Se mide en unidades cúbicas (cm³, m³). El volumen de un cubo es lado³ (lado×lado×lado). El volumen de un paralelepípedo (caja) es largo×ancho×alto. Por ejemplo, una caja de 3×4×5 cm tiene un volumen de 60 cm³.",
+      "palabras_clave": ["volumen", "cuerpo", "tridimensional", "cm³", "cubo", "caja", "largo", "ancho", "alto", "espacio"]
+    }
+  ]
+}

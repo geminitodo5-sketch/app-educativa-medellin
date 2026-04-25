@@ -1,0 +1,85 @@
+{
+  "materia": "ingles",
+  "version": "1.0.0",
+  "descripcion": "Knowledge base for English (Inglés) grades 1 to 5 — Colombian curriculum",
+  "contenido": [
+    {
+      "id": "ing_g1_001", "grado": 1, "tema": "greetings",
+      "pregunta": "¿Cómo saludo en inglés?",
+      "respuesta": "En inglés los saludos son: Hello / Hi (Hola), Good morning (Buenos días), Good afternoon (Buenas tardes), Good night (Buenas noches). Para despedirse: Goodbye / Bye (Adiós), See you later (Hasta luego). Para preguntar cómo está alguien: How are you? Y responder: I am fine, thank you (Estoy bien, gracias).",
+      "palabras_clave": ["saludar", "saludo", "hello", "hi", "good morning", "goodbye", "bye", "inglés", "greeting", "how are you"]
+    },
+    {
+      "id": "ing_g1_002", "grado": 1, "tema": "colors",
+      "pregunta": "¿Cómo se dicen los colores en inglés?",
+      "respuesta": "Los colores en inglés son: red (rojo), blue (azul), yellow (amarillo), green (verde), orange (naranja), purple (morado), pink (rosado), white (blanco), black (negro), brown (café/marrón), gray (gris). Ejemplo: The sky is blue (El cielo es azul). The apple is red (La manzana es roja).",
+      "palabras_clave": ["colores", "color", "colors", "red", "blue", "yellow", "green", "orange", "purple", "pink", "white", "black", "inglés"]
+    },
+    {
+      "id": "ing_g1_003", "grado": 1, "tema": "numbers",
+      "pregunta": "¿Cómo se dicen los números del 1 al 10 en inglés?",
+      "respuesta": "Los números en inglés del 1 al 10: one (1), two (2), three (3), four (4), five (5), six (6), seven (7), eight (8), nine (9), ten (10). Para continuar: eleven (11), twelve (12), thirteen (13), fourteen (14), fifteen (15). Los números son igual de importantes en cualquier idioma.",
+      "palabras_clave": ["números", "numbers", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "contar", "inglés"]
+    },
+    {
+      "id": "ing_g1_004", "grado": 1, "tema": "body parts",
+      "pregunta": "¿Cómo se dicen las partes del cuerpo en inglés?",
+      "respuesta": "Las partes del cuerpo en inglés: head (cabeza), eyes (ojos), ears (orejas), nose (nariz), mouth (boca), neck (cuello), arms (brazos), hands (manos), fingers (dedos), legs (piernas), feet (pies). La canción 'Head, shoulders, knees and toes' ayuda a aprenderlas.",
+      "palabras_clave": ["cuerpo", "body", "body parts", "head", "eyes", "ears", "nose", "mouth", "arms", "hands", "legs", "feet", "inglés"]
+    },
+    {
+      "id": "ing_g2_001", "grado": 2, "tema": "family",
+      "pregunta": "¿Cómo se dice la familia en inglés?",
+      "respuesta": "Los miembros de la familia en inglés: mother (mamá), father (papá), sister (hermana), brother (hermano), grandmother (abuela), grandfather (abuelo), aunt (tía), uncle (tío), cousin (primo/prima), daughter (hija), son (hijo). Ejemplo: 'My mother is kind' (Mi mamá es amable).",
+      "palabras_clave": ["familia", "family", "mother", "father", "sister", "brother", "grandmother", "grandfather", "parents", "inglés", "members"]
+    },
+    {
+      "id": "ing_g2_002", "grado": 2, "tema": "animals",
+      "pregunta": "¿Cómo se dicen los animales en inglés?",
+      "respuesta": "Los animales en inglés: dog (perro), cat (gato), bird (pájaro), fish (pez), cow (vaca), horse (caballo), pig (cerdo), chicken (pollo), lion (león), tiger (tigre), elephant (elefante), snake (serpiente), butterfly (mariposa), frog (rana). Los animales hacen diferentes sonidos: a dog barks (un perro ladra), a cat meows (un gato maúlla).",
+      "palabras_clave": ["animales", "animals", "dog", "cat", "bird", "fish", "cow", "horse", "lion", "tiger", "elephant", "inglés"]
+    },
+    {
+      "id": "ing_g2_003", "grado": 2, "tema": "days and months",
+      "pregunta": "¿Cómo se dicen los días de la semana en inglés?",
+      "respuesta": "Los días de la semana en inglés: Monday (lunes), Tuesday (martes), Wednesday (miércoles), Thursday (jueves), Friday (viernes), Saturday (sábado), Sunday (domingo). La semana empieza el Sunday (domingo) o Monday (lunes) según el país. Today is Monday (Hoy es lunes). Yesterday was Sunday (Ayer fue domingo).",
+      "palabras_clave": ["días", "semana", "days", "week", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "inglés"]
+    },
+    {
+      "id": "ing_g3_001", "grado": 3, "tema": "present simple",
+      "pregunta": "¿Qué es el presente simple en inglés?",
+      "respuesta": "El presente simple (Simple Present) se usa para hablar de hábitos, rutinas y hechos generales. Estructura: I / You / We / They + verbo base. He / She / It + verbo + s. Ejemplos: I eat breakfast (Yo desayuno), She goes to school (Ella va al colegio), They play soccer (Ellos juegan fútbol). Negativo: I do not eat = I don't eat.",
+      "palabras_clave": ["presente simple", "simple present", "verbo", "hábito", "rutina", "I", "she", "he", "they", "do", "does", "inglés"]
+    },
+    {
+      "id": "ing_g3_002", "grado": 3, "tema": "food",
+      "pregunta": "¿Cómo se dice la comida en inglés?",
+      "respuesta": "Vocabulario de comida en inglés: apple (manzana), banana (banano), orange (naranja), bread (pan), rice (arroz), chicken (pollo), fish (pescado), milk (leche), water (agua), juice (jugo), cake (pastel), egg (huevo), soup (sopa), salad (ensalada). Frase útil: I like... / I don't like... (Me gusta / No me gusta).",
+      "palabras_clave": ["comida", "food", "apple", "banana", "bread", "rice", "milk", "water", "juice", "egg", "soup", "inglés", "comer"]
+    },
+    {
+      "id": "ing_g4_001", "grado": 4, "tema": "past simple",
+      "pregunta": "¿Qué es el pasado simple en inglés?",
+      "respuesta": "El pasado simple (Simple Past) habla de acciones que ya ocurrieron. Los verbos regulares añaden -ed: play → played, walk → walked, watch → watched. Los verbos irregulares cambian de forma: go → went, eat → ate, see → saw, have → had. Negativo: did not (didn't) + verbo base. Ejemplo: Yesterday I played football (Ayer jugué fútbol).",
+      "palabras_clave": ["pasado simple", "simple past", "ayer", "yesterday", "verbos irregulares", "ed", "went", "played", "ate", "did", "inglés"]
+    },
+    {
+      "id": "ing_g4_002", "grado": 4, "tema": "weather",
+      "pregunta": "¿Cómo se describe el clima en inglés?",
+      "respuesta": "Para hablar del clima en inglés: It is sunny (Está soleado), It is raining (Está lloviendo), It is cloudy (Está nublado), It is windy (Está ventoso), It is cold (Hace frío), It is hot (Hace calor), It is foggy (Hay neblina). Pregunta: What's the weather like today? (¿Cómo está el clima hoy?)",
+      "palabras_clave": ["clima", "weather", "sunny", "rain", "cloud", "wind", "cold", "hot", "fog", "inglés", "temperatura"]
+    },
+    {
+      "id": "ing_g5_001", "grado": 5, "tema": "present continuous",
+      "pregunta": "¿Qué es el presente continuo en inglés?",
+      "respuesta": "El presente continuo (Present Continuous) describe acciones que están ocurriendo ahora mismo. Estructura: verbo 'to be' (am/is/are) + verbo-ing. Ejemplos: I am reading (Estoy leyendo), She is dancing (Ella está bailando), They are playing (Ellos están jugando). Se diferencia del presente simple porque indica algo que pasa en este momento.",
+      "palabras_clave": ["presente continuo", "present continuous", "ing", "am", "is", "are", "ahora", "now", "reading", "playing", "inglés"]
+    },
+    {
+      "id": "ing_g5_002", "grado": 5, "tema": "comparatives",
+      "pregunta": "¿Cómo se forman los comparativos en inglés?",
+      "respuesta": "Los comparativos se usan para comparar dos cosas. Para adjetivos cortos: añade -er + than. Ejemplo: tall → taller (A is taller than B = A es más alto que B). Para adjetivos largos: more + adjetivo + than. Ejemplo: beautiful → more beautiful. Irregulares: good → better, bad → worse. Ejemplo: She is more intelligent than him.",
+      "palabras_clave": ["comparativo", "comparatives", "taller", "bigger", "more", "than", "better", "worse", "adjetivo", "comparar", "inglés"]
+    }
+  ]
+}

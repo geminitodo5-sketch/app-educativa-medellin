@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 
 class SqliteService {
   static const String _dbName    = 'numi.db';
-  static const int    _dbVersion = 2;
+  static const int    _dbVersion = 3;
 
   static SqliteService? _instance;
   static Database?      _database;
@@ -141,7 +141,24 @@ class SqliteService {
       await txn.execute(
         'CREATE INDEX idx_rag ON historial_rag (estudiante_id, fecha)');
 
-      // 7. configuracion (siempre 1 sola fila)
+      // 7. base_conocimiento (RAG offline)
+      await txn.execute('''
+        CREATE TABLE base_conocimiento (
+          id               INTEGER PRIMARY KEY AUTOINCREMENT,
+          materia          TEXT    NOT NULL CHECK (materia IN (
+                             'matematicas','ingles','espanol','ciencias','sociales')),
+          grado            INTEGER NOT NULL CHECK (grado BETWEEN 1 AND 5),
+          tema             TEXT    NOT NULL,
+          pregunta         TEXT    NOT NULL,
+          respuesta        TEXT    NOT NULL,
+          palabras_clave   TEXT    NOT NULL,
+          version_paquete  TEXT    NOT NULL DEFAULT '1.0.0'
+        )
+      ''');
+      await txn.execute(
+        'CREATE INDEX idx_rag_materia ON base_conocimiento (materia, grado)');
+
+      // 8. configuracion (siempre 1 sola fila)
       await txn.execute('''
         CREATE TABLE configuracion (
           id                   INTEGER PRIMARY KEY CHECK (id = 1),
@@ -163,6 +180,23 @@ class SqliteService {
       await db.execute('ALTER TABLE estudiantes ADD COLUMN contrasena TEXT');
       await db.execute('ALTER TABLE estudiantes ADD COLUMN edad       INTEGER');
       await db.execute('ALTER TABLE estudiantes ADD COLUMN genero     TEXT');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS base_conocimiento (
+          id               INTEGER PRIMARY KEY AUTOINCREMENT,
+          materia          TEXT    NOT NULL CHECK (materia IN (
+                             'matematicas','ingles','espanol','ciencias','sociales')),
+          grado            INTEGER NOT NULL CHECK (grado BETWEEN 1 AND 5),
+          tema             TEXT    NOT NULL,
+          pregunta         TEXT    NOT NULL,
+          respuesta        TEXT    NOT NULL,
+          palabras_clave   TEXT    NOT NULL,
+          version_paquete  TEXT    NOT NULL DEFAULT '1.0.0'
+        )
+      ''');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_rag_materia ON base_conocimiento (materia, grado)');
     }
   }
 

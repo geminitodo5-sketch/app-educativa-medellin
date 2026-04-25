@@ -1,0 +1,109 @@
+{
+  "materia": "ciencias",
+  "version": "1.0.0",
+  "descripcion": "Base de conocimiento de Ciencias Naturales para grados 1 a 5 — currículo colombiano",
+  "contenido": [
+    {
+      "id": "cie_g1_001", "grado": 1, "tema": "seres vivos",
+      "pregunta": "¿Qué es un ser vivo?",
+      "respuesta": "Los seres vivos son todos los organismos que nacen, crecen, se alimentan, se reproducen y mueren. Son seres vivos: las plantas, los animales y las personas. Los objetos como las piedras, las sillas y los carros NO son seres vivos porque no cumplen esas funciones.",
+      "palabras_clave": ["ser vivo", "seres vivos", "nacer", "crecer", "alimentar", "reproducir", "morir", "planta", "animal"]
+    },
+    {
+      "id": "cie_g1_002", "grado": 1, "tema": "cuerpo humano",
+      "pregunta": "¿Cuáles son las partes del cuerpo humano?",
+      "respuesta": "Las partes principales del cuerpo humano son: cabeza (donde están el cerebro, ojos, nariz, boca y orejas), tronco (pecho y espalda donde están el corazón y pulmones) y extremidades (dos brazos con manos y dos piernas con pies). Cada parte cumple una función importante.",
+      "palabras_clave": ["cuerpo", "humano", "cabeza", "tronco", "extremidades", "brazos", "piernas", "manos", "pies", "partes"]
+    },
+    {
+      "id": "cie_g1_003", "grado": 1, "tema": "sentidos",
+      "pregunta": "¿Cuáles son los cinco sentidos?",
+      "respuesta": "Los cinco sentidos son: la vista (con los ojos vemos), el oído (con las orejas escuchamos), el olfato (con la nariz olemos), el gusto (con la lengua probamos los sabores) y el tacto (con la piel sentimos el frío, calor y textura). Los sentidos nos ayudan a conocer el mundo.",
+      "palabras_clave": ["sentidos", "cinco sentidos", "vista", "oído", "olfato", "gusto", "tacto", "ojos", "oreja", "nariz", "lengua", "piel"]
+    },
+    {
+      "id": "cie_g1_004", "grado": 1, "tema": "plantas",
+      "pregunta": "¿Cuáles son las partes de una planta?",
+      "respuesta": "Las partes de una planta son: raíz (está bajo la tierra, absorbe agua y minerales), tallo (sostiene la planta y transporta el agua), hojas (capturan la luz del sol para hacer el alimento de la planta), flores (sirven para reproducirse) y frutos (contienen las semillas).",
+      "palabras_clave": ["planta", "plantas", "raíz", "tallo", "hojas", "flores", "frutos", "semillas", "partes", "árbol"]
+    },
+    {
+      "id": "cie_g1_005", "grado": 1, "tema": "animales",
+      "pregunta": "¿Cómo se clasifican los animales según su alimentación?",
+      "respuesta": "Según lo que comen, los animales se clasifican en: herbívoros (comen solo plantas, como la vaca y el caballo), carnívoros (comen solo carne, como el tigre y el lobo) y omnívoros (comen plantas y carne, como el oso y el ser humano).",
+      "palabras_clave": ["animales", "alimentación", "herbívoro", "carnívoro", "omnívoro", "come", "plantas", "carne", "clasificar"]
+    },
+    {
+      "id": "cie_g2_001", "grado": 2, "tema": "estados de la materia",
+      "pregunta": "¿Cuáles son los estados de la materia?",
+      "respuesta": "La materia tiene tres estados principales: sólido (forma y volumen fijos, como una piedra o el hielo), líquido (volumen fijo pero toma la forma del recipiente, como el agua) y gaseoso (no tiene forma ni volumen fijo, se expande, como el aire o el vapor). El agua puede estar en los tres estados.",
+      "palabras_clave": ["materia", "estados", "sólido", "líquido", "gaseoso", "gas", "agua", "hielo", "vapor", "forma", "volumen"]
+    },
+    {
+      "id": "cie_g2_002", "grado": 2, "tema": "agua",
+      "pregunta": "¿Por qué es importante el agua?",
+      "respuesta": "El agua es fundamental para la vida. Los seres vivos necesitamos agua para vivir: hidrata nuestro cuerpo, nos ayuda a digerir los alimentos, regula la temperatura y limpia nuestro organismo. Cubre el 71% de la Tierra pero solo el 3% es agua dulce apta para beber. Debemos cuidarla.",
+      "palabras_clave": ["agua", "importante", "vida", "beber", "hidratar", "cuerpo", "dulce", "cuidar", "Tierra", "océano"]
+    },
+    {
+      "id": "cie_g2_003", "grado": 2, "tema": "hábitats",
+      "pregunta": "¿Qué es un hábitat?",
+      "respuesta": "El hábitat es el lugar natural donde vive un animal o una planta. Cada ser vivo está adaptado a su hábitat. Por ejemplo: los peces viven en el hábitat acuático (ríos, mares, lagos), los cóndores en el hábitat montañoso (Sierra Nevada, Andes), y los monos en la selva tropical.",
+      "palabras_clave": ["hábitat", "hábitats", "lugar", "vivir", "animal", "adaptado", "acuático", "montaña", "selva", "bosque", "desierto"]
+    },
+    {
+      "id": "cie_g3_001", "grado": 3, "tema": "ecosistemas",
+      "pregunta": "¿Qué es un ecosistema?",
+      "respuesta": "Un ecosistema es el conjunto de todos los seres vivos (plantas, animales, hongos, bacterias) que habitan en un lugar y su relación con el ambiente (agua, suelo, clima, luz solar). En Colombia hay ecosistemas muy variados: selva amazónica, páramos, manglares, desiertos y sabanas.",
+      "palabras_clave": ["ecosistema", "ecosistemas", "ambiente", "seres vivos", "interacción", "selva", "páramo", "Colombia", "bosque", "bioma"]
+    },
+    {
+      "id": "cie_g3_002", "grado": 3, "tema": "cadena alimenticia",
+      "pregunta": "¿Qué es la cadena alimenticia?",
+      "respuesta": "La cadena alimenticia muestra quién come a quién en un ecosistema. Siempre empieza con los productores (plantas que usan el sol para hacer su alimento), luego vienen los consumidores primarios (herbívoros que comen plantas), los consumidores secundarios (carnívoros que comen herbívoros) y los descomponedores (bacterias y hongos que descomponen la materia muerta).",
+      "palabras_clave": ["cadena alimenticia", "cadena", "alimenticia", "productor", "consumidor", "descomponedor", "herbívoro", "carnívoro", "alimento", "eslabón"]
+    },
+    {
+      "id": "cie_g3_003", "grado": 3, "tema": "ciclo del agua",
+      "pregunta": "¿Qué es el ciclo del agua?",
+      "respuesta": "El ciclo del agua es el movimiento continuo del agua en la naturaleza: 1) Evaporación: el sol calienta el agua de mares y ríos y sube como vapor. 2) Condensación: el vapor se enfría y forma nubes. 3) Precipitación: el agua cae como lluvia, nieve o granizo. 4) Infiltración y escorrentía: el agua vuelve a los ríos y al suelo. El ciclo vuelve a comenzar.",
+      "palabras_clave": ["ciclo del agua", "ciclo", "agua", "evaporación", "condensación", "precipitación", "lluvia", "nube", "vapor", "río", "mar"]
+    },
+    {
+      "id": "cie_g4_001", "grado": 4, "tema": "sistema solar",
+      "pregunta": "¿Cómo está compuesto el sistema solar?",
+      "respuesta": "El sistema solar está formado por el Sol (estrella central) y los 8 planetas que giran a su alrededor: Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno. También hay lunas, asteroides y cometas. La Tierra es el tercer planeta y el único con vida confirmada. Un año es el tiempo que tarda la Tierra en rodear el Sol (365 días).",
+      "palabras_clave": ["sistema solar", "planetas", "Sol", "Tierra", "Marte", "Júpiter", "Saturno", "órbita", "estrella", "luna", "Venus", "Mercurio"]
+    },
+    {
+      "id": "cie_g4_002", "grado": 4, "tema": "cuerpo humano",
+      "pregunta": "¿Cuáles son los sistemas del cuerpo humano?",
+      "respuesta": "El cuerpo humano tiene varios sistemas: Sistema digestivo (procesa los alimentos), Sistema circulatorio (el corazón bombea sangre), Sistema respiratorio (los pulmones intercambian gases), Sistema nervioso (el cerebro controla el cuerpo), Sistema musculoesquelético (huesos y músculos dan forma y movimiento) y Sistema excretor (elimina desechos).",
+      "palabras_clave": ["sistemas", "cuerpo", "digestivo", "circulatorio", "respiratorio", "nervioso", "muscular", "esquelético", "órgano", "corazón", "pulmón", "cerebro"]
+    },
+    {
+      "id": "cie_g4_003", "grado": 4, "tema": "mezclas",
+      "pregunta": "¿Cuál es la diferencia entre mezcla homogénea y heterogénea?",
+      "respuesta": "Una mezcla homogénea es aquella en que las sustancias se combinan completamente y no se pueden distinguir a simple vista (ejemplo: agua con sal, café). Una mezcla heterogénea es aquella en que las sustancias se pueden ver por separado (ejemplo: agua con arena, ensalada de frutas). Las mezclas se pueden separar por filtración, decantación o evaporación.",
+      "palabras_clave": ["mezcla", "homogénea", "heterogénea", "sustancia", "separar", "filtración", "decantación", "sal", "agua", "arena"]
+    },
+    {
+      "id": "cie_g5_001", "grado": 5, "tema": "célula",
+      "pregunta": "¿Qué es la célula?",
+      "respuesta": "La célula es la unidad básica de la vida. Todos los seres vivos estamos formados por células. Hay organismos unicelulares (una sola célula, como las bacterias) y multicelulares (muchas células, como los humanos con 37 billones de células). Las células tienen membrana, citoplasma y núcleo (donde está el ADN con la información genética).",
+      "palabras_clave": ["célula", "células", "unidad", "vida", "membrana", "núcleo", "citoplasma", "ADN", "unicelular", "multicelular", "bacteria"]
+    },
+    {
+      "id": "cie_g5_002", "grado": 5, "tema": "energía",
+      "pregunta": "¿Qué tipos de energía existen?",
+      "respuesta": "Existen varios tipos de energía: cinética (de los objetos en movimiento), potencial (almacenada por posición), térmica (calor), luminosa (luz), eléctrica (electricidad), química (en alimentos y combustibles) y nuclear (en el núcleo del átomo). La energía no se crea ni se destruye, solo se transforma de un tipo a otro.",
+      "palabras_clave": ["energía", "tipos", "cinética", "potencial", "térmica", "luminosa", "eléctrica", "química", "nuclear", "transformación", "calor", "luz"]
+    },
+    {
+      "id": "cie_g5_003", "grado": 5, "tema": "cambios de la materia",
+      "pregunta": "¿Cuál es la diferencia entre cambio físico y cambio químico?",
+      "respuesta": "Un cambio físico modifica la forma o el estado de la materia pero NO cambia su composición química (ejemplo: romper un papel, derretir hielo, hervir agua). Un cambio químico transforma la materia en una nueva sustancia diferente (ejemplo: quemar papel, oxidar el hierro, cocinar huevos). En los cambios químicos suele haber cambio de color, desprendimiento de gas o calor.",
+      "palabras_clave": ["cambio físico", "cambio químico", "materia", "composición", "transformación", "quemar", "oxidar", "hervir", "derretir", "nueva sustancia"]
+    }
+  ]
+}
