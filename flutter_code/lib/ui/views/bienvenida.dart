@@ -11,7 +11,18 @@ import '../../data/providers/app_state_provider.dart';
 import 'seleccion_grado_view.dart';
 
 class WelcomeScreen extends ConsumerStatefulWidget {
-  const WelcomeScreen({super.key});
+  final String? email;
+  final String? contrasena;
+  final int?    edad;
+  final String? genero;
+
+  const WelcomeScreen({
+    super.key,
+    this.email,
+    this.contrasena,
+    this.edad,
+    this.genero,
+  });
 
   @override
   ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -63,6 +74,10 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
         grado: 1, // grado temporal, se actualiza en selección de grado
         personaje: personaje,
         fechaRegistro: DateTime.now().toIso8601String(),
+        email:     widget.email,
+        contrasena: widget.contrasena,
+        edad:      widget.edad,
+        genero:    widget.genero,
       );
 
       final id = await repo.crear(estudiante);

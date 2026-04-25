@@ -66,6 +66,19 @@ class EstudianteRepository {
     );
   }
 
+  /// Busca un estudiante por email y contraseña (para el login).
+  Future<EstudianteModel?> buscarPorEmailYContrasena(
+      String email, String contrasena) async {
+    final filas = await _db.consultar(
+      _tabla,
+      where:     'email = ? AND contrasena = ?',
+      whereArgs: [email, contrasena],
+      limit:     1,
+    );
+    if (filas.isEmpty) return null;
+    return EstudianteModel.fromMap(filas.first);
+  }
+
   /// Crea el estudiante por defecto si no existe ninguno.
   /// Devuelve el estudiante (existente o recién creado).
   Future<EstudianteModel> obtenerOCrearPorDefecto() async {

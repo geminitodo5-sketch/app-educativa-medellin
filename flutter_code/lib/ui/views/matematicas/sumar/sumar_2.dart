@@ -1,14 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ Importante
+import 'package:media_kit/media_kit.dart';
+import 'dart:math';
 import 'quien_tiene_mas_31.dart';
 
-// --- Paleta de Colores NUMI ---
 const Color kColorAzulNumi = Color(0xFF3475F7);
 const Color kColorRojoNumi = Color(0xFFF65757);
 const Color kColorNaranjaNumi = Color(0xFFEF9325);
 const Color kColorVerdeNumi = Color(0xFF59E347);
 
+// ─── Modelo de actividad aleatoria ─────────────────────────────────────────
+class _DatosActividad {
+  final int cantidadA;
+  final int cantidadB;
+  final List<int> opciones;
+  final int indexCorrecto;
+
+  _DatosActividad({
+    required this.cantidadA,
+    required this.cantidadB,
+    required this.opciones,
+    required this.indexCorrecto,
+  });
+
+  int get respuestaCorrecta => cantidadA + cantidadB;
+
+  factory _DatosActividad.generar() {
+    final rng = Random();
+
+    final a = rng.nextInt(6) + 1; // 1..6
+    final b = rng.nextInt(6) + 1; // 1..6
+    final correcto = a + b;
+
+    final Set<int> distSet = {};
+    while (distSet.length < 2) {
+      final delta = rng.nextInt(2) + 1;
+      final candidato = rng.nextBool() ? correcto + delta : correcto - delta;
+      if (candidato != correcto && candidato > 0) {
+        distSet.add(candidato);
+      }
+    }
+
+    final List<int> opciones = distSet.toList();
+    final posCorrecta = rng.nextInt(3);
+    opciones.insert(posCorrecta, correcto);
+
+    return _DatosActividad(
+      cantidadA: a,
+      cantidadB: b,
+      opciones: opciones,
+      indexCorrecto: posCorrecta,
+    );
+  }
+}
+
+// ─── Pantalla principal ─────────────────────────────────────────────────────
 class PantallaSumaUvas extends ConsumerStatefulWidget {
   const PantallaSumaUvas({super.key});
 
@@ -17,20 +63,20 @@ class PantallaSumaUvas extends ConsumerStatefulWidget {
 }
 
 class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
-  // ✅ Controlador del reproductor
   Player? _player;
+  late _DatosActividad _datos;
 
   @override
   void initState() {
     super.initState();
+    _datos = _DatosActividad.generar();
     _player = Player();
-    // Reproducción automática al entrar
     Future.microtask(() => _reproducirInstruccion());
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberación de memoria
+    _player?.dispose();
     super.dispose();
   }
 
@@ -42,6 +88,12 @@ class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }
+  }
+
+  void _regenerar() {
+    setState(() {
+      _datos = _DatosActividad.generar();
+    });
   }
 
   @override
@@ -57,21 +109,24 @@ class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(40)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
                       const SizedBox(height: 10),
-                      // ✅ Pasamos la función de reproducción al widget de instrucción
                       _InstruccionAudio(onPlay: _reproducirInstruccion),
                       const Spacer(),
-                      const _SeccionCajas(),
+                      _SeccionCajas(
+                        cantidadA: _datos.cantidadA,
+                        cantidadB: _datos.cantidadB,
+                      ),
                       const Spacer(),
-                      const Text(
-                        "4+3=?",
-                        style: TextStyle(
+                      Text(
+                        '${_datos.cantidadA}+${_datos.cantidadB}=?',
+                        style: const TextStyle(
                           fontFamily: 'Hiruko',
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -79,7 +134,10 @@ class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
                         ),
                       ),
                       const Spacer(),
-                      const _OpcionesRespuesta(),
+                      _OpcionesRespuesta(
+                        datos: _datos,
+                        onRegenerar: _regenerar,
+                      ),
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -93,6 +151,7 @@ class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
   }
 }
 
+// ─── Header ──────────────────────────────────────────────────────────────────
 class _HeaderSuma extends StatelessWidget {
   const _HeaderSuma();
 
@@ -106,7 +165,7 @@ class _HeaderSuma extends StatelessWidget {
           const Align(
             alignment: Alignment.center,
             child: Text(
-              "Sumar",
+              'Sumar',
               style: TextStyle(
                 fontFamily: 'Hiruko',
                 fontSize: 36,
@@ -129,15 +188,15 @@ class _HeaderSuma extends StatelessWidget {
   }
 }
 
+// ─── Instrucción con audio ────────────────────────────────────────────────────
 class _InstruccionAudio extends StatelessWidget {
-  final VoidCallback onPlay; // ✅ Callback para repetir el audio
+  final VoidCallback onPlay;
   const _InstruccionAudio({required this.onPlay});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // ✅ Botón interactivo para repetir instrucción
         IconButton(
           icon: const Icon(Icons.volume_up_outlined, size: 50),
           color: Colors.black87,
@@ -146,7 +205,7 @@ class _InstruccionAudio extends StatelessWidget {
         const SizedBox(width: 15),
         const Expanded(
           child: Text(
-            "Suma las uvas de  las dos cajas",
+            'Suma  las uvas de  las dos cajas',
             style: TextStyle(
               fontFamily: 'Hiruko',
               fontSize: 22,
@@ -160,26 +219,39 @@ class _InstruccionAudio extends StatelessWidget {
   }
 }
 
+// ─── Sección de cajas ─────────────────────────────────────────────────────────
 class _SeccionCajas extends StatelessWidget {
-  const _SeccionCajas();
+  final int cantidadA;
+  final int cantidadB;
+  const _SeccionCajas({required this.cantidadA, required this.cantidadB});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        _CajaFruta(color: kColorRojoNumi, cantidad: 3),
-        SizedBox(width: 20),
-        _CajaFruta(color: kColorNaranjaNumi, cantidad: 4),
+      children: [
+        _CajaFruta(color: kColorRojoNumi, cantidad: cantidadA),
+        const SizedBox(width: 20),
+        _CajaFruta(color: kColorNaranjaNumi, cantidad: cantidadB),
       ],
     );
   }
 }
 
+// ─── Caja individual con uvas adaptativas ────────────────────────────────────
 class _CajaFruta extends StatelessWidget {
   final Color color;
   final int cantidad;
   const _CajaFruta({required this.color, required this.cantidad});
+
+  // ✅ Tamaño de uva se adapta según cuántas hay
+  double get _tamanoUva {
+    if (cantidad <= 2) return 55;
+    if (cantidad <= 4) return 48;
+    if (cantidad <= 6) return 38;
+    if (cantidad <= 9) return 30;
+    return 24; // 10..12
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,28 +264,34 @@ class _CajaFruta extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Center(
-            child: Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              alignment: WrapAlignment.center,
-              children: List.generate(
-                cantidad,
-                (index) => Image.asset(
-                  'assets/images/actividades/matematicas/mora.png',
-                  width: 55,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                alignment: WrapAlignment.center,
+                runAlignment: WrapAlignment.center, // ✅ centra filas verticalmente
+                children: List.generate(
+                  cantidad,
+                  (index) => Image.asset(
+                    'assets/images/actividades/matematicas/mora.png',
+                    width: _tamanoUva,
+                    height: _tamanoUva,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
           ),
           Positioned(
-            bottom: 10,
-            right: 15,
+            bottom: 8,
+            right: 12,
             child: Text(
-              "$cantidad",
+              '$cantidad',
               style: const TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 28,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -225,39 +303,32 @@ class _CajaFruta extends StatelessWidget {
   }
 }
 
+// ─── Opciones de respuesta ────────────────────────────────────────────────────
 class _OpcionesRespuesta extends StatelessWidget {
-  const _OpcionesRespuesta();
+  final _DatosActividad datos;
+  final VoidCallback onRegenerar;
+  const _OpcionesRespuesta({required this.datos, required this.onRegenerar});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _BotonOpcion(
-          numero: "6",
-          onTap: () => _showFeedbackSheet(context, false),
-        ),
-        _BotonOpcion(
-          numero: "8",
-          onTap: () => _showFeedbackSheet(context, false),
-        ),
-        _BotonOpcion(
-          numero: "7",
-          onTap: () => _showFeedbackSheet(context, true),
-        ),
-      ],
+      children: List.generate(3, (i) {
+        final esCorrecto = i == datos.indexCorrecto;
+        return _BotonOpcion(
+          numero: '${datos.opciones[i]}',
+          onTap: () => _showFeedbackSheet(context, esCorrecto, onRegenerar),
+        );
+      }),
     );
   }
 }
 
+// ─── Botón de opción ──────────────────────────────────────────────────────────
 class _BotonOpcion extends StatelessWidget {
   final String numero;
   final VoidCallback onTap;
-
-  const _BotonOpcion({
-    required this.numero,
-    required this.onTap,
-  });
+  const _BotonOpcion({required this.numero, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -277,7 +348,7 @@ class _BotonOpcion extends StatelessWidget {
             fontFamily: 'Poppins',
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white, // Ajustado a blanco para contraste con azul
+            color: Colors.white,
           ),
         ),
       ),
@@ -285,7 +356,9 @@ class _BotonOpcion extends StatelessWidget {
   }
 }
 
-void _showFeedbackSheet(BuildContext context, bool esCorrecto) {
+// ─── Bottom sheet de feedback ─────────────────────────────────────────────────
+void _showFeedbackSheet(
+    BuildContext context, bool esCorrecto, VoidCallback onRegenerar) {
   showModalBottomSheet(
     context: context,
     isDismissible: false,
@@ -294,7 +367,9 @@ void _showFeedbackSheet(BuildContext context, bool esCorrecto) {
       return Container(
         padding: const EdgeInsets.all(30),
         decoration: BoxDecoration(
-          color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+          color: esCorrecto
+              ? const Color(0xFFD7FFD3)
+              : const Color(0xFFFFD3D3),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),
@@ -328,10 +403,10 @@ void _showFeedbackSheet(BuildContext context, bool esCorrecto) {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: esCorrecto ? kColorVerdeNumi : kColorRojoNumi,
+                  backgroundColor:
+                      esCorrecto ? kColorVerdeNumi : kColorRojoNumi,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                      borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -340,6 +415,8 @@ void _showFeedbackSheet(BuildContext context, bool esCorrecto) {
                       MaterialPageRoute(
                           builder: (_) => const QuienTieneMasview3()),
                     );
+                  } else {
+                    onRegenerar();
                   }
                 },
                 child: Text(

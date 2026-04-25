@@ -12,7 +12,7 @@ import 'package:media_kit_video/media_kit_video.dart';
 import '../../data/models/estudiante_model.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
-import 'bienvenida.dart';
+import 'registro_view.dart';
 import 'menu_1_y_2_view.dart';
 
 class InicioView extends ConsumerStatefulWidget {
@@ -72,7 +72,7 @@ class _InicioViewState extends ConsumerState<InicioView> {
   void _irABienvenida() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (ctx, a, _) => const WelcomeScreen(),
+        pageBuilder: (ctx, a, _) => const RegistroView(),
         transitionsBuilder: (ctx, anim, _, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 500),

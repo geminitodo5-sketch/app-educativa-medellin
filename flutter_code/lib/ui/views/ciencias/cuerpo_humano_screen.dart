@@ -335,19 +335,10 @@ class _Actividad1State extends State<_Actividad1>
     super.initState();
     _cargarTamanioImagen();
 
-    // ✅ CORRECCIÓN: espera a que termine _audio4 antes de reproducir
-    // el audio de la primera parte del cuerpo (ojos).
     Future.microtask(() async {
       if (!mounted) return;
-
-      // 1. Reproduce la instrucción general
       await _playAsset(_playerInstruccion, _audio4);
-
-      // 2. Espera a que el stream confirme que terminó de reproducirse
-      await _playerInstruccion.stream.completed
-          .firstWhere((done) => done);
-
-      // 3. Solo entonces reproduce el audio de la primera parte
+      await _playerInstruccion.stream.completed.firstWhere((done) => done);
       if (mounted) await _playAudioParte(_preguntas[0]);
     });
   }
@@ -656,12 +647,15 @@ class _InstruccionState extends State<_Instruccion> {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 2
+// ACTIVIDAD 2  –  Armar la figura
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _PiezaCuerpo {
   final String nombre;
   final String ruta;
+  // ── Tolerancia relativa: fracción del área (0–1) ──────────────────────────
+  // Se evalúa sobre el CENTRO de la pieza ya colocada.
+  // Ajusta solo si la posición "correcta" cambia respecto al diseño.
   final Rect toleranceRect;
   final double anchoFraccion;
   final double altoFraccion;
@@ -676,7 +670,7 @@ class _PiezaCuerpo {
 
 class _PiezaEstado {
   final String nombre;
-  Offset posicion;
+  Offset posicion; // centro de la pieza en fracción del área (0–1)
   bool colocada;
   _PiezaEstado(this.nombre, {required this.posicion, this.colocada = false});
 }
@@ -689,31 +683,34 @@ class _Actividad2 extends StatefulWidget {
 }
 
 class _Actividad2State extends State<_Actividad2> {
+  // ── Definición base (anchoFraccion / altoFraccion se recalculan luego) ────
   static const _piezasBase = [
     _PiezaCuerpo('piernas', '${_p5}piernas.png',
-        toleranceRect: Rect.fromLTWH(0.00, 0.30, 1.00, 0.70),
+        toleranceRect: Rect.fromLTWH(0.20, 0.55, 0.60, 0.35),
         anchoFraccion: 0.55, altoFraccion: 0.35),
     _PiezaCuerpo('manos', '${_p5}manos.png',
-        toleranceRect: Rect.fromLTWH(0.00, 0.10, 1.00, 0.80),
+        toleranceRect: Rect.fromLTWH(0.05, 0.30, 0.90, 0.40),
         anchoFraccion: 0.88, altoFraccion: 0.15),
     _PiezaCuerpo('camisa', '${_p5}camisa.png',
-        toleranceRect: Rect.fromLTWH(0.05, 0.10, 0.90, 0.80),
+        toleranceRect: Rect.fromLTWH(0.20, 0.25, 0.60, 0.45),
         anchoFraccion: 0.65, altoFraccion: 0.28),
     _PiezaCuerpo('cabeza', '${_p5}cabeza.png',
-        toleranceRect: Rect.fromLTWH(0.00, 0.00, 1.00, 0.60),
+        toleranceRect: Rect.fromLTWH(0.20, 0.02, 0.60, 0.35),
         anchoFraccion: 0.55, altoFraccion: 0.30),
     _PiezaCuerpo('cabello', '${_p5}cabello.png',
-        toleranceRect: Rect.fromLTWH(0.00, 0.00, 1.00, 0.50),
+        toleranceRect: Rect.fromLTWH(0.20, 0.00, 0.60, 0.28),
         anchoFraccion: 0.62, altoFraccion: 0.22),
     _PiezaCuerpo('ojos', '${_p5}ojos.png',
-        toleranceRect: Rect.fromLTWH(0.20, 0.05, 0.60, 0.30),
+        toleranceRect: Rect.fromLTWH(0.28, 0.08, 0.44, 0.18),
         anchoFraccion: 0.06, altoFraccion: 0.02),
     _PiezaCuerpo('boca', '${_p5}boca.png',
-        toleranceRect: Rect.fromLTWH(0.20, 0.10, 0.60, 0.40),
+        toleranceRect: Rect.fromLTWH(0.30, 0.15, 0.40, 0.20),
         anchoFraccion: 0.08, altoFraccion: 0.03),
   ];
 
-  static const _renderOrder = ['cabello', 'piernas', 'manos', 'camisa', 'cabeza', 'ojos', 'boca'];
+  static const _renderOrder = [
+    'cabello', 'piernas', 'manos', 'camisa', 'cabeza', 'ojos', 'boca'
+  ];
 
   List<_PiezaCuerpo> _piezas = List.of(_piezasBase);
   late List<_PiezaEstado> _estados;
@@ -721,27 +718,21 @@ class _Actividad2State extends State<_Actividad2> {
   bool _imagenesListas = false;
 
   final _areaKey = GlobalKey();
-  final Map<String, Offset> _touchOffset = {};
 
   final Player _player = Player();
 
-  Future<void> _playAudio() async {
-    await _playAsset(_player, _audio5);
-  }
+  Future<void> _playAudio() async => _playAsset(_player, _audio5);
 
   @override
   void initState() {
     super.initState();
     _inicializarEstados();
     _calcularFraccionesDesdeImagenes();
-    Future.microtask(() {
-      if (mounted) _playAudio();
-    });
+    Future.microtask(() { if (mounted) _playAudio(); });
   }
 
   Future<void> _calcularFraccionesDesdeImagenes() async {
     final Map<String, Size> sizes = {};
-
     for (final p in _piezasBase) {
       try {
         final completer = Completer<ui.Image>();
@@ -761,32 +752,32 @@ class _Actividad2State extends State<_Actividad2> {
 
     if (!mounted) return;
 
-    final cabezaSize = sizes['cabeza']!;
-    const cabezaAncho = 0.50;
+    // Usamos la cabeza como referencia de escala (ancho = 50 % del área)
+    final cabezaSize    = sizes['cabeza']!;
+    const cabezaAncho   = 0.50; // fracción del área que debe ocupar el ancho de la cabeza
+    final pixelPorFrac  = cabezaSize.width / cabezaAncho;
+
+    // ── Escalas visuales por pieza ──────────────────────────────────────────
+    // Ajusta estos valores si las proporciones siguen viéndose mal.
+    const escala = {
+      'cabeza'  : 0.50,
+      'cabello' : 0.55,
+      'camisa'  : 0.45,
+      'piernas' : 0.28,
+      'manos'   : 0.45,
+      'ojos'    : 0.18,
+      'boca'    : 0.18,
+    };
 
     final List<_PiezaCuerpo> nuevas = _piezasBase.map((p) {
       final imgSize = sizes[p.nombre]!;
-      final pixelesPorFraccion = cabezaSize.width / cabezaAncho;
+      final esc     = escala[p.nombre] ?? 0.50;
 
-      double escalaEspecial = 0.7;
-      if (p.nombre == 'ojos' || p.nombre == 'boca') {
-        escalaEspecial = 0.25;
-      } else if (p.nombre == 'camisa') {
-        escalaEspecial = 0.60;
-      } else if (p.nombre == 'piernas') {
-        escalaEspecial = 0.40;
-      } else if (p.nombre == 'manos') {
-        escalaEspecial = 0.60;
-      } else if (p.nombre == 'cabello') {
-        escalaEspecial = 0.85;
-      }
-
-      final anchoFrac = (imgSize.width  / pixelesPorFraccion * escalaEspecial).clamp(0.05, 0.95);
-      final altoFrac  = (imgSize.height / pixelesPorFraccion * escalaEspecial).clamp(0.02, 0.50);
+      final anchoFrac = (imgSize.width  / pixelPorFrac * esc).clamp(0.04, 0.95);
+      final altoFrac  = (imgSize.height / pixelPorFrac * esc).clamp(0.02, 0.55);
 
       return _PiezaCuerpo(
-        p.nombre,
-        p.ruta,
+        p.nombre, p.ruta,
         toleranceRect: p.toleranceRect,
         anchoFraccion: anchoFrac,
         altoFraccion:  altoFrac,
@@ -794,7 +785,7 @@ class _Actividad2State extends State<_Actividad2> {
     }).toList();
 
     setState(() {
-      _piezas = nuevas;
+      _piezas        = nuevas;
       _imagenesListas = true;
     });
   }
@@ -815,8 +806,8 @@ class _Actividad2State extends State<_Actividad2> {
     final p = _piezas.firstWhere((p) => p.nombre == nombre);
 
     if (nombre == 'camisa') {
-      return e.posicion.dx >= 0.20 && e.posicion.dx <= 0.80 &&
-             e.posicion.dy >= 0.25 && e.posicion.dy <= 0.75;
+      return e.posicion.dx >= 0.30 && e.posicion.dx <= 0.70 &&
+             e.posicion.dy >= 0.30 && e.posicion.dy <= 0.65;
     }
 
     if (nombre == 'cabeza' || nombre == 'manos' || nombre == 'piernas') {
@@ -824,24 +815,24 @@ class _Actividad2State extends State<_Actividad2> {
       if (!eCamisa.colocada) return p.toleranceRect.contains(e.posicion);
       final diff = e.posicion - eCamisa.posicion;
       if (nombre == 'cabeza') {
-        return diff.dy < -0.08 && diff.dy > -0.45 && diff.dx.abs() < 0.28;
+        return diff.dy < -0.12 && diff.dy > -0.38 && diff.dx.abs() < 0.18;
       }
       if (nombre == 'piernas') {
-        return diff.dy > 0.10 && diff.dy < 0.55 && diff.dx.abs() < 0.28;
+        return diff.dy > 0.05 && diff.dy < 0.65 && diff.dx.abs() < 0.40;
       }
       if (nombre == 'manos') {
-        return diff.dy.abs() < 0.25 && diff.dx.abs() < 0.50;
+        return diff.dy.abs() < 0.15 && diff.dx.abs() < 0.38;
       }
     }
 
     if (nombre == 'ojos' || nombre == 'boca' || nombre == 'cabello') {
       final eCabeza = _estados.firstWhere((estado) => estado.nombre == 'cabeza');
       if (!eCabeza.colocada) return p.toleranceRect.contains(e.posicion);
-      final diff = e.posicion - eCabeza.posicion;
+      final diff    = e.posicion - eCabeza.posicion;
       final distancia = diff.distance;
-      if (nombre == 'cabello') return distancia < 0.35 && diff.dy <= 0.05;
-      if (nombre == 'ojos')    return distancia < 0.30;
-      if (nombre == 'boca')    return distancia < 0.30;
+      if (nombre == 'cabello') return distancia < 0.18 && diff.dy <= -0.02;
+      if (nombre == 'ojos')    return distancia < 0.04;
+      if (nombre == 'boca')    return distancia < 0.16;
     }
 
     return p.toleranceRect.contains(e.posicion);
@@ -872,31 +863,39 @@ class _Actividad2State extends State<_Actividad2> {
     });
   }
 
-  void _colocarPieza(String nombre, Offset globalPointer, Offset touchOff) {
+  // ── FIX PRINCIPAL: posicionamiento exacto al soltar ───────────────────────
+  // Estrategia: usamos childDragAnchorStrategy (la pieza se arrastra desde su
+  // esquina superior-izquierda). Al recibir `details.offset` en onDragEnd,
+  // ese offset ES la posición global de la esquina superior-izquierda del
+  // feedback. Sumamos la mitad del tamaño para obtener el centro.
+  void _colocarPieza(String nombre, Offset globalTopLeft) {
     final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
     if (ro == null) return;
 
-    final areaSize      = ro.size;
-    final globalTopLeft = globalPointer - touchOff;
-    final localTopLeft  = ro.globalToLocal(globalTopLeft);
+    final areaSize = ro.size;
+    final p        = _piezas.firstWhere((p) => p.nombre == nombre);
+    final pxW      = areaSize.width  * p.anchoFraccion;
+    final pxH      = areaSize.height * p.altoFraccion;
 
-    final p   = _piezas.firstWhere((p) => p.nombre == nombre);
-    final pxW = areaSize.width  * p.anchoFraccion;
-    final pxH = areaSize.height * p.altoFraccion;
+    // Centro del feedback en coordenadas globales
+    final globalCenter = globalTopLeft + Offset(pxW / 2, pxH / 2);
+    // Convertir a coordenadas locales del área
+    final localCenter  = ro.globalToLocal(globalCenter);
 
-    final centerX = localTopLeft.dx + pxW / 2;
-    final centerY = localTopLeft.dy + pxH / 2;
+    // Verificar que el centro aterrizó dentro del área (con margen)
+    if (localCenter.dx < -pxW / 2 || localCenter.dx > areaSize.width  + pxW / 2 ||
+        localCenter.dy < -pxH / 2 || localCenter.dy > areaSize.height + pxH / 2) {
+      return; // soltó fuera del área → no mover
+    }
 
-    if (centerX < -pxW || centerX > areaSize.width  + pxW ||
-        centerY < -pxH || centerY > areaSize.height + pxH) return;
-
-    final fracX = (centerX / areaSize.width ).clamp(
+    // Convertir a fracción y clampear para que la pieza no salga del área
+    final fracX = (localCenter.dx / areaSize.width ).clamp(
         p.anchoFraccion / 2, 1.0 - p.anchoFraccion / 2);
-    final fracY = (centerY / areaSize.height).clamp(
+    final fracY = (localCenter.dy / areaSize.height).clamp(
         p.altoFraccion  / 2, 1.0 - p.altoFraccion  / 2);
 
     setState(() {
-      final e = _estados.firstWhere((e) => e.nombre == nombre);
+      final e    = _estados.firstWhere((e) => e.nombre == nombre);
       e.posicion = Offset(fracX, fracY);
       e.colocada = true;
       _verificado = false;
@@ -929,107 +928,140 @@ class _Actividad2State extends State<_Actividad2> {
                 final areaW = constraints.maxWidth;
                 final areaH = constraints.maxHeight;
 
-                return Container(
-                  key: _areaKey,
-                  width: areaW,
-                  height: areaH,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5FFF6),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFBBEEC4), width: 1.5),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Stack(
-                      clipBehavior: Clip.hardEdge,
-                      children: [
-                        if (_enBandeja.length == _piezas.length)
-                          const Center(
-                            child: Text('⬆ Arrastra las piezas aquí',
-                                style: TextStyle(
-                                    color: Color(0xFF9E9E9E),
-                                    fontSize: 13,
-                                    fontFamily: 'Poppins')),
-                          ),
-                        ..._renderOrder.map((nombre) {
-                          final e = _estados.firstWhere((e) => e.nombre == nombre);
-                          if (!e.colocada) return const SizedBox.shrink();
-                          final p = _piezas.firstWhere((p) => p.nombre == nombre);
+                return DragTarget<String>(
+                  onAcceptWithDetails: (details) {
+                    // details.offset = posición global de la esquina sup-izq del feedback
+                    _colocarPieza(details.data, details.offset);
+                  },
+                  builder: (ctx, candidateData, rejectedData) {
+                    return Container(
+                      key: _areaKey,
+                      width: areaW,
+                      height: areaH,
+                      decoration: BoxDecoration(
+                        color: candidateData.isNotEmpty
+                            ? const Color(0xFFE8F5E9)
+                            : const Color(0xFFF5FFF6),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: candidateData.isNotEmpty
+                              ? const Color(0xFF3DCC52)
+                              : const Color(0xFFBBEEC4),
+                          width: candidateData.isNotEmpty ? 2.5 : 1.5,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Stack(
+                          clipBehavior: Clip.hardEdge,
+                          children: [
+                            if (_enBandeja.length == _piezas.length)
+                              const Center(
+                                child: Text('⬆ Arrastra las piezas aquí',
+                                    style: TextStyle(
+                                        color: Color(0xFF9E9E9E),
+                                        fontSize: 13,
+                                        fontFamily: 'Poppins')),
+                              ),
 
-                          final pxW  = areaW * p.anchoFraccion;
-                          final pxH  = areaH * p.altoFraccion;
-                          final left = (e.posicion.dx * areaW - pxW / 2)
-                              .clamp(0.0, (areaW - pxW).clamp(0.0, areaW));
-                          final top  = (e.posicion.dy * areaH - pxH / 2)
-                              .clamp(0.0, (areaH - pxH).clamp(0.0, areaH));
-                          final correcto = _verificado ? _esCorrecto(nombre) : null;
+                            // ── Piezas ya colocadas en el área ───────────────
+                            ..._renderOrder.map((nombre) {
+                              final e = _estados.firstWhere((e) => e.nombre == nombre);
+                              if (!e.colocada) return const SizedBox.shrink();
+                              final p = _piezas.firstWhere((p) => p.nombre == nombre);
 
-                          return Positioned(
-                            left: left, top: top, width: pxW, height: pxH,
-                            child: Listener(
-                              onPointerDown: (ev) {
-                                _touchOffset[nombre] = ev.localPosition;
-                              },
-                              child: Draggable<String>(
-                                data: nombre,
-                                dragAnchorStrategy: pointerDragAnchorStrategy,
-                                feedback: Material(
-                                  color: Colors.transparent,
-                                  child: Opacity(
-                                    opacity: 0.9,
-                                    child: SizedBox(
-                                      width: pxW, height: pxH,
-                                      child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
+                              final pxW  = areaW * p.anchoFraccion;
+                              final pxH  = areaH * p.altoFraccion;
+                              final left = (e.posicion.dx * areaW - pxW / 2)
+                                  .clamp(0.0, (areaW - pxW).clamp(0.0, areaW));
+                              final top  = (e.posicion.dy * areaH - pxH / 2)
+                                  .clamp(0.0, (areaH - pxH).clamp(0.0, areaH));
+                              final correcto = _verificado ? _esCorrecto(nombre) : null;
+
+                              return Positioned(
+                                left: left, top: top, width: pxW, height: pxH,
+                                child: Draggable<String>(
+                                  data: nombre,
+                                  // childDragAnchorStrategy: la esquina sup-izq
+                                  // del feedback coincide con el puntero →
+                                  // details.offset en onDragEnd es la posición
+                                  // global de esa esquina. Simple y exacto.
+                                  dragAnchorStrategy: childDragAnchorStrategy,
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: Opacity(
+                                      opacity: 0.88,
+                                      child: SizedBox(
+                                        width: pxW, height: pxH,
+                                        child: Image.asset(p.ruta,
+                                            fit: BoxFit.contain,
+                                            filterQuality: FilterQuality.high),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                childWhenDragging: Opacity(
-                                  opacity: 0.25,
-                                  child: SizedBox(
-                                    width: pxW, height: pxH,
-                                    child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
+                                  childWhenDragging: Opacity(
+                                    opacity: 0.20,
+                                    child: SizedBox(
+                                      width: pxW, height: pxH,
+                                      child: Image.asset(p.ruta,
+                                          fit: BoxFit.contain,
+                                          filterQuality: FilterQuality.high),
+                                    ),
                                   ),
-                                ),
-                                onDragEnd: (details) {
-                                  final touch = _touchOffset[nombre] ??
-                                      Offset(pxW / 2, pxH / 2);
-                                  _colocarPieza(nombre, details.offset, touch);
-                                },
-                                child: Stack(children: [
-                                  SizedBox(
-                                    width: pxW, height: pxH,
-                                    child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
-                                  ),
-                                  if (correcto != null)
-                                    Positioned.fill(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: correcto
-                                              ? const Color(0x2200CC44)
-                                              : const Color(0x44FF0000),
-                                          borderRadius: BorderRadius.circular(6),
-                                        ),
-                                        child: Center(
-                                          child: Icon(
-                                            correcto
-                                                ? Icons.check_circle_rounded
-                                                : Icons.cancel_rounded,
+                                  onDragEnd: (details) {
+                                    // Si no fue aceptado por un DragTarget,
+                                    // el onAcceptWithDetails del DragTarget
+                                    // ya lo maneja. Aquí solo necesitamos
+                                    // manejar el caso en que se suelte FUERA
+                                    // del área: devolver a bandeja.
+                                    if (!details.wasAccepted) {
+                                      setState(() {
+                                        final est = _estados.firstWhere(
+                                            (est) => est.nombre == nombre);
+                                        est.colocada = false;
+                                        est.posicion = const Offset(-999, -999);
+                                        _verificado  = false;
+                                      });
+                                    }
+                                  },
+                                  child: Stack(children: [
+                                    SizedBox(
+                                      width: pxW, height: pxH,
+                                      child: Image.asset(p.ruta,
+                                          fit: BoxFit.contain,
+                                          filterQuality: FilterQuality.high),
+                                    ),
+                                    if (correcto != null)
+                                      Positioned.fill(
+                                        child: Container(
+                                          decoration: BoxDecoration(
                                             color: correcto
-                                                ? const Color(0xFF2E7D32)
-                                                : const Color(0xFFB71C1C),
-                                            size: 24,
+                                                ? const Color(0x2200CC44)
+                                                : const Color(0x44FF0000),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              correcto
+                                                  ? Icons.check_circle_rounded
+                                                  : Icons.cancel_rounded,
+                                              color: correcto
+                                                  ? const Color(0xFF2E7D32)
+                                                  : const Color(0xFFB71C1C),
+                                              size: 24,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                ]),
-                              ),
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
+                                  ]),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 );
               }),
             ),
@@ -1078,51 +1110,47 @@ class _Actividad2State extends State<_Actividad2> {
               ),
             ),
 
+          // ── Bandeja de piezas ─────────────────────────────────────────────
           if (enBandeja.isNotEmpty)
             SizedBox(
               height: 100,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(left: 6, right: 6, top: 4, bottom: 4),
+                padding:
+                    const EdgeInsets.only(left: 6, right: 6, top: 4, bottom: 4),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: _piezas
                       .where((p) => enBandeja.contains(p.nombre))
                       .map((p) {
-                        const thumbSize = 72.0;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Listener(
-                            onPointerDown: (ev) {
-                              _touchOffset[p.nombre] = ev.localPosition;
-                            },
-                            child: Draggable<String>(
-                              data: p.nombre,
-                              dragAnchorStrategy: pointerDragAnchorStrategy,
-                              feedback: Material(
-                                color: Colors.transparent,
-                                child: Opacity(
-                                  opacity: 0.9,
-                                  child: SizedBox(
-                                    width: thumbSize, height: thumbSize,
-                                    child: Image.asset(p.ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
-                                  ),
-                                ),
-                              ),
-                              childWhenDragging: Opacity(
-                                opacity: 0.30,
-                                child: _piezaEnBandeja(p.nombre, p.ruta),
-                              ),
-                              onDragEnd: (details) {
-                                const touch = Offset(thumbSize / 2, thumbSize / 2);
-                                _colocarPieza(p.nombre, details.offset, touch);
-                              },
-                              child: _piezaEnBandeja(p.nombre, p.ruta),
+                    const thumbSize = 72.0;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Draggable<String>(
+                        data: p.nombre,
+                        dragAnchorStrategy: childDragAnchorStrategy,
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: Opacity(
+                            opacity: 0.88,
+                            child: SizedBox(
+                              width: thumbSize, height: thumbSize,
+                              child: Image.asset(p.ruta,
+                                  fit: BoxFit.contain,
+                                  filterQuality: FilterQuality.high),
                             ),
                           ),
-                        );
-                      })
-                      .toList(),
+                        ),
+                        childWhenDragging: Opacity(
+                          opacity: 0.30,
+                          child: _piezaEnBandeja(p.nombre, p.ruta),
+                        ),
+                        // La bandeja NO usa onDragEnd para posicionar:
+                        // el DragTarget del área lo hace via onAcceptWithDetails.
+                        child: _piezaEnBandeja(p.nombre, p.ruta),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
@@ -1144,10 +1172,12 @@ class _Actividad2State extends State<_Actividad2> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFF3DCC52), width: 1.5),
             boxShadow: const [
-              BoxShadow(color: Color(0x22000000), blurRadius: 6, offset: Offset(0, 3))
+              BoxShadow(
+                  color: Color(0x22000000), blurRadius: 6, offset: Offset(0, 3))
             ],
           ),
-          child: Image.asset(ruta, fit: BoxFit.contain, filterQuality: FilterQuality.high),
+          child: Image.asset(ruta,
+              fit: BoxFit.contain, filterQuality: FilterQuality.high),
         ),
         const SizedBox(height: 2),
         Text(label,
@@ -1197,9 +1227,8 @@ class _Actividad3State extends State<_Actividad3> {
   String get _audioRondaActual =>
       _audioPorRespuesta[_preguntas[_ronda]['ans']]!;
 
-  Future<void> _playAudioRonda() async {
-    await _playAsset(_player, _audioRondaActual);
-  }
+  Future<void> _playAudioRonda() async =>
+      _playAsset(_player, _audioRondaActual);
 
   @override
   void initState() {
@@ -1211,9 +1240,7 @@ class _Actividad3State extends State<_Actividad3> {
       {'txt': '¿Con qué parte del cuerpo saboreo los alimentos?', 'ans': 'gusto'},
     ]..shuffle(Random());
     _preguntas = lista;
-    Future.microtask(() {
-      if (mounted) _playAudioRonda();
-    });
+    Future.microtask(() { if (mounted) _playAudioRonda(); });
   }
 
   void _responder(BuildContext context, String id) {
@@ -1223,10 +1250,7 @@ class _Actividad3State extends State<_Actividad3> {
     _mostrarFeedback(context, correcto, onAction: () {
       if (correcto) {
         if (_ronda < _preguntas.length - 1) {
-          setState(() {
-            _ronda++;
-            _seleccion = null;
-          });
+          setState(() { _ronda++; _seleccion = null; });
           _playAudioRonda();
         } else {
           widget.onFinish();
@@ -1280,7 +1304,8 @@ class _Actividad3State extends State<_Actividad3> {
                             width: 4,
                           ),
                         ),
-                        child: Image.asset(b['img'] as String, filterQuality: ui.FilterQuality.high),
+                        child: Image.asset(b['img'] as String,
+                            filterQuality: ui.FilterQuality.high),
                       ),
                     );
                   }).toList(),

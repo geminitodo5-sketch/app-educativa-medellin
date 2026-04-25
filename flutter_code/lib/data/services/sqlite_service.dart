@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 
 class SqliteService {
   static const String _dbName    = 'numi.db';
-  static const int    _dbVersion = 1;
+  static const int    _dbVersion = 2;
 
   static SqliteService? _instance;
   static Database?      _database;
@@ -49,7 +49,11 @@ class SqliteService {
           grado          INTEGER NOT NULL CHECK (grado BETWEEN 1 AND 5),
           personaje      TEXT    NOT NULL CHECK (personaje IN ('pollito','mono')),
           fecha_registro TEXT    NOT NULL,
-          ultima_sesion  TEXT
+          ultima_sesion  TEXT,
+          email          TEXT,
+          contrasena     TEXT,
+          edad           INTEGER,
+          genero         TEXT
         )
       ''');
 
@@ -154,7 +158,12 @@ class SqliteService {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Agregar migraciones aquí en versiones futuras
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE estudiantes ADD COLUMN email      TEXT');
+      await db.execute('ALTER TABLE estudiantes ADD COLUMN contrasena TEXT');
+      await db.execute('ALTER TABLE estudiantes ADD COLUMN edad       INTEGER');
+      await db.execute('ALTER TABLE estudiantes ADD COLUMN genero     TEXT');
+    }
   }
 
   // ── Métodos genéricos ────────────────────────────────────────

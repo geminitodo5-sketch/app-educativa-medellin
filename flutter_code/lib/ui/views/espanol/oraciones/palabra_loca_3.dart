@@ -102,30 +102,87 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
                 ),
                 child: Column(
                   children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _buildSeccionImagen(ejercicio),
-                            const SizedBox(height: 10),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Column(
-                                children: [
-                                  _buildZonaRespuesta(state, notifier, ejercicio),
-                                  const SizedBox(height: 10),
-                                ],
+
+                    // ── Instrucción (fija arriba) ──────────────────────────
+                    Padding(
+                      // ── MARGEN SUPERIOR instrucción: cambia el 20 ─────────
+                      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: _reproducirAudio,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF0F4FF),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.volume_up_rounded,
+                                color: Color(0xFF3475F7),
+                                size: 26,
                               ),
                             ),
-                            const SizedBox(height: 30),
-                            _buildBancoPalabras(state, notifier),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Ordena las palabras y forma la oración.',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+
+                    // ── Zona central centrada: imagen + respuesta ──────────
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // ── TAMAÑO IMAGEN: cambia 190 ──────────────────
+                          SizedBox(
+                            height: 190,
+                            child: Center(
+                              child: Image.asset(
+                                ejercicio.imagenAsset,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Icon(Icons.image_not_supported,
+                                      size: 70, color: Colors.grey),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // ── ESPACIO imagen → zona respuesta: cambia 20 ─
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: _buildZonaRespuesta(state, notifier, ejercicio),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // ── Banco de palabras (fijo abajo) ────────────────────
+                    // ── ESPACIO zona respuesta → palabras: cambia 16 ──────
+                    const SizedBox(height: 16),
+                    _buildBancoPalabras(state, notifier),
+                    // ── ESPACIO palabras → botón: cambia 20 ───────────────
+                    const SizedBox(height: 20),
                     _buildBotones(state, notifier),
-                    const SizedBox(height: 32),
+                    // ── ESPACIO inferior: cambia 28 ───────────────────────
+                    const SizedBox(height: 28),
                   ],
                 ),
               ),
@@ -138,7 +195,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
 
   Widget _buildHeader() {
     return Container(
-      height: 130,
+      // ── ALTURA HEADER: cambia 80 ───────────────────────────────────────
+      height: 80,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Stack(
@@ -158,67 +216,6 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
             child: GestureDetector(
               onTap: () => Navigator.of(context).maybePop(),
               child: const Icon(Icons.close, color: Colors.white, size: 26),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSeccionImagen(OracionEjercicio ejercicio) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: _reproducirAudio,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0F4FF),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.volume_up_rounded,
-                    color: Color(0xFF3475F7),
-                    size: 26,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Ordena las palabras y forma la oración.',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 180,
-            child: Center(
-              child: Image.asset(
-                ejercicio.imagenAsset,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.image_not_supported,
-                      size: 70, color: Colors.grey),
-                ),
-              ),
             ),
           ),
         ],
@@ -299,7 +296,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
     );
   }
 
-  Widget _chipPalabra(int index, OracionesEstado state, OracionesViewModel notifier) {
+  Widget _chipPalabra(
+      int index, OracionesEstado state, OracionesViewModel notifier) {
     final palabra = state.palabrasDisponibles[index];
     final disponible = palabra != null;
 
@@ -357,7 +355,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
           foregroundColor: Colors.white,
           disabledBackgroundColor: Colors.grey[300],
           minimumSize: const Size(double.infinity, 52),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 2,
         ),
         child: const Text(
@@ -393,7 +392,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
               backgroundColor: const Color(0xFF59E347),
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 2,
             ),
             child: const Text(
@@ -431,7 +431,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
               backgroundColor: const Color(0xFFF65757),
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 2,
             ),
             child: const Text(

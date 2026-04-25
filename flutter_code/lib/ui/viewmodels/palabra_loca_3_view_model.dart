@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/sync_queue_model.dart';
@@ -56,28 +57,71 @@ class OracionesEstado {
 
 class OracionesViewModel extends StateNotifier<OracionesEstado> {
   final Ref _ref;
+  final List<OracionEjercicio> _ejercicios;
 
-  OracionesViewModel(this._ref) : super(_initialState(0));
+  OracionesViewModel._(this._ref, this._ejercicios, OracionesEstado initialState)
+      : super(initialState);
 
-  static final List<OracionEjercicio> ejercicios = [
-    const OracionEjercicio(
+  factory OracionesViewModel(Ref ref) {
+    final ejercicios = _crearListaAleatoria();
+    return OracionesViewModel._(ref, ejercicios, _estadoInicial(ejercicios, 0));
+  }
+
+  static const List<OracionEjercicio> _todosLosEjercicios = [
+    OracionEjercicio(
       imagenAsset: 'assets/images/actividades/espanol/gato_comiendo.png',
       palabrasDesordenadas: ['come', 'gato', 'El'],
       respuestaCorrecta: ['El', 'gato', 'come'],
     ),
-    const OracionEjercicio(
+    OracionEjercicio(
       imagenAsset: 'assets/images/actividades/espanol/nino_balon.png',
       palabrasDesordenadas: ['juega', 'con', 'El', 'el', 'balón', 'niño'],
       respuestaCorrecta: ['El', 'niño', 'juega', 'con', 'el', 'balón'],
     ),
-    const OracionEjercicio(
+    OracionEjercicio(
       imagenAsset: 'assets/images/actividades/espanol/carro.png',
       palabrasDesordenadas: ['carro', 'es', 'El', 'rojo', 'color', 'de'],
       respuestaCorrecta: ['El', 'carro', 'es', 'de', 'color', 'rojo'],
     ),
+    OracionEjercicio(
+      imagenAsset: 'assets/images/actividades/espanol/perro.png',
+      palabrasDesordenadas: ['ladra', 'El', 'fuerte', 'perro'],
+      respuestaCorrecta: ['El', 'perro', 'ladra', 'fuerte'],
+    ),
+    OracionEjercicio(
+      imagenAsset: 'assets/images/actividades/espanol/mono.png',
+      palabrasDesordenadas: ['al', 'El', 'sube', 'mono', 'árbol'],
+      respuestaCorrecta: ['El', 'mono', 'sube', 'al', 'árbol'],
+    ),
+    OracionEjercicio(
+      imagenAsset: 'assets/images/actividades/espanol/banano.png',
+      palabrasDesordenadas: ['es', 'El', 'amarillo', 'banano'],
+      respuestaCorrecta: ['El', 'banano', 'es', 'amarillo'],
+    ),
+    OracionEjercicio(
+      imagenAsset: 'assets/images/actividades/espanol/manzana.png',
+      palabrasDesordenadas: ['es', 'La', 'roja', 'manzana'],
+      respuestaCorrecta: ['La', 'manzana', 'es', 'roja'],
+    ),
+    OracionEjercicio(
+      imagenAsset: 'assets/images/actividades/espanol/pinguinos.png',
+      palabrasDesordenadas: ['son', 'pingüinos', 'Los', 'muy', 'lindos'],
+      respuestaCorrecta: ['Los', 'pingüinos', 'son', 'muy', 'lindos'],
+    ),
+    OracionEjercicio(
+      imagenAsset: 'assets/images/actividades/espanol/mono_corazon.png',
+      palabrasDesordenadas: ['da', 'El', 'abrazo', 'un', 'mono'],
+      respuestaCorrecta: ['El', 'mono', 'da', 'un', 'abrazo'],
+    ),
   ];
 
-  static OracionesEstado _initialState(int index) {
+  static List<OracionEjercicio> _crearListaAleatoria() {
+    final lista = List<OracionEjercicio>.from(_todosLosEjercicios);
+    lista.shuffle(Random());
+    return lista.take(4).toList();
+  }
+
+  static OracionesEstado _estadoInicial(List<OracionEjercicio> ejercicios, int index) {
     final ejercicio = ejercicios[index];
     return OracionesEstado(
       ejercicioActual: index,
@@ -89,7 +133,7 @@ class OracionesViewModel extends StateNotifier<OracionesEstado> {
     );
   }
 
-  OracionEjercicio get currentEjercicio => ejercicios[state.ejercicioActual];
+  OracionEjercicio get currentEjercicio => _ejercicios[state.ejercicioActual];
 
   void commandSeleccionarPalabra(int index) {
     if (state.mostrandoResultado) return;
@@ -138,8 +182,8 @@ class OracionesViewModel extends StateNotifier<OracionesEstado> {
   }
 
   void commandSiguiente() {
-    if (state.ejercicioActual < ejercicios.length - 1) {
-      state = _initialState(state.ejercicioActual + 1);
+    if (state.ejercicioActual < _ejercicios.length - 1) {
+      state = _estadoInicial(_ejercicios, state.ejercicioActual + 1);
     } else {
       _guardarProgreso();
       state = state.copyWith(juegoFinalizado: true);
@@ -147,7 +191,7 @@ class OracionesViewModel extends StateNotifier<OracionesEstado> {
   }
 
   void commandReiniciar() {
-    state = _initialState(0);
+    state = _estadoInicial(_ejercicios, state.ejercicioActual);
   }
 
   Future<void> _guardarProgreso() async {

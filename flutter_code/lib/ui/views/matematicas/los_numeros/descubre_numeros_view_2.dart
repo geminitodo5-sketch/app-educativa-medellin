@@ -11,7 +11,8 @@ class DescubreNumerosView2 extends ConsumerStatefulWidget {
   const DescubreNumerosView2({super.key});
 
   @override
-  ConsumerState<DescubreNumerosView2> createState() => _DescubreNumerosView2State();
+  ConsumerState<DescubreNumerosView2> createState() =>
+      _DescubreNumerosView2State();
 }
 
 class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
@@ -61,10 +62,7 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
         bottom: false,
         child: Column(
           children: [
-            _Header(
-              onClose: () => Navigator.of(context).pop(),
-              progreso: 0.66,
-            ),
+            _Header(onClose: () => Navigator.of(context).pop(), progreso: 0.66),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -83,14 +81,12 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _InstruccionCard(
-                              onAudio: _reproducirInstruccion,
-                            ),
+                            _InstruccionCard(onAudio: _reproducirInstruccion),
                             const SizedBox(height: 28),
                             _AreaVisual(cantidadBananos: vm.numeroObjetivo),
                             const SizedBox(height: 32),
                             const Text(
-                              'Elige la respuesta correcta',
+                              'Elige  la respuesta correcta',
                               style: TextStyle(
                                 fontFamily: 'Hiruko',
                                 fontSize: 17,
@@ -114,7 +110,12 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
                                     ? null
                                     : () {
                                         notifier.commandValidarRespuesta(valor);
-                                        _showFeedbackSheet(context, valor, vm.numeroObjetivo, notifier);
+                                        _showFeedbackSheet(
+                                          context,
+                                          valor,
+                                          vm.numeroObjetivo,
+                                          notifier,
+                                        );
                                       },
                               );
                             }),
@@ -133,7 +134,12 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
     );
   }
 
-  void _showFeedbackSheet(BuildContext context, int seleccion, int objetivo, dynamic notifier) {
+  void _showFeedbackSheet(
+    BuildContext context,
+    int seleccion,
+    int objetivo,
+    dynamic notifier,
+  ) {
     final bool esCorrecto = seleccion == objetivo;
 
     showModalBottomSheet(
@@ -144,7 +150,9 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -180,14 +188,16 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(ctx);
                     if (esCorrecto) {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (_) => const DescubreGlobosView()),
+                          builder: (_) => const DescubreGlobosView(),
+                        ),
                       );
                     } else {
                       notifier.commandIntentarDeNuevo();
@@ -234,7 +244,7 @@ class _Header extends ConsumerWidget {
             // Título centrado
             const Center(
               child: Text(
-                'Descubre los números',
+                'Descubre  los números',
                 style: TextStyle(
                   fontFamily: 'Hiruko',
                   fontSize: 24,
@@ -266,7 +276,9 @@ class _Header extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: progreso,
                   backgroundColor: Colors.white.withOpacity(0.15),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFF59E347),
+                  ),
                   minHeight: 10,
                 ),
               ),
@@ -301,7 +313,10 @@ class _InstruccionCard extends StatelessWidget {
                 color: const Color(0xFFEEF2FF),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.volume_up_rounded, color: Color(0xFF3475F7)),
+              child: const Icon(
+                Icons.volume_up_rounded,
+                color: Color(0xFF3475F7),
+              ),
             ),
           ),
           const SizedBox(width: 14),

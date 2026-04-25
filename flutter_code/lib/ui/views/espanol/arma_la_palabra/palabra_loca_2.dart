@@ -13,7 +13,7 @@ class ArmaLaPalabraScreen extends ConsumerStatefulWidget {
 
 class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
     with TickerProviderStateMixin {
-  
+
   late final Player _player;
   late AnimationController _successController;
   late Animation<double> _successScale;
@@ -110,15 +110,20 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  backgroundColor:
+                      esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
                   onAction();
                 },
-                child: Text(esCorrecto ? 'Continuar' : 'Reintentar', 
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
@@ -154,12 +159,16 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
       if (!prev.completado && next.completado) {
         _successController.forward();
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) _mostrarFeedback(true, () => notifier.commandSiguientePalabra());
+          if (mounted) {
+            _mostrarFeedback(true, () => notifier.commandSiguientePalabra());
+          }
         });
       }
       if (!prev.error && next.error) {
         _errorController.forward().then((_) {
-          if (mounted) _mostrarFeedback(false, () => notifier.commandLimpiarRespuestas());
+          if (mounted) {
+            _mostrarFeedback(false, () => notifier.commandLimpiarRespuestas());
+          }
         });
       }
       if (!prev.actividadCompletada && next.actividadCompletada) {
@@ -182,51 +191,64 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                 ),
                 child: Column(
                   children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 32),
-                            _InstruccionRow(
-                              texto: 'Arma la palabra de  la imagen.',
-                              onPlay: _reproducirAudio,
-                            ),
-                            const SizedBox(height: 32),
-                            _ImagenAnimal(
-                              asset: palabra.imagenAsset,
-                              completado: state.completado,
-                              error: state.error,
-                              scaleAnimation: _successScale,
-                            ),
-                            const SizedBox(height: 40),
-                            AnimatedBuilder(
-                              animation: _errorShake,
-                              builder: (context, child) => Transform.translate(
-                                offset: Offset(_errorShake.value, 0),
-                                child: child,
-                              ),
-                              child: _RecuadrosRespuesta(
-                                silabas: state.silabasColocadas,
-                                cantidadSilabas: palabra.silabas.length,
-                                completado: state.completado,
-                                error: state.error,
-                                onQuitarSilaba: notifier.commandQuitarSilaba,
-                                onColocarSilaba: notifier.commandColocarSilaba,
-                                opcionesDisponibles: state.opcionesDisponibles,
-                              ),
-                            ),
-                          ],
-                        ),
+
+                    // ── Instrucción (fija arriba) ────────────────────────
+                    Padding(
+                      // ── MARGEN SUPERIOR instrucción: cambia el 24 ──────
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                      child: _InstruccionRow(
+                        texto: 'Arma la palabra de la imagen.',
+                        onPlay: _reproducirAudio,
                       ),
                     ),
+
+                    // ── Zona central centrada: imagen + recuadros ────────
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // ── TAMAÑO DE IMAGEN: cambia 200 ───────────────
+                          _ImagenAnimal(
+                            asset: palabra.imagenAsset,
+                            completado: state.completado,
+                            error: state.error,
+                            scaleAnimation: _successScale,
+                            size: 200,
+                          ),
+                          // ── ESPACIO imagen → recuadros: cambia 28 ──────
+                          const SizedBox(height: 28),
+                          AnimatedBuilder(
+                            animation: _errorShake,
+                            builder: (context, child) => Transform.translate(
+                              offset: Offset(_errorShake.value, 0),
+                              child: child,
+                            ),
+                            child: _RecuadrosRespuesta(
+                              silabas: state.silabasColocadas,
+                              cantidadSilabas: palabra.silabas.length,
+                              completado: state.completado,
+                              error: state.error,
+                              onQuitarSilaba: notifier.commandQuitarSilaba,
+                              onColocarSilaba: notifier.commandColocarSilaba,
+                              opcionesDisponibles: state.opcionesDisponibles,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // ── Grid de sílabas (fijo abajo) ─────────────────────
+                    // ── ESPACIO recuadros → sílabas: cambia 16 ────────────
+                    const SizedBox(height: 16),
                     _GridSilabas(
                       opciones: palabra.opcionesMezcladas,
                       disponibles: state.opcionesDisponibles,
                       silabasColocadas: state.silabasColocadas,
-                      onTap: (idx, target) => notifier.commandColocarSilaba(idx, target),
+                      onTap: (idx, target) =>
+                          notifier.commandColocarSilaba(idx, target),
                     ),
-                    const SizedBox(height: 24),
+                    // ── ESPACIO inferior: cambia 28 ────────────────────────
+                    const SizedBox(height: 28),
                   ],
                 ),
               ),
@@ -238,7 +260,9 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
   }
 }
 
-// --- WIDGETS AUXILIARES ---
+// ─────────────────────────────────────────────────────────────────────────────
+// WIDGETS AUXILIARES
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _Header extends StatelessWidget {
   final VoidCallback onClose;
@@ -263,9 +287,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 0,
-          right: 4,
-          bottom: 0,
+          top: 0, right: 4, bottom: 0,
           child: Align(
             alignment: Alignment.centerRight,
             child: IconButton(
@@ -293,12 +315,22 @@ class _InstruccionRow extends StatelessWidget {
           onTap: onPlay,
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: const Color(0xFFF0F4FF), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.volume_up_rounded, color: Color(0xFF3475F7), size: 22),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F4FF),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.volume_up_rounded,
+                color: Color(0xFF3475F7), size: 22),
           ),
         ),
         const SizedBox(width: 10),
-        Text(texto, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF444444))),
+        Text(
+          texto,
+          style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF444444)),
+        ),
       ],
     );
   }
@@ -309,20 +341,33 @@ class _ImagenAnimal extends StatelessWidget {
   final bool completado;
   final bool error;
   final Animation<double> scaleAnimation;
+  // ── Parámetro de tamaño: pásale otro valor desde el build para ajustar ──
+  final double size;
 
-  const _ImagenAnimal({required this.asset, required this.completado, required this.error, required this.scaleAnimation});
+  const _ImagenAnimal({
+    required this.asset,
+    required this.completado,
+    required this.error,
+    required this.scaleAnimation,
+    this.size = 200,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ScaleTransition(
-      scale: completado ? scaleAnimation : const AlwaysStoppedAnimation(1.0),
+      scale: completado
+          ? scaleAnimation
+          : const AlwaysStoppedAnimation(1.0),
       child: Container(
-        width: 160, height: 160,
+        width: size,
+        height: size,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: error ? const Color(0xFFFFEBEB) : Colors.transparent,
-          border: error ? Border.all(color: const Color(0xFFFF5252), width: 3) : null,
+          border: error
+              ? Border.all(color: const Color(0xFFFF5252), width: 3)
+              : null,
         ),
         child: Image.asset(asset, fit: BoxFit.contain),
       ),
@@ -340,8 +385,12 @@ class _RecuadrosRespuesta extends StatelessWidget {
   final List<bool> opcionesDisponibles;
 
   const _RecuadrosRespuesta({
-    required this.silabas, required this.cantidadSilabas, required this.completado, 
-    required this.error, required this.onQuitarSilaba, required this.onColocarSilaba,
+    required this.silabas,
+    required this.cantidadSilabas,
+    required this.completado,
+    required this.error,
+    required this.onQuitarSilaba,
+    required this.onColocarSilaba,
     required this.opcionesDisponibles,
   });
 
@@ -352,20 +401,33 @@ class _RecuadrosRespuesta extends StatelessWidget {
       children: List.generate(cantidadSilabas, (i) {
         final silaba = silabas[i];
         return DragTarget<int>(
-          onWillAcceptWithDetails: (details) => !completado && !error && opcionesDisponibles[details.data],
-          onAcceptWithDetails: (details) => onColocarSilaba(details.data, i),
+          onWillAcceptWithDetails: (details) =>
+              !completado && !error && opcionesDisponibles[details.data],
+          onAcceptWithDetails: (details) =>
+              onColocarSilaba(details.data, i),
           builder: (context, _, __) => GestureDetector(
-            onTap: (silaba != null && !completado && !error) ? () => onQuitarSilaba(i) : null,
+            onTap: (silaba != null && !completado && !error)
+                ? () => onQuitarSilaba(i)
+                : null,
             child: Container(
               width: 70, height: 55,
               margin: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 color: silaba != null ? Colors.white : Colors.grey[100],
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: error ? Colors.red : (completado ? Colors.green : Colors.grey[300]!), width: 2),
+                border: Border.all(
+                  color: error
+                      ? Colors.red
+                      : (completado ? Colors.green : Colors.grey[300]!),
+                  width: 2,
+                ),
               ),
               alignment: Alignment.center,
-              child: Text(silaba ?? '', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              child: Text(
+                silaba ?? '',
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         );
@@ -380,7 +442,12 @@ class _GridSilabas extends StatelessWidget {
   final List<String?> silabasColocadas;
   final Function(int, int) onTap;
 
-  const _GridSilabas({required this.opciones, required this.disponibles, required this.silabasColocadas, required this.onTap});
+  const _GridSilabas({
+    required this.opciones,
+    required this.disponibles,
+    required this.silabasColocadas,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -391,12 +458,15 @@ class _GridSilabas extends StatelessWidget {
         return Draggable<int>(
           data: i,
           feedback: _SilabaChip(texto: opciones[i], disponible: true),
-          childWhenDragging: _SilabaChip(texto: opciones[i], disponible: false, opacity: 0.3),
+          childWhenDragging:
+              _SilabaChip(texto: opciones[i], disponible: false, opacity: 0.3),
           child: GestureDetector(
-            onTap: disponibles[i] ? () {
-              int emptyIdx = silabasColocadas.indexOf(null);
-              if (emptyIdx != -1) onTap(i, emptyIdx);
-            } : null,
+            onTap: disponibles[i]
+                ? () {
+                    int emptyIdx = silabasColocadas.indexOf(null);
+                    if (emptyIdx != -1) onTap(i, emptyIdx);
+                  }
+                : null,
             child: _SilabaChip(texto: opciones[i], disponible: disponibles[i]),
           ),
         );
@@ -409,7 +479,8 @@ class _SilabaChip extends StatelessWidget {
   final String texto;
   final bool disponible;
   final double opacity;
-  const _SilabaChip({required this.texto, required this.disponible, this.opacity = 1.0});
+  const _SilabaChip(
+      {required this.texto, required this.disponible, this.opacity = 1.0});
 
   @override
   Widget build(BuildContext context) {
@@ -421,10 +492,15 @@ class _SilabaChip extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey[300]!, width: 1.5),
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: const Offset(0, 2))],
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))
+          ],
         ),
         alignment: Alignment.center,
-        child: Text(texto, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        child: Text(
+          texto,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

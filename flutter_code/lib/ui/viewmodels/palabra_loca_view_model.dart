@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/sync_queue_model.dart';
@@ -64,18 +65,27 @@ class ArmaLaPalabraState {
 
 class ArmaLaPalabraViewModel extends StateNotifier<ArmaLaPalabraState> {
   final Ref _ref;
+  final List<PalabraData> _palabras;
 
-  ArmaLaPalabraViewModel(this._ref)
-      : super(ArmaLaPalabraState(
-          palabraIndex: 0,
-          silabasColocadas: List.filled(_palabras[0].silabas.length, null),
-          opcionesDisponibles:
-              List.filled(_palabras[0].opcionesMezcladas.length, true),
-          completado: false,
-          error: false,
-        ));
+  ArmaLaPalabraViewModel._(this._ref, this._palabras, ArmaLaPalabraState initialState)
+      : super(initialState);
 
-  static const List<PalabraData> _palabras = [
+  factory ArmaLaPalabraViewModel(Ref ref) {
+    final palabras = _crearListaAleatoria();
+    return ArmaLaPalabraViewModel._(
+      ref,
+      palabras,
+      ArmaLaPalabraState(
+        palabraIndex: 0,
+        silabasColocadas: List.filled(palabras[0].silabas.length, null),
+        opcionesDisponibles: List.filled(palabras[0].opcionesMezcladas.length, true),
+        completado: false,
+        error: false,
+      ),
+    );
+  }
+
+  static const List<PalabraData> _todasLasPalabras = [
     PalabraData(
       imagenAsset: 'assets/images/actividades/espanol/perro.png',
       palabra: 'Perro',
@@ -94,7 +104,43 @@ class ArmaLaPalabraViewModel extends StateNotifier<ArmaLaPalabraState> {
       silabas: ['Ba', 'na', 'no'],
       opcionesMezcladas: ['Ba', 'na', 'di', 'no', 'Te', 'Ti'],
     ),
+    PalabraData(
+      imagenAsset: 'assets/images/actividades/espanol/carro.png',
+      palabra: 'Carro',
+      silabas: ['Ca', 'rro'],
+      opcionesMezcladas: ['Ca', 'rro', 'Mi', 'Sa', 'lo', 'Pe'],
+    ),
+    PalabraData(
+      imagenAsset: 'assets/images/actividades/espanol/gato_comiendo.png',
+      palabra: 'Gato',
+      silabas: ['Ga', 'to'],
+      opcionesMezcladas: ['Ga', 'to', 'Mi', 'Pa', 'lo', 'Sa'],
+    ),
+    PalabraData(
+      imagenAsset: 'assets/images/actividades/espanol/manzana.png',
+      palabra: 'Manzana',
+      silabas: ['Man', 'za', 'na'],
+      opcionesMezcladas: ['Man', 'za', 'na', 'Pe', 'li', 'To'],
+    ),
+    PalabraData(
+      imagenAsset: 'assets/images/actividades/espanol/pinguinos.png',
+      palabra: 'Pingüino',
+      silabas: ['Pin', 'güi', 'no'],
+      opcionesMezcladas: ['Pin', 'güi', 'no', 'Ca', 'li', 'Me'],
+    ),
+    PalabraData(
+      imagenAsset: 'assets/images/actividades/espanol/nino_balon.png',
+      palabra: 'Niño',
+      silabas: ['Ni', 'ño'],
+      opcionesMezcladas: ['Ni', 'ño', 'Ca', 'Pe', 'la', 'Mi'],
+    ),
   ];
+
+  static List<PalabraData> _crearListaAleatoria() {
+    final lista = List<PalabraData>.from(_todasLasPalabras);
+    lista.shuffle(Random());
+    return lista.take(4).toList();
+  }
 
   PalabraData get palabraActual => _palabras[state.palabraIndex];
 

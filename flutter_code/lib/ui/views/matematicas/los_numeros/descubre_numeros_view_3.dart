@@ -19,19 +19,19 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
   late final List<AnimationController> _floatControllers;
   late final List<Animation<double>> _floatAnimations;
 
-  final double _balloonWidth = 120.0;
+  final double _balloonWidth = _BalloonWidget.kWidth;
   final List<double> _floatPhases = [0.0, 0.33, 0.66];
 
   static const Map<int, String> _audioMap = {
-    1:  'audio_mate_globo1_mezcla.mp3',
-    2:  'audio_mate_globo2_mezcla.mp3',
-    3:  'audio_mate_globo3_mezcla.mp3',
-    4:  'audio_mate_globo4_mezcla.mp3',
-    5:  'audio_mate_globo5_mezcla.mp3',
-    6:  'audio_mate_globo6_mezcla.mp3',
-    7:  'audio_mate_globo7_mezcla.mp3',
-    8:  'audio_mate_globo8_mezcla.mp3',
-    9:  'audio_mate_globo9_mezcla.mp3',
+    1: 'audio_mate_globo1_mezcla.mp3',
+    2: 'audio_mate_globo2_mezcla.mp3',
+    3: 'audio_mate_globo3_mezcla.mp3',
+    4: 'audio_mate_globo4_mezcla.mp3',
+    5: 'audio_mate_globo5_mezcla.mp3',
+    6: 'audio_mate_globo6_mezcla.mp3',
+    7: 'audio_mate_globo7_mezcla.mp3',
+    8: 'audio_mate_globo8_mezcla.mp3',
+    9: 'audio_mate_globo9_mezcla.mp3',
     10: 'audio_mate_globo10_mezcla.mp3',
   };
 
@@ -56,14 +56,17 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
 
     _floatControllers = List.generate(
       3,
-      (i) => AnimationController(duration: durations[i], vsync: this)
-        ..repeat(reverse: true),
+      (i) =>
+          AnimationController(duration: durations[i], vsync: this)
+            ..repeat(reverse: true),
     );
 
     _floatAnimations = _floatControllers
         .map(
-          (c) => Tween<double>(begin: -14, end: 14)
-              .animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)),
+          (c) => Tween<double>(
+            begin: -14,
+            end: 14,
+          ).animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)),
         )
         .toList();
 
@@ -84,9 +87,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     }
 
     try {
-      await _player.open(
-        Media('asset:///assets/Audio/Matematicas/$archivo'),
-      );
+      await _player.open(Media('asset:///assets/Audio/Matematicas/$archivo'));
       await _player.play();
     } catch (e) {
       debugPrint('Error reproduciendo audio del globo $numero: $e');
@@ -102,7 +103,9 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -142,14 +145,16 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                         ? const Color(0xFF59E347)
                         : const Color(0xFFF65757),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(ctx);
                     if (esCorrecto) {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (_) => const ActividadTerminadaScreen()),
+                          builder: (_) => const ActividadTerminadaScreen(),
+                        ),
                       );
                     } else {
                       notifier.commandIntentarDeNuevo();
@@ -213,10 +218,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
         bottom: false,
         child: Column(
           children: [
-            _Header(
-              onClose: () => Navigator.of(context).pop(),
-              progreso: 1.0,
-            ),
+            _Header(onClose: () => Navigator.of(context).pop(), progreso: 1.0),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -242,36 +244,42 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                             ),
                             const SizedBox(height: 32),
                             Expanded(
-                              child: ClipRect(
-                                child: AnimatedBuilder(
-                                  animation: Listenable.merge([
-                                    _moveController,
-                                    ..._floatControllers,
-                                  ]),
-                                  builder: (context, _) {
-                                    return Stack(
-                                      clipBehavior: Clip.none,
-                                      children: List.generate(
-                                        vm.numerosEnGlobos.length,
-                                        (i) => _buildLoopedBalloon(
-                                          screenWidth: screenWidth,
-                                          relativeOffset: i / 3,
-                                          numero: vm.numerosEnGlobos[i],
-                                          floatValue:
-                                              _floatAnimations[i].value,
-                                          yaRespondioCorrectamente:
-                                              vm.yaRespondioCorrectamente,
-                                          onTap: vm.yaRespondioCorrectamente
-                                              ? null
-                                              : () => notifier
-                                                  .commandValidarRespuesta(
-                                                    vm.numerosEnGlobos[i],
-                                                  ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return ClipRect(
+                                    child: AnimatedBuilder(
+                                      animation: Listenable.merge([
+                                        _moveController,
+                                        ..._floatControllers,
+                                      ]),
+                                      builder: (context, _) {
+                                        return Stack(
+                                          clipBehavior: Clip.none,
+                                          children: List.generate(
+                                            vm.numerosEnGlobos.length,
+                                            (i) => _buildLoopedBalloon(
+                                              screenWidth: screenWidth,
+                                              availableHeight:
+                                                  constraints.maxHeight,
+                                              relativeOffset: i / 3,
+                                              numero: vm.numerosEnGlobos[i],
+                                              floatValue:
+                                                  _floatAnimations[i].value,
+                                              yaRespondioCorrectamente:
+                                                  vm.yaRespondioCorrectamente,
+                                              onTap: vm.yaRespondioCorrectamente
+                                                  ? null
+                                                  : () => notifier
+                                                        .commandValidarRespuesta(
+                                                          vm.numerosEnGlobos[i],
+                                                        ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ],
@@ -290,27 +298,39 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
 
   Widget _buildLoopedBalloon({
     required double screenWidth,
+    required double availableHeight,
     required double relativeOffset,
     required int numero,
     required double floatValue,
     required bool yaRespondioCorrectamente,
     required VoidCallback? onTap,
   }) {
-    final double totalDistance = screenWidth + _balloonWidth;
+    // Escalar el globo para que quepa verticalmente con margen, máx tamaño original
+    const double floatMargin = 30.0; // espacio para la animación flotante
+    final double maxH = availableHeight - floatMargin * 2;
+    final double scale = (maxH / _BalloonWidget.kHeight).clamp(0.3, 1.0);
+    final double scaledW = _BalloonWidget.kWidth * scale;
+    final double scaledH = _BalloonWidget.kHeight * scale;
+
+    final double totalDistance = screenWidth + scaledW;
 
     double xPos =
         (screenWidth -
                 (_moveController.value * totalDistance) +
                 (relativeOffset * totalDistance)) %
             totalDistance -
-        _balloonWidth;
+        scaledW;
 
-    const double yBase = 20;
+    final double yBase = (availableHeight - scaledH) / 2;
 
     return Positioned(
       left: xPos,
       top: yBase + floatValue,
-      child: _BalloonWidget(numero: numero, onTap: onTap),
+      child: SizedBox(
+        width: scaledW,
+        height: scaledH,
+        child: _BalloonWidget(numero: numero, onTap: onTap),
+      ),
     );
   }
 }
@@ -342,13 +362,18 @@ class _Header extends ConsumerWidget {
                 color: Colors.white.withOpacity(0.7),
                 size: 22,
               ),
-              error: (_, __) => const Icon(Icons.cloud_off_rounded,
-                  color: Colors.white30, size: 22),
+              error: (_, __) => const Icon(
+                Icons.cloud_off_rounded,
+                color: Colors.white30,
+                size: 22,
+              ),
               loading: () => const SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white30),
+                  strokeWidth: 2,
+                  color: Colors.white30,
+                ),
               ),
             ),
           ),
@@ -384,8 +409,11 @@ class _Header extends ConsumerWidget {
             top: 12,
             right: 8,
             child: IconButton(
-              icon: const Icon(Icons.close_rounded,
-                  color: Colors.white, size: 28),
+              icon: const Icon(
+                Icons.close_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
               onPressed: onClose,
             ),
           ),
@@ -415,10 +443,7 @@ class _InstruccionCard extends StatelessWidget {
   final int numeroObjetivo;
   final VoidCallback onAudio;
 
-  const _InstruccionCard({
-    required this.numeroObjetivo,
-    required this.onAudio,
-  });
+  const _InstruccionCard({required this.numeroObjetivo, required this.onAudio});
 
   @override
   Widget build(BuildContext context) {
@@ -446,8 +471,11 @@ class _InstruccionCard extends StatelessWidget {
                 color: const Color(0xFFEEF2FF),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.volume_up_rounded,
-                  color: Color(0xFF3475F7), size: 26),
+              child: const Icon(
+                Icons.volume_up_rounded,
+                color: Color(0xFF3475F7),
+                size: 26,
+              ),
             ),
           ),
           const SizedBox(width: 14),
@@ -462,8 +490,7 @@ class _InstruccionCard extends StatelessWidget {
                   height: 1.3,
                 ),
                 children: [
-                  const TextSpan(
-                      text: 'Presiona el globo cuando salga el '),
+                  const TextSpan(text: 'Presiona el globo cuando salga el '),
                   TextSpan(
                     text: '$numeroObjetivo',
                     style: const TextStyle(
@@ -475,6 +502,12 @@ class _InstruccionCard extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          const SizedBox(width: 10),
+          Image.asset(
+            'assets/images/actividades/matematicas/globo.png',
+            width: 70,
+            height: 90,
           ),
         ],
       ),
@@ -488,36 +521,41 @@ class _BalloonWidget extends StatelessWidget {
 
   const _BalloonWidget({required this.numero, required this.onTap});
 
+  // Dimensiones del globo — usadas también en _buildLoopedBalloon
+  static const double kWidth = 400.0;
+  static const double kHeight = 490.0;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: 120,
-        height: 160,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/actividades/matematicas/globo.png',
-                fit: BoxFit.contain,
+      // Sin SizedBox fijo: respeta el tamaño que le pase el padre
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Escalar fuente proporcionalmente al alto disponible
+          final double fontSize = (constraints.maxHeight * 0.12).clamp(
+            28.0,
+            70.0,
+          );
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/actividades/matematicas/globo.png',
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 160 * 0.25,
-              child: Center(
+              Align(
+                alignment: const Alignment(0, -0.15),
                 child: Text(
                   '$numero',
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 44,
-                    fontWeight: FontWeight.w900,
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
                     height: 1,
-                    shadows: [
+                    shadows: const [
                       Shadow(
                         color: Colors.black26,
                         offset: Offset(1, 2),
@@ -527,11 +565,10 @@ class _BalloonWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
 }
-

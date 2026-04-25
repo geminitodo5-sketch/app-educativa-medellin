@@ -1,11 +1,60 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ Importante
+import 'package:media_kit/media_kit.dart';
 import '../../terminado.dart';
 import '../../../viewmodels/comparacion_cantidades_view_model.dart';
 
-// Proveedor de estado para feedback visual
 final respuestaProvider = StateProvider<bool?>((ref) => null);
+
+class _Animal {
+  final String name;
+  final String path;
+  const _Animal(this.name, this.path);
+}
+
+class _RoundData {
+  final List<_Animal> animals;
+  final List<int> counts;
+  final int correctIndex;
+
+  const _RoundData({
+    required this.animals,
+    required this.counts,
+    required this.correctIndex,
+  });
+
+  static _RoundData generate() {
+    final rng = Random();
+
+    const allAnimals = [
+      _Animal('Cocodrilo', 'assets/images/actividades/matematicas/cocodrilo.png'),
+      _Animal('Elefante',  'assets/images/actividades/matematicas/elefante.png'),
+      _Animal('Pato',      'assets/images/actividades/matematicas/pato.png'),
+      _Animal('Pingüino',  'assets/images/actividades/matematicas/pinguino.png'),
+    ];
+
+    final shuffled = List<_Animal>.from(allAnimals)..shuffle(rng);
+
+    // Ganador: 4–5 imágenes. Resto: 1–3 distintos. Total máximo ~14 imágenes.
+    final winnerCount = 4 + rng.nextInt(2); // 4 o 5
+    final otherCounts = <int>[];
+    while (otherCounts.length < 3) {
+      final c = 1 + rng.nextInt(3); // 1, 2 o 3
+      if (!otherCounts.contains(c)) otherCounts.add(c);
+    }
+    otherCounts.shuffle(rng);
+
+    final winnerPos = rng.nextInt(4);
+    final counts = List<int>.filled(4, 0);
+    int otherIdx = 0;
+    for (int i = 0; i < 4; i++) {
+      counts[i] = (i == winnerPos) ? winnerCount : otherCounts[otherIdx++];
+    }
+
+    return _RoundData(animals: shuffled, counts: counts, correctIndex: winnerPos);
+  }
+}
 
 class QuienTieneMasview3 extends ConsumerStatefulWidget {
   const QuienTieneMasview3({super.key});
@@ -15,40 +64,37 @@ class QuienTieneMasview3 extends ConsumerStatefulWidget {
 }
 
 class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
-  // ✅ Definición del reproductor
   Player? _player;
-
-  static const String _crocPath =
-      'assets/images/actividades/matematicas/cocodrilo.png';
-  static const String _elephantPath =
-      'assets/images/actividades/matematicas/elefante.png';
-  static const String _duckPath =
-      'assets/images/actividades/matematicas/pato.png';
-  static const String _penguinPath =
-      'assets/images/actividades/matematicas/pinguino.png';
+  late _RoundData _round;
 
   static const Color verdeNumi = Color(0xFF59E347);
-  static const Color rojoNumi = Color(0xFFF65757);
+  static const Color rojoNumi  = Color(0xFFF65757);
 
   @override
   void initState() {
     super.initState();
     _player = Player();
-    
-    // Reproducir automáticamente al entrar a la pantalla
+    _round  = _RoundData.generate();
     Future.microtask(() => _reproducirInstruccion());
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Limpieza de memoria
+    _player?.dispose();
     super.dispose();
+  }
+
+  void _nuevaRonda() {
+    setState(() {
+      _round = _RoundData.generate();
+      ref.read(respuestaProvider.notifier).state = null;
+    });
   }
 
   Future<void> _reproducirInstruccion() async {
     try {
       await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate6_mezcla.mp3'),
+        Media('asset:///assets/Audio/Matematicas/audio_matemaaticasnaranjas_mezcla.mp3'),
       );
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
@@ -63,16 +109,16 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
         bottom: false,
         child: Column(
           children: [
-            _buildTopBar(context, ref),
+            _buildTopBar(),
             const SizedBox(height: 10),
-            Expanded(child: _buildWhiteCanvas(context, ref)),
+            Expanded(child: _buildWhiteCanvas()),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTopBar(BuildContext context, WidgetRef ref) {
+  Widget _buildTopBar() {
     return Column(
       children: [
         Align(
@@ -98,7 +144,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     );
   }
 
-  Widget _buildWhiteCanvas(BuildContext context, WidgetRef ref) {
+  Widget _buildWhiteCanvas() {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -108,27 +154,28 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
           topRight: Radius.circular(40),
         ),
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 40.0),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCountingGrid(),
-            const SizedBox(height: 40),
+            // Grilla ocupa el espacio sobrante entre el título y las opciones
+            Expanded(child: _buildCountingGrid()),
+            const SizedBox(height: 8),
+            // Pregunta
             Row(
               children: [
-                // ✅ Icono convertido a botón para repetir el audio
                 IconButton(
-                  icon: const Icon(Icons.volume_up_rounded, size: 45),
+                  icon: const Icon(Icons.volume_up_rounded, size: 38),
                   color: const Color(0xFF3475F7),
                   onPressed: _reproducirInstruccion,
                 ),
-                const SizedBox(width: 15),
+                const SizedBox(width: 8),
                 const Expanded(
                   child: Text(
                     '¿Cuál de estos animales hay en mayor cantidad?',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 15,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
@@ -137,30 +184,97 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
-            _OptionButton(
-              image: _crocPath,
-              letter: 'A)',
-              name: 'Cocodrilo',
-              onTap: () => _showFeedbackSheet(context, ref, true),
+            const SizedBox(height: 8),
+            // 4 opciones compactas
+            ...List.generate(4, (i) {
+              final animal    = _round.animals[i];
+              final isCorrect = i == _round.correctIndex;
+              return _OptionButton(
+                image: animal.path,
+                letter: '${String.fromCharCode(65 + i)})',
+                name: animal.name,
+                onTap: () => _showFeedbackSheet(isCorrect),
+              );
+            }),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showFeedbackSheet(bool esCorrecto) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  esCorrecto ? Icons.check_circle : Icons.cancel,
+                  color: esCorrecto ? verdeNumi : rojoNumi,
+                  size: 40,
+                ),
+                const SizedBox(width: 15),
+                Text(
+                  esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                  ),
+                ),
+              ],
             ),
-            _OptionButton(
-              image: _elephantPath,
-              letter: 'B)',
-              name: 'Elefante',
-              onTap: () => _showFeedbackSheet(context, ref, false),
-            ),
-            _OptionButton(
-              image: _duckPath,
-              letter: 'C)',
-              name: 'Pato',
-              onTap: () => _showFeedbackSheet(context, ref, false),
-            ),
-            _OptionButton(
-              image: _penguinPath,
-              letter: 'D)',
-              name: 'Pingüino',
-              onTap: () => _showFeedbackSheet(context, ref, false),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (esCorrecto) {
+                    ref
+                        .read(comparacionCantidadesViewModelProvider.notifier)
+                        .commandGuardarProgresoFinal('Quien tiene más');
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => const ActividadTerminadaScreen(),
+                      ),
+                    );
+                  } else {
+                    _nuevaRonda();
+                  }
+                },
+                child: Text(
+                  esCorrecto ? 'Continuar' : 'Reintentar',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -168,114 +282,52 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     );
   }
 
-  void _showFeedbackSheet(BuildContext context, WidgetRef ref, bool esCorrecto) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? verdeNumi : rojoNumi,
-                    size: 40,
-                  ),
-                  const SizedBox(width: 15),
-                  Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    if (esCorrecto) {
-                      ref
-                          .read(comparacionCantidadesViewModelProvider.notifier)
-                          .commandGuardarProgresoFinal('Quien tiene más');
+  Widget _buildCountingGrid() {
+    final allImages = <String>[];
+    for (int i = 0; i < 4; i++) {
+      for (int k = 0; k < _round.counts[i]; k++) {
+        allImages.add(_round.animals[i].path);
+      }
+    }
+    allImages.shuffle(Random());
 
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (_) => const ActividadTerminadaScreen(),
-                        ),
-                      );
-                    }
-                  },
-                  child: Text(
-                    esCorrecto ? 'Continuar' : 'Reintentar',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const cols    = 4;
+        final imgSize = (constraints.maxWidth / cols) * 0.70;
+        final cellH   = imgSize + 10;
+
+        final wrap = Wrap(
+          spacing: 0,
+          // ── ESPACIADO VERTICAL entre filas ──────────────────────────────
+          // Aumenta runSpacing para separar más las filas de animales,
+          // o disminúyelo para juntarlas. Valor actual: 4
+          runSpacing: 4,
+          alignment: WrapAlignment.spaceEvenly,
+          children: allImages
+              .map((p) => SizedBox(
+                    width:  constraints.maxWidth / cols,
+                    height: cellH,
+                    child: Center(
+                      child: Image.asset(p, width: imgSize, height: imgSize),
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                  ))
+              .toList(),
+        );
+
+        // ── POSICIÓN VERTICAL de la grilla dentro del espacio disponible ──
+        // mainAxisAlignment.center  → centrado (actual)
+        // mainAxisAlignment.start   → pegado arriba
+        // mainAxisAlignment.end     → pegado abajo
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [wrap],
         );
       },
     );
   }
-
-  Widget _buildCountingGrid() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _img(_crocPath),
-            _img(_elephantPath),
-            _img(_penguinPath),
-            _img(_crocPath),
-          ],
-        ),
-        const SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _img(_duckPath),
-            _img(_crocPath),
-            _img(_duckPath),
-            _img(_elephantPath),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _img(String p) => Image.asset(p, width: 60, height: 60);
 }
 
-// Widget de botón de opción (Sin cambios)
 class _OptionButton extends StatelessWidget {
   final String image;
   final String letter;
@@ -292,34 +344,34 @@ class _OptionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 7),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: Colors.grey.shade300, width: 2),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Row(
             children: [
-              Image.asset(image, width: 50, height: 50),
-              const SizedBox(width: 15),
+              Image.asset(image, width: 38, height: 38),
+              const SizedBox(width: 12),
               Text(
                 letter,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 17,
                   fontFamily: 'Hiruko',
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Text(
                 name,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 15,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                 ),

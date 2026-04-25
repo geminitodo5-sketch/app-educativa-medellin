@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
+import 'registro_view.dart';
 
 class ConfiguracionView extends ConsumerStatefulWidget {
   const ConfiguracionView({super.key});
@@ -24,6 +25,52 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
 
   static const Color _cyanTeal = Color(0xFF65CEE3);
   static const Color _royalBlue = Color(0xFF3475F7);
+
+  // ── Cerrar sesión ─────────────────────────────────────────────
+  Future<void> _cerrarSesion() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Cerrar sesión',
+            style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+        content: const Text('¿Seguro que quieres cerrar sesión?',
+            style: TextStyle(fontFamily: 'Poppins', fontSize: 15)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar',
+                style: TextStyle(fontFamily: 'Poppins')),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF5353),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Salir',
+                style: TextStyle(fontFamily: 'Poppins')),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar != true || !mounted) return;
+
+    ref.read(estudianteActivoProvider.notifier).state = null;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (ctx, a, _) => const RegistroView(),
+        transitionsBuilder: (ctx, anim, _, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
+      (_) => false,
+    );
+  }
 
   // ── Cambiar nombre ────────────────────────────────────────────
   Future<void> _mostrarDialogoNombre() async {
@@ -182,6 +229,10 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
 
                   // ── Sync info ──────────────────────────────────
                   _buildSyncCard(),
+                  const SizedBox(height: 12),
+
+                  // ── Cerrar sesión ───────────────────────────────
+                  _buildLogoutCard(),
                 ],
               ),
             ),
@@ -403,6 +454,35 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutCard() {
+    return GestureDetector(
+      onTap: _cerrarSesion,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEF5353),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.logout_rounded, color: Colors.white, size: 36),
+            SizedBox(width: 16),
+            Text(
+              'Cerrar sesión',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

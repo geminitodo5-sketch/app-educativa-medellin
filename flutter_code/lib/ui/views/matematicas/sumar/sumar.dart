@@ -1,11 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ Importante
+import 'package:media_kit/media_kit.dart';
+import 'dart:math';
 import 'sumar_2.dart';
 
-// Proveedor para manejar el estado de la respuesta
 final respuestaSumarProvider = StateProvider<bool?>((ref) => null);
 
+// ─── Tipos de patrón disponibles ───────────────────────────────────────────
+enum TipoPatron { sumarUno, sumarDos, sumarTres, sumarCuatro }
+
+class _Patron {
+  final String nombre;      // descripción interna
+  final int incremento;     // cuánto suma cada fila
+
+  const _Patron({required this.nombre, required this.incremento});
+}
+
+const _patrones = [
+  _Patron(nombre: '+1', incremento: 1),
+  _Patron(nombre: '+2', incremento: 2),
+  _Patron(nombre: '+3', incremento: 3),
+  _Patron(nombre: '+4', incremento: 4),
+];
+
+// ─── Modelo de la actividad generada aleatoriamente ────────────────────────
+class _DatosActividad {
+  final int fila1Num;         // número columna izquierda fila 1
+  final int incremento;       // de qué en qué sube
+  final String opcionCorrecta;
+  final String opcionIncorrecta;
+  final bool correctaEsPrimera;
+
+  _DatosActividad({
+    required this.fila1Num,
+    required this.incremento,
+    required this.opcionCorrecta,
+    required this.opcionIncorrecta,
+    required this.correctaEsPrimera,
+  });
+
+  // Números de cada fila (columna izquierda)
+  int get fila2Num => fila1Num + incremento;
+  int get fila3Num => fila1Num + incremento * 2;
+
+  // Suma que se muestra en columna derecha (fila1: anterior+incremento)
+  // Fila 1: (fila1Num - incremento) + incremento  →  se muestra como "prev+inc"
+  // Usamos: fila1Num = prev + incremento, entonces prev = fila1Num - incremento
+  String get fila1Suma => '${fila1Num - incremento}+$incremento';
+  String get fila2Suma => '${fila2Num - incremento}+$incremento';
+  // fila3Suma es la respuesta correcta → se muestra "???"
+
+  factory _DatosActividad.generar() {
+    final rng = Random();
+
+    // Elegir patrón aleatorio
+    final patron = _patrones[rng.nextInt(_patrones.length)];
+    final inc = patron.incremento;
+
+    // Número inicial de fila1: debe ser al menos inc+1 para que fila1Suma tenga sentido
+    // Rango: (inc+1) .. (inc+6)  para que los números sean manejables para niños
+    final fila1Num = rng.nextInt(6) + (inc + 1); // ej: si inc=2 → 3..8
+
+    // Respuesta correcta: fila3Num - incremento + incremento
+    final fila3Num = fila1Num + inc * 2;
+    final correcto = '${fila3Num - inc}+$inc';
+
+    // Distractores: variar el primer o segundo operando
+    final distractores = [
+      '${fila3Num - inc + 1}+$inc',
+      '${fila3Num - inc - 1}+$inc',
+      '${fila3Num - inc}+${inc + 1}',
+      '${fila3Num - inc}+${inc - 1}',
+    ].where((d) => d != correcto && !d.contains('+0') && !d.contains('-')).toList();
+
+    // Si por algún edge-case no hay distractores válidos, usar fallback
+    final incorrecto = distractores.isNotEmpty
+        ? distractores[rng.nextInt(distractores.length)]
+        : '${fila3Num - inc + 1}+$inc';
+
+    final correctaEsPrimera = rng.nextBool();
+
+    return _DatosActividad(
+      fila1Num: fila1Num,
+      incremento: inc,
+      opcionCorrecta: correcto,
+      opcionIncorrecta: incorrecto,
+      correctaEsPrimera: correctaEsPrimera,
+    );
+  }
+}
+
+// ─── Widget principal ───────────────────────────────────────────────────────
 class SumarPatronview extends ConsumerStatefulWidget {
   const SumarPatronview({super.key});
 
@@ -14,28 +99,26 @@ class SumarPatronview extends ConsumerStatefulWidget {
 }
 
 class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
-  // ✅ Definición del reproductor
   Player? _player;
+  late _DatosActividad _datos;
 
-  // Colores del Manual de Marca 
-  static const Color azulPrincipal = Color(0xFF3475F7);
-  static const Color azulBoton = Color(0xFF3878FA);
-  static const Color rojoNumi = Color(0xFFF65757);
-  static const Color naranjaNumi = Color(0xFFEF9325);
-  static const Color verdeNumi = Color(0xFF59E347);
+  static const Color azulPrincipal   = Color(0xFF3475F7);
+  static const Color azulBoton       = Color(0xFF3878FA);
+  static const Color rojoNumi        = Color(0xFFF65757);
+  static const Color naranjaNumi     = Color(0xFFEF9325);
+  static const Color verdeNumi       = Color(0xFF59E347);
 
   @override
   void initState() {
     super.initState();
+    _datos = _DatosActividad.generar();
     _player = Player();
-    
-    // Reproducción automática al entrar
     Future.microtask(() => _reproducirInstruccion());
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    _player?.dispose();
     super.dispose();
   }
 
@@ -59,9 +142,7 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
           children: [
             _buildTopBar(context),
             const SizedBox(height: 10),
-            Expanded(
-              child: _buildMainContent(context),
-            ),
+            Expanded(child: _buildMainContent(context)),
           ],
         ),
       ),
@@ -112,9 +193,25 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
             const SizedBox(height: 40),
             _buildPatternTable(),
             const Spacer(),
-            _buildOptionButton(context, '4+1', azulBoton, Colors.white, true),
+            _buildOptionButton(
+              context,
+              _datos.correctaEsPrimera
+                  ? _datos.opcionCorrecta
+                  : _datos.opcionIncorrecta,
+              azulBoton,
+              Colors.white,
+              _datos.correctaEsPrimera,
+            ),
             const SizedBox(height: 15),
-            _buildOptionButton(context, '4+2', azulBoton, Colors.white, false),
+            _buildOptionButton(
+              context,
+              _datos.correctaEsPrimera
+                  ? _datos.opcionIncorrecta
+                  : _datos.opcionCorrecta,
+              azulBoton,
+              Colors.white,
+              !_datos.correctaEsPrimera,
+            ),
             const SizedBox(height: 20),
           ],
         ),
@@ -125,7 +222,6 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
   Widget _buildInstruction() {
     return Row(
       children: [
-        // ✅ Botón de volumen funcional
         IconButton(
           icon: const Icon(Icons.volume_up_rounded, size: 50),
           color: Colors.black87,
@@ -154,9 +250,10 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
         borderRadius: BorderRadius.circular(10),
         child: Column(
           children: [
-            _buildTableRow('3', '2+1', rojoNumi),
-            _buildTableRow('4', '3+1', naranjaNumi),
-            _buildTableRow('5', '???', verdeNumi),
+            // ✅ Las 3 filas usan los datos generados aleatoriamente
+            _buildTableRow('${_datos.fila1Num}', _datos.fila1Suma, rojoNumi),
+            _buildTableRow('${_datos.fila2Num}', _datos.fila2Suma, naranjaNumi),
+            _buildTableRow('${_datos.fila3Num}', '???',            verdeNumi),
           ],
         ),
       ),
@@ -193,7 +290,8 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
     );
   }
 
-  Widget _buildOptionButton(BuildContext context, String text, Color bgColor, Color textColor, bool esCorrecto) {
+  Widget _buildOptionButton(BuildContext context, String text, Color bgColor,
+      Color textColor, bool esCorrecto) {
     return SizedBox(
       width: double.infinity,
       height: 60,
@@ -201,7 +299,8 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15)),
         ),
         onPressed: () {
           ref.read(respuestaSumarProvider.notifier).state = esCorrecto;
@@ -229,7 +328,9 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -252,7 +353,8 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      color:
+                          esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
@@ -264,7 +366,8 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -273,6 +376,11 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
                         MaterialPageRoute(
                             builder: (_) => const PantallaSumaUvas()),
                       );
+                    } else {
+                      // ✅ Reintentar genera un patrón completamente nuevo
+                      setState(() {
+                        _datos = _DatosActividad.generar();
+                      });
                     }
                   },
                   child: Text(

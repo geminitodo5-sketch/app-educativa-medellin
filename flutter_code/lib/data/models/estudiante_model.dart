@@ -4,12 +4,16 @@
 // ─────────────────────────────────────────────────────────────
 
 class EstudianteModel {
-  final int?   id;
-  final String nombre;
-  final int    grado;
-  final String personaje;       // 'pollito' | 'mono'
-  final String fechaRegistro;   // ISO-8601
-  final String? ultimaSesion;   // ISO-8601, nullable
+  final int?    id;
+  final String  nombre;
+  final int     grado;
+  final String  personaje;       // 'pollito' | 'mono'
+  final String  fechaRegistro;   // ISO-8601
+  final String? ultimaSesion;    // ISO-8601, nullable
+  final String? email;
+  final String? contrasena;
+  final int?    edad;
+  final String? genero;
 
   const EstudianteModel({
     this.id,
@@ -18,16 +22,24 @@ class EstudianteModel {
     required this.personaje,
     required this.fechaRegistro,
     this.ultimaSesion,
+    this.email,
+    this.contrasena,
+    this.edad,
+    this.genero,
   });
 
   factory EstudianteModel.fromMap(Map<String, dynamic> map) {
     return EstudianteModel(
-      id:             map['id'] as int?,
-      nombre:         map['nombre'] as String,
-      grado:          map['grado'] as int,
-      personaje:      map['personaje'] as String,
-      fechaRegistro:  map['fecha_registro'] as String,
-      ultimaSesion:   map['ultima_sesion'] as String?,
+      id:            map['id'] as int?,
+      nombre:        map['nombre'] as String,
+      grado:         map['grado'] as int,
+      personaje:     map['personaje'] as String,
+      fechaRegistro: map['fecha_registro'] as String,
+      ultimaSesion:  map['ultima_sesion'] as String?,
+      email:         map['email'] as String?,
+      contrasena:    map['contrasena'] as String?,
+      edad:          map['edad'] as int?,
+      genero:        map['genero'] as String?,
     );
   }
 
@@ -39,6 +51,10 @@ class EstudianteModel {
       'personaje':      personaje,
       'fecha_registro': fechaRegistro,
       'ultima_sesion':  ultimaSesion,
+      'email':          email,
+      'contrasena':     contrasena,
+      'edad':           edad,
+      'genero':         genero,
     };
   }
 
@@ -49,6 +65,10 @@ class EstudianteModel {
     String? personaje,
     String? fechaRegistro,
     String? ultimaSesion,
+    String? email,
+    String? contrasena,
+    int?    edad,
+    String? genero,
   }) {
     return EstudianteModel(
       id:            id            ?? this.id,
@@ -57,6 +77,10 @@ class EstudianteModel {
       personaje:     personaje     ?? this.personaje,
       fechaRegistro: fechaRegistro ?? this.fechaRegistro,
       ultimaSesion:  ultimaSesion  ?? this.ultimaSesion,
+      email:         email         ?? this.email,
+      contrasena:    contrasena    ?? this.contrasena,
+      edad:          edad          ?? this.edad,
+      genero:        genero        ?? this.genero,
     );
   }
 }

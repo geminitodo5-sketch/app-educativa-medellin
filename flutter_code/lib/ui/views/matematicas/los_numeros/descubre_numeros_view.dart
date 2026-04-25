@@ -84,6 +84,7 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
             Expanded(
               child: Container(
                 width: double.infinity,
+                clipBehavior: Clip.hardEdge,
                 decoration: const BoxDecoration(
                   color: fondoGris,
                   borderRadius: BorderRadius.only(
@@ -91,31 +92,62 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
                     topRight: Radius.circular(40),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _InstruccionCard(
-                              numeroObjetivo: vm.numeroObjetivo,
-                              onAudio: () =>
-                                  _reproducirAudioNumero(vm.numeroObjetivo),
-                            ),
-                            const SizedBox(height: 28),
-                            const _SeccionLabel(texto: 'Arrastra las fresas'),
-                            const SizedBox(height: 14),
-                            _GrillaFresas(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Alturas fijas reales medidas en pantalla
+                    const alturaInstruccion = 100.0;
+                    const alturaLabelFresas = 28.0;
+                    const alturaLabelRecuadro = 28.0;
+                    const alturaBoton = 60.0;
+                    const espaciadosV = 20.0 + 14.0 + 8.0 + 12.0 + 6.0 + 12.0 + 20.0;
+                    const alturaFija = alturaInstruccion + alturaLabelFresas +
+                        alturaLabelRecuadro + alturaBoton + espaciadosV;
+
+                    final espacioLibre = (constraints.maxHeight - alturaFija).clamp(200.0, double.infinity);
+                    // 65% fresas, 35% destino
+                    final alturaGrilla = espacioLibre * 0.65;
+                    final alturaDestino = espacioLibre * 0.35;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                          child: _InstruccionCard(
+                            numeroObjetivo: vm.numeroObjetivo,
+                            onAudio: () =>
+                                _reproducirAudioNumero(vm.numeroObjetivo),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: const _SeccionLabel(texto: 'Arrastra  las fresas'),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: alturaGrilla,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: _GrillaFresas(
                               totalDisponibles: vm.totalFresasDisponibles,
                               enCuadro: vm.fresasEnCuadro.length,
                               verificado: vm.verificado,
+                              alturaDisponible: alturaGrilla,
                             ),
-                            const SizedBox(height: 28),
-                            _buildZonaTitulo(vm, notifier),
-                            const SizedBox(height: 10),
-                            _ZonaDestino(
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: _buildZonaTitulo(vm, notifier),
+                        ),
+                        const SizedBox(height: 6),
+                        SizedBox(
+                          height: alturaDestino,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: _ZonaDestino(
                               fresasEnCuadro: vm.fresasEnCuadro,
                               verificado: vm.verificado,
                               feedbackEstado: vm.feedback,
@@ -123,26 +155,27 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
                                   ? null
                                   : notifier.commandAgregarFresa,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: _BotonPrincipal(
-                        texto: 'Verificar respuesta',
-                        color: azulPrincipal,
-                        textColor: Colors.white,
-                        habilitado:
-                            vm.fresasEnCuadro.isNotEmpty && !vm.verificado,
-                        onTap: () {
-                          final esCorrecto = vm.fresasEnCuadro.length == vm.numeroObjetivo;
-                          notifier.commandVerificar();
-                          _showFeedbackSheet(context, esCorrecto, notifier);
-                        },
-                      ),
-                    ),
-                  ],
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                          child: _BotonPrincipal(
+                            texto: 'Verificar respuesta',
+                            color: azulPrincipal,
+                            textColor: Colors.white,
+                            habilitado:
+                                vm.fresasEnCuadro.isNotEmpty && !vm.verificado,
+                            onTap: () {
+                              final esCorrecto = vm.fresasEnCuadro.length == vm.numeroObjetivo;
+                              notifier.commandVerificar();
+                              _showFeedbackSheet(context, esCorrecto, notifier);
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -237,8 +270,7 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
           GestureDetector(
             onTap: notifier.commandQuitarFresa,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFEDED),
                 borderRadius: BorderRadius.circular(20),
@@ -280,7 +312,7 @@ class _Header extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'Descubre los números',
+                  'Descubre  los números',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Hiruko',
@@ -386,6 +418,12 @@ class _InstruccionCard extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(width: 10),
+          Image.asset(
+            'assets/images/actividades/matematicas/fresa.png',
+            width: 90,
+            height: 90,
+          ),
         ],
       ),
     );
@@ -396,38 +434,85 @@ class _GrillaFresas extends StatelessWidget {
   final int totalDisponibles;
   final int enCuadro;
   final bool verificado;
+  final double alturaDisponible;
+
   const _GrillaFresas({
     required this.totalDisponibles,
     required this.enCuadro,
     required this.verificado,
+    required this.alturaDisponible,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 14,
-      runSpacing: 14,
-      children: List.generate(totalDisponibles, (index) {
-        final usada = index < enCuadro;
-        return Opacity(
-          opacity: usada ? 0.25 : 1.0,
-          child: Draggable<int>(
-            data: 1,
-            maxSimultaneousDrags: (verificado || usada) ? 0 : 1,
-            feedback: Image.asset(
+    final columnas = totalDisponibles <= 4 ? 2 : 3;
+    final filas = (totalDisponibles / columnas).ceil();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const espaciado = 10.0;
+
+        final imgAncho =
+            (constraints.maxWidth - espaciado * (columnas - 1)) / columnas;
+        final imgAlto =
+            (alturaDisponible - espaciado * (filas - 1)) / filas;
+
+        final tamanoImagen =
+            (imgAncho < imgAlto ? imgAncho : imgAlto).clamp(0.0, 120.0);
+
+        Widget fresaImg(double size) => Image.asset(
               'assets/images/actividades/matematicas/fresa.png',
-              width: 60,
-            ),
-            child: Image.asset(
-              'assets/images/actividades/matematicas/fresa.png',
-              width: 55,
-            ),
-          ),
+              width: size,
+              height: size,
+              fit: BoxFit.contain,
+            );
+
+        int index = 0;
+        final rows = <Widget>[];
+
+        for (int f = 0; f < filas; f++) {
+          final cells = <Widget>[];
+          for (int c = 0; c < columnas; c++) {
+            if (index < totalDisponibles) {
+              final i = index;
+              final usada = i < enCuadro;
+              cells.add(
+                SizedBox(
+                  width: tamanoImagen,
+                  height: tamanoImagen,
+                  child: Opacity(
+                    opacity: usada ? 0.25 : 1.0,
+                    child: Draggable<int>(
+                      data: 1,
+                      maxSimultaneousDrags: (verificado || usada) ? 0 : 1,
+                      feedback: fresaImg(tamanoImagen * 0.9),
+                      child: fresaImg(tamanoImagen),
+                    ),
+                  ),
+                ),
+              );
+              index++;
+            } else {
+              cells.add(SizedBox(width: tamanoImagen, height: tamanoImagen));
+            }
+            if (c < columnas - 1) cells.add(SizedBox(width: espaciado));
+          }
+          rows.add(Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: cells,
+          ));
+          if (f < filas - 1) rows.add(SizedBox(height: espaciado));
+        }
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: rows,
         );
-      }),
+      },
     );
   }
 }
+
 
 class _ZonaDestino extends StatelessWidget {
   final List<Key> fresasEnCuadro;
@@ -450,11 +535,10 @@ class _ZonaDestino extends StatelessWidget {
         final estaSobre = candidateData.isNotEmpty;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          constraints: const BoxConstraints(minHeight: 140),
           width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
-            color:
-                estaSobre ? const Color(0xFFEEF2FF) : Colors.white,
+            color: estaSobre ? const Color(0xFFEEF2FF) : Colors.white,
             border: Border.all(
               color: estaSobre
                   ? const Color(0xFF1EB9D8)
@@ -473,22 +557,42 @@ class _ZonaDestino extends StatelessWidget {
                     ),
                   ),
                 )
-              : Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: fresasEnCuadro
-                        .map(
-                          (key) => Image.asset(
-                            'assets/images/actividades/matematicas/fresa.png',
-                            key: key,
-                            width: 46,
-                          ),
-                        )
-                        .toList(),
-                  ),
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final count = fresasEnCuadro.length;
+                    const padding = 12.0;
+                    const gap = 8.0;
+                    final areaW = constraints.maxWidth - padding * 2;
+                    final areaH = constraints.maxHeight - padding * 2;
+                    double tamano = 0;
+                    for (int cols = 1; cols <= count; cols++) {
+                      final rows = (count / cols).ceil();
+                      final w = (areaW - gap * (cols - 1)) / cols;
+                      final h = (areaH - gap * (rows - 1)) / rows;
+                      final s = w < h ? w : h;
+                      if (s > tamano) tamano = s;
+                    }
+                    tamano = tamano.clamp(30.0, 100.0);
+                    return Center(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        runAlignment: WrapAlignment.center,
+                        spacing: gap,
+                        runSpacing: gap,
+                        children: fresasEnCuadro
+                            .map(
+                              (key) => Image.asset(
+                                'assets/images/actividades/matematicas/fresa.png',
+                                key: key,
+                                width: tamano,
+                                height: tamano,
+                                fit: BoxFit.contain,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    );
+                  },
                 ),
         );
       },
