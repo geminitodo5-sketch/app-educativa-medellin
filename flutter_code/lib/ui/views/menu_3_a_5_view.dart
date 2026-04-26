@@ -150,12 +150,11 @@ class Menu3A5Screen extends ConsumerStatefulWidget {
 }
 
 class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
-  int _tabIndex   = 0;
+  int _tabIndex = 0;
   int _currentPage = 0;
-
-  final Map<String, bool>   _descargado        = {};
+  final Map<String, bool> _descargado = {};
   final Map<String, double> _progresosDescarga = {};
-  final Set<String>         _descargando       = {};
+  final Set<String> _descargando = {};
   bool _verificando = true;
 
   late final DescargaPaqueteService _svc;
@@ -215,7 +214,6 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
       _descargando.add(clave);
       _progresosDescarga[clave] = 0.0;
     });
-
     try {
       await _svc.descargarPaquete(
         clave,
@@ -248,12 +246,14 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
   void _abrirAsistente(_MateriaInfo materia) {
     final estudiante = ref.read(estudianteActivoProvider);
     Navigator.of(context)
-        .push(MaterialPageRoute(
-          builder: (_) => AsistenteIaView(
-            materiaInicial: materia.clave,
-            gradoInicial: estudiante?.grado ?? 3,
+        .push(
+          MaterialPageRoute(
+            builder: (_) => AsistenteIaView(
+              materiaInicial: materia.clave,
+              gradoInicial: estudiante?.grado ?? 3,
+            ),
           ),
-        ))
+        )
         .then((_) => _verificarDescargas());
   }
 
@@ -266,10 +266,10 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final estudiante  = ref.watch(estudianteActivoProvider);
-    final nombre      = estudiante?.nombre ?? 'Estudiante';
-    final avatar      = estudiante?.personaje ?? 'pollito';
-    final nivel       = estudiante?.grado ?? 3;
+    final estudiante = ref.watch(estudianteActivoProvider);
+    final nombre = estudiante?.nombre ?? 'Estudiante';
+    final avatar = estudiante?.personaje ?? 'pollito';
+    final nivel = estudiante?.grado ?? 3;
     final progresoAsync = ref.watch(menuProgresoProvider);
 
     return Scaffold(
@@ -318,9 +318,7 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
               },
               onProgreso: () => setState(() => _tabIndex = 1),
               onConfiguracion: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ConfiguracionView(),
-                ),
+                MaterialPageRoute(builder: (_) => const ConfiguracionView()),
               ),
             ),
           ),
@@ -338,13 +336,13 @@ class _HomeTab extends StatelessWidget {
   final String avatar;
   final int nivel;
   final bool verificando;
-  final Map<String, bool>   descargado;
-  final Set<String>         descargando;
+  final Map<String, bool> descargado;
+  final Set<String> descargando;
   final Map<String, double> progresosDescarga;
-  final PageController      pageController;
-  final int                 currentPage;
-  final ValueChanged<int>   onPageChanged;
-  final void Function(String)       onDescargar;
+  final PageController pageController;
+  final int currentPage;
+  final ValueChanged<int> onPageChanged;
+  final void Function(String) onDescargar;
   final void Function(_MateriaInfo) onAbrir;
 
   const _HomeTab({
@@ -373,302 +371,313 @@ class _HomeTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            // ── Header ────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          saludo,
-                          style: const TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 16,
-                            color: Colors.black54,
-                          ),
+          // ── Header ────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        saludo,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          color: Colors.black54,
                         ),
-                        Text(
-                          '$nombre!',
-                          style: const TextStyle(
-                            fontFamily: 'Hiruko',
-                            fontSize: 30,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '$nombre!',
+                        style: const TextStyle(
+                          fontFamily: 'Hiruko',
+                          fontSize: 30,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
                         ),
-                      ],
-                    ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  // Píldora blanca con "Nivel X" + avatar
-                  Container(
-                    padding: const EdgeInsets.only(
-                        left: 16, top: 6, bottom: 6, right: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.10),
-                          blurRadius: 12,
-                          offset: const Offset(0, 3),
+                ),
+                // Píldora blanca con "Nivel X" + avatar
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    top: 6,
+                    bottom: 6,
+                    right: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(40),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 12,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Nivel $nivel',
+                        style: const TextStyle(
+                          fontFamily: 'Hiruko',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Nivel $nivel',
-                          style: const TextStyle(
-                            fontFamily: 'Hiruko',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
-                          ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFFFFF0D6),
                         ),
-                        const SizedBox(width: 10),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFFFFF0D6),
-                          ),
-                          padding: const EdgeInsets.all(2),
-                          child: ClipOval(
-                            child: Image.asset(
-                              _avatarPath,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, _, _) => const Icon(
-                                Icons.person,
-                                color: Color(0xFF3B74FF),
-                              ),
+                        padding: const EdgeInsets.all(2),
+                        child: ClipOval(
+                          child: Image.asset(
+                            _avatarPath,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.person,
+                              color: Color(0xFF3B74FF),
                             ),
                           ),
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ── Banner ────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.topCenter,
+              children: [
+                // 1. Contenedor base responsivo (define el tamaño del Stack)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 55,
+                  ), // Espacio fijo para la mascota
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                    // Eliminamos el height: 155 para que crezca según el texto interior
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(26),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              _materias[currentPage.clamp(
+                                    0,
+                                    _materias.length - 1,
+                                  )]
+                                  .sombra,
+                          blurRadius: 0,
+                          offset: const Offset(0, 8),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ── Banner ────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                height: 210,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.topCenter,
-                  children: [
-                    // Contenedor con color cambiante según materia activa
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.easeInOut,
-                        height: 155,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(26),
-                          boxShadow: [
-                            BoxShadow(
-                              color: _materias[currentPage.clamp(0, _materias.length - 1)].sombra,
-                              blurRadius: 0,
-                              offset: const Offset(0, 8),
+                        color:
+                            _materias[currentPage.clamp(
+                                  0,
+                                  _materias.length - 1,
+                                )]
+                                .color,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                          // Eliminamos el Align(bottomCenter) para que el layout fluya natural
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
                             ),
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(22),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeInOut,
-                            color: _materias[currentPage.clamp(0, _materias.length - 1)].color,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize:
+                                        MainAxisSize.min, // Se adapta al texto
                                     children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Text(
-                                              '¡No pares de aprender!',
-                                              style: TextStyle(
-                                                fontFamily: 'Hiruko',
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            const Text(
-                                              'Cada pregunta es un nuevo descubrimiento',
-                                              style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontSize: 13,
-                                                color: Colors.black54,
-                                              ),
-                                            ),
-                                          ],
+                                      const Text(
+                                        '¡No pares de aprender!',
+                                        style: TextStyle(
+                                          fontFamily: 'Hiruko',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.black87,
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFFF8C00),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: const Icon(
-                                          Icons.arrow_forward_rounded,
-                                          color: Colors.white,
-                                          size: 22,
+                                      const SizedBox(height: 4),
+                                      const Text(
+                                        'Cada pregunta es un nuevo descubrimiento',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 13,
+                                          color: Colors.black54,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFF8C00),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                    // Mascota asomándose desde arriba
-                    Positioned(
-                      top: -35,
-                      child: ClipRect(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          heightFactor: 0.78,
-                          child: Image.asset(
-                            _avatarPath,
-                            height: 170,
-                            fit: BoxFit.contain,
-                            errorBuilder: (_, _, _) => const SizedBox(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 44),
-
-            // ── Título "Mis Clases" ────────────────────────────
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Mis Clases',
-                style: TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
-            // ── Carrusel de clases ─────────────────────────────
-            if (verificando)
-              const SizedBox(
-                height: 260,
-                child: Center(
-                  child: CircularProgressIndicator(
-                      color: Color(0xFF3E7DFE)),
-                ),
-              )
-            else ...[
-              SizedBox(
-                height: 260,
-                child: PageView.builder(
-                  controller: pageController,
-                  onPageChanged: onPageChanged,
-                  physics: const PageScrollPhysics(),
-                  itemCount: _materias.length,
-                  padEnds: false,
-                  clipBehavior: Clip.none,
-                  itemBuilder: (context, i) {
-                    final m = _materias[i];
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 10),
-                      child: _ClaseCard(
-                        info: m,
-                        descargado: descargado[m.clave] ?? false,
-                        descargando: descargando.contains(m.clave),
-                        progreso: progresosDescarga[m.clave] ?? 0.0,
-                        onDescargar: () => onDescargar(m.clave),
-                        onAbrir: () => onAbrir(m),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Puntos indicadores (tapeables)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  _materias.length,
-                  (i) => GestureDetector(
-                    onTap: () => pageController.animateToPage(
-                      i,
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeInOut,
-                    ),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: i == currentPage ? 20 : 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: i == currentPage
-                            ? const Color(0xFF3E7DFE)
-                            : Colors.grey[300],
+                // 2. Mascota asomándose desde arriba
+                Positioned(
+                  top: -35,
+                  child: ClipRect(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      heightFactor: 0.78,
+                      child: Image.asset(
+                        _avatarPath,
+                        height: 136,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, _, _) => const SizedBox(),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
+            ),
+          ),
 
-              const SizedBox(height: 10),
-            ],
+          const SizedBox(height: 44),
+
+          // ── Título "Mis Clases" ────────────────────────────
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Mis Clases',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── Carrusel de clases ─────────────────────────────
+          if (verificando)
+            const SizedBox(
+              height: 260,
+              child: Center(
+                child: CircularProgressIndicator(color: Color(0xFF3E7DFE)),
+              ),
+            )
+          else ...[
+            SizedBox(
+              height: 260,
+              child: PageView.builder(
+                controller: pageController,
+                onPageChanged: onPageChanged,
+                physics: const PageScrollPhysics(),
+                itemCount: _materias.length,
+                padEnds: false,
+                clipBehavior: Clip.none,
+                itemBuilder: (context, i) {
+                  final m = _materias[i];
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 10),
+                    child: _ClaseCard(
+                      info: m,
+                      descargado: descargado[m.clave] ?? false,
+                      descargando: descargando.contains(m.clave),
+                      progreso: progresosDescarga[m.clave] ?? 0.0,
+                      onDescargar: () => onDescargar(m.clave),
+                      onAbrir: () => onAbrir(m),
+                    ),
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // Puntos indicadores (tapeables)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                _materias.length,
+                (i) => GestureDetector(
+                  onTap: () => pageController.animateToPage(
+                    i,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                  ),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: i == currentPage ? 20 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: i == currentPage
+                          ? const Color(0xFF3E7DFE)
+                          : Colors.grey[300],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
           ],
-        ),
+        ],
+      ),
     );
   }
 }
@@ -702,8 +711,10 @@ class _ClaseCardState extends State<_ClaseCard>
     vsync: this,
     duration: const Duration(milliseconds: 80),
   );
-  late final Animation<double> _scale =
-      Tween<double>(begin: 1.0, end: 0.95).animate(_ctrl);
+  late final Animation<double> _scale = Tween<double>(
+    begin: 1.0,
+    end: 0.95,
+  ).animate(_ctrl);
 
   @override
   void dispose() {
@@ -713,8 +724,8 @@ class _ClaseCardState extends State<_ClaseCard>
 
   @override
   Widget build(BuildContext context) {
-    final info      = widget.info;
-    final listo     = widget.descargado;
+    final info = widget.info;
+    final listo = widget.descargado;
     final enDescarga = widget.descargando;
 
     return GestureDetector(
@@ -761,9 +772,7 @@ class _ClaseCardState extends State<_ClaseCard>
                     flex: 62,
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: info.color,
-                      ),
+                      decoration: BoxDecoration(color: info.color),
                       child: Stack(
                         children: [
                           Center(
@@ -964,7 +973,9 @@ class _ProgresoTab extends StatelessWidget {
                           const SizedBox(height: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 4),
+                              horizontal: 14,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFFFF8C00),
                               borderRadius: BorderRadius.circular(20),
@@ -1015,8 +1026,7 @@ class _ProgresoTab extends StatelessWidget {
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 40),
                 child: Center(
-                  child: CircularProgressIndicator(
-                      color: Color(0xFF3E7DFE)),
+                  child: CircularProgressIndicator(color: Color(0xFF3E7DFE)),
                 ),
               ),
               error: (_, _) => _buildBarras({}),
@@ -1071,11 +1081,7 @@ class _BarraProgreso extends StatelessWidget {
         color: color,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(
-            color: sombra,
-            blurRadius: 0,
-            offset: const Offset(0, 10),
-          ),
+          BoxShadow(color: sombra, blurRadius: 0, offset: const Offset(0, 10)),
         ],
       ),
       child: Padding(
@@ -1193,11 +1199,7 @@ class _NavItem extends StatelessWidget {
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Icon(
-          icon,
-          size: 28,
-          color: Colors.white,
-        ),
+        child: Icon(icon, size: 28, color: Colors.white),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart'; // ✅ media_kit reemplaza just_audio
+import 'package:media_kit_video/media_kit_video.dart';
 import 'dart:ui' as ui;
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
@@ -290,21 +291,17 @@ class _PageCard extends StatelessWidget {
 }
 
 // ── Fila de instrucción ───────────────────────────────────────────────────
-// ✅ Recibe Player? (media_kit) y audioAsset en lugar de AudioPlayer? y audioPath
 class _Instruccion extends StatelessWidget {
   final String texto;
-  final Player? player;      // ✅ media_kit Player
-  final String? audioAsset;  // ✅ path del asset, ej: 'assets/audio/xxx.mp3'
+  final Player? player;
+  final String? audioAsset;
 
   const _Instruccion(this.texto, {this.player, this.audioAsset});
 
   Future<void> _reproducir() async {
     if (player == null || audioAsset == null) return;
     try {
-      // ✅ Mismo patrón que el código de referencia: open(Media('asset:///...'))
-      await player!.open(
-        Media('asset:///$audioAsset'),
-      );
+      await player!.open(Media('asset:///$audioAsset'));
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }
@@ -316,7 +313,6 @@ class _Instruccion extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // ✅ Botón de volumen — mismo estilo e IconButton que el código de referencia
         IconButton(
           icon: const Icon(Icons.volume_up_rounded, size: 36),
           color: Colors.black87,
@@ -353,8 +349,6 @@ class _Actividad1State extends State<_Actividad1> {
   static const _barajadas = [3, 1, 5, 2, 4];
 
   final Map<int, int> _colocadas = {};
-
-  // ✅ Player de media_kit — mismo patrón que el código de referencia
   Player? _player;
 
   bool get _completo => _colocadas.length == _totalSlots;
@@ -362,23 +356,19 @@ class _Actividad1State extends State<_Actividad1> {
   @override
   void initState() {
     super.initState();
-    _player = Player(); // ✅ Inicializar igual que en el código de referencia
-    // ✅ Reproducción automática al entrar
+    _player = Player();
     Future.microtask(() => _playAudio());
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    _player?.dispose();
     super.dispose();
   }
 
   Future<void> _playAudio() async {
     try {
-      // ✅ Mismo patrón: open(Media('asset:///...'))
-      await _player?.open(
-        Media('asset:///$_audio10'),
-      );
+      await _player?.open(Media('asset:///$_audio10'));
     } catch (e) {
       debugPrint('Error playAudio actividad1: $e');
     }
@@ -400,7 +390,6 @@ class _Actividad1State extends State<_Actividad1> {
     return _Tarjeta(
       child: Column(
         children: [
-          // ✅ Se pasa _player y _audio10 como audioAsset
           _Instruccion(
             '¿Cómo crece una planta? Pon sus fases en el orden correcto',
             player: _player,
@@ -734,34 +723,29 @@ class _Actividad2State extends State<_Actividad2> {
   bool _imagenesListas = false;
 
   final _areaKey = GlobalKey();
-  final Map<String, Offset> _touchOffset = {};
 
-  // ✅ Player de media_kit
   Player? _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+    _player = Player();
     _estados = _piezasBase
         .map((p) => _PiezaEstado(p.nombre, posicion: const Offset(-999, -999)))
         .toList();
     _calcularFracciones();
-    // ✅ Reproducción automática al entrar
     Future.microtask(() => _playAudio());
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    _player?.dispose();
     super.dispose();
   }
 
   Future<void> _playAudio() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audio11'),
-      );
+      await _player?.open(Media('asset:///$_audio11'));
     } catch (e) {
       debugPrint('Error playAudio actividad2: $e');
     }
@@ -803,9 +787,16 @@ class _Actividad2State extends State<_Actividad2> {
           hFinal = 0.45;
         }
 
+        // ── Escala por pieza ─────────────────────────────────────────────
+        // Cambia estos multiplicadores para ajustar el tamaño de cada pieza.
+        // 0.50 = 50% del tamaño calculado, 1.0 = tamaño original.
         if (p.nombre == 'raices') {
-          wFinal = wFinal * 0.65;
-          hFinal = hFinal * 0.65;
+          wFinal = wFinal * 0.45; // ← tamaño raíces (antes 0.65)
+          hFinal = hFinal * 0.45;
+        }
+        if (p.nombre == 'flor') {
+          wFinal = wFinal * 0.50; // ← tamaño girasol/flor
+          hFinal = hFinal * 0.50;
         }
 
         return _PiezaPlanta(
@@ -819,29 +810,33 @@ class _Actividad2State extends State<_Actividad2> {
     });
   }
 
-  void _colocarPieza(String nombre, Offset globalPointer, Offset touchOff) {
+  // Igual que en cuerpo_humano: childDragAnchorStrategy hace que details.offset
+  // en onAcceptWithDetails sea la esquina top-left del feedback. Sumamos la
+  // mitad del tamaño de la pieza para obtener su centro.
+  void _colocarPieza(String nombre, Offset globalTopLeft) {
     final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
     if (ro == null) return;
 
     final areaSize = ro.size;
-    final localPos = ro.globalToLocal(globalPointer - touchOff);
     final p = _piezas.firstWhere((p) => p.nombre == nombre);
-
-    final pxW = areaSize.width * p.anchoFraccion;
+    final pxW = areaSize.width  * p.anchoFraccion;
     final pxH = areaSize.height * p.altoFraccion;
-    final centerX = localPos.dx + pxW / 2;
-    final centerY = localPos.dy + pxH / 2;
 
-    if (centerX < -pxW || centerX > areaSize.width + pxW ||
-        centerY < -pxH || centerY > areaSize.height + pxH) return;
+    // Centro del feedback en coordenadas globales → locales del área
+    final globalCenter = globalTopLeft + Offset(pxW / 2, pxH / 2);
+    final localCenter  = ro.globalToLocal(globalCenter);
+
+    // Descartar si quedó completamente fuera del área
+    if (localCenter.dx < -pxW / 2 || localCenter.dx > areaSize.width  + pxW / 2 ||
+        localCenter.dy < -pxH / 2 || localCenter.dy > areaSize.height + pxH / 2) return;
 
     setState(() {
       final e = _estados.firstWhere((e) => e.nombre == nombre);
       e.posicion = Offset(
-        (centerX / areaSize.width).clamp(p.anchoFraccion / 2, 1.0 - p.anchoFraccion / 2),
-        (centerY / areaSize.height).clamp(p.altoFraccion / 2, 1.0 - p.altoFraccion / 2),
+        (localCenter.dx / areaSize.width ).clamp(p.anchoFraccion / 2, 1.0 - p.anchoFraccion / 2),
+        (localCenter.dy / areaSize.height).clamp(p.altoFraccion  / 2, 1.0 - p.altoFraccion  / 2),
       );
-      e.colocada = true;
+      e.colocada  = true;
       _verificado = false;
     });
   }
@@ -906,10 +901,11 @@ class _Actividad2State extends State<_Actividad2> {
   Widget build(BuildContext context) {
     if (!_imagenesListas) return const Center(child: CircularProgressIndicator());
 
+    final enBandeja = _enBandeja;
+
     return _Tarjeta(
       child: Column(
         children: [
-          // ✅ Se pasa _player y _audio11 como audioAsset
           _Instruccion(
             'Arma la planta con todos sus elementos, arrastralos al cuadro',
             player: _player,
@@ -919,91 +915,135 @@ class _Actividad2State extends State<_Actividad2> {
             flex: 3,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(30, 8, 30, 4),
-              child: LayoutBuilder(builder: (ctx, constraints) {
-                final w = constraints.maxWidth;
-                final h = constraints.maxHeight;
-                return Stack(
-                  key: _areaKey,
-                  clipBehavior: Clip.hardEdge,
-                  children: [
-                    Container(
+              child: LayoutBuilder(builder: (_, constraints) {
+                final areaW = constraints.maxWidth;
+                final areaH = constraints.maxHeight;
+
+                return DragTarget<String>(
+                  // ── El DragTarget cubre TODO el área ─────────────────────
+                  // onAcceptWithDetails recibe details.offset = esquina top-left
+                  // del feedback (gracias a childDragAnchorStrategy).
+                  onAcceptWithDetails: (details) {
+                    _colocarPieza(details.data, details.offset);
+                  },
+                  builder: (ctx, candidateData, rejectedData) {
+                    return Container(
+                      key: _areaKey,
+                      width: areaW,
+                      height: areaH,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF9FBF9),
+                        color: candidateData.isNotEmpty
+                            ? const Color(0xFFE8F5E9)
+                            : const Color(0xFFF9FBF9),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
+                        border: Border.all(
+                          color: candidateData.isNotEmpty
+                              ? const Color(0xFF3DCC52)
+                              : const Color(0xFFE0E0E0),
+                          width: candidateData.isNotEmpty ? 2.5 : 1.5,
+                        ),
                       ),
-                      child: _enBandeja.length == _piezas.length
-                        ? const Center(child: Text('⬆ Arrastra las piezas aquí',
-                            style: TextStyle(color: Colors.grey, fontSize: 12)))
-                        : null,
-                    ),
-                    ..._renderOrder.map((nombre) {
-                      final e = _estados.firstWhere((st) => st.nombre == nombre);
-                      if (!e.colocada) return const SizedBox.shrink();
-                      final p = _piezas.firstWhere((pz) => pz.nombre == nombre);
-
-                      final pxW = w * p.anchoFraccion;
-                      final pxH = h * p.altoFraccion;
-                      final left = (e.posicion.dx * w - pxW / 2).clamp(0.0, w - pxW);
-                      final top = (e.posicion.dy * h - pxH / 2).clamp(0.0, h - pxH);
-                      final correcto = _verificado ? _esCorrecto(nombre) : null;
-
-                      return Positioned(
-                        left: left, top: top, width: pxW, height: pxH,
-                        child: Listener(
-                          onPointerDown: (ev) => _touchOffset[nombre] = ev.localPosition,
-                          child: Draggable<String>(
-                            data: nombre,
-                            dragAnchorStrategy: pointerDragAnchorStrategy,
-                            feedback: Material(
-                              color: Colors.transparent,
-                              child: Opacity(
-                                opacity: 0.8,
-                                child: SizedBox(width: pxW, height: pxH,
-                                  child: Image.asset(p.ruta, fit: BoxFit.contain,
-                                      filterQuality: ui.FilterQuality.high)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Stack(
+                          clipBehavior: Clip.hardEdge,
+                          children: [
+                            if (enBandeja.length == _piezas.length)
+                              const Center(
+                                child: Text('⬆ Arrastra las piezas aquí',
+                                    style: TextStyle(color: Colors.grey, fontSize: 12)),
                               ),
-                            ),
-                            childWhenDragging: Opacity(opacity: 0.3,
-                              child: Image.asset(p.ruta, fit: BoxFit.contain,
-                                  filterQuality: ui.FilterQuality.high)),
-                            onDragEnd: (details) => _colocarPieza(nombre, details.offset,
-                                _touchOffset[nombre] ?? Offset(pxW / 2, pxH / 2)),
-                            child: Stack(children: [
-                              Image.asset(p.ruta, fit: BoxFit.contain,
-                                  filterQuality: ui.FilterQuality.high),
-                              if (correcto != null)
-                                Positioned.fill(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: correcto
-                                          ? const Color(0x2200CC44)
-                                          : const Color(0x33FF0000),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        correcto
-                                            ? Icons.check_circle_rounded
-                                            : Icons.cancel_rounded,
-                                        color: correcto
-                                            ? const Color(0xFF2E7D32)
-                                            : const Color(0xFFB71C1C),
-                                        size: 28,
-                                      ),
+
+                            // ── Piezas ya colocadas ───────────────────────
+                            ..._renderOrder.map((nombre) {
+                              final e = _estados.firstWhere((st) => st.nombre == nombre);
+                              if (!e.colocada) return const SizedBox.shrink();
+                              final p = _piezas.firstWhere((pz) => pz.nombre == nombre);
+
+                              final pxW  = areaW * p.anchoFraccion;
+                              final pxH  = areaH * p.altoFraccion;
+                              final left = (e.posicion.dx * areaW - pxW / 2)
+                                  .clamp(0.0, (areaW - pxW).clamp(0.0, areaW));
+                              final top  = (e.posicion.dy * areaH - pxH / 2)
+                                  .clamp(0.0, (areaH - pxH).clamp(0.0, areaH));
+                              final correcto = _verificado ? _esCorrecto(nombre) : null;
+
+                              return Positioned(
+                                left: left, top: top, width: pxW, height: pxH,
+                                child: Draggable<String>(
+                                  data: nombre,
+                                  // ── childDragAnchorStrategy: igual que cuerpo humano ──
+                                  // El feedback se ancla en la esquina top-left del widget.
+                                  // details.offset en onDragEnd = esa esquina top-left global.
+                                  dragAnchorStrategy: childDragAnchorStrategy,
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: Opacity(
+                                      opacity: 0.88,
+                                      child: SizedBox(width: pxW, height: pxH,
+                                        child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                            filterQuality: ui.FilterQuality.high)),
                                     ),
                                   ),
+                                  childWhenDragging: Opacity(
+                                    opacity: 0.20,
+                                    child: SizedBox(width: pxW, height: pxH,
+                                      child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                          filterQuality: ui.FilterQuality.high)),
+                                  ),
+                                  // Solo manejamos el caso de soltar FUERA del área
+                                  // (el DragTarget no lo acepta → wasAccepted=false)
+                                  onDragEnd: (details) {
+                                    if (!details.wasAccepted) {
+                                      setState(() {
+                                        final est = _estados.firstWhere(
+                                            (est) => est.nombre == nombre);
+                                        est.colocada = false;
+                                        est.posicion = const Offset(-999, -999);
+                                        _verificado  = false;
+                                      });
+                                    }
+                                  },
+                                  child: Stack(children: [
+                                    SizedBox(width: pxW, height: pxH,
+                                      child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                          filterQuality: ui.FilterQuality.high)),
+                                    if (correcto != null)
+                                      Positioned.fill(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: correcto
+                                                ? const Color(0x2200CC44)
+                                                : const Color(0x33FF0000),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              correcto
+                                                  ? Icons.check_circle_rounded
+                                                  : Icons.cancel_rounded,
+                                              color: correcto
+                                                  ? const Color(0xFF2E7D32)
+                                                  : const Color(0xFFB71C1C),
+                                              size: 28,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ]),
                                 ),
-                            ]),
-                          ),
+                              );
+                            }),
+                          ],
                         ),
-                      );
-                    }),
-                  ],
+                      ),
+                    );
+                  },
                 );
               }),
             ),
           ),
+
           if (_todoColocado && !_verificado)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1041,37 +1081,46 @@ class _Actividad2State extends State<_Actividad2> {
               ),
             ),
 
-          if (_enBandeja.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: _piezas
-                    .where((p) => _enBandeja.contains(p.nombre))
-                    .map((p) {
-                      const thumbSize = 64.0;
-                      return Listener(
-                        onPointerDown: (ev) => _touchOffset[p.nombre] = ev.localPosition,
-                        child: Draggable<String>(
-                          data: p.nombre,
-                          dragAnchorStrategy: pointerDragAnchorStrategy,
-                          feedback: Material(
-                            color: Colors.transparent,
-                            child: SizedBox(
-                              width: thumbSize, height: thumbSize,
-                              child: Image.asset(p.ruta, fit: BoxFit.contain,
-                                  filterQuality: ui.FilterQuality.high),
+          // ── Bandeja de piezas ────────────────────────────────────────────
+          if (enBandeja.isNotEmpty)
+            SizedBox(
+              height: 92,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: _piezas
+                      .where((p) => enBandeja.contains(p.nombre))
+                      .map((p) {
+                        const thumbSize = 64.0;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Draggable<String>(
+                            data: p.nombre,
+                            // ── childDragAnchorStrategy: igual que cuerpo humano ──
+                            dragAnchorStrategy: childDragAnchorStrategy,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: Opacity(
+                                opacity: 0.88,
+                                child: SizedBox(
+                                  width: thumbSize, height: thumbSize,
+                                  child: Image.asset(p.ruta, fit: BoxFit.contain,
+                                      filterQuality: ui.FilterQuality.high),
+                                ),
+                              ),
                             ),
+                            childWhenDragging: Opacity(
+                                opacity: 0.30, child: _chipBandeja(p)),
+                            // La bandeja no maneja posicionamiento:
+                            // el DragTarget del área lo hace en onAcceptWithDetails
+                            child: _chipBandeja(p),
                           ),
-                          childWhenDragging: Opacity(opacity: 0.3, child: _chipBandeja(p)),
-                          onDragEnd: (details) => _colocarPieza(
-                              p.nombre, details.offset,
-                              const Offset(thumbSize / 2, thumbSize / 2)),
-                          child: _chipBandeja(p),
-                        ),
-                      );
-                    })
-                    .toList(),
+                        );
+                      })
+                      .toList(),
+                ),
               ),
             ),
         ],
@@ -1124,31 +1173,56 @@ class _Actividad3State extends State<_Actividad3> {
   final Set<String> _seleccionados = {};
   String? _error;
 
-  // ✅ Player de media_kit
   Player? _player;
+  Player? _videoPlayer;
+  VideoController? _videoController;
+  StreamSubscription<bool>? _videoSub;
 
   @override
   void initState() {
     super.initState();
-    _player = Player(); // ✅ Inicializar igual que en el código de referencia
-    // ✅ Reproducción automática al entrar
+    _player = Player();
+    _videoPlayer = Player();
+    _videoController = VideoController(_videoPlayer!);
     Future.microtask(() => _playAudio());
+    Future.microtask(() => _cargarVideoInicial());
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    _videoSub?.cancel();
+    _player?.dispose();
+    _videoPlayer?.dispose();
     super.dispose();
   }
 
   Future<void> _playAudio() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audio12'),
-      );
+      await _player?.open(Media('asset:///$_audio12'));
     } catch (e) {
       debugPrint('Error playAudio actividad3: $e');
     }
+  }
+
+  Future<void> _cargarVideoInicial() async {
+    try {
+      await _videoPlayer!.open(
+        Media('asset:///assets/animations/planta_creciendo.mp4'),
+        play: false,
+      );
+    } catch (e) {
+      debugPrint('Error cargando video planta: $e');
+    }
+  }
+
+  void _iniciarVideo() {
+    _player?.stop();
+    _videoSub = _videoPlayer!.stream.completed.listen((done) {
+      if (done && mounted) {
+        _mostrarFeedback(context, true, onAction: () => widget.onFinish());
+      }
+    });
+    _videoPlayer!.play();
   }
 
   void _tocar(BuildContext context, String id, bool correcto) {
@@ -1162,9 +1236,7 @@ class _Actividad3State extends State<_Actividad3> {
     }
     setState(() => _seleccionados.add(id));
     if (_seleccionados.length >= _meta) {
-      _mostrarFeedback(context, true, onAction: () {
-        widget.onFinish();
-      });
+      _iniciarVideo();
     }
   }
 
@@ -1173,7 +1245,6 @@ class _Actividad3State extends State<_Actividad3> {
     return _Tarjeta(
       child: Column(
         children: [
-          // ✅ Se pasa _player y _audio12 como audioAsset
           _Instruccion(
             'Necesito hacer crecer esta planta, elige los elementos que le ayudarán a crecer',
             player: _player,
@@ -1183,10 +1254,12 @@ class _Actividad3State extends State<_Actividad3> {
             flex: 3,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(40, 12, 40, 8),
-              child: Image.asset('${_p12}planta muerta.png',
-                  fit: BoxFit.contain,
-                  errorBuilder: (c, e, s) =>
-                      const Icon(Icons.local_florist, size: 80, color: Colors.brown)),
+              child: Video(
+                controller: _videoController!,
+                controls: NoVideoControls,
+                fill: Colors.white,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
           Padding(

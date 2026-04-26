@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'detective_objetos_3_screen.dart';
 
 
@@ -21,6 +22,10 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
 
   late final Player _player;
   bool _isPlayingAudio = false;
+
+  late final Player _animPlayer;
+  late final VideoController _animController;
+  bool _showAnimation = false;
 
   // Índice 2 = balón es la respuesta correcta
   static const int _correctIndex = 2;
@@ -49,6 +54,16 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   void initState() {
     super.initState();
     _player = Player();
+    _animPlayer = Player();
+    _animController = VideoController(_animPlayer);
+    _animPlayer.stream.completed.listen((done) {
+      if (done && mounted) {
+        setState(() => _showAnimation = false);
+        _showSuccess();
+      }
+    });
+    _animPlayer.open(
+        Media('asset:///assets/animations/balon_en_caja.mp4'), play: false);
     _shakeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
@@ -98,6 +113,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   void dispose() {
     _shakeCtrl.dispose();
     _player.dispose();
+    _animPlayer.dispose();
     super.dispose();
   }
 
@@ -110,9 +126,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     });
 
     if (index == _correctIndex) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) _showSuccess();
-      });
+      _playAnimation();
     } else {
       _shakeCtrl.forward().then((_) {
         _shakeCtrl.reverse();
@@ -126,6 +140,11 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
         }
       });
     }
+  }
+
+  Future<void> _playAnimation() async {
+    setState(() => _showAnimation = true);
+    await _animPlayer.play();
   }
 
   void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
@@ -343,16 +362,30 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
           ),
           const SizedBox(height: 16),
 
-          // Caja imagen grande
+          // Caja imagen grande / animación del balón
           Expanded(
             child: Center(
-              child: Image.asset(
-                'assets/images/actividades/sociales/Caja.png',
-                fit: BoxFit.contain,
-                errorBuilder: (ctx, e, _) => const Text(
-                  '📦',
-                  style: TextStyle(fontSize: 120),
-                ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: _showAnimation
+                    ? ClipRRect(
+                        key: const ValueKey('anim'),
+                        borderRadius: BorderRadius.circular(16),
+                        child: Video(
+                          controller: _animController,
+                          controls: NoVideoControls,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.asset(
+                        key: const ValueKey('caja'),
+                        'assets/images/actividades/sociales/Caja.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (ctx, e, _) => const Text(
+                          '📦',
+                          style: TextStyle(fontSize: 120),
+                        ),
+                      ),
               ),
             ),
           ),

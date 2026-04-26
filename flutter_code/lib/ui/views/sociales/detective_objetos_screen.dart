@@ -32,7 +32,8 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
       await _player.open(
-          Media('asset:///assets/Audio/Sociales/audio_sociales4_mezcla.mp3'));
+        Media('asset:///assets/Audio/Sociales/audio_sociales4_mezcla.mp3'),
+      );
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -67,7 +68,7 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
   static const Map<_Zone, _ZoneRect> _zones = {
     _Zone.estanteria: _ZoneRect(0.14, 0.2, 0.250, 0.1, false),
     _Zone.pizarra: _ZoneRect(0.435, 0.199, 0.390, 0.215, false),
-    _Zone.manzana: _ZoneRect(0.220, 0.455, 0.340, 0.155, false),
+    _Zone.manzana: _ZoneRect(0.275, 0.450, 0.205, 0.125, false),
     _Zone.juguete: _ZoneRect(0.125, 0.752, 0.290, 0.15, true),
   };
 
@@ -75,9 +76,21 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
   static const List<_ItemData> _items = [
     _ItemData(_Item.balon, 'assets/images/actividades/sociales/balon.png', '⚽'),
-    _ItemData(_Item.libro, 'assets/images/actividades/sociales/libro.png', '📕'),
-    _ItemData(_Item.manzana, 'assets/images/actividades/sociales/Manzana.png', '🍎'),
-    _ItemData(_Item.pizarra, 'assets/images/actividades/sociales/Pizarra.png', '🖼️'),
+    _ItemData(
+      _Item.libro,
+      'assets/images/actividades/sociales/libro.png',
+      '📕',
+    ),
+    _ItemData(
+      _Item.manzana,
+      'assets/images/actividades/sociales/Manzana.png',
+      '🍎',
+    ),
+    _ItemData(
+      _Item.pizarra,
+      'assets/images/actividades/sociales/Pizarra.png',
+      '🖼️',
+    ),
   ];
 
   void _onDrop(_Zone zone, _Item item) {
@@ -132,9 +145,7 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto
-                          ? Colors.green[900]
-                          : Colors.red[900],
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
@@ -149,7 +160,8 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                         ? const Color(0xFF59E347)
                         : const Color(0xFFF65757),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -218,7 +230,10 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20), // ← ajusta "vertical"
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ), // ← ajusta "vertical"
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
@@ -355,8 +370,10 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                               errorBuilder: (ctx, e, _) => Container(
                                 color: const Color(0xFFF5E6C8),
                                 child: const Center(
-                                  child: Text('🏫',
-                                      style: TextStyle(fontSize: 80)),
+                                  child: Text(
+                                    '🏫',
+                                    style: TextStyle(fontSize: 80),
+                                  ),
                                 ),
                               ),
                             ),
@@ -368,8 +385,10 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                             child: Image.asset(
                               'assets/images/actividades/sociales/Oso Pancho.png',
                               fit: BoxFit.contain,
-                              errorBuilder: (ctx, e, _) => const Text('🐻',
-                                  style: TextStyle(fontSize: 40)),
+                              errorBuilder: (ctx, e, _) => const Text(
+                                '🐻',
+                                style: TextStyle(fontSize: 40),
+                              ),
                             ),
                           ),
                           ..._zones.entries.map((entry) {
@@ -451,17 +470,14 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
           decoration: BoxDecoration(
             shape: shape,
             borderRadius: radius,
-            color: placed != null
-                ? Colors.white.withOpacity(0.90)
-                : hovering
-                    ? Colors.white.withOpacity(0.50)
-                    : Colors.transparent,
+            color: hovering
+                ? Colors.white.withOpacity(0.30)
+                : Colors.transparent,
             border: placed != null
                 ? Border.all(color: Colors.green.shade400, width: 2.5)
                 : hovering
-                    ? Border.all(
-                        color: const Color(0xFFF5A623), width: 2.5)
-                    : null,
+                ? Border.all(color: const Color(0xFFF5A623), width: 2.5)
+                : null,
           ),
           child: placed != null
               ? Padding(
@@ -490,8 +506,9 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
       child: Image.asset(
         data.path,
         fit: BoxFit.contain,
-        errorBuilder: (ctx, e, _) =>
-            Center(child: Text(data.emoji, style: const TextStyle(fontSize: 36))),
+        errorBuilder: (ctx, e, _) => Center(
+          child: Text(data.emoji, style: const TextStyle(fontSize: 36)),
+        ),
       ),
     );
 
