@@ -1,6 +1,6 @@
 {
   "materia": "ingles",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "descripcion": "Knowledge base expanded for English (Inglés) grades 1-5 — Colombian curriculum MEN",
   "contenido": [
     {
@@ -374,6 +374,126 @@
       "pregunta": "¿Cómo escribo una historia corta en inglés?",
       "respuesta": "Para escribir una historia en inglés: 1) Introduction: set the scene (Once upon a time... / One day...). 2) Present the characters: The main character was... 3) The problem/conflict: Suddenly... / Unfortunately... 4) Resolution: Finally... / In the end... 5) Conclusion. Use the past simple for events and past continuous for background: 'It was raining when she arrived.' Use descriptive language: adjectives and adverbs.",
       "palabras_clave": ["historia", "story", "once upon a time", "suddenly", "finally", "in the end", "past simple", "past continuous", "characters", "writing"]
+    },
+    {
+      "id": "ing_g3_018", "grado": 3, "tema": "healthy habits",
+      "pregunta": "¿Cómo hablar de hábitos sanos en inglés?",
+      "respuesta": "Los hábitos sanos (healthy habits) en inglés: I brush my teeth twice a day (Me cepillo los dientes dos veces al día). I eat fruits and vegetables (Como frutas y verduras). I exercise every day (Hago ejercicio todos los días). I sleep eight hours (Duermo ocho horas). I wash my hands (Me lavo las manos). I drink water instead of soda (Tomo agua en vez de gaseosa). Adjetivos clave: healthy (saludable), strong (fuerte), clean (limpio). Frase: A healthy lifestyle keeps you strong and happy!",
+      "palabras_clave": ["healthy habits", "hábitos sanos", "brush teeth", "exercise", "sleep", "wash hands", "fruits", "vegetables", "lifestyle", "rutina saludable", "saludable", "tengo hábitos sanos"]
+    },
+    {
+      "id": "ing_g3_019", "grado": 3, "tema": "health prevention",
+      "pregunta": "¿Cómo prevenir problemas de salud en inglés?",
+      "respuesta": "Vocabulario para prevenir problemas de salud (health prevention): Wash your hands (Lávate las manos). Drink water (Toma agua). Don't eat too much sugar (No comas mucha azúcar). Exercise regularly (Haz ejercicio regularmente). Sleep well (Duerme bien). Visit the doctor (Visita al médico). Wear a jacket when it is cold (Usa chaqueta cuando hace frío). Eat balanced meals (Come comidas balanceadas). Avoid junk food (Evita la comida chatarra). Prevention (prevención) is better than cure (cura).",
+      "palabras_clave": ["prevención salud", "health prevention", "wash hands", "sugar", "exercise", "doctor", "balanced meals", "cure", "sick", "enfermar", "evitar", "problemas de salud"]
+    },
+    {
+      "id": "ing_g3_020", "grado": 3, "tema": "duties and responsibilities",
+      "pregunta": "¿Cómo hablar de deberes y responsabilidades en la comunidad en inglés?",
+      "respuesta": "Deberes y responsabilidades (duties and responsibilities) en inglés: duty (deber), responsibility (responsabilidad). En el colegio: I must do my homework (Debo hacer mi tarea). I should respect my classmates (Debo respetar a mis compañeros). En la comunidad: We must keep the streets clean (Debemos mantener las calles limpias). We should help others (Debemos ayudar a otros). I follow the rules (Sigo las reglas). Vocabulary: community (comunidad), rules (reglas), respect (respeto), help (ayudar), share (compartir), citizen (ciudadano).",
+      "palabras_clave": ["deberes", "duties", "responsabilidades", "responsibilities", "community", "homework", "respect", "classmates", "rules", "help", "share", "ciudadano", "cumplo mis deberes"]
+    },
+    {
+      "id": "ing_g3_021", "grado": 3, "tema": "biodiversity care",
+      "pregunta": "¿Cómo hablar del cuidado del medio ambiente y la biodiversidad en inglés?",
+      "respuesta": "Colombia tiene una biodiversidad increíble. En inglés: nature (naturaleza), biodiversity (biodiversidad), animals (animales), plants (plantas), forest (bosque), river (río), mountain (montaña). Para cuidarla: Don't throw trash (No tires basura). Plant trees (Siembra árboles). Save water (Ahorra agua). Protect animals (Protege los animales). Recycle (Recicla). Don't pollute (No contamines). Colombia is one of the most biodiverse countries in the world (uno de los países más biodiversos del mundo).",
+      "palabras_clave": ["biodiversidad", "biodiversity", "naturaleza", "nature", "animals", "plants", "forest", "reciclar", "recycle", "Colombia", "proteger", "protect", "medio ambiente", "valoro biodiversidad", "cuidado ambiente"]
+    },
+    {
+      "id": "ing_g3_022", "grado": 3, "tema": "animals plants nature",
+      "pregunta": "¿Cómo hablar de animales, plantas y naturaleza en inglés?",
+      "respuesta": "Naturaleza en inglés: tree (árbol), flower (flor), leaf (hoja), grass (pasto), river (río), mountain (montaña), lake (lago), sun (sol), moon (luna), star (estrella), cloud (nube), rain (lluvia). Animales de Colombia: hummingbird (colibrí), condor (cóndor), jaguar, monkey (mono), turtle (tortuga), frog (rana), butterfly (mariposa). Plantas: orchid (orquídea — flor nacional de Colombia), rose (rosa), cactus, bamboo (bambú). My favorite animal is... (Mi animal favorito es...). We must protect them (Debemos protegerlos).",
+      "palabras_clave": ["naturaleza", "nature", "tree", "flower", "river", "mountain", "hummingbird", "condor", "jaguar", "orchid", "Colombia", "animales", "plantas", "animals plants nature"]
+    },
+    {
+      "id": "ing_g3_023", "grado": 3, "tema": "responsible technology use",
+      "pregunta": "¿Cómo hablar del uso responsable de la tecnología en inglés?",
+      "respuesta": "Uso responsable de la tecnología (responsible technology use) en inglés: Don't spend too much time on your phone (No pases demasiado tiempo en el teléfono). Ask an adult before using the internet (Pide permiso a un adulto antes de usar internet). Don't share personal information online (No compartas información personal en internet). Use technology to learn (Usa la tecnología para aprender). Take breaks from screens (Descansa de las pantallas). Be kind online (Sé amable en internet). Vocabulary: screen (pantalla), password (contraseña), safe (seguro), responsible (responsable).",
+      "palabras_clave": ["tecnología", "technology", "responsible", "responsable", "internet", "screen", "phone", "safe", "password", "personal information", "adult", "uso apropiado tecnología", "uso responsable"]
+    },
+    {
+      "id": "ing_g3_024", "grado": 3, "tema": "technology objects function",
+      "pregunta": "¿Cómo se llaman y para qué sirven los objetos tecnológicos en inglés?",
+      "respuesta": "Objetos tecnológicos (technology objects) en inglés y su función: computer/laptop (computadora — para trabajar y estudiar), smartphone (teléfono inteligente — para comunicarse), tablet (tableta — para leer y jugar), television/TV (televisión — para ver programas), radio (radio — para escuchar música y noticias), calculator (calculadora — para hacer cuentas), camera (cámara — para tomar fotos), printer (impresora — para imprimir). Pregunta: What is a computer used for? It is used for studying. What does a camera do? It takes photos.",
+      "palabras_clave": ["objetos tecnológicos", "technology objects", "computer", "smartphone", "tablet", "television", "radio", "calculator", "camera", "printer", "used for", "función", "function"]
+    },
+    {
+      "id": "ing_g4_018", "grado": 4, "tema": "eating habits",
+      "pregunta": "¿Cómo hablar de hábitos alimenticios en inglés?",
+      "respuesta": "Hábitos alimenticios (eating habits) en inglés: balanced diet (dieta balanceada), healthy food (comida saludable), junk food (comida chatarra), meal (comida/plato), breakfast (desayuno), lunch (almuerzo), dinner (cena), snack (merienda). Frases: I usually eat fruits for breakfast (Generalmente como frutas en el desayuno). I try to avoid junk food (Trato de evitar la comida chatarra). It is important to drink water instead of soda (Es importante tomar agua en vez de gaseosa). Eating habits affect your health and energy (Los hábitos alimenticios afectan tu salud y energía).",
+      "palabras_clave": ["hábitos alimenticios", "eating habits", "balanced diet", "healthy food", "junk food", "breakfast", "lunch", "dinner", "fruits", "vegetables", "soda", "cuido mi alimentación"]
+    },
+    {
+      "id": "ing_g4_019", "grado": 4, "tema": "harmful substances",
+      "pregunta": "¿Cómo hablar de sustancias dañinas como azúcar, grasa, sal y cafeína en inglés?",
+      "respuesta": "Sustancias dañinas (harmful substances) en inglés: sugar (azúcar — en exceso causa diabetes y daña los dientes), fat (grasa — en exceso daña el corazón), salt (sal — en exceso causa hipertensión), caffeine (cafeína — en café y bebidas cola, afecta el sueño en niños). Too much sugar is bad for your teeth (Demasiada azúcar es mala para los dientes). Avoid processed food (Evita la comida procesada). Prefer natural food (Prefiere comida natural). Read food labels (Lee las etiquetas de los alimentos). Harmful = dañino. Substance = sustancia.",
+      "palabras_clave": ["sustancias dañinas", "harmful substances", "azúcar", "sugar", "grasa", "fat", "sal", "salt", "cafeína", "caffeine", "processed food", "diabetes", "health", "harmful"]
+    },
+    {
+      "id": "ing_g4_020", "grado": 4, "tema": "conflict resolution dialogue",
+      "pregunta": "¿Cómo resolver conflictos y expresar opiniones en inglés?",
+      "respuesta": "Resolución de conflictos (conflict resolution) y diálogo en inglés: Let's talk about it (Hablemos de esto). I'm sorry (Lo siento). I understand your point of view (Entiendo tu punto de vista). Can we find a solution? (¿Podemos encontrar una solución?). Let's take turns (Turnímonos). That's not fair (Eso no es justo). I feel... when you... (Me siento... cuando tú...). Expressing opinions: I think... / In my opinion... / I believe... Vocabulary: argument (discusión), solution (solución), respect (respeto), listen (escuchar), compromise (llegar a un acuerdo), dialogue (diálogo).",
+      "palabras_clave": ["conflicto", "conflict resolution", "dialogar", "dialogue", "sorry", "solution", "fair", "argument", "listen", "respect", "compromise", "me gusta dialogar", "opiniones", "expressing opinions"]
+    },
+    {
+      "id": "ing_g4_021", "grado": 4, "tema": "community actions environment",
+      "pregunta": "¿Cómo hablar de las acciones de la comunidad que afectan el ambiente en inglés?",
+      "respuesta": "Acciones que DAÑAN el ambiente: littering (tirar basura en la calle), cutting down trees (talar árboles), pollution (contaminación), wasting water (desperdiciar agua), using too many cars (usar demasiados carros). Acciones que AYUDAN el ambiente: recycling (reciclar), planting trees (sembrar árboles), cleaning parks (limpiar parques), saving energy (ahorrar energía), using public transport (usar transporte público). Community actions make a big difference! Vocabulary: affect (afectar), environment (medio ambiente), impact (impacto), action (acción), responsible (responsable).",
+      "palabras_clave": ["comunidad", "community", "acciones comunidad", "ambiente", "environment", "littering", "recycle", "trees", "pollution", "wasting water", "saving energy", "impact", "cuido mi ciudad"]
+    },
+    {
+      "id": "ing_g4_022", "grado": 4, "tema": "other cultures customs",
+      "pregunta": "¿Cómo hablar de otras culturas y costumbres en inglés?",
+      "respuesta": "Hablar de culturas en inglés: culture (cultura), custom (costumbre), tradition (tradición), celebration (celebración), festival (festival), language (idioma), clothing (ropa), music (música), food (comida). Ejemplos: In Japan, people bow to greet (En Japón la gente se inclina para saludar). In the USA, Thanksgiving is celebrated in November. In Brazil, Carnival is famous (En Brasil el Carnaval es famoso). In India, Diwali is the festival of lights. Every culture is unique and valuable (Cada cultura es única y valiosa). We learn from each other (Aprendemos los unos de los otros).",
+      "palabras_clave": ["otras culturas", "other cultures", "costumbres", "customs", "tradición", "tradition", "festival", "Japan", "USA", "Brazil", "celebration", "language", "clothing", "aldea global", "global village"]
+    },
+    {
+      "id": "ing_g4_023", "grado": 4, "tema": "comparisons places people",
+      "pregunta": "¿Cómo comparar lugares y personas en inglés?",
+      "respuesta": "Para comparar lugares y personas en inglés usamos comparativos: bigger than (más grande que), smaller than (más pequeño que), more populated than (más poblado que), colder than (más frío que), more modern than (más moderno que). Ejemplos: Bogotá is bigger than Medellín. The Amazon river is longer than the Magdalena. María is taller than Juan. Superlativo: the biggest city, the most beautiful place. Vocabulary: population (población), area (área), climate (clima), located (ubicado), similar (similar), different (diferente). Which city do you prefer and why?",
+      "palabras_clave": ["comparar", "comparisons", "bigger", "smaller", "taller", "more than", "Bogotá", "Medellín", "population", "climate", "places", "people", "vivo aldea global", "comparisons places"]
+    },
+    {
+      "id": "ing_g5_022", "grado": 5, "tema": "habits likes preferences body",
+      "pregunta": "¿Cómo hablar de hábitos, gustos, preferencias y cuidado del cuerpo en inglés?",
+      "respuesta": "Expresar gustos y preferencias: I like/love/enjoy... (Me gusta/encanta/disfruto...). I prefer... to... (Prefiero... a...). I can't stand... (No soporto...). I'm into... (Me interesa/me gusta mucho...). Hábitos saludables: I try to sleep 8 hours (Trato de dormir 8 horas). I avoid processed food (Evito comida procesada). I exercise regularly (Hago ejercicio regularmente). Cuidado del cuerpo: I respect my body (Respeto mi cuerpo). My body is important (Mi cuerpo es importante). Vocabulary: habit (hábito), preference (preferencia), routine (rutina), hygiene (higiene), self-care (autocuidado).",
+      "palabras_clave": ["hábitos", "habits", "gustos", "likes", "preferencias", "preferences", "body", "cuerpo", "respeto", "respect", "hygiene", "self-care", "sleep", "exercise", "respeto mi cuerpo"]
+    },
+    {
+      "id": "ing_g5_023", "grado": 5, "tema": "personal care",
+      "pregunta": "¿Cómo hablar del cuidado personal en inglés?",
+      "respuesta": "Cuidado personal (personal care) en inglés: hygiene (higiene), shower (ducha), shampoo, soap (jabón), toothbrush (cepillo de dientes), toothpaste (crema dental), deodorant (desodorante), sunscreen (protector solar), moisturizer (crema hidratante). Frases: I take a shower every day (Me ducho todos los días). I brush my teeth after every meal (Me cepillo los dientes después de cada comida). I wear clean clothes (Uso ropa limpia). Personal care is important for health and self-esteem (autoestima). Looking after yourself helps you feel confident (seguro/a) and healthy.",
+      "palabras_clave": ["cuidado personal", "personal care", "hygiene", "shower", "toothbrush", "toothpaste", "deodorant", "soap", "health", "self-esteem", "confident", "clean", "cuidado personal cuerpo"]
+    },
+    {
+      "id": "ing_g5_024", "grado": 5, "tema": "peaceful coexistence peace",
+      "pregunta": "¿Cómo hablar de convivencia, paz y lenguaje respetuoso en inglés?",
+      "respuesta": "Convivencia y paz (peaceful coexistence) en inglés: peace (paz), harmony (armonía), respect (respeto), tolerance (tolerancia), inclusion (inclusión), solidarity (solidaridad), empathy (empatía), kindness (amabilidad). Frases: We must respect our differences (Debemos respetar nuestras diferencias). Together we can build a better world (Juntos podemos construir un mundo mejor). Peace starts with me (La paz empieza conmigo). Say no to bullying (Di no al matoneo). Use positive language (Usa lenguaje positivo). Treat others as you want to be treated (Trata a los demás como quieres ser tratado). Words can hurt or heal (Las palabras pueden herir o sanar).",
+      "palabras_clave": ["convivencia", "coexistence", "paz", "peace", "respeto", "respect", "tolerancia", "tolerance", "inclusión", "inclusion", "bullying", "harmony", "empathy", "cuido mi lenguaje", "lenguaje positivo"]
+    },
+    {
+      "id": "ing_g5_025", "grado": 5, "tema": "expressing emotions opinions",
+      "pregunta": "¿Cómo expresar emociones y opiniones en inglés?",
+      "respuesta": "Emociones en inglés: happy (feliz), sad (triste), angry (enojado), scared (asustado), excited (emocionado), nervous (nervioso), proud (orgulloso), disappointed (decepcionado), surprised (sorprendido), confused (confundido). Expresar emociones: I feel... (Me siento...). I'm feeling happy today. Para dar opiniones: In my opinion... / I think that... / I believe that... / From my point of view... / I strongly feel that... Escucha activa: I understand how you feel (Entiendo cómo te sientes). It's okay to feel... (Está bien sentir...). Emotions are normal (Las emociones son normales).",
+      "palabras_clave": ["emociones", "emotions", "happy", "sad", "angry", "scared", "excited", "nervous", "proud", "surprised", "opiniones", "opinions", "I feel", "I think", "believe", "expresar emociones"]
+    },
+    {
+      "id": "ing_g5_026", "grado": 5, "tema": "environment positive actions world",
+      "pregunta": "¿Cómo hablar del medio ambiente y las acciones positivas para cuidar nuestro mundo en inglés?",
+      "respuesta": "Acciones positivas para el medio ambiente (positive environmental actions) en inglés: reduce, reuse, recycle (las 3 R). Use less plastic (Usa menos plástico). Save electricity (Ahorra electricidad). Walk or cycle instead of driving (Camina o monta bicicleta). Support local products (Apoya productos locales). Plant trees (Siembra árboles). Raise awareness (Concientiza a otros). Vocabulary: carbon footprint (huella de carbono), renewable energy (energía renovable), sustainability (sostenibilidad), conservation (conservación), climate change (cambio climático). The Earth needs our help (La Tierra necesita nuestra ayuda).",
+      "palabras_clave": ["medio ambiente", "environment", "acciones positivas", "reduce", "reuse", "recycle", "plastic", "electricity", "carbon footprint", "renewable energy", "sustainability", "conservation", "cuidemos nuestro mundo"]
+    },
+    {
+      "id": "ing_g5_027", "grado": 5, "tema": "media communication news",
+      "pregunta": "¿Cómo hablar de los medios de comunicación en inglés?",
+      "respuesta": "Medios de comunicación (media) en inglés: television (televisión), radio, newspaper (periódico), magazine (revista), internet, social media (redes sociales), podcast, blog, streaming platform (plataforma de streaming). Para hablar de noticias: news (noticias), headlines (titulares), reporter (reportero), journalist (periodista), breaking news (noticias de último momento). Frases: I watch the news every day (Veo las noticias todos los días). I read articles online (Leo artículos en línea). It is important to verify information (Es importante verificar la información). Fake news (noticias falsas) can be dangerous. Be a responsible media consumer (Sé un consumidor responsable de medios).",
+      "palabras_clave": ["medios de comunicación", "media", "television", "radio", "newspaper", "internet", "social media", "news", "journalist", "headlines", "fake news", "podcast", "streaming", "estamos informados"]
+    },
+    {
+      "id": "ing_g5_028", "grado": 5, "tema": "current past events news",
+      "pregunta": "¿Cómo hablar de hechos actuales y del pasado en inglés?",
+      "respuesta": "Para hablar del pasado: usamos el pasado simple para hechos específicos: Last year, scientists discovered... (El año pasado, los científicos descubrieron...). En 2020, the pandemic started. Usamos el presente perfecto para hechos recientes: Recently, researchers have found... (Recientemente, los investigadores han encontrado...). Para hechos actuales: Currently / Nowadays (Actualmente / Hoy en día): Nowadays, many people use electric cars. According to the news... (Según las noticias...). Experts say that... (Los expertos dicen que...). In recent years... (En años recientes...). This connects the past with the present (Esto conecta el pasado con el presente).",
+      "palabras_clave": ["hechos actuales", "current events", "pasado", "past", "recently", "nowadays", "currently", "pandemic", "scientists", "news", "experts", "last year", "hechos pasado", "estamos bien informados"]
     }
   ]
 }

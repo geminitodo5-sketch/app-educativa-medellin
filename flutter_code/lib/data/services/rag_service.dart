@@ -1,24 +1,39 @@
 // ─────────────────────────────────────────────────────────────
-//  lib/data/services/rag_service.dart
-//  Motor RAG offline — BM25 + evaluador aritmético completo
-//  Cubre: operadores símbolo, palabras (multiplicado por, entre…),
-//  casos especiales (doble, mitad, triple, cuadrado, raíz).
+//  lib/data/services/rag_service.dart  v3.0
+//  Motor RAG offline — BM25 + expansión conceptual + reranking TFLite
+//
+//  Flujo de búsqueda:
+//    1. Evaluador aritmético (solo matemáticas)
+//    2. Tokenización + expansión de conceptos por materia
+//    3. BM25 sobre corpus completo de la materia
+//    4. Reranking semántico TFLite (si el modelo está disponible)
+//    5. Decisión por umbral:
+//         ≥ minScore  → respuesta directa + tema relacionado si aplica
+//         ≥ softMin   → "¿quisiste preguntar sobre X?"
+//         < softMin   → fallback con preguntas reales del grado del estudiante
 // ─────────────────────────────────────────────────────────────
 
 import 'dart:math';
 import 'sqlite_service.dart';
+import 'embedding_service.dart';
 
 class RagService {
   final SqliteService _db;
-  RagService(this._db);
+  final EmbeddingService? _embeddings;
+
+  // El parámetro embeddings es opcional: si se pasa un EmbeddingService con
+  // el modelo TFLite cargado, se activa el reranking semántico automáticamente.
+  RagService(this._db, {EmbeddingService? embeddings})
+      : _embeddings = embeddings;
 
   // ─── BM25 hiperparámetros ─────────────────────────────────
-  static const double _k1 = 1.5;
-  static const double _b  = 0.75;
-  static const double _minScore = 0.35;
+  static const double _k1      = 1.5;
+  static const double _b       = 0.75;
+  static const double _minScore  = 0.35; // respuesta directa
+  static const double _softMin   = 0.18; // respuesta aproximada
 
   // ─── Stopwords normalizadas ───────────────────────────────
-  // "mas" y "menos" NO están aquí porque son operadores matemáticos.
+  // "mas" y "menos" NO están aquí (son operadores matemáticos).
   static const _stopwords = {
     'el','la','los','las','un','una','unos','unas','de','del','al','a','en',
     'y','o','pero','que','es','son','ser','fue','era','si','no','se',
@@ -45,30 +60,199 @@ class RagService {
     'es','as',
   ];
 
-  // ─── Ejemplos por materia para el mensaje de fallback ────
-  static const _ejemplos = {
-    'matematicas': '¿Cuánto es 8 × 7?\n¿Qué es una fracción?\n¿Cómo calculo el área?',
-    'ciencias':    '¿Qué es la fotosíntesis?\n¿Cómo funciona el sistema digestivo?\n¿Qué es un ecosistema?',
-    'espanol':     '¿Qué es un sustantivo?\n¿Cómo se usa la coma?\n¿Qué es una metáfora?',
-    'ingles':      '¿Qué significa "friend"?\n¿Cómo se usa "to be"?\n¿Qué son los verbos irregulares?',
-    'sociales':    '¿Qué es la Constitución?\n¿Cuáles son los ríos de Colombia?\n¿Qué es la democracia?',
+  // ═══════════════════════════════════════════════════════════
+  //  MAPAS DE EXPANSIÓN CONCEPTUAL
+  //  Permiten que el sistema entienda el mismo tema desde
+  //  distintos ángulos: "¿cómo respiran los peces?" encuentra
+  //  la entrada sobre sistema respiratorio aunque use palabras
+  //  diferentes. La key es el inicio de stem del término del
+  //  usuario; los valores son términos de la KB relacionados.
+  // ═══════════════════════════════════════════════════════════
+  static const Map<String, Map<String, List<String>>> _expansion = {
+
+    // ── MATEMÁTICAS ──────────────────────────────────────────
+    'matematicas': {
+      'tabla':      ['multiplicacion', 'multiplicar', 'producto', 'factor'],
+      'multiplic':  ['tabla', 'producto', 'factor', 'veces'],
+      'sum':        ['adicion', 'agregar', 'total', 'resultado', 'mas'],
+      'rest':       ['sustraccion', 'quitar', 'diferencia', 'menos'],
+      'divis':      ['cociente', 'repartir', 'dividendo', 'divisor'],
+      'fracc':      ['numerador', 'denominador', 'quebrado', 'mitad', 'tercio'],
+      'decimal':    ['coma', 'decimas', 'centesimas', 'millesimas'],
+      'porcent':    ['tanto por ciento', 'descuento', 'proporcion'],
+      'figur':      ['geometria', 'poligono', 'triangulo', 'cuadrado', 'rectangulo', 'circulo'],
+      'geometr':    ['figura', 'forma', 'plano', 'solido', 'lados', 'poligono'],
+      'area':       ['superficie', 'medir', 'm2', 'centimetro cuadrado'],
+      'perimetr':   ['contorno', 'borde', 'lados', 'longitud'],
+      'angul':      ['grado', 'recto', 'agudo', 'obtuso', 'triangulo'],
+      'medid':      ['metro', 'centimetro', 'kilogramo', 'litro', 'unidad'],
+      'patron':     ['secuencia', 'serie', 'sigue', 'siguiente numero'],
+      'estadistic': ['grafico', 'tabla', 'datos', 'barras', 'promedio'],
+      'multipl':    ['multiplo', 'divisor', 'factor', 'divisible', 'comun'],
+      'promedi':    ['media aritmetica', 'dato', 'estadistica'],
+      'ecuaci':     ['variable', 'despejar', 'resolver', 'incognita'],
+      'raiz':       ['cuadrada', 'radical', 'sqrt'],
+      'potenci':    ['cuadrado', 'cubo', 'exponente'],
+      'proporci':   ['razon', 'escala', 'porcentaje', 'proporcionalidad'],
+      'problem':    ['plantear', 'resolver', 'situacion', 'enunciado'],
+      'volum':      ['capacidad', 'litro', 'centimetro cubico', 'solido'],
+      'coordenada': ['plano cartesiano', 'eje x', 'eje y', 'punto', 'graficar'],
+      'plano':      ['coordenadas', 'eje', 'cartesiano', 'cuadrante'],
+    },
+
+    // ── CIENCIAS NATURALES ────────────────────────────────────
+    'ciencias': {
+      'respir':     ['pulmones', 'oxigeno', 'alveolos', 'sistema respiratorio', 'CO2'],
+      'digest':     ['estomago', 'intestino', 'nutricion', 'alimentos', 'sistema digestivo'],
+      'sangre':     ['circulacion', 'corazon', 'arterias', 'venas', 'sistema circulatorio'],
+      'comer':      ['nutricion', 'alimento', 'digestion', 'nutriente', 'vitamina'],
+      'hues':       ['esqueleto', 'oseo', 'columna', 'articulacion', 'sistema oseo'],
+      'muscul':     ['contraccion', 'movimiento', 'fibra', 'sistema muscular'],
+      'cerebr':     ['nervioso', 'neurona', 'impulso', 'sistema nervioso'],
+      'planta':     ['fotosintesis', 'clorofila', 'hoja', 'tallo', 'raiz'],
+      'fotosint':   ['clorofila', 'luz solar', 'glucosa', 'CO2', 'oxigeno'],
+      'animal':     ['vertebrado', 'invertebrado', 'clasificacion', 'reino animal'],
+      'celul':      ['nucleo', 'membrana', 'citoplasma', 'ADN', 'organulo'],
+      'fuerz':      ['newton', 'empuje', 'movimiento', 'velocidad', 'masa'],
+      'movimient':  ['fuerza', 'velocidad', 'aceleracion', 'newton', 'desplazamiento'],
+      'energ':      ['transformacion', 'calor', 'luz', 'renovable', 'termica', 'electrica'],
+      'mezcl':      ['solucion', 'homogenea', 'heterogenea', 'separacion', 'filtracion'],
+      'ecosistem':  ['cadena alimenticia', 'habitat', 'biodiversidad', 'especie', 'productor'],
+      'contamin':   ['medio ambiente', 'residuos', 'poluccion', 'basura', 'deforestacion'],
+      'mater':      ['solido', 'liquido', 'gaseoso', 'estado', 'cambio de estado'],
+      'electric':   ['circuito', 'corriente', 'conductor', 'pila', 'serie', 'paralelo'],
+      'magnetis':   ['iman', 'polo norte', 'campo magnetico', 'brujula', 'electroiman'],
+      'sonid':      ['onda', 'frecuencia', 'vibracion', 'decibel'],
+      'luz':        ['reflexion', 'refraccion', 'espectro', 'optica', 'ojo'],
+      'agalla':     ['respiracion', 'peces', 'branquia', 'agua', 'oxigeno'],
+      'maquina':    ['palanca', 'polea', 'plano inclinado', 'rueda', 'cuña'],
+      'clim':       ['temperatura', 'ecosistema', 'calentamiento', 'cambio climatico'],
+      'evoluc':     ['darwin', 'seleccion natural', 'adaptacion', 'especie', 'fosil'],
+      'vitamin':    ['nutricion', 'salud', 'alimento', 'mineral', 'hierro'],
+      'vacun':      ['inmune', 'enfermedad', 'prevencion', 'anticuerpo', 'virus'],
+      'herenci':    ['gen', 'ADN', 'cromosoma', 'rasgo', 'hereditario'],
+      'reproduc':   ['celula sexual', 'ovulo', 'espermatozoide', 'fecundacion'],
+      'organism':   ['clasificacion', 'ser vivo', 'reino', 'taxonomia'],
+      'mineral':    ['roca', 'suelo', 'geologico', 'cristal', 'dureza'],
+    },
+
+    // ── ESPAÑOL / LENGUAJE ────────────────────────────────────
+    'espanol': {
+      'punt':       ['signos de puntuacion', 'coma', 'punto y coma', 'exclamacion'],
+      'sign':       ['puntuacion', 'coma', 'punto', 'interrogacion', 'exclamacion'],
+      'letr':       ['ortografia', 'alfabeto', 'consonante', 'vocal', 'tilde'],
+      'cuent':      ['narrativo', 'ficcion', 'personaje', 'trama', 'texto'],
+      'poem':       ['poesia', 'verso', 'estrofa', 'rima', 'metafora'],
+      'sustantiv':  ['nombre comun', 'nombre propio', 'genero', 'numero gramatical'],
+      'verb':       ['accion', 'conjugacion', 'tiempo verbal', 'infinitivo', 'modo'],
+      'adjetiv':    ['calificativo', 'comparativo', 'superlativo', 'descriptor'],
+      'parraf':     ['texto', 'oracion', 'idea principal', 'coherencia', 'cohesion'],
+      'sinonim':    ['parecido', 'equivalente', 'mismo significado', 'campo semantico'],
+      'antonim':    ['contrario', 'opuesto', 'significado contrario'],
+      'silab':      ['division silabica', 'tonica', 'atona', 'diptongo', 'hiato'],
+      'acent':      ['tilde', 'prosodico', 'ortografico', 'aguda', 'grave', 'esdrujula'],
+      'argum':      ['argumentacion', 'opinion', 'tesis', 'evidencia', 'debate'],
+      'leer':       ['comprension lectora', 'inferencia', 'interpretar', 'analisis'],
+      'escrib':     ['produccion', 'redaccion', 'composicion', 'texto escrito'],
+      'conect':     ['enlace', 'conjuncion', 'transicion', 'cohesion', 'pero aunque'],
+      'resum':      ['sintetizar', 'compendio', 'ideas principales', 'mapa conceptual'],
+      'expos':      ['oral', 'discurso', 'presentacion', 'hablar', 'exposicion'],
+      'narrativ':   ['cuento', 'historia', 'personaje', 'narrador', 'ficcion'],
+      'descripti':  ['descripcion', 'caracteristica', 'como es', 'adjetivo'],
+      'informativ': ['informacion', 'noticia', 'enciclopedia', 'datos', 'expositivo'],
+      'inferenci':  ['conclusion', 'deducir', 'implica', 'entre lineas', 'deduccion'],
+      'produc':     ['texto escrito', 'redaccion', 'estructura', 'parrafo'],
+      'ortograf':   ['tilde', 'letra', 'mayuscula', 'regla ortografica'],
+      'lectur':     ['texto', 'comprension', 'leer', 'interpretar', 'critica'],
+    },
+
+    // ── INGLÉS ────────────────────────────────────────────────
+    'ingles': {
+      'verb':       ['action word', 'to be', 'to have', 'conjugate', 'irregular'],
+      'present':    ['simple present', 'tense', 'now', 'habitual', 'frequency'],
+      'past':       ['simple past', 'yesterday', 'irregular verb', 'preterite', 'ago'],
+      'futur':      ['future', 'will', 'going to', 'tomorrow', 'prediction'],
+      'vocabul':    ['word', 'meaning', 'translation', 'vocabulary', 'dictionary'],
+      'preposici':  ['preposition', 'in', 'on', 'at', 'by', 'with', 'location'],
+      'articul':    ['article', 'the', 'a', 'an', 'determiner'],
+      'adjetiv':    ['adjective', 'describe', 'color', 'size', 'big', 'small'],
+      'sustantiv':  ['noun', 'person', 'place', 'thing', 'plural'],
+      'pronunciar': ['pronunciation', 'phonics', 'sound', 'speak', 'how to say'],
+      'salud':      ['greeting', 'hello', 'hi', 'how are you', 'nice to meet'],
+      'famili':     ['family', 'mom', 'dad', 'brother', 'sister', 'cousin', 'relative'],
+      'comid':      ['food', 'eat', 'fruit', 'vegetable', 'meal', 'drink', 'healthy'],
+      'cuerp':      ['body', 'head', 'arm', 'leg', 'eye', 'health', 'parts'],
+      'color':      ['colour', 'red', 'blue', 'green', 'yellow', 'purple'],
+      'numer':      ['numbers', 'count', 'how many', 'cardinal', 'ordinal'],
+      'rutin':      ['routine', 'daily habits', 'wake up', 'school', 'schedule'],
+      'animal':     ['animals', 'pet', 'wild', 'farm', 'zoo', 'nature'],
+      'tiemp':      ['weather', 'rainy', 'sunny', 'cold', 'hot', 'temperature'],
+      'rop':        ['clothes', 'wear', 'shirt', 'pants', 'dress', 'fashion'],
+      'objetos':    ['object', 'thing', 'item', 'technology', 'tool', 'use'],
+      'opinion':    ['opinion', 'think', 'believe', 'like', 'prefer', 'agree'],
+      'emocion':    ['feelings', 'happy', 'sad', 'angry', 'scared', 'excited'],
+      'salon':      ['classroom', 'school', 'teacher', 'student', 'learn'],
+      'habitos':    ['habits', 'healthy', 'routine', 'do every day', 'lifestyle'],
+      'medios':     ['media', 'tv', 'internet', 'social media', 'communication'],
+    },
+
+    // ── CIENCIAS SOCIALES ─────────────────────────────────────
+    'sociales': {
+      'rio':        ['hidrografia', 'cuenca', 'Magdalena', 'Cauca', 'corriente', 'agua'],
+      'montan':     ['cordillera', 'andina', 'sierra', 'nevado', 'pico', 'altura'],
+      'ocean':      ['mar', 'Caribe', 'Pacifico', 'Atlantico', 'costa', 'isla'],
+      'mar':        ['oceano', 'Caribe', 'costa', 'litoral', 'isla', 'agua'],
+      'map':        ['cartografia', 'coordenadas', 'escala', 'brujula', 'orientacion'],
+      'region':     ['zona', 'territorio', 'departamento', 'municipio', 'area', 'Andina', 'Caribe', 'Pacifica', 'Orinoquia', 'Amazonica'],
+      'gobier':     ['gobernador', 'alcalde', 'presidente', 'instituciones', 'estado'],
+      'constituc':  ['ley', 'norma', 'derechos', 'carta magna', '1991', 'colombia'],
+      'derecho':    ['deber', 'ciudadano', 'constitucional', 'humanos', 'libertad'],
+      'democraci':  ['voto', 'elecciones', 'participacion', 'ciudadania', 'gobierno'],
+      'colon':      ['virreinato', 'conquistadores', 'espana', 'colonial', '1492'],
+      'independ':   ['libertad', '20 julio', 'bolivar', 'republica', '1819', '1810'],
+      'indigen':    ['precolombino', 'Muisca', 'Tayrona', 'aborigen', 'nativo', 'cultura'],
+      'econom':     ['produccion', 'comercio', 'exportaciones', 'trabajo', 'industria'],
+      'clim':       ['temperatura', 'lluvia', 'piso termico', 'tropical', 'ambiente'],
+      'cultur':     ['patrimonio', 'tradicion', 'costumbre', 'fiesta', 'identidad'],
+      'fronter':    ['limite', 'Venezuela', 'Ecuador', 'Brasil', 'Panama', 'limitar'],
+      'piso':       ['termico', 'temperatura', 'altura', 'paramo', 'frio', 'calido'],
+      'recurs':     ['natural', 'renovable', 'petroleo', 'agua', 'bosque', 'suelo'],
+      'comunid':    ['barrio', 'vecindad', 'organizacion', 'social', 'junta', 'familia'],
+      'precolomb':  ['Muisca', 'Tayrona', 'Quimbaya', 'indigena', 'cultura', 'San Agustin'],
+      'bolivar':    ['independencia', 'Boyaca', '1819', 'libertador', 'Gran Colombia'],
+      'histori':    ['precolombino', 'colonia', 'independencia', 'republica', 'pasado'],
+      'geografi':   ['mapa', 'region', 'cordillera', 'relieve', 'ubicacion', 'cartografia'],
+      'departamen': ['gobernador', 'municipio', 'alcalde', 'territorio', 'colombia'],
+      'ambient':    ['contaminacion', 'deforestacion', 'problema', 'recurso natural'],
+    },
   };
 
-  // ─── API pública ──────────────────────────────────────────
+  // ─── Ejemplos por materia para el fallback ────────────────
+  static const _ejemplos = {
+    'matematicas': '¿Cuánto es 8 × 7?\n¿Qué es una fracción?\n¿Cómo calculo el área de un rectángulo?',
+    'ciencias':    '¿Qué es la fotosíntesis?\n¿Cómo funciona el sistema digestivo?\n¿Qué es un ecosistema?',
+    'espanol':     '¿Qué es un sustantivo?\n¿Cómo se usa la coma?\n¿Qué es una metáfora?',
+    'ingles':      '¿Qué significa "friend"?\n¿Cómo se usa "to be"?\n¿Cuáles son los verbos irregulares?',
+    'sociales':    '¿Qué es la Constitución de Colombia?\n¿Cuáles son las regiones de Colombia?\n¿Qué es la democracia?',
+  };
+
+  // ═══════════════════════════════════════════════════════════
+  //  API PÚBLICA
+  // ═══════════════════════════════════════════════════════════
 
   Future<RagRespuesta> responder({
     required String pregunta,
     required String materia,
     required int grado,
   }) async {
-    // 1. Evaluador aritmético (solo matemáticas — responde sin tocar la BD)
+    // 1. Evaluador aritmético (solo matemáticas — sin tocar la BD)
     if (materia == 'matematicas') {
       final calc = _calcularExpresion(pregunta);
       if (calc != null) return calc;
     }
 
+    // 2. Tokenizar
     final tokens = _tokenizar(pregunta);
-
     if (tokens.isEmpty) {
       return RagRespuesta(
         texto: '¡Hola! Pregúntame algo sobre ${_nombreMateria(materia)}.\n'
@@ -77,13 +261,12 @@ class RagService {
       );
     }
 
-    // 2. Carga corpus completo de la materia (IDF preciso en BM25)
+    // 3. Cargar corpus completo de la materia (IDF preciso en BM25)
     final corpus = await _db.consultar(
       'base_conocimiento',
       where: 'materia = ?',
       whereArgs: [materia],
     );
-
     if (corpus.isEmpty) {
       return RagRespuesta(
         texto: 'Aún no descargaste el contenido de ${_nombreMateria(materia)}. '
@@ -92,23 +275,26 @@ class RagService {
       );
     }
 
-    // 3. BM25 con boost de grado
-    final scored = _puntuarBM25(corpus, tokens, gradoPreferido: grado);
-    final mejor = scored.first;
+    // 4. BM25 con expansión conceptual
+    //    Los tokens se expanden con sinónimos/conceptos relacionados
+    //    para que el sistema entienda el mismo tema desde distintos ángulos.
+    final tokensExpandidos = _expandirConceptos(tokens, materia);
+    final scored = _puntuarBM25(corpus, tokensExpandidos, gradoPreferido: grado);
 
-    if (mejor.puntaje < _minScore) {
-      return RagRespuesta(
-        texto: 'No encontré eso en ${_nombreMateria(materia)} para grado $grado.\n'
-               'Intenta preguntar así:\n${_ejemplos[materia] ?? '¿Qué es...?'}',
-        encontrado: false, tema: '',
-      );
+    // 5. Reranking semántico con TFLite (activo solo si el modelo está cargado)
+    final reranked = await _rerancarConTFLite(scored, pregunta);
+
+    final top = reranked.first;
+    final top5 = reranked.take(5).toList();
+
+    // 6. Decisión por umbral
+    if (top.puntaje >= _minScore) {
+      return _construirRespuesta(top, top5, materia, grado);
     }
-
-    return RagRespuesta(
-      texto: mejor.entrada['respuesta'] as String,
-      encontrado: true,
-      tema: mejor.entrada['tema'] as String,
-    );
+    if (top.puntaje >= _softMin) {
+      return _respuestaAproximada(top, materia, grado);
+    }
+    return _fallbackInteligente(corpus, materia, grado);
   }
 
   Future<List<String>> preguntasSugeridas({
@@ -147,24 +333,162 @@ class RagService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  EVALUADOR ARITMÉTICO COMPLETO
+  //  EXPANSIÓN CONCEPTUAL
+  //  Transforma los tokens del usuario en un conjunto expandido
+  //  que incluye conceptos relacionados de la KB.
+  //  Ejemplo: tokens = ['respiramos'] → stem 'respir' →
+  //           expandido += ['pulmones','oxigeno','alveolos',...]
   // ═══════════════════════════════════════════════════════════
-  //
-  //  Maneja en orden:
-  //    1. Casos especiales: el doble de N, la mitad de N, el triple de N,
-  //       N al cuadrado, N al cubo, raíz cuadrada de N
-  //    2. Frases compuestas: "multiplicado por", "dividido entre/por"
-  //    3. Operadores en palabra: mas, menos, por, entre, veces, x
-  //    4. Operadores símbolo: +, -, ×, *, ÷, /
-  //    5. Expresión final: número op número
+
+  List<String> _expandirConceptos(List<String> tokens, String materia) {
+    final mapa = _expansion[materia];
+    if (mapa == null) return tokens;
+
+    final expanded = <String>[...tokens];
+    for (final token in tokens) {
+      final s = _stem(token);
+      if (s.length < 3) continue;
+      for (final entry in mapa.entries) {
+        final key = entry.key;
+        // Coincidencia si uno empieza por el otro (stem overlap)
+        if (s.startsWith(key) || key.startsWith(s) || s == key) {
+          for (final related in entry.value) {
+            expanded.addAll(_tokenizar(related));
+          }
+          break; // una sola key por token para evitar explosión
+        }
+      }
+    }
+    return expanded;
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  RERANKING SEMÁNTICO CON TFLITE
+  //  Si EmbeddingService tiene un modelo TFLite cargado,
+  //  combina el score BM25 con la similitud coseno del embedding.
+  //  Si no hay modelo, devuelve los resultados BM25 sin cambios.
+  // ═══════════════════════════════════════════════════════════
+
+  Future<List<_EP>> _rerancarConTFLite(List<_EP> scored, String query) async {
+    final emb = _embeddings;
+    if (emb == null || !emb.modelAvailable) return scored;
+
+    final queryEmb = await emb.encodeLocal(query);
+    if (queryEmb == null) return scored;
+
+    // Solo rerankeamos los top-10 por eficiencia en dispositivo móvil
+    final top10 = scored.take(10).toList();
+    final rest  = scored.skip(10).toList();
+    final maxBm25 = top10.first.puntaje + 0.001;
+
+    final reranked = <_EP>[];
+    for (final ep in top10) {
+      final docText = '${ep.entrada['pregunta']} ${ep.entrada['respuesta']}';
+      final docEmb  = await emb.encodeLocal(docText);
+      if (docEmb == null) {
+        reranked.add(ep);
+        continue;
+      }
+      final cosine   = EmbeddingService.cosineSimilarity(queryEmb, docEmb);
+      final bm25Norm = ep.puntaje / maxBm25;
+      // coseno de [-1,1] → [0,1]; peso 60% BM25 + 40% semántico
+      final combined = bm25Norm * 0.6 + ((cosine + 1) / 2) * 0.4;
+      reranked.add(_EP(entrada: ep.entrada, puntaje: combined));
+    }
+
+    reranked.sort((a, b) => b.puntaje.compareTo(a.puntaje));
+    return [...reranked, ...rest];
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  CONSTRUCCIÓN DE RESPUESTAS
+  // ═══════════════════════════════════════════════════════════
+
+  // Respuesta directa (puntaje ≥ minScore)
+  RagRespuesta _construirRespuesta(
+    _EP top, List<_EP> candidatos, String materia, int grado,
+  ) {
+    final buffer = StringBuffer();
+    buffer.write(top.entrada['respuesta'] as String);
+
+    // Si hay un segundo resultado relevante con tema distinto, sugerirlo
+    if (candidatos.length > 1) {
+      final segundo   = candidatos[1];
+      final temaTop   = (top.entrada['tema'] as String).toLowerCase();
+      final temaSeg   = (segundo.entrada['tema'] as String).toLowerCase();
+      final puntSeg   = segundo.puntaje;
+
+      if (puntSeg >= _minScore * 0.72 && temaSeg != temaTop) {
+        buffer.write('\n\n▸ También relacionado con tu pregunta: '
+                     '${segundo.entrada['tema']}');
+        buffer.write('\n  Puedes preguntar: "${segundo.entrada['pregunta']}"');
+      }
+    }
+
+    return RagRespuesta(
+      texto:      buffer.toString(),
+      encontrado: true,
+      tema:       top.entrada['tema'] as String,
+    );
+  }
+
+  // Respuesta aproximada (softMin ≤ puntaje < minScore)
+  RagRespuesta _respuestaAproximada(_EP top, String materia, int grado) {
+    final tema     = top.entrada['tema'] as String;
+    final pregSug  = top.entrada['pregunta'] as String;
+    return RagRespuesta(
+      texto: 'No encontré exactamente eso en ${_nombreMateria(materia)} '
+             'para grado $grado, pero lo más cercano que tengo es sobre "$tema".\n\n'
+             '¿Quisiste preguntar: "$pregSug"?\n\n'
+             'Escríbela así y te respondo completo.',
+      encontrado: false,
+      tema: tema,
+    );
+  }
+
+  // Fallback inteligente (puntaje < softMin)
+  // Sugiere preguntas reales del grado del estudiante desde la KB.
+  RagRespuesta _fallbackInteligente(
+    List<Map<String, dynamic>> corpus, String materia, int grado,
+  ) {
+    // Filtrar entradas del grado del estudiante
+    final delGrado = corpus
+        .where((e) => e['grado'] == grado)
+        .map((e) => e['pregunta'] as String)
+        .toList()
+      ..shuffle(Random());
+
+    final sugeridas = delGrado.take(3).toList();
+
+    final buffer = StringBuffer();
+    buffer.write(
+      'Hmm, no encontré información sobre ese tema en '
+      '${_nombreMateria(materia)} para grado $grado. '
+      'Es posible que ese contenido aún no esté disponible, '
+      'pero seguiremos ampliando poco a poco.',
+    );
+
+    if (sugeridas.isNotEmpty) {
+      buffer.write('\n\nSí sé responder cosas como estas (grado $grado):');
+      for (final p in sugeridas) {
+        buffer.write('\n• $p');
+      }
+    }
+
+    return RagRespuesta(texto: buffer.toString(), encontrado: false, tema: '');
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  EVALUADOR ARITMÉTICO COMPLETO
+  //  Maneja: casos especiales (doble/mitad/triple/cuadrado/raíz),
+  //  frases compuestas, operadores en palabra, operadores símbolo.
+  // ═══════════════════════════════════════════════════════════
 
   static RagRespuesta? _calcularExpresion(String texto) {
-    // Normaliza y limpia
     var t = _quitarAcentos(texto.toLowerCase())
         .replaceAll(RegExp(r'[?¿!¡]'), '')
         .trim();
 
-    // Quita prefijos de pregunta comunes
     t = t
         .replaceAll(RegExp(r'^cu[aá]nto[s]?\s+(es|son|da|vale|valen|hay)\s+'), '')
         .replaceAll(RegExp(r'^cu[aá]l\s+es\s+(el\s+)?(resultado\s+de\s+)?'), '')
@@ -173,9 +497,7 @@ class RagService {
         .replaceAll(RegExp(r'^que\s+(es|vale|da)\s+'), '')
         .trim();
 
-    // ── Casos especiales ──────────────────────────────────────
-
-    // "el doble de N"
+    // Casos especiales
     var m = RegExp(r'^(el\s+)?doble\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);
     if (m != null) {
       final n = _parseNum(m.group(2)!);
@@ -183,7 +505,6 @@ class RagService {
           '${_fmt(n)} × 2 = ${_fmt(n * 2)}');
     }
 
-    // "la mitad de N"
     m = RegExp(r'^(la\s+)?mitad\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);
     if (m != null) {
       final n = _parseNum(m.group(2)!);
@@ -191,7 +512,6 @@ class RagService {
           '${_fmt(n)} ÷ 2 = ${_fmt(n / 2)}');
     }
 
-    // "el triple de N"
     m = RegExp(r'^(el\s+)?triple\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);
     if (m != null) {
       final n = _parseNum(m.group(2)!);
@@ -199,35 +519,29 @@ class RagService {
           '${_fmt(n)} × 3 = ${_fmt(n * 3)}');
     }
 
-    // "N al cuadrado" / "N elevado a 2" / "N^2"
     m = RegExp(r'^(\d+(?:[.,]\d+)?)\s*(al\s+cuadrado|\^2|elevado\s+a\s+(la\s+)?2)$')
         .firstMatch(t);
     if (m != null) {
       final n = _parseNum(m.group(1)!);
       final r = n * n;
       return RagRespuesta(
-        texto: '${_fmt(n)}² = ${_fmt(r)}\n'
-               '(${_fmt(n)} × ${_fmt(n)} = ${_fmt(r)})',
+        texto: '${_fmt(n)}² = ${_fmt(r)}\n(${_fmt(n)} × ${_fmt(n)} = ${_fmt(r)})',
         encontrado: true, tema: 'potencias',
       );
     }
 
-    // "N al cubo" / "N elevado a 3" / "N^3"
     m = RegExp(r'^(\d+(?:[.,]\d+)?)\s*(al\s+cubo|\^3|elevado\s+a\s+(la\s+)?3)$')
         .firstMatch(t);
     if (m != null) {
       final n = _parseNum(m.group(1)!);
       final r = n * n * n;
       return RagRespuesta(
-        texto: '${_fmt(n)}³ = ${_fmt(r)}\n'
-               '(${_fmt(n)} × ${_fmt(n)} × ${_fmt(n)} = ${_fmt(r)})',
+        texto: '${_fmt(n)}³ = ${_fmt(r)}\n(${_fmt(n)} × ${_fmt(n)} × ${_fmt(n)} = ${_fmt(r)})',
         encontrado: true, tema: 'potencias',
       );
     }
 
-    // "raíz (cuadrada) de N" / "√N"
-    m = RegExp(r'^(ra[ií]z\s+(?:cuadrada\s+)?de\s+|√)(\d+(?:[.,]\d+)?)$')
-        .firstMatch(t);
+    m = RegExp(r'^(ra[ií]z\s+(?:cuadrada\s+)?de\s+|√)(\d+(?:[.,]\d+)?)$').firstMatch(t);
     if (m != null) {
       final n = _parseNum(m.group(2)!);
       final r = sqrt(n);
@@ -238,35 +552,29 @@ class RagService {
       );
     }
 
-    // ── Normalización de operadores compuestos (orden: frases primero) ───
-
-    // Frases multi-palabra ANTES que palabras sueltas
+    // Normalización de operadores (frases multi-palabra primero)
     t = t
-        .replaceAll(RegExp(r'multiplicado\s+por'),  '*')
-        .replaceAll(RegExp(r'multiplicado\s+x'),    '*')
-        .replaceAll(RegExp(r'multiplicado\s+'),     '*')   // "multiplicado N" sin "por"
-        .replaceAll(RegExp(r'dividido\s+entre'),    '/')
-        .replaceAll(RegExp(r'dividido\s+por'),      '/')
-        .replaceAll(RegExp(r'dividido\s+'),         '/')   // "dividido N" sin preposición
+        .replaceAll(RegExp(r'multiplicado\s+por'), '*')
+        .replaceAll(RegExp(r'multiplicado\s+x'),   '*')
+        .replaceAll(RegExp(r'multiplicado\s+'),    '*')
+        .replaceAll(RegExp(r'dividido\s+entre'),   '/')
+        .replaceAll(RegExp(r'dividido\s+por'),     '/')
+        .replaceAll(RegExp(r'dividido\s+'),        '/')
         .replaceAll(RegExp(r'sumado\s+[a-z]*\s*'), '+');
 
-    // Palabras sueltas
     t = t
-        .replaceAll(RegExp(r'\bmas\b'),         '+')
-        .replaceAll(RegExp(r'\bmenos\b'),        '-')
+        .replaceAll(RegExp(r'\bmas\b'),          '+')
+        .replaceAll(RegExp(r'\bmenos\b'),         '-')
         .replaceAll(RegExp(r'\bpor\b|\bveces\b'), '*')
-        .replaceAll(RegExp(r'\bentre\b'),        '/')
-        .replaceAll(RegExp(r'\bx\b'),            '*');   // "6 x 20"
+        .replaceAll(RegExp(r'\bentre\b'),         '/')
+        .replaceAll(RegExp(r'\bx\b'),             '*');
 
-    // Símbolos alternativos
     t = t
         .replaceAll('×', '*')
         .replaceAll('÷', '/')
-        .replaceAll(',', '.');
+        .replaceAll(',', '.')
+        .trim();
 
-    t = t.trim();
-
-    // ── Expresión final: número op número ────────────────────
     final match = RegExp(
       r'^(\d+(?:\.\d+)?)\s*([+\-*/])\s*(\d+(?:\.\d+)?)$',
     ).firstMatch(t);
@@ -292,10 +600,7 @@ class RagService {
             encontrado: true, tema: 'división',
           );
         }
-        resultado = a / b;
-        operacion = 'división';
-        simbolo   = '÷';
-        break;
+        resultado = a / b; operacion = 'división'; simbolo = '÷'; break;
       default: return null;
     }
 
@@ -307,8 +612,6 @@ class RagService {
     );
   }
 
-  // ─── Helpers del evaluador ────────────────────────────────
-
   static RagRespuesta _respEspecial(
       String enunciado, double resultado, String tema, String calculo) {
     return RagRespuesta(
@@ -318,8 +621,7 @@ class RagService {
     );
   }
 
-  static double _parseNum(String s) =>
-      double.parse(s.replaceAll(',', '.'));
+  static double _parseNum(String s) => double.parse(s.replaceAll(',', '.'));
 
   static String _fmt(double n) {
     if (n == n.truncateToDouble()) return n.toInt().toString();
@@ -393,7 +695,6 @@ class RagService {
   // ═══════════════════════════════════════════════════════════
 
   List<String> _tokenizar(String texto) {
-    // Extrae operadores símbolo como tokens especiales ANTES del filtro stopwords
     final mathTokens = <String>[];
     var t = texto.toLowerCase();
 
@@ -405,14 +706,14 @@ class RagService {
 
     final regular = t.split(RegExp(r'\s+')).where((w) {
       if (w.isEmpty) return false;
-      if (RegExp(r'^\d+$').hasMatch(w)) return true; // números siempre pasan
+      if (RegExp(r'^\d+$').hasMatch(w)) return true;
       return w.length >= 3 && !_stopwords.contains(w);
     }).toList();
 
     return [...regular, ...mathTokens];
   }
 
-  // ─── Stemmer español ─────────────────────────────────────
+  // ─── Stemmer español ──────────────────────────────────────
 
   String _stem(String word) {
     final w = _normalizar(word);
@@ -424,11 +725,7 @@ class RagService {
     return w;
   }
 
-  // ─── Normalización (instancia) ────────────────────────────
-
   String _normalizar(String t) => _quitarAcentos(t).trim();
-
-  // ─── Quitar acentos (estático, usado en evaluador también) ─
 
   static String _quitarAcentos(String t) => t
       .toLowerCase()
@@ -438,8 +735,6 @@ class RagService {
       .replaceAll(RegExp(r'[óòôö]'), 'o')
       .replaceAll(RegExp(r'[úùûü]'), 'u')
       .replaceAll('ñ', 'n');
-
-  // ─── Nombre legible de materia ────────────────────────────
 
   static String _nombreMateria(String m) => const {
     'matematicas': 'Matemáticas',

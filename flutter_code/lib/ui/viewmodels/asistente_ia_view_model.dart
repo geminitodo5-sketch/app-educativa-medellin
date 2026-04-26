@@ -6,6 +6,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/services/rag_service.dart';
+import '../../data/services/embedding_service.dart';
 import '../../data/services/descarga_paquete_service.dart';
 
 // ── Modelo de mensaje del chat ────────────────────────────────
@@ -254,8 +255,19 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
 
 // ── Providers ─────────────────────────────────────────────────
 
+// EmbeddingService se inicializa una vez; si el modelo TFLite no está en assets
+// falla silenciosamente y RagService usa solo BM25 + expansión conceptual.
+final embeddingServiceProvider = Provider<EmbeddingService>((ref) {
+  final svc = EmbeddingService();
+  svc.initialize(); // fire-and-forget; RagService lo usa solo cuando modelAvailable == true
+  return svc;
+});
+
 final ragServiceProvider = Provider<RagService>((ref) {
-  return RagService(ref.read(sqliteServiceProvider));
+  return RagService(
+    ref.read(sqliteServiceProvider),
+    embeddings: ref.read(embeddingServiceProvider),
+  );
 });
 
 final descargaPaqueteServiceProvider = Provider<DescargaPaqueteService>((ref) {

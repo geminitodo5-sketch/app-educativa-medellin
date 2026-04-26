@@ -1,6 +1,6 @@
 {
   "materia": "espanol",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "descripcion": "Base de conocimiento ampliada de Español (Lengua Castellana) grados 1-5 — currículo colombiano MEN",
   "contenido": [
     {
@@ -500,6 +500,90 @@
       "pregunta": "¿Qué es la comunicación asertiva?",
       "respuesta": "La comunicación asertiva es expresar lo que pensamos, sentimos y necesitamos de forma clara, directa y respetuosa, sin agredir ni someternos. Diferencias: Pasiva (no dices lo que piensas por miedo). Agresiva (impones tu opinión sin respetar al otro). Asertiva (expresas tu opinión con respeto, escuchas al otro, llegas a acuerdos). Claves: hablar en primera persona ('Yo siento que...'), escuchar activamente, pedir clarificación.",
       "palabras_clave": ["asertiva", "comunicación", "respetuosa", "directa", "pasiva", "agresiva", "yo siento", "escuchar", "acuerdo", "opinión"]
+    },
+    {
+      "id": "esp_g3_035", "grado": 3, "tema": "comprension textos narrativos descriptivos",
+      "pregunta": "¿Cómo comprendo un texto narrativo o descriptivo?",
+      "respuesta": "Un texto narrativo cuenta una historia con personajes, lugar y tiempo (cuentos, fábulas, leyendas). Para comprenderlo: identifica los personajes (¿quién?), el lugar (¿dónde?), el tiempo (¿cuándo?) y los eventos principales (¿qué pasa?). Busca el inicio, el nudo y el desenlace. Un texto descriptivo explica cómo es algo o alguien usando detalles precisos: colores, formas, tamaños, sensaciones. Para comprenderlo: identifica qué se describe, qué adjetivos usa el autor y qué imagen mental te forma. En ambos tipos, ubica la idea principal de cada párrafo y las ideas secundarias que la apoyan.",
+      "palabras_clave": ["texto narrativo", "texto descriptivo", "comprensión", "personajes", "cuento", "fábula", "leyenda", "descripción", "idea principal", "adjetivos", "inicio", "nudo", "desenlace", "comprender"]
+    },
+    {
+      "id": "esp_g3_036", "grado": 3, "tema": "expresion oral narracion experiencias",
+      "pregunta": "¿Cómo cuento una experiencia de forma oral?",
+      "respuesta": "Narrar una experiencia de forma oral significa contar algo que te pasó usando la voz. Pasos: 1) Organiza en orden: ¿qué ocurrió primero, después y al final? 2) Menciona cuándo y dónde sucedió. 3) Describe cómo te sentiste. 4) Habla claro, ni muy rápido ni muy lento, con buena voz. 5) Usa conectores de tiempo: primero, luego, después, al final. 6) Mira a las personas mientras hablas. Ejemplo de inicio: 'El sábado fui al zoológico con mi familia. Primero vimos los leones... luego... finalmente regresamos a casa muy felices'. Narrar experiencias te ayuda a expresarte mejor y a organizar tus ideas.",
+      "palabras_clave": ["expresión oral", "narración", "experiencias", "hablar", "contar", "orden", "primero", "luego", "después", "sentimientos", "organizar", "voz", "narrar"]
+    },
+    {
+      "id": "esp_g4_022", "grado": 4, "tema": "comprension interpretacion textos informativos",
+      "pregunta": "¿Cómo comprendo e interpreto un texto informativo?",
+      "respuesta": "Un texto informativo transmite datos reales y verificables (artículos de enciclopedia, noticias, informes, textos de ciencias). Para comprenderlo: 1) Lee el título y subtítulos (revelan la estructura). 2) Identifica la idea principal de cada párrafo. 3) Observa los datos, cifras y fechas mencionados. Para interpretarlo (ir más allá): 4) Relaciona la información con lo que ya sabes. 5) Pregúntate: ¿para qué fue escrito?, ¿qué quiere que yo aprenda? 6) Distingue hechos (datos comprobables) de opiniones. 7) Resume con tus propias palabras. La interpretación es el nivel más profundo de la comprensión.",
+      "palabras_clave": ["texto informativo", "comprensión", "interpretación", "artículo", "enciclopedia", "noticia", "idea principal", "hechos", "datos", "subtítulos", "resumen", "interpretar", "verificable"]
+    },
+    {
+      "id": "esp_g4_023", "grado": 4, "tema": "produccion textos expositivos narrativos grado cuarto",
+      "pregunta": "¿Cómo escribo textos expositivos y narrativos en grado cuarto?",
+      "respuesta": "Texto expositivo: informa sobre un tema de forma clara y objetiva. Partes: introducción (presenta el tema), desarrollo (explica con datos, ejemplos y subtítulos) y conclusión (resume lo aprendido). Usa tercera persona y lenguaje preciso. Texto narrativo: cuenta una historia. Partes: inicio (presenta personajes y situación), nudo (conflicto o problema) y desenlace (solución). Usa descripciones, diálogos y conectores narrativos (de repente, mientras tanto, al día siguiente). En ambos tipos: planea antes de escribir con un borrador, revisa la ortografía, la coherencia y los signos de puntuación.",
+      "palabras_clave": ["texto expositivo", "texto narrativo", "producción", "escribir", "introducción", "desarrollo", "conclusión", "inicio", "nudo", "desenlace", "diálogo", "coherencia", "grado cuarto"]
+    },
+    {
+      "id": "esp_g4_024", "grado": 4, "tema": "uso conectores textuales grado cuarto",
+      "pregunta": "¿Qué son los conectores y cómo se usan correctamente en un texto?",
+      "respuesta": "Los conectores son palabras o expresiones que unen ideas y dan coherencia y fluidez al texto. Tipos con ejemplos: Para añadir información: además, también, igualmente, asimismo. Para contrastar ideas: pero, sin embargo, aunque, a pesar de. Para indicar causa: porque, ya que, puesto que. Para indicar consecuencia: por eso, por lo tanto, en consecuencia. Para ordenar: primero, luego, después, finalmente. Para concluir: en conclusión, en resumen, para finalizar. Ejemplo: 'Me gustan las ciencias; sin embargo, también disfruto leer. Además, me ayudan a entender el mundo'. Usar conectores correctamente hace que el texto fluya y sea fácil de leer.",
+      "palabras_clave": ["conectores", "textuales", "además", "sin embargo", "pero", "porque", "por lo tanto", "primero", "finalmente", "en conclusión", "coherencia", "fluido", "unen ideas"]
+    },
+    {
+      "id": "esp_g4_025", "grado": 4, "tema": "reglas ortograficas grado cuarto",
+      "pregunta": "¿Cuáles son las reglas ortográficas más importantes para grado cuarto?",
+      "respuesta": "Reglas ortográficas clave en grado 4: 1) Tilde en agudas (terminan en vocal, n, s: café, camión), graves (tilde si NO terminan en vocal, n, s: árbol) y esdrújulas (siempre: música). 2) Tilde diacrítico: tú/tu, él/el, sí/si, más/mas, té/te. 3) Uso de h: siempre en haber, hacer, hablar, humano, hospital, historia, hijo. 4) r/rr: 'rr' entre vocales (carro, perro); 'r' fuerte al inicio de palabra (rosa, rojo) o tras n/l/s (enredo, alrededor). 5) c/qu: 'ca, co, cu' y 'que, qui' (queso, quitar). 6) ll/y: suenan igual en Colombia; cada palabra se aprende. La práctica con dictados es la mejor estrategia.",
+      "palabras_clave": ["ortografía", "reglas ortográficas", "tilde", "h", "rr", "c", "qu", "ll", "y", "diacrítico", "aguda", "grave", "esdrújula", "grado cuarto", "haber", "hacer"]
+    },
+    {
+      "id": "esp_g4_026", "grado": 4, "tema": "resumenes mapas conceptuales",
+      "pregunta": "¿Cómo hago un resumen y un mapa conceptual?",
+      "respuesta": "Resumen: síntesis breve de las ideas más importantes de un texto, escrita con tus propias palabras. Pasos: 1) Lee el texto completo. 2) Identifica las ideas clave de cada párrafo. 3) Escríbelas con tus palabras (sin copiar). 4) El resumen debe ser más corto que el original (aprox. un tercio). Mapa conceptual: herramienta visual que organiza un tema. Pasos: 1) Escribe el concepto central en la parte superior o en el centro. 2) Agrega conceptos secundarios conectados con líneas. 3) Escribe palabras de enlace en las líneas (tiene, es un tipo de, produce, permite). 4) Añade ejemplos si es necesario. Ambas herramientas ayudan a estudiar y comprender mejor.",
+      "palabras_clave": ["resumen", "resumir", "mapa conceptual", "síntesis", "ideas principales", "visual", "conceptos", "palabras de enlace", "estudiar", "organizar", "propias palabras", "texto"]
+    },
+    {
+      "id": "esp_g4_027", "grado": 4, "tema": "exposicion oral temas",
+      "pregunta": "¿Cómo preparo y presento una exposición oral sobre un tema?",
+      "respuesta": "Para hacer una exposición oral: 1) Investiga el tema con fuentes confiables (libros, enciclopedias, internet). 2) Organiza la información: introducción (presenta el tema y llama la atención), desarrollo (los puntos más importantes, con datos y ejemplos) y conclusión (lo más relevante). 3) Prepara apoyos visuales: carteleras, láminas, diagramas o diapositivas. 4) Ensaya en voz alta antes del día. 5) Durante la exposición: habla claro y despacio, mira a tu audiencia, no leas todo de un papel, demuestra que conoces el tema. 6) Al finalizar: agradece la atención e invita preguntas. Una buena exposición combina conocimiento y comunicación.",
+      "palabras_clave": ["exposición oral", "presentación oral", "exponer", "tema", "introducción", "desarrollo", "conclusión", "investigar", "apoyos visuales", "audiencia", "ensayar", "hablar en público"]
+    },
+    {
+      "id": "esp_g5_022", "grado": 5, "tema": "analisis textos narrativos informativos argumentativos",
+      "pregunta": "¿Cómo analizo textos narrativos, informativos y argumentativos?",
+      "respuesta": "Texto narrativo: identifica narrador (¿quién cuenta?), personajes, trama (inicio-nudo-desenlace), tiempo, espacio y recursos literarios (metáforas, diálogos). Texto informativo: identifica el tema, la estructura (título, introducción, desarrollo, conclusión), los datos y sus fuentes, y el propósito del autor. Texto argumentativo: identifica la tesis (posición del autor), los argumentos (razones con evidencia: datos, ejemplos, citas), posibles contraargumentos y la conclusión. En los tres tipos, aplica lectura crítica: ¿quién lo escribió?, ¿por qué?, ¿qué evidencia usa?, ¿es confiable?, ¿distingues hechos de opiniones?",
+      "palabras_clave": ["análisis", "texto narrativo", "texto informativo", "texto argumentativo", "tesis", "argumentos", "narrador", "trama", "estructura", "lectura crítica", "propósito", "fuentes", "analizar textos"]
+    },
+    {
+      "id": "esp_g5_023", "grado": 5, "tema": "produccion textos estructurados grado quinto",
+      "pregunta": "¿Cómo produzco textos bien estructurados en grado quinto?",
+      "respuesta": "En grado 5, los textos deben tener mayor estructura y profundidad: 1) Propósito claro antes de escribir (¿para qué? ¿a quién?). 2) Estructura completa: introducción que presenta el tema y capta la atención, desarrollo organizado en párrafos coherentes con ideas conectadas, conclusión que cierra con reflexión. 3) Vocabulario variado y preciso (usa sinónimos, no repitas las mismas palabras). 4) Ortografía y puntuación impecables. 5) Cohesión: conectores, pronombres y sinónimos que eviten repeticiones. 6) Proceso: planea (lluvia de ideas, esquema) → escribe borrador → revisa (¿tiene sentido?) → corrige → pasa en limpio. Tipos: cuentos, ensayos, textos expositivos y argumentativos.",
+      "palabras_clave": ["producción textual", "textos estructurados", "introducción", "desarrollo", "conclusión", "cohesión", "coherencia", "proceso escritura", "borrador", "revisar", "corregir", "vocabulario", "grado quinto"]
+    },
+    {
+      "id": "esp_g5_024", "grado": 5, "tema": "inferencias conclusiones lectura",
+      "pregunta": "¿Qué es una inferencia y cómo saco conclusiones de un texto?",
+      "respuesta": "Una inferencia es una deducción que haces a partir de lo que el texto sugiere pero no dice directamente. Para inferir: combina las pistas del texto + tu conocimiento previo. Ejemplo: si el texto dice 'salió de casa con paraguas y botas de caucho', puedes inferir que llovía, aunque no lo mencione. Tipos de inferencias: de causa-efecto (¿qué causó ese evento?), sobre las intenciones del autor (¿por qué escribió esto?), sobre el significado de palabras desconocidas por el contexto. Sacar conclusiones: al terminar la lectura, formula la idea global que resume el mensaje completo. Pregúntate: ¿qué quería decir el autor?, ¿cuál es la lección o mensaje principal?",
+      "palabras_clave": ["inferencia", "inferir", "conclusión", "deducción", "contexto", "pistas", "conocimiento previo", "causa-efecto", "autor", "implícito", "explícito", "leer entre líneas", "mensaje"]
+    },
+    {
+      "id": "esp_g5_025", "grado": 5, "tema": "gramatica verbos sustantivos adjetivos conectores grado quinto",
+      "pregunta": "¿Cómo funcionan juntos los verbos, sustantivos, adjetivos y conectores en grado quinto?",
+      "respuesta": "Sustantivos: nombran personas, animales, cosas, lugares e ideas. Pueden ser comunes (ciudad), propios (Medellín), concretos (mesa) o abstractos (libertad). Adjetivos: describen al sustantivo y concuerdan en género y número: 'la ciudad hermosa / las ciudades hermosas'. Verbos: expresan acciones o estados; se conjugan en persona, número y tiempo: yo corro / ellos corrieron / nosotros correremos. Conectores: unen oraciones e ideas: además, sin embargo, porque, por lo tanto, finalmente. Todos juntos forman textos correctos: 'Las flores rojas (sust. + adj.) florecen (verbo) en primavera; por lo tanto (conector), el jardín se ve hermoso'. Dominar la gramática mejora tu escritura y comprensión.",
+      "palabras_clave": ["gramática", "verbos", "sustantivos", "adjetivos", "conectores", "conjugar", "concordancia", "género", "número", "tiempo verbal", "oración", "propios", "comunes", "abstractos"]
+    },
+    {
+      "id": "esp_g5_026", "grado": 5, "tema": "argumentacion oral escrita grado quinto",
+      "pregunta": "¿Cómo argumento de forma oral y escrita en grado quinto?",
+      "respuesta": "Argumentar es defender una posición con razones y evidencia de forma respetuosa. Argumentación oral (debates, discusiones): presenta tu tesis con claridad, apoya cada argumento con ejemplos concretos, escucha activamente al oponente, usa lenguaje respetuoso aunque no estés de acuerdo, cierra reafirmando tu posición. Argumentación escrita: 1) Tesis (posición del autor). 2) Argumentos (razones + evidencia: datos, citas, ejemplos). 3) Contraargumentos (objeciones que rebates). 4) Conclusión (cierra y reafirma). Conectores clave: 'dado que', 'en consecuencia', 'aunque', 'sin embargo', 'por lo tanto'. Evita falacias (atacar a la persona en vez de la idea). La argumentación entrena el pensamiento crítico.",
+      "palabras_clave": ["argumentación", "argumentar", "oral", "escrita", "tesis", "argumentos", "evidencia", "debate", "contraargumento", "conclusión", "pensamiento crítico", "falacias", "razones", "grado quinto"]
+    },
+    {
+      "id": "esp_g5_027", "grado": 5, "tema": "lectura critica avanzada grado quinto",
+      "pregunta": "¿Cómo aplico la lectura crítica a diferentes tipos de texto?",
+      "respuesta": "La lectura crítica evalúa, cuestiona y forma una opinión propia sobre lo que se lee. Pasos: 1) Identifica el propósito del texto: ¿para qué fue escrito (informar, persuadir, entretener)? 2) Analiza el autor: ¿quién es?, ¿tiene algún interés particular? 3) Distingue hechos (verificables: 'Colombia tiene 48 millones de habitantes') de opiniones ('Colombia es el mejor país del mundo'). 4) Evalúa la evidencia: ¿son datos confiables?, ¿tienen fuente clara? 5) Detecta el punto de vista o sesgo del autor. 6) Contrasta la información con otras fuentes. 7) Formula tu propia posición informada. Aplicalo a noticias, ensayos, redes sociales y cualquier texto que leas.",
+      "palabras_clave": ["lectura crítica", "analizar", "evaluar", "hechos", "opiniones", "propósito", "autor", "sesgo", "fuentes", "evidencia", "contrastar", "posición", "cuestionar", "grado quinto"]
     }
   ]
 }

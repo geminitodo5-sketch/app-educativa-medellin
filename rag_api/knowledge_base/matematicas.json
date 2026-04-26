@@ -1,6 +1,6 @@
 {
   "materia": "matematicas",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "descripcion": "Base de conocimiento ampliada de Matemáticas grados 1-5 — currículo colombiano MEN",
   "contenido": [
 
@@ -727,6 +727,36 @@
     {"id":"mat_g5_038","grado":5,"tema":"álgebra básica",
      "pregunta":"¿Cómo planto y resuelvo una ecuación de un problema verbal?",
      "respuesta":"Ejemplo: 'El doble de un número más 3 es igual a 11. ¿Cuál es el número?' Paso 1: nombra la incógnita: n. Paso 2: escribe la ecuación: 2n + 3 = 11. Paso 3: resta 3: 2n = 8. Paso 4: divide entre 2: n = 4. Verificación: 2×4+3 = 11. ✓ El número es 4.",
-     "palabras_clave":["álgebra","ecuación","problema verbal","incógnita","n","2n+3=11","8","4","plantear","resolver","verificar"]}
+     "palabras_clave":["álgebra","ecuación","problema verbal","incógnita","n","2n+3=11","8","4","plantear","resolver","verificar"]},
+
+    {"id":"mat_g3_054","grado":3,"tema":"cuatro operaciones fundamentales",
+     "pregunta":"¿Cuáles son las cuatro operaciones matemáticas básicas y para qué sirve cada una?",
+     "respuesta":"Las cuatro operaciones fundamentales son: Suma (+): juntar cantidades. Ejemplo: 235 + 148 = 383. Resta (−): quitar o encontrar la diferencia. Ejemplo: 400 − 156 = 244. Multiplicación (×): suma repetida de un mismo número. Ejemplo: 6 × 7 = 42. División (÷): repartir en partes iguales. Ejemplo: 48 ÷ 6 = 8. Palabras clave en problemas: 'en total / se juntan' → suma; '¿cuánto queda / diferencia?' → resta; 'veces / grupos de' → multiplicación; 'repartir / entre' → división. Las cuatro operaciones son la base de toda la matemática.",
+     "palabras_clave":["cuatro operaciones","suma","resta","multiplicación","división","fundamentales","básicas","operaciones matemáticas","235","148","400","156","48","6","operar"]},
+
+    {"id":"mat_g4_041","grado":4,"tema":"operaciones numeros naturales grado cuarto",
+     "pregunta":"¿Cómo realizo operaciones con números naturales en grado cuarto?",
+     "respuesta":"En grado 4 las operaciones con números naturales incluyen: Multiplicación de dos cifras: 34 × 25 = 850 (multiplica por unidades: 34×5=170; por decenas: 34×20=680; suma parciales: 850). División larga: 756 ÷ 4 = 189 (baja cifra por cifra). Potencias: 3² = 9, 2³ = 8. Orden de operaciones: primero paréntesis, luego multiplicación y división de izquierda a derecha, luego suma y resta. Ejemplo: 5 + (2 × 3²) = 5 + (2 × 9) = 5 + 18 = 23. Divisibilidad: un número es divisible entre 2 si termina en par, entre 3 si la suma de sus dígitos es múltiplo de 3.",
+     "palabras_clave":["números naturales","multiplicación dos cifras","división larga","potencias","orden operaciones","divisibilidad","34x25","756","189","grado cuarto","operaciones naturales"]},
+
+    {"id":"mat_g4_042","grado":4,"tema":"recoleccion interpretacion datos grado cuarto",
+     "pregunta":"¿Cómo recojo e interpreto datos estadísticos en grado cuarto?",
+     "respuesta":"Recolección de datos: 1) Define la pregunta (¿qué quieres saber?). 2) Elige el método (encuesta, observación, experimento). 3) Registra los resultados en una tabla de frecuencias (dato / conteo / frecuencia). Organización: agrupa los datos en tablas y gráficas (barras simples, barras dobles, pictograma). Interpretación: identifica el dato más frecuente (moda), el del centro (mediana), el promedio (suma ÷ cantidad), el máximo y el mínimo. Conclusiones: ¿qué muestra el gráfico?, ¿qué categoría es la mayor?, ¿hay diferencias entre grupos? Los datos bien interpretados permiten tomar decisiones informadas.",
+     "palabras_clave":["recolección de datos","interpretar datos","encuesta","tabla de frecuencias","gráfica","moda","mediana","promedio","máximo","mínimo","conclusión","organizar datos","grado cuarto"]},
+
+    {"id":"mat_g5_039","grado":5,"tema":"operaciones combinadas naturales fracciones decimales",
+     "pregunta":"¿Cómo opero con números naturales, fracciones y decimales en el mismo problema?",
+     "respuesta":"En grado 5 se trabajan los tres tipos de números en conjunto. Naturales: 1, 2, 3... Fracciones: 1/2, 3/4... Decimales: 0,5; 3,75... Para operar con mezclas: convierte al mismo formato. 1/2 = 0,5; 3/4 = 0,75; 1/4 = 0,25. Ejemplo: 2 + 1/2 + 0,75 = 2 + 0,5 + 0,75 = 3,25. Ejemplo con los tres: ¿Cuánto es el 25% de 80 menos 3/4 de 12? Paso 1: 25% de 80 = 20. Paso 2: 3/4 de 12 = 9. Paso 3: 20 − 9 = 11. Orden de operaciones (PEMDAS): primero paréntesis, luego potencias, luego × y ÷, finalmente + y −.",
+     "palabras_clave":["números naturales","fracciones","decimales","operaciones combinadas","convertir","PEMDAS","orden operaciones","mezcla","1/2","0,5","25%","grado quinto","operar juntos"]},
+
+    {"id":"mat_g5_040","grado":5,"tema":"patrones secuencias numericas grado quinto",
+     "pregunta":"¿Cómo identifico, describo y extiendo patrones y secuencias numéricas en grado quinto?",
+     "respuesta":"Tipos de patrones: Aritmético (suma o resta una constante): 4, 7, 10, 13, 16... (se suma 3 cada vez). Geométrico (multiplica o divide por una constante): 2, 4, 8, 16, 32... (se multiplica por 2). Fórmula para secuencia aritmética: tₙ = a + (n−1)×d, donde a = primer término y d = diferencia. Ejemplo: a=4, d=3, término 10 → t₁₀ = 4 + 9×3 = 31. Patrones de figuras: cuadrados que crecen, triángulos que se agregan. Patrones de fracciones: 1/2, 1/4, 1/8, 1/16... (se divide entre 2). Para encontrar la regla: observa la diferencia entre términos consecutivos.",
+     "palabras_clave":["patrón","secuencia","aritmético","geométrico","regla","término","4","7","10","multiplicar","fórmula","tₙ","diferencia","grado quinto","patrones numéricos"]},
+
+    {"id":"mat_g5_041","grado":5,"tema":"graficos estadisticos analisis datos grado quinto",
+     "pregunta":"¿Cómo analizo gráficos estadísticos y saco conclusiones en grado quinto?",
+     "respuesta":"Tipos de gráficos y cuándo usar cada uno: Barras: comparar cantidades entre categorías (ej: ventas por mes). Línea: mostrar cambios a lo largo del tiempo (ej: temperatura diaria). Circular/torta: proporciones del total en porcentajes (ej: gustos de la clase). Histograma: distribución de datos agrupados. Para analizar cualquier gráfico: 1) Lee el título y las etiquetas de los ejes. 2) Identifica el valor máximo y mínimo. 3) Calcula media, mediana y moda si aplica. 4) Busca la tendencia (¿sube, baja, se mantiene?). 5) Compara grupos si hay más de uno. 6) Escribe una conclusión con base en los datos. Los gráficos convierten datos en información visual que facilita el análisis.",
+     "palabras_clave":["gráficos estadísticos","barras","línea","circular","histograma","analizar","conclusión","media","mediana","moda","tendencia","máximo","mínimo","interpretar gráfica","grado quinto"]}
   ]
 }

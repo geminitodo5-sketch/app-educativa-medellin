@@ -1,6 +1,6 @@
 {
   "materia": "sociales",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "descripcion": "Base de conocimiento ampliada de Ciencias Sociales grados 1-5 — currículo colombiano MEN",
   "contenido": [
     {
@@ -244,6 +244,36 @@
       "palabras_clave": ["Convención Derechos del Niño", "CDN", "ONU", "1989", "Colombia", "ICBF", "menores", "educación", "protección", "participación"]
     },
     {
+      "id": "soc_g3_035", "grado": 3, "tema": "océanos y mares",
+      "pregunta": "¿Cuáles son los océanos y mares más importantes del mundo?",
+      "respuesta": "La Tierra tiene cinco océanos: 1) Pacífico (el más grande; baña las costas de Colombia por el occidente). 2) Atlántico (al oriente de América; Colombia tiene costas en el Mar Caribe, que es un mar del Atlántico). 3) Índico (al sur de Asia). 4) Ártico (polo norte). 5) Antártico (polo sur). Colombia es privilegiada porque tiene costas en dos mares: el Caribe (norte) y el Pacífico (occidente). Los océanos regulan el clima, producen oxígeno y son fuente de alimentos como peces y mariscos.",
+      "palabras_clave": ["océanos", "mares", "Pacífico", "Atlántico", "Índico", "Ártico", "Antártico", "Mar Caribe", "Colombia", "costas", "peces", "clima", "dos mares"]
+    },
+    {
+      "id": "soc_g3_036", "grado": 3, "tema": "actividades económicas de la región",
+      "pregunta": "¿Cuáles son las principales actividades económicas de las regiones colombianas?",
+      "respuesta": "Las actividades económicas son las formas en que las personas generan ingresos. Se clasifican en: 1) Primarias: obtener recursos de la naturaleza (agricultura, ganadería, pesca, minería). 2) Secundarias: transformar materias primas en productos (industria, artesanías, construcción). 3) Terciarias: servicios (comercio, transporte, turismo, educación). Ejemplos por región: Antioquia y Eje Cafetero: café, flores, textiles. Costa Caribe: pesca, turismo, ganadería. Llanos Orientales: ganadería, petróleo. Cada región aprovecha sus recursos naturales para trabajar.",
+      "palabras_clave": ["actividades económicas", "primarias", "secundarias", "terciarias", "agricultura", "ganadería", "pesca", "minería", "industria", "comercio", "turismo", "café", "flores", "Antioquia", "región"]
+    },
+    {
+      "id": "soc_g3_037", "grado": 3, "tema": "recursos naturales de Colombia grado tercero",
+      "pregunta": "¿Cuáles son los recursos naturales de Colombia y por qué son importantes?",
+      "respuesta": "Los recursos naturales son los elementos que la naturaleza nos ofrece para vivir. Colombia tiene enormes riquezas: Agua: grandes ríos como el Magdalena, el Cauca y el Amazonas. Biodiversidad: Colombia es el segundo país más biodiverso del mundo. Suelos fértiles: para cultivar café, banano y flores. Minerales: carbón, petróleo, oro y esmeraldas. Bosques: selvas tropicales y páramos fuente de agua dulce. Estos recursos pertenecen a todos los colombianos y debemos cuidarlos para el futuro.",
+      "palabras_clave": ["recursos naturales", "Colombia", "agua", "ríos", "Magdalena", "biodiversidad", "suelos", "minerales", "carbón", "petróleo", "oro", "esmeraldas", "bosques", "páramos", "biodiverso"]
+    },
+    {
+      "id": "soc_g3_038", "grado": 3, "tema": "organización social de la comunidad",
+      "pregunta": "¿Cómo está organizada la sociedad en una comunidad?",
+      "respuesta": "La sociedad se organiza en grupos: La familia es la célula básica de la sociedad. El barrio o la vereda es donde viven varias familias juntas. La comunidad incluye el barrio, la escuela, la iglesia, el mercado y los espacios comunes. El municipio agrupa varias comunidades. Las comunidades tienen líderes comunitarios y juntas de acción comunal que trabajan por el bienestar de todos. En Colombia hay comunidades urbanas (ciudades) y rurales (campo). Cada comunidad tiene sus propias tradiciones, costumbres y formas de convivir.",
+      "palabras_clave": ["organización social", "comunidad", "familia", "barrio", "vereda", "municipio", "junta de acción comunal", "líderes", "convivencia", "urbano", "rural", "sociedad", "escuela", "costumbres"]
+    },
+    {
+      "id": "soc_g3_039", "grado": 3, "tema": "problemáticas ambientales grado tercero",
+      "pregunta": "¿Cuáles son las principales problemáticas ambientales que afectan a las comunidades?",
+      "respuesta": "Las problemáticas ambientales son los daños que las actividades humanas causan al medio ambiente: 1) Contaminación del agua: arrojar basuras y químicos a ríos y quebradas. 2) Contaminación del aire: humo de fábricas y carros. 3) Deforestación: tala de bosques para sembrar o construir. 4) Contaminación del suelo: basuras y agroquímicos. 5) Pérdida de biodiversidad: extinción de animales y plantas. En Colombia afectan especialmente la minería ilegal y la deforestación en la Amazonia. Cada persona puede ayudar reduciendo la basura, ahorrando agua y cuidando las áreas verdes.",
+      "palabras_clave": ["problemáticas ambientales", "contaminación", "agua", "aire", "suelo", "deforestación", "biodiversidad", "minería ilegal", "Amazonia", "basura", "ríos", "Colombia", "tala", "quebradas"]
+    },
+    {
       "id": "soc_g4_001", "grado": 4, "tema": "historia de Colombia",
       "pregunta": "¿Qué fue la independencia de Colombia?",
       "respuesta": "La independencia de Colombia se celebra el 20 de julio de 1810, cuando los criollos de Bogotá iniciaron el proceso de independencia de España. El proceso culminó el 7 de agosto de 1819 con la Batalla de Boyacá, liderada por Simón Bolívar y Francisco de Paula Santander, que garantizó la libertad definitiva.",
@@ -350,6 +380,36 @@
       "pregunta": "¿Qué es la migración y por qué ocurre?",
       "respuesta": "La migración es el desplazamiento de personas de un lugar a otro para vivir. Tipos: Interna (dentro del mismo país: del campo a la ciudad en Colombia). Externa (de un país a otro). Causas: económicas (buscar trabajo), políticas (huir de conflictos o dictaduras), ambientales (desastres naturales), familiares (reunificación). Colombia ha sido tanto país de emigración (colombianos en España, EE.UU., Venezuela) como de inmigración reciente (venezolanos en Colombia).",
       "palabras_clave": ["migración", "emigración", "inmigración", "desplazamiento", "trabajo", "conflicto", "Venezuela", "Colombia", "España", "campo", "ciudad"]
+    },
+    {
+      "id": "soc_g4_019", "grado": 4, "tema": "organización territorial de Colombia grado cuarto",
+      "pregunta": "¿Cómo está organizado el territorio de Colombia?",
+      "respuesta": "Colombia se organiza territorialmente en: 32 Departamentos (cada uno con gobernador y asamblea departamental): Antioquia, Cundinamarca, Valle del Cauca, Atlántico, Bolívar, Santander, entre otros. 1 Distrito Capital: Bogotá D.C., capital y ciudad más grande del país. Más de 1.100 Municipios, gobernados por alcaldes y concejos municipales. También existen resguardos indígenas y territorios colectivos de comunidades afrocolombianas. Los departamentos se agrupan en regiones geográficas. A nivel nacional, el gobierno lo forman el Congreso, la Presidencia y la Corte Suprema.",
+      "palabras_clave": ["organización territorial", "departamentos", "municipios", "Bogotá", "gobernador", "alcalde", "Colombia", "32 departamentos", "Antioquia", "Valle del Cauca", "resguardos", "afrocolombianos", "concejos"]
+    },
+    {
+      "id": "soc_g4_020", "grado": 4, "tema": "regiones geográficas de Colombia grado cuarto",
+      "pregunta": "¿Cuáles son las seis regiones geográficas de Colombia?",
+      "respuesta": "Colombia tiene seis regiones geográficas: 1) Región Andina: las tres cordilleras (Occidental, Central, Oriental), ciudades como Bogotá, Medellín y Cali; cafeteras y montañosas. 2) Región Caribe: costa norte, clima cálido seco, ciudades: Cartagena, Barranquilla, Santa Marta. 3) Región Pacífica: costa occidente, muy lluviosa, selva tropical, Buenaventura y Chocó. 4) Región Orinoquía: Llanos Orientales, ganadería, ríos Meta y Orinoco. 5) Región Amazónica: selva tropical, máxima biodiversidad, ríos Putumayo y Amazonas. 6) Región Insular: islas San Andrés y Providencia (Caribe) y Malpelo (Pacífico).",
+      "palabras_clave": ["regiones geográficas", "Colombia", "Andina", "Caribe", "Pacífica", "Orinoquía", "Amazónica", "Insular", "cordilleras", "Bogotá", "Medellín", "Cartagena", "San Andrés", "Llanos", "seis regiones"]
+    },
+    {
+      "id": "soc_g4_021", "grado": 4, "tema": "pisos térmicos y climas de Colombia",
+      "pregunta": "¿Qué son los pisos térmicos y qué climas tiene Colombia?",
+      "respuesta": "Los pisos térmicos son zonas de temperatura que cambian según la altura sobre el nivel del mar: 1) Cálido: 0-1.000 m, más de 24°C (cocos, plátano, palma de aceite). 2) Templado: 1.000-2.000 m, 17-24°C (café, caña, aguacate). 3) Frío: 2.000-3.000 m, 12-17°C (papa, maíz, flores). 4) Páramo: 3.000-4.500 m, 6-12°C (frailejones, fuente de agua). 5) Glacial: más de 4.500 m, menos de 6°C (nieves perpetuas). Colombia tiene todos los climas del mundo por estar en la zona ecuatorial y tener altas cordilleras. Medellín (1.495 m) está en el templado y se llama 'la ciudad de la eterna primavera'.",
+      "palabras_clave": ["pisos térmicos", "clima", "cálido", "templado", "frío", "páramo", "glacial", "1000 m", "2000 m", "3000 m", "café", "papa", "frailejón", "Colombia", "Medellín", "eterna primavera"]
+    },
+    {
+      "id": "soc_g4_022", "grado": 4, "tema": "posición geográfica y astronómica de Colombia",
+      "pregunta": "¿Cuál es la posición geográfica y astronómica de Colombia?",
+      "respuesta": "Posición astronómica: Colombia está entre los 4° sur y 12° norte de latitud, y entre 67° y 79° de longitud oeste. El Ecuador geográfico atraviesa el sur de Colombia (Nariño y Amazonas). Por eso Colombia tiene clima tropical y no tiene estaciones. Posición geográfica: Colombia está en el noroccidente de Suramérica. Es el único país de América del Sur con costas en dos océanos (Pacífico y Atlántico-Caribe). Limita con Venezuela y Brasil al oriente, Perú y Ecuador al sur, el Pacífico al occidente y Panamá y el Mar Caribe al norte.",
+      "palabras_clave": ["posición geográfica", "posición astronómica", "Ecuador", "latitud", "longitud", "Colombia", "Suramérica", "Pacífico", "Atlántico", "Caribe", "Venezuela", "Brasil", "Perú", "Ecuador", "dos océanos"]
+    },
+    {
+      "id": "soc_g4_023", "grado": 4, "tema": "fronteras y límites de Colombia",
+      "pregunta": "¿Con qué países y mares limita Colombia?",
+      "respuesta": "Colombia limita con 5 países y 2 mares: Al norte: Mar Caribe. Al nororiente: Venezuela (2.219 km de frontera). Al oriente: Brasil (1.644 km). Al suroriente: Perú (1.626 km). Al sur: Ecuador (586 km). Al occidente: Océano Pacífico. Al noroccidente: Panamá (266 km). Total de fronteras terrestres: más de 6.000 km. Colombia tiene además fronteras marítimas con varios países en el Caribe y el Pacífico. Ciudades fronterizas importantes: Cúcuta (con Venezuela), Ipiales (con Ecuador), Leticia (con Brasil y Perú).",
+      "palabras_clave": ["fronteras", "límites", "Colombia", "Venezuela", "Brasil", "Perú", "Ecuador", "Panamá", "Mar Caribe", "Pacífico", "Cúcuta", "Ipiales", "Leticia", "frontera terrestre", "países limítrofes"]
     },
     {
       "id": "soc_g5_001", "grado": 5, "tema": "democracia",
@@ -476,6 +536,30 @@
       "pregunta": "¿Qué fue la separación de Panamá de Colombia?",
       "respuesta": "El 3 de noviembre de 1903, Panamá se separó de Colombia y se proclamó república independiente, con el apoyo de Estados Unidos. La razón principal: Colombia rechazó el tratado Herrán-Hay que permitía a EE.UU. construir el Canal de Panamá. Entonces EE.UU. apoyó la separación. La pérdida de Panamá fue un golpe enorme para Colombia. En compensación, EE.UU. pagó 25 millones de dólares. El canal fue construido entre 1904 y 1914 y sigue siendo estratégico para el comercio mundial.",
       "palabras_clave": ["Panamá", "separación", "1903", "Colombia", "Estados Unidos", "Canal de Panamá", "1914", "independencia", "Herrán-Hay", "comercio"]
+    },
+    {
+      "id": "soc_g5_022", "grado": 5, "tema": "historia de Colombia grado quinto",
+      "pregunta": "¿Cuáles son los períodos más importantes de la historia de Colombia?",
+      "respuesta": "La historia de Colombia tiene cuatro grandes períodos: 1) Precolombino (antes de 1492): culturas indígenas avanzadas como Muisca, Tayrona, Zenú y Quimbaya. 2) Colonia española (1492-1810): Cristóbal Colón llegó a América en 1492; los españoles conquistaron el territorio y fundaron ciudades como Santa Fe de Bogotá (1538) y Medellín (1675). 3) Independencia (1810-1819): el Grito de Independencia fue el 20 de julio de 1810; Simón Bolívar venció en la Batalla de Boyacá el 7 de agosto de 1819. 4) República (1819-presente): se formó la Gran Colombia con Venezuela y Ecuador, luego se separaron; en 1991 se promulgó la actual Constitución.",
+      "palabras_clave": ["historia Colombia", "precolombino", "colonia", "independencia", "república", "Muisca", "Tayrona", "Simón Bolívar", "Boyacá", "1810", "1819", "Santa Fe", "Gran Colombia", "Constitución 1991"]
+    },
+    {
+      "id": "soc_g5_023", "grado": 5, "tema": "culturas precolombinas de Colombia grado quinto",
+      "pregunta": "¿Cuáles fueron las principales culturas precolombinas de Colombia?",
+      "respuesta": "Antes de la llegada española, Colombia tenía culturas indígenas avanzadas: 1) Muisca: en la Sabana de Bogotá y Boyacá; orfebrería (leyenda del Dorado), comercio y sistema de gobierno. 2) Tayrona: en la Sierra Nevada de Santa Marta; construyeron Ciudad Perdida (Teyuna). 3) Zenú: en las sabanas de Bolívar y Córdoba; sistema hidráulico avanzado. 4) Quimbaya: en el Eje Cafetero; famosos por su orfebrería en oro. 5) San Agustín: en el Huila; estatuas y montículos funerarios declarados Patrimonio de la Humanidad. Estas culturas aportaron conocimientos en agricultura, astronomía, medicina y arte.",
+      "palabras_clave": ["culturas precolombinas", "Muisca", "Tayrona", "Zenú", "Quimbaya", "San Agustín", "Ciudad Perdida", "El Dorado", "orfebrería", "indígenas", "Colombia", "Bogotá", "Sierra Nevada", "patrimonio humanidad"]
+    },
+    {
+      "id": "soc_g5_024", "grado": 5, "tema": "colonización e independencia de Colombia grado quinto",
+      "pregunta": "¿Cómo fue la colonización española y cómo logró Colombia su independencia?",
+      "respuesta": "Colonización: Cristóbal Colón llegó a América en 1492. Los conquistadores, como Gonzalo Jiménez de Quesada, fundaron Santa Fe de Bogotá en 1538. Durante 300 años de colonia, los españoles impusieron su idioma, religión y el sistema de encomiendas (trabajo forzado indígena). Independencia: Las ideas de la Revolución Francesa y el ejemplo de EE.UU. inspiraron a los criollos. El 20 de julio de 1810 se dio el Grito de Independencia en Bogotá. La lucha duró años: Simón Bolívar y Francisco de Paula Santander lideraron el ejército patriota. El 7 de agosto de 1819, la Batalla de Boyacá aseguró la independencia definitiva de Colombia.",
+      "palabras_clave": ["colonización", "independencia", "Cristóbal Colón", "España", "1492", "Santa Fe", "1538", "20 de julio", "1810", "Simón Bolívar", "Santander", "Boyacá", "1819", "criollos", "encomiendas"]
+    },
+    {
+      "id": "soc_g5_025", "grado": 5, "tema": "economía y organización política de Colombia grado quinto",
+      "pregunta": "¿Cómo están organizadas la economía y la política en Colombia?",
+      "respuesta": "Organización política: Colombia es una república unitaria, presidencial y democrática. Tres poderes: Ejecutivo (Presidente elegido cada 4 años), Legislativo (Congreso: Senado + Cámara de Representantes, crean las leyes), Judicial (Corte Suprema, Corte Constitucional, garantizan la justicia). También existen Fiscalía, Contraloría y Defensoría del Pueblo. Economía: principales sectores son Industria (textiles, alimentos, petróleo), Agricultura (café, flores, banano, caña de azúcar), Minería (carbón, esmeraldas, oro) y Servicios (turismo, finanzas, comercio). La moneda es el peso colombiano (COP). Colombia pertenece a la Alianza del Pacífico y la CAN.",
+      "palabras_clave": ["economía colombiana", "organización política", "república", "Presidente", "Congreso", "Senado", "Cámara", "Corte Suprema", "poderes del estado", "café", "petróleo", "minería", "turismo", "peso colombiano", "democracia"]
     }
   ]
 }

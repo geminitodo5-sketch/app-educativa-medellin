@@ -1,6 +1,6 @@
 {
   "materia": "ciencias",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "descripcion": "Base de conocimiento ampliada de Ciencias Naturales grados 1-5 — currículo colombiano MEN",
   "contenido": [
     {
@@ -274,6 +274,18 @@
       "palabras_clave": ["vista", "ojos", "cuidar", "luz", "pantalla", "vitamina A", "zanahoria", "gafas", "oftalmólogo", "descanso", "salud"]
     },
     {
+      "id": "cie_g3_038", "grado": 3, "tema": "clasificación de seres vivos grado tercero",
+      "pregunta": "¿Cómo se clasifican los seres vivos en grado tercero?",
+      "respuesta": "Los seres vivos se clasifican en cinco reinos: 1) Animales (se mueven y comen para obtener energía). 2) Plantas (hacen fotosíntesis con la luz solar). 3) Hongos (descomponen materia orgánica, como el moho). 4) Bacterias (unicelulares sin núcleo). 5) Protistas (como las algas). Los animales se dividen en vertebrados (tienen columna vertebral: peces, anfibios, reptiles, aves, mamíferos) e invertebrados (sin columna: insectos, arañas, gusanos). Los humanos somos mamíferos vertebrados.",
+      "palabras_clave": ["reinos", "clasificación seres vivos", "animales", "plantas", "hongos", "bacterias", "vertebrados", "invertebrados", "mamíferos", "aves", "reptiles", "anfibios", "peces", "insectos", "columna vertebral"]
+    },
+    {
+      "id": "cie_g3_039", "grado": 3, "tema": "estados de la materia grado tercero",
+      "pregunta": "¿Cuáles son los estados de la materia y cómo cambian?",
+      "respuesta": "La materia puede estar en tres estados: 1) Sólido: tiene forma y volumen propios (hielo, roca, madera). 2) Líquido: tiene volumen fijo pero toma la forma del recipiente (agua, jugo, aceite). 3) Gaseoso: no tiene forma ni volumen fijos (vapor de agua, aire). Los cambios de estado ocurren por temperatura: fusión (sólido→líquido: derretir hielo), evaporación (líquido→gaseoso: hervir agua), condensación (gaseoso→líquido: gotitas en un vaso frío), solidificación (líquido→sólido: congelar agua).",
+      "palabras_clave": ["estados de la materia", "sólido", "líquido", "gaseoso", "fusión", "evaporación", "condensación", "solidificación", "hielo", "agua", "vapor", "congelar", "hervir", "derretir", "materia"]
+    },
+    {
       "id": "cie_g4_001", "grado": 4, "tema": "sistema solar",
       "pregunta": "¿Cómo está compuesto el sistema solar?",
       "respuesta": "El sistema solar está formado por el Sol (estrella central) y los 8 planetas que giran a su alrededor: Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno. También hay lunas, asteroides y cometas. La Tierra es el tercer planeta y el único con vida confirmada. Un año es el tiempo que tarda la Tierra en rodear el Sol (365 días).",
@@ -496,6 +508,30 @@
       "palabras_clave": ["insectos", "abejas", "mariposas", "polinización", "escarabajos", "descomposición", "cadena alimenticia", "frutas", "verduras", "ecosistema"]
     },
     {
+      "id": "cie_g4_038", "grado": 4, "tema": "materiales y sus propiedades grado cuarto",
+      "pregunta": "¿Qué propiedades tienen los materiales?",
+      "respuesta": "Los materiales tienen propiedades físicas que los distinguen: 1) Dureza: resistencia a rayarse (el diamante es el más duro). 2) Elasticidad: capacidad de recuperar la forma (caucho). 3) Conductividad: los metales conducen el calor y la electricidad; la madera y el plástico son aislantes. 4) Transparencia: el vidrio es transparente; la madera es opaca. 5) Solubilidad: la sal se disuelve en agua; el aceite no. 6) Densidad: el corcho flota; el hierro se hunde. Los materiales se clasifican en naturales (madera, piedra, algodón) y artificiales (plástico, vidrio, cemento).",
+      "palabras_clave": ["materiales", "propiedades", "dureza", "elasticidad", "conductividad", "transparencia", "solubilidad", "densidad", "metal", "plástico", "madera", "natural", "artificial", "aislante", "conductor"]
+    },
+    {
+      "id": "cie_g4_039", "grado": 4, "tema": "energía y sus transformaciones grado cuarto",
+      "pregunta": "¿Qué es la energía y cómo se transforma?",
+      "respuesta": "La energía es la capacidad de producir cambios o realizar trabajo. Tipos: luminosa (luz del sol), térmica (calor), eléctrica (electricidad), mecánica (objetos en movimiento) y química (almacenada en alimentos y combustibles). La energía se transforma: el sol calienta el agua (luminosa→térmica), el fuego hierve agua (química→térmica), un carro usa gasolina (química→mecánica). La energía no se crea ni se destruye, siempre se transforma. Las fuentes pueden ser renovables (sol, viento, agua) o no renovables (petróleo, carbón, gas natural).",
+      "palabras_clave": ["energía", "transformaciones", "luminosa", "térmica", "eléctrica", "mecánica", "química", "renovable", "no renovable", "sol", "viento", "petróleo", "carbón", "combustible", "trabajo"]
+    },
+    {
+      "id": "cie_g4_040", "grado": 4, "tema": "ecosistemas y cadenas alimenticias grado cuarto",
+      "pregunta": "¿Qué es una cadena alimenticia y cómo funciona en el ecosistema?",
+      "respuesta": "Una cadena alimenticia muestra quién come a quién en un ecosistema. Niveles: 1) Productores: plantas que fabrican su alimento mediante fotosíntesis (hierba, árbol). 2) Consumidores primarios: herbívoros que comen plantas (conejo, vaca, oruga). 3) Consumidores secundarios: carnívoros que comen herbívoros (zorro, rana, serpiente). 4) Consumidores terciarios: depredadores que comen carnívoros (águila, jaguar). 5) Descomponedores: hongos y bacterias que reciclan materia orgánica. Si desaparece un eslabón, todo el ecosistema se desequilibra.",
+      "palabras_clave": ["cadena alimenticia", "ecosistema", "productores", "consumidores", "herbívoros", "carnívoros", "depredadores", "descomponedores", "fotosíntesis", "conejo", "zorro", "águila", "desequilibrio", "red alimenticia", "energía"]
+    },
+    {
+      "id": "cie_g4_041", "grado": 4, "tema": "cuidado de recursos naturales grado cuarto",
+      "pregunta": "¿Cómo podemos cuidar los recursos naturales en grado cuarto?",
+      "respuesta": "Los recursos naturales son los que ofrece la naturaleza. Se clasifican en: Renovables (se pueden recuperar: agua, bosques, suelo, animales) y No renovables (se agotan: petróleo, carbón, minerales). Acciones para cuidarlos: 1) Agua: cerrar el grifo, no contaminar ríos ni quebradas. 2) Bosques: no talar, sembrar árboles nativos. 3) Suelo: no arrojar basura, usar abono orgánico. 4) Energía: preferir fuentes limpias, apagar la luz al salir. 5) Biodiversidad: proteger especies en peligro de extinción. En Colombia los recursos naturales son protegidos por el Ministerio de Ambiente y las CAR (Corporaciones Autónomas Regionales).",
+      "palabras_clave": ["recursos naturales", "renovables", "no renovables", "agua", "bosques", "suelo", "petróleo", "carbón", "cuidado", "conservación", "Colombia", "ambiente", "talar", "contaminar", "biodiversidad"]
+    },
+    {
       "id": "cie_g5_001", "grado": 5, "tema": "célula",
       "pregunta": "¿Qué es la célula?",
       "respuesta": "La célula es la unidad básica de la vida. Todos los seres vivos estamos formados por células. Hay organismos unicelulares (una sola célula, como las bacterias) y multicelulares (muchas células, como los humanos con 37 billones de células). Las células tienen membrana, citoplasma y núcleo (donde está el ADN con la información genética).",
@@ -704,6 +740,30 @@
       "pregunta": "¿Qué son los ácidos y las bases?",
       "respuesta": "Los ácidos son sustancias que tienen pH menor a 7. Son agrios, reaccionan con metales. Ejemplos: jugo de limón (pH 2), vinagre (pH 3), jugo gástrico (pH 1,5). Las bases (o álcalis) tienen pH mayor a 7. Son resbaladizas y amargas. Ejemplos: jabón (pH 9), bicarbonato (pH 8,3), lejía (pH 13). El agua pura es neutra (pH 7). La escala pH va de 0 a 14.",
       "palabras_clave": ["ácido", "base", "pH", "neutro", "7", "limón", "vinagre", "jabón", "bicarbonato", "escala", "agrio", "amargo"]
+    },
+    {
+      "id": "cie_g5_036", "grado": 5, "tema": "sistema circulatorio respiratorio y reproductor grado quinto",
+      "pregunta": "¿Cómo funcionan el sistema circulatorio, el respiratorio y el reproductor en grado quinto?",
+      "respuesta": "Sistema circulatorio: el corazón bombea sangre que transporta oxígeno y nutrientes a todas las células. Tiene doble circulación: pulmonar (corazón↔pulmones) y sistémica (corazón↔cuerpo). Sistema respiratorio: los pulmones captan oxígeno del aire y eliminan CO₂; los alvéolos hacen el intercambio gaseoso con la sangre. Sistema reproductor: masculino (testículos producen espermatozoides) y femenino (ovarios producen óvulos, el útero gestiona el embarazo). La fecundación ocurre cuando el espermatozoide une el óvulo. Los tres sistemas trabajan coordinados: la sangre lleva el oxígeno del sistema respiratorio a todos los órganos.",
+      "palabras_clave": ["sistema circulatorio", "sistema respiratorio", "sistema reproductor", "corazón", "pulmones", "alvéolos", "oxígeno", "CO₂", "sangre", "testículos", "ovarios", "útero", "fecundación", "espermatozoide", "óvulo"]
+    },
+    {
+      "id": "cie_g5_037", "grado": 5, "tema": "máquinas simples grado quinto",
+      "pregunta": "¿Qué son las máquinas simples y cuáles son sus tipos?",
+      "respuesta": "Las máquinas simples reducen el esfuerzo necesario para realizar un trabajo. Tipos: 1) Palanca: barra rígida sobre un punto de apoyo (tijeras, balancín, carretilla). Ventaja mecánica = brazo de esfuerzo ÷ brazo de resistencia. 2) Polea: rueda con cuerda que reduce esfuerzo para elevar pesos (grúas, polipastos). 3) Plano inclinado: superficie inclinada para subir objetos pesados (rampas, tornillo, cuña). 4) Rueda y eje: amplifica la fuerza (timón, volante del carro). 5) Cuña: concentra la fuerza en un punto (hacha, clavos). Las máquinas compuestas combinan varias simples (bicicleta, tijeras).",
+      "palabras_clave": ["máquinas simples", "palanca", "polea", "plano inclinado", "rueda", "eje", "cuña", "ventaja mecánica", "esfuerzo", "trabajo", "grúa", "rampa", "tijeras", "bicicleta", "fuerza"]
+    },
+    {
+      "id": "cie_g5_038", "grado": 5, "tema": "electricidad y magnetismo grado quinto",
+      "pregunta": "¿Cómo se relacionan la electricidad y el magnetismo?",
+      "respuesta": "Electricidad y magnetismo están profundamente relacionados (electromagnetismo). Electricidad: flujo de electrones por un conductor. Circuito eléctrico: fuente (pila/batería), conductor (cable de cobre), receptor (bombilla), interruptor. En serie: corriente pasa por todos en fila; en paralelo: cada componente tiene su propia vía independiente. Magnetismo: los imanes tienen polo norte y polo sur (polos iguales se repelen, diferentes se atraen). El campo magnético rodea a los imanes. Electromagnetismo: una corriente eléctrica genera campo magnético (electroimán). La Tierra tiene campo magnético que orienta la brújula. Los generadores convierten movimiento en electricidad usando magnetismo.",
+      "palabras_clave": ["electricidad", "magnetismo", "electromagnetismo", "circuito eléctrico", "corriente", "imán", "polo norte", "polo sur", "electroimán", "brújula", "generador", "serie", "paralelo", "campo magnético", "conductor"]
+    },
+    {
+      "id": "cie_g5_039", "grado": 5, "tema": "conservación del ambiente grado quinto",
+      "pregunta": "¿Qué estrategias existen para conservar el medio ambiente en grado quinto?",
+      "respuesta": "La conservación ambiental requiere acciones en diferentes niveles. Individual: regla de las 3R (Reducir, Reutilizar, Reciclar), ahorrar agua y energía, evitar plásticos de un solo uso, separar residuos. Comunitario: limpiar ríos y quebradas, sembrar árboles, huertos escolares, educación ambiental. Nacional: Colombia tiene áreas naturales protegidas (Parques Nacionales: Tayrona, Los Nevados, Sierra Nevada de Santa Marta), leyes ambientales y control de minería ilegal. Global: Acuerdos internacionales como el Acuerdo de París buscan reducir gases de efecto invernadero. Los ecosistemas estratégicos colombianos (páramos, manglares, selva amazónica) son prioritarios para la conservación del agua y la biodiversidad mundial.",
+      "palabras_clave": ["conservación ambiental", "medio ambiente", "3R", "reducir", "reutilizar", "reciclar", "parques nacionales", "Tayrona", "Colombia", "Acuerdo de París", "biodiversidad", "páramos", "manglares", "amazonía", "residuos"]
     }
   ]
 }
