@@ -22,7 +22,7 @@ try:
     from fastembed import TextEmbedding
     import faiss as _faiss
     _ML_AVAILABLE = True
-except ImportError:
+except Exception:
     _ML_AVAILABLE = False
 
 # ── Rutas ─────────────────────────────────────────────────────────────────────
