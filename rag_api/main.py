@@ -1,8 +1,8 @@
 """
-RAG API — App Educativa Numi  v2.0.0
+RAG API — App Educativa Numi  v2.1.0
 API pública para descarga de bases de conocimiento offline.
-Búsqueda semántica con FAISS + sentence-transformers cuando los paquetes
-ML están instalados; los endpoints de descarga siempre funcionan.
+Búsqueda semántica con FAISS + fastembed (ONNX, sin PyTorch) cuando los
+paquetes ML están instalados; los endpoints de descarga siempre funcionan.
 """
 
 import json
@@ -16,10 +16,10 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# ── ML opcional (FAISS + sentence-transformers) ───────────────────────────────
+# ── ML opcional (FAISS + fastembed) ──────────────────────────────────────────
 try:
     import numpy as np
-    from sentence_transformers import SentenceTransformer
+    from fastembed import TextEmbedding
     import faiss as _faiss
     _ML_AVAILABLE = True
 except ImportError:
@@ -34,8 +34,8 @@ MATERIAS = {"matematicas", "ingles", "espanol", "ciencias", "sociales"}
 os.makedirs(PACKAGES_DIR, exist_ok=True)
 
 # ── Estado global FAISS ───────────────────────────────────────────────────────
-_model = None
-_indexes: dict = {}   # materia → {"index": faiss.Index, "entries": list, "mtime": float}
+_model = None          # instancia TextEmbedding (fastembed)
+_indexes: dict = {}    # materia → {"index": faiss.Index, "entries": list, "mtime": float}
 
 
 # ── Helpers de archivos ───────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ def _build_zip(materia: str) -> str:
 # ── FAISS index builder ───────────────────────────────────────────────────────
 
 def _build_faiss_index(materia: str, model) -> dict:
-    """Construye un índice FAISS para una materia. Devuelve {} si no hay datos."""
+    """Construye un índice FAISS coseno para una materia usando fastembed."""
     src = _json_path(materia)
     if not os.path.exists(src):
         return {}
@@ -75,19 +75,18 @@ def _build_faiss_index(materia: str, model) -> dict:
         return {}
 
     texts = [
-        f"{e.get('pregunta', '')} {e.get('respuesta', '')} {e.get('palabras_clave', '')}"
+        f"{e.get('pregunta', '')} {e.get('respuesta', '')} "
+        f"{' '.join(e.get('palabras_clave', []))}"
         for e in entries
     ]
-    embeddings = model.encode(
-        texts,
-        show_progress_bar=False,
-        normalize_embeddings=True,   # needed for IndexFlatIP == cosine sim
-        batch_size=64,
-    )
-    embeddings = np.array(embeddings, dtype=np.float32)
+
+    # fastembed devuelve un generador de numpy arrays
+    embeddings = np.array(list(model.embed(texts)), dtype=np.float32)
+    # Normalización L2 en-lugar para que IndexFlatIP == similitud coseno
+    _faiss.normalize_L2(embeddings)
 
     dim = embeddings.shape[1]
-    index = _faiss.IndexFlatIP(dim)  # Inner-product on L2-normalised vecs = cosine
+    index = _faiss.IndexFlatIP(dim)
     index.add(embeddings)
 
     return {"index": index, "entries": entries, "mtime": mtime, "dim": dim}
@@ -113,8 +112,10 @@ async def lifespan(_app: FastAPI):
     global _model
     if _ML_AVAILABLE:
         try:
-            print("[FAISS] Cargando modelo sentence-transformers…")
-            _model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+            print("[FAISS] Cargando modelo fastembed (ONNX)…")
+            _model = TextEmbedding(
+                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+            )
             for materia in MATERIAS:
                 print(f"[FAISS] Construyendo índice para {materia}…")
                 _indexes[materia] = _build_faiss_index(materia, _model)
@@ -123,7 +124,7 @@ async def lifespan(_app: FastAPI):
             print(f"[FAISS] No se pudo inicializar la búsqueda semántica: {exc}")
             _model = None
     else:
-        print("[FAISS] sentence-transformers / faiss no instalados — búsqueda semántica desactivada.")
+        print("[FAISS] fastembed / faiss no instalados — búsqueda semántica desactivada.")
     yield
     _indexes.clear()
     _model = None
@@ -135,10 +136,10 @@ app = FastAPI(
     title="RAG API — Numi Educativa",
     description=(
         "API pública para descargar bases de conocimiento de las 5 materias. "
-        "Incluye búsqueda semántica con FAISS cuando los paquetes ML están instalados. "
+        "Incluye búsqueda semántica con FAISS + fastembed (ONNX, sin PyTorch). "
         "Los paquetes descargados funcionan 100 % offline en la app Numi."
     ),
-    version="2.0.0",
+    version="2.1.0",
     lifespan=lifespan,
 )
 
@@ -165,7 +166,8 @@ class BusquedaSemanticaRequest(BaseModel):
 def root():
     return {
         "api": "RAG API — Numi Educativa",
-        "version": "2.0.0",
+        "version": "2.1.0",
+        "motor_semantico": "FAISS + fastembed (ONNX)",
         "semantica_disponible": _ML_AVAILABLE and bool(_indexes),
         "materias_disponibles": sorted(MATERIAS),
         "endpoints": {
@@ -240,41 +242,31 @@ def descargar_paquete(materia: str):
 @app.post("/api/buscar_semantico", tags=["semantico"])
 def buscar_semantico(req: BusquedaSemanticaRequest):
     """
-    Búsqueda semántica con FAISS + sentence-transformers.
-
-    Requiere que el servidor tenga instalados:
-      - sentence-transformers==2.7.0
-      - faiss-cpu==1.8.0
-      - numpy==1.26.4
+    Búsqueda semántica con FAISS + fastembed (ONNX, sin PyTorch).
 
     Devuelve los top_k resultados más similares semánticamente a la pregunta.
-    Si se especifica `grado`, las entradas de ese grado reciben un pequeño boost.
+    Si se especifica `grado`, las entradas de otro grado reciben una penalización.
     """
     if not _ML_AVAILABLE or _model is None:
         raise HTTPException(
             503,
             "Búsqueda semántica no disponible. "
-            "Instala sentence-transformers, faiss-cpu y numpy en el servidor.",
+            "El servidor necesita fastembed, faiss-cpu y numpy instalados.",
         )
 
     materia = req.materia.lower()
     if materia not in MATERIAS:
         raise HTTPException(404, f"Materia '{materia}' no encontrada. Disponibles: {sorted(MATERIAS)}")
 
-    # Reconstruye el índice si el JSON cambió
     _maybe_rebuild(materia)
 
     idx_data = _indexes.get(materia)
     if not idx_data or not idx_data.get("index"):
         raise HTTPException(503, f"Índice semántico para '{materia}' no está listo.")
 
-    # Encode de la consulta
-    query_vec = _model.encode(
-        [req.pregunta],
-        normalize_embeddings=True,
-        show_progress_bar=False,
-    )
-    query_vec = np.array(query_vec, dtype=np.float32)
+    # Encode de la consulta con fastembed
+    query_vec = np.array(list(_model.embed([req.pregunta])), dtype=np.float32)
+    _faiss.normalize_L2(query_vec)
 
     k = min(req.top_k, idx_data["index"].ntotal)
     scores, indices = idx_data["index"].search(query_vec, k)
@@ -295,16 +287,16 @@ def buscar_semantico(req: BusquedaSemanticaRequest):
             "tema":           entry.get("tema", ""),
             "pregunta":       entry.get("pregunta", ""),
             "respuesta":      entry.get("respuesta", ""),
-            "palabras_clave": entry.get("palabras_clave", ""),
+            "palabras_clave": entry.get("palabras_clave", []),
             "similitud":      round(sim, 4),
         })
 
     resultados.sort(key=lambda x: x["similitud"], reverse=True)
 
     return {
-        "pregunta":  req.pregunta,
-        "materia":   materia,
-        "grado":     req.grado,
+        "pregunta":   req.pregunta,
+        "materia":    materia,
+        "grado":      req.grado,
         "resultados": resultados,
-        "total":     len(resultados),
+        "total":      len(resultados),
     }

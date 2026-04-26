@@ -1,69 +1,121 @@
 // ─────────────────────────────────────────────────────────────
 //  lib/data/services/embedding_service.dart
-//  Búsqueda semántica para el RAG:
-//    • TFLite local → modelo en assets/models/embedding_model.tflite
-//    • Similitud coseno para reranking de resultados BM25
+//  Servicio de embeddings semánticos para reranking RAG offline.
 //
-//  Para activar el modo TFLite completo:
-//    1. Exportar paraphrase-multilingual-MiniLM-L12-v2 a TFLite.
-//    2. Copiar el .tflite a assets/models/embedding_model.tflite
-//    3. Declararlo en pubspec.yaml bajo flutter > assets.
-//    4. Instanciar EmbeddingService, llamar initialize() y pasarlo
-//       a RagService(db, embeddings: embeddingService).
+//  Modos de operación:
+//    1. TFLite (preferido) — carga assets/models/embedding_model.tflite
+//       Requiere declarar el asset en pubspec.yaml:
+//         - assets/models/
+//    2. Hash-bag (fallback automático) — siempre disponible, sin modelo.
+//       Produce vectores comparables vía similitud coseno.
 //
-//  Sin modelo: el servicio falla silenciosamente y RagService
-//  usa solo BM25 + expansión conceptual.
+//  La calidad del reranking mejora con un modelo TFLite real, pero el
+//  sistema funciona correctamente con el fallback hash-bag.
 // ─────────────────────────────────────────────────────────────
 
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class EmbeddingService {
-  static const String _modelAssetPath = 'assets/models/embedding_model.tflite';
-  static const int _embeddingDim = 384;
-  static const int _maxSeqLen    = 128;
-
-  // Tamaño del vocabulario para el tokenizer de hash.
-  // Un valor primo grande minimiza colisiones.
-  static const int _vocabSize = 30001;
-
   Interpreter? _interpreter;
+  int _embDim = 64;
   bool _initialized = false;
 
-  bool get modelAvailable => _interpreter != null;
-
-  // ─── Inicialización ───────────────────────────────────────
+  // true después de initialize() — siempre disponemos de algún embedding.
+  bool get modelAvailable => _initialized;
+  bool get usesTFLite => _interpreter != null;
 
   Future<void> initialize() async {
     if (_initialized) return;
-    _initialized = true;
     try {
       final options = InterpreterOptions()..threads = 2;
       _interpreter = await Interpreter.fromAsset(
-        _modelAssetPath,
+        'assets/models/embedding_model.tflite',
         options: options,
       );
+      // Detectar dimensión de salida desde la forma del tensor de output
+      final outShape = _interpreter!.getOutputTensor(0).shape;
+      _embDim = outShape.last;
     } catch (_) {
-      _interpreter = null; // BM25 + expansión conceptual como fallback
+      // Modelo no encontrado — se usará hash-bag como fallback.
+      _interpreter = null;
+      _embDim = 64;
+    } finally {
+      _initialized = true;
     }
   }
 
-  // ─── Embedding local (TFLite) ─────────────────────────────
-
+  /// Devuelve un vector de embedding para [text].
+  /// Usa TFLite si el modelo está cargado; de lo contrario hash-bag.
   Future<List<double>?> encodeLocal(String text) async {
-    if (_interpreter == null) return null;
-    try {
-      final tokens = _tokenize(text);
-      final input  = [tokens]; // shape [1, _maxSeqLen]
-      final output = List.generate(1, (_) => List.filled(_embeddingDim, 0.0));
-      _interpreter!.run(input, output);
-      return _normalize(List<double>.from(output[0] as List));
-    } catch (_) {
-      return null;
+    if (!_initialized) return null;
+
+    final interp = _interpreter;
+    if (interp != null) {
+      try {
+        return _runTFLite(interp, text);
+      } catch (_) {
+        // Fallo de inferencia — caemos al hash-bag
+      }
     }
+    return _hashBag(text, _embDim);
   }
 
-  // ─── Similitud coseno ─────────────────────────────────────
+  // ─── TFLite inference ────────────────────────────────────────
+
+  List<double> _runTFLite(Interpreter interp, String text) {
+    final inShape  = interp.getInputTensor(0).shape;
+    final outShape = interp.getOutputTensor(0).shape;
+    final inDim    = inShape.last;
+    final outDim   = outShape.last;
+
+    // Construir input como bag-of-hashes normalizado
+    final inputVec = _hashBag(text, inDim);
+    final inputFloat = Float32List.fromList(inputVec);
+
+    // Preparar buffer de salida
+    final outputFloat = Float32List(outDim);
+
+    // Reformar como listas anidadas [1, dim] para tflite_flutter
+    final input2d  = [inputFloat.toList()];
+    final output2d = [outputFloat.toList()];
+
+    interp.run(input2d, output2d);
+
+    return _l2Normalize(output2d[0]);
+  }
+
+  // ─── Hash bag-of-words + bigramas de caracteres ──────────────
+
+  List<double> _hashBag(String text, int dim) {
+    final vec = List<double>.filled(dim, 0.0);
+    final words = text
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-záéíóúñü0-9\s]'), ' ')
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.length >= 2);
+
+    for (final word in words) {
+      // unigrama
+      vec[word.hashCode.abs() % dim] += 1.0;
+      // bigramas de caracteres
+      for (int i = 0; i < word.length - 1; i++) {
+        final bg = word.substring(i, i + 2);
+        vec[(bg.hashCode.abs() ^ 0x5F3759DF) % dim] += 0.5;
+      }
+    }
+    return _l2Normalize(vec);
+  }
+
+  List<double> _l2Normalize(List<double> v) {
+    final norm = sqrt(v.fold(0.0, (s, x) => s + x * x));
+    if (norm < 1e-9) return List<double>.filled(v.length, 0.0);
+    return v.map((x) => x / norm).toList();
+  }
+
+  // ─── Utilidades estáticas ─────────────────────────────────────
 
   static double cosineSimilarity(List<double> a, List<double> b) {
     assert(a.length == b.length);
@@ -89,72 +141,5 @@ class EmbeddingService {
     return scored.take(topK).toList();
   }
 
-  // ─── Helpers internos ─────────────────────────────────────
-
-  List<double> _normalize(List<double> v) {
-    final norm = sqrt(v.fold(0.0, (s, x) => s + x * x));
-    if (norm == 0) return v;
-    return v.map((x) => x / norm).toList();
-  }
-
-  // Tokenizer de subword hash (character n-grams de largo 3-4).
-  // No requiere archivo de vocabulario y es determinístico.
-  // Produce IDs consistentes que el modelo puede usar como input_ids.
-  // Para producción con MiniLM real, reemplazar por WordPiece tokenizer.
-  List<int> _tokenize(String text, {int maxLen = _maxSeqLen}) {
-    final normalized = _normalizeText(text);
-    final tokens = <int>[1]; // [CLS] token = 1
-
-    // Extraer character n-grams solapados (trigramas y cuatrigramas)
-    for (int i = 0; i < normalized.length; i++) {
-      if (tokens.length >= maxLen - 1) break;
-
-      // Trigrama
-      if (i + 3 <= normalized.length) {
-        final gram3 = normalized.substring(i, i + 3);
-        tokens.add(_hashGram(gram3));
-      }
-      // Cuatrigrama (cada 2 posiciones para no sobrecargar)
-      if (i % 2 == 0 && i + 4 <= normalized.length) {
-        final gram4 = normalized.substring(i, i + 4);
-        if (tokens.length < maxLen - 1) tokens.add(_hashGram(gram4));
-      }
-    }
-
-    tokens.add(2); // [SEP] token = 2
-
-    // Pad con 0 hasta maxLen
-    while (tokens.length < maxLen) { tokens.add(0); }
-    return tokens.take(maxLen).toList();
-  }
-
-  // Hash de un n-gram a un índice de vocabulario [3, _vocabSize)
-  int _hashGram(String gram) {
-    int h = 5381;
-    for (final c in gram.codeUnits) {
-      h = ((h << 5) + h) ^ c; // djb2
-    }
-    return (h.abs() % (_vocabSize - 3)) + 3; // [3, vocabSize)
-  }
-
-  // Normalización de texto para tokenizar
-  String _normalizeText(String text) {
-    return text
-        .toLowerCase()
-        .replaceAll(RegExp(r'[áàâä]'), 'a')
-        .replaceAll(RegExp(r'[éèêë]'), 'e')
-        .replaceAll(RegExp(r'[íìîï]'), 'i')
-        .replaceAll(RegExp(r'[óòôö]'), 'o')
-        .replaceAll(RegExp(r'[úùûü]'), 'u')
-        .replaceAll('ñ', 'n')
-        .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-  }
-
-  void dispose() {
-    _interpreter?.close();
-    _interpreter = null;
-    _initialized = false;
-  }
+  void dispose() => _interpreter?.close();
 }
