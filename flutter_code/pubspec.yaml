@@ -72,6 +72,9 @@ dependencies:
   # Fuentes de Google (usado en menú)
   google_fonts: ^6.2.1
 
+  # Inferencia TFLite para embeddings semánticos offline
+  tflite_flutter: ^0.10.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

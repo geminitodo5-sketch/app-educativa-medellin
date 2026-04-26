@@ -1,7 +1,7 @@
 {
   "materia": "sociales",
-  "version": "1.0.0",
-  "descripcion": "Base de conocimiento de Ciencias Sociales para grados 1 a 5 — currículo colombiano",
+  "version": "2.0.0",
+  "descripcion": "Base de conocimiento ampliada de Ciencias Sociales grados 1-5 — currículo colombiano MEN",
   "contenido": [
     {
       "id": "soc_g1_001", "grado": 1, "tema": "familia",
@@ -36,14 +36,14 @@
     {
       "id": "soc_g2_003", "grado": 2, "tema": "símbolos patrios",
       "pregunta": "¿Cuáles son los símbolos patrios de Colombia?",
-      "respuesta": "Los símbolos patrios de Colombia son: La Bandera (amarilla, azul y roja — el amarillo representa la riqueza, el azul los mares y el rojo la sangre de los héroes), el Escudo (con el cóndor, el istmo de Panamá y la cornucopia), y el Himno Nacional (compuesto por Oreste Síndici con letra de Rafael Núñez). También son símbolos el cóndor (ave nacional) y la orquídea (flor nacional).",
+      "respuesta": "Los símbolos patrios de Colombia son: La Bandera (amarilla, azul y roja), el Escudo (con el cóndor, el istmo de Panamá y la cornucopia), y el Himno Nacional (compuesto por Oreste Síndici con letra de Rafael Núñez). También son símbolos el cóndor (ave nacional) y la orquídea (flor nacional).",
       "palabras_clave": ["símbolos patrios", "bandera", "escudo", "himno", "Colombia", "amarillo", "azul", "rojo", "cóndor", "orquídea", "nacional"]
     },
     {
       "id": "soc_g3_001", "grado": 3, "tema": "regiones de Colombia",
       "pregunta": "¿Cuáles son las regiones naturales de Colombia?",
-      "respuesta": "Colombia tiene 6 regiones naturales: 1) Caribe: costa norte, playas, Barranquilla y Cartagena. 2) Pacífica: costa oeste, selvas lluviosas, Buenaventura. 3) Andina: cordillera de los Andes, Bogotá, Medellín, Cali. 4) Orinoquía: llanos orientales, ríos y ganado. 5) Amazonía: selva tropical, Leticia, biodiversidad. 6) Insular: islas como San Andrés y Providencia.",
-      "palabras_clave": ["regiones", "Colombia", "Caribe", "Pacífica", "Andina", "Orinoquía", "Amazonía", "Insular", "geografía", "zona", "área"]
+      "respuesta": "Colombia tiene 6 regiones naturales: 1) Caribe: costa norte, playas, Barranquilla y Cartagena. 2) Pacífica: costa oeste, selvas lluviosas, Buenaventura. 3) Andina: cordillera de los Andes, Bogotá, Medellín, Cali. 4) Orinoquía: llanos orientales, ríos y ganado. 5) Amazonía: selva tropical, Leticia. 6) Insular: islas como San Andrés y Providencia.",
+      "palabras_clave": ["regiones", "Colombia", "Caribe", "Pacífica", "Andina", "Orinoquía", "Amazonía", "Insular", "geografía", "zona"]
     },
     {
       "id": "soc_g3_002", "grado": 3, "tema": "mapas",
@@ -52,28 +52,430 @@
       "palabras_clave": ["mapa", "mapas", "cartografía", "escala", "rosa de los vientos", "leyenda", "norte", "sur", "este", "oeste", "título", "geografía"]
     },
     {
+      "id": "soc_g3_003", "grado": 3, "tema": "comunidades de Colombia",
+      "pregunta": "¿Cuáles son los grupos étnicos que habitan en Colombia?",
+      "respuesta": "Colombia es un país pluriétnico y multicultural. Los principales grupos étnicos son: Mestizos (la mayoría, mezcla de español e indígena), Afrocolombianos o afrodescendientes (concentrados en el Pacífico, Caribe, San Andrés y ciudades grandes), Indígenas (65 pueblos distintos con sus propias lenguas y costumbres: Wayúu, Embera, Arhuaco, Nasa, Tucano) y Raizales (San Andrés y Providencia).",
+      "palabras_clave": ["grupos étnicos", "mestizo", "afrocolombiano", "indígena", "raizal", "Wayúu", "Embera", "Arhuaco", "Nasa", "pluriétnico", "Colombia"]
+    },
+    {
+      "id": "soc_g3_004", "grado": 3, "tema": "economía básica",
+      "pregunta": "¿Qué es la economía y cuáles son las actividades económicas?",
+      "respuesta": "La economía estudia cómo las personas y los países producen, distribuyen y consumen bienes y servicios. Las actividades económicas se dividen en: Sector primario (extrae recursos de la naturaleza: agricultura, ganadería, minería, pesca). Sector secundario (transforma materias primas: fábricas, industria). Sector terciario (presta servicios: educación, salud, comercio, transporte). Colombia tiene las tres actividades.",
+      "palabras_clave": ["economía", "actividades económicas", "sector primario", "secundario", "terciario", "agricultura", "ganadería", "minería", "industria", "servicios"]
+    },
+    {
+      "id": "soc_g3_005", "grado": 3, "tema": "antioquia",
+      "pregunta": "¿Cuáles son los municipios más importantes de Antioquia?",
+      "respuesta": "Antioquia es el departamento más poblado de Colombia después de Bogotá. Su capital es Medellín. Municipios importantes: Bello, Itagüí, Envigado, Sabaneta (Área Metropolitana), Rionegro, Marinilla, Santafé de Antioquia, El Carmen de Viboral, Santa Rosa de Osos. Antioquia tiene 125 municipios. Es famoso por su cultura paisa, el banano del Urabá y la flor de corte.",
+      "palabras_clave": ["Antioquia", "municipios", "Medellín", "Bello", "Itagüí", "Rionegro", "paisa", "departamento", "Colombia", "Urabá", "banano"]
+    },
+    {
+      "id": "soc_g3_006", "grado": 3, "tema": "geografía física",
+      "pregunta": "¿Cuáles son los principales ríos de Colombia?",
+      "respuesta": "Los ríos más importantes de Colombia son: Magdalena (el más largo e importante, navegable, de los Andes al Caribe), Cauca (segundo más importante, paralelo al Magdalena), Atrato (Pacífico, más caudaloso), Amazonas (en el sur, límite con Perú y Brasil), Meta (Orinoquía), Putumayo (Amazonía). Los ríos colombianos son fuente de agua, alimento (pesca), energía (hidroeléctricas) y transporte.",
+      "palabras_clave": ["ríos", "Magdalena", "Cauca", "Atrato", "Amazonas", "Meta", "Colombia", "navegable", "pesca", "energía", "transporte"]
+    },
+    {
+      "id": "soc_g3_007", "grado": 3, "tema": "cordilleras de Colombia",
+      "pregunta": "¿Cuántas cordilleras tiene Colombia?",
+      "respuesta": "Colombia tiene tres cordilleras que son ramificaciones de los Andes: Occidental (la más baja, bordeando el Pacífico), Central (la más alta, con nevados: Nevado del Ruiz, Tolima, Santa Isabel) y Oriental (la más larga, llega hasta Venezuela y cubre parte de Bogotá, los Santanderes). En el norte están la Sierra Nevada de Santa Marta (pico Cristóbal Colón, 5775 m — el más alto de Colombia) y la Serranía de la Macarena.",
+      "palabras_clave": ["cordilleras", "Andes", "occidental", "central", "oriental", "Nevada", "Sierra Nevada", "Santa Marta", "Cristóbal Colón", "5775", "Colombia"]
+    },
+    {
+      "id": "soc_g3_008", "grado": 3, "tema": "valores cívicos",
+      "pregunta": "¿Qué son los valores cívicos y por qué son importantes?",
+      "respuesta": "Los valores cívicos son principios que guían nuestra convivencia en sociedad. Principales valores cívicos: Respeto (reconocer la dignidad de los demás), Honestidad (actuar con verdad), Solidaridad (ayudar a quien lo necesita), Responsabilidad (cumplir con nuestras obligaciones), Justicia (dar a cada quien lo que merece), Tolerancia (aceptar las diferencias), Participación (tomar parte en las decisiones de la comunidad).",
+      "palabras_clave": ["valores cívicos", "respeto", "honestidad", "solidaridad", "responsabilidad", "justicia", "tolerancia", "participación", "convivencia", "comunidad"]
+    },
+    {
+      "id": "soc_g3_009", "grado": 3, "tema": "transporte",
+      "pregunta": "¿Cuáles son los medios de transporte en Colombia?",
+      "respuesta": "Colombia tiene varios medios de transporte: Aéreo: aviones (El Dorado en Bogotá, José María Córdova en Medellín). Terrestre: carreteras, buses, camiones, Metro de Medellín. Fluvial: botes y lanchas en ríos como el Magdalena y el Amazonas. Marítimo: barcos en los puertos de Barranquilla, Cartagena, Buenaventura y Santa Marta. El transporte es fundamental para la economía y la unión del país.",
+      "palabras_clave": ["transporte", "aéreo", "terrestre", "fluvial", "marítimo", "avión", "bus", "Metro", "Medellín", "río", "puerto", "Colombia"]
+    },
+    {
+      "id": "soc_g3_010", "grado": 3, "tema": "medioambiente y sociedad",
+      "pregunta": "¿Cómo afecta la naturaleza a las comunidades en Colombia?",
+      "respuesta": "Las comunidades colombianas dependen de la naturaleza: Las comunidades del Pacífico viven de la pesca y el bosque húmedo. Las del Amazonas son indígenas que han habitado la selva por miles de años. Las comunidades andinas viven de la agricultura en las montañas. Las del Caribe dependen del turismo y la pesca. El cambio climático y la deforestación amenazan los modos de vida de todas estas comunidades.",
+      "palabras_clave": ["comunidades", "naturaleza", "Pacífico", "Amazonia", "Andes", "Caribe", "pesca", "selva", "agricultura", "cambio climático", "Colombia"]
+    },
+    {
+      "id": "soc_g3_011", "grado": 3, "tema": "constitución de Colombia",
+      "pregunta": "¿Qué es la Constitución de 1991?",
+      "respuesta": "La Constitución Política de Colombia de 1991 es la ley máxima del país. Reemplazó la Constitución de 1886. Estableció que Colombia es un Estado social de derecho, democrático, participativo y pluralista. Reconoció los derechos de los indígenas y afrocolombianos, estableció la tutela (mecanismo para proteger derechos), creó la Corte Constitucional y garantizó derechos fundamentales como la vida, la educación y la salud.",
+      "palabras_clave": ["Constitución", "1991", "ley", "Colombia", "democrática", "pluralista", "tutela", "derechos", "indígenas", "Corte Constitucional"]
+    },
+    {
+      "id": "soc_g3_012", "grado": 3, "tema": "cultura colombiana",
+      "pregunta": "¿Cuáles son las fiestas y festivales más importantes de Colombia?",
+      "respuesta": "Los festivales más importantes de Colombia: Festival de las Flores (Medellín, agosto): silleteros y desfile de autos. Carnaval de Barranquilla (febrero): declarado Patrimonio de la Humanidad por la UNESCO. Festival Vallenato (Valledupar, abril). Feria de Cali (diciembre): capital de la salsa. Carnaval de Negros y Blancos (Pasto, enero): Patrimonio UNESCO. Cada región tiene sus propias fiestas que reflejan su identidad cultural.",
+      "palabras_clave": ["festivales", "Festival de las Flores", "Medellín", "Carnaval de Barranquilla", "UNESCO", "Festival Vallenato", "Feria de Cali", "salsa", "cultura"]
+    },
+    {
+      "id": "soc_g3_013", "grado": 3, "tema": "geografía urbana",
+      "pregunta": "¿Cuáles son las ciudades más importantes de Colombia?",
+      "respuesta": "Las principales ciudades de Colombia: Bogotá D.C. (capital, ~9 millones de habitantes, sede del gobierno). Medellín (segunda ciudad, ~2,5 millones, innovación y flores). Cali (tercera ciudad, capital de la salsa, Valle del Cauca). Barranquilla (puerta de oro de Colombia, Caribe, carnaval). Cartagena (ciudad amurallada, Patrimonio de la Humanidad). Bucaramanga, Manizales, Pereira, Santa Marta, Cúcuta.",
+      "palabras_clave": ["ciudades", "Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Bucaramanga", "Colombia", "capital", "habitantes"]
+    },
+    {
+      "id": "soc_g3_014", "grado": 3, "tema": "diversidad cultural",
+      "pregunta": "¿Qué es el multiculturalismo?",
+      "respuesta": "El multiculturalismo es la coexistencia de diferentes culturas en un mismo espacio, respetándose mutuamente. Colombia es un país multicultural porque tiene: pueblos indígenas con sus lenguas y tradiciones, comunidades afrocolombianas con su música y gastronomía, comunidades mestizas con influencias españolas e indígenas, comunidades raizales caribeñas, comunidades rom (gitanos). La Constitución del 91 reconoce y protege esta diversidad.",
+      "palabras_clave": ["multiculturalismo", "diversidad", "culturas", "indígenas", "afrocolombianos", "mestizos", "raizales", "Colombia", "respeto", "Constitución"]
+    },
+    {
+      "id": "soc_g3_015", "grado": 3, "tema": "historia precolombina",
+      "pregunta": "¿Quiénes eran los pueblos indígenas que vivían en Colombia antes de la conquista?",
+      "respuesta": "Antes de la conquista española, Colombia estaba habitada por numerosos pueblos indígenas. Los más desarrollados: Muiscas (altiplano cundiboyacense, organización política avanzada, origen del mito de El Dorado), Taironas (Sierra Nevada de Santa Marta, Ciudad Perdida), Sinúes/Zenúes (Caribe, orfebrería), Quimbayas (Eje Cafetero, orfebrería famosa), Calimas (Valle del Cauca), Pijaos (Tolima). Cada uno tenía su lengua, arte y organización social.",
+      "palabras_clave": ["precolombino", "indígenas", "Muiscas", "Taironas", "Zenúes", "Quimbayas", "El Dorado", "Ciudad Perdida", "conquista", "Colombia"]
+    },
+    {
+      "id": "soc_g3_016", "grado": 3, "tema": "normas de convivencia",
+      "pregunta": "¿Por qué necesitamos normas de convivencia?",
+      "respuesta": "Las normas de convivencia son reglas que acordamos para vivir bien en comunidad y evitar conflictos. Sin normas, cada persona haría lo que quiere y habría caos. En el colegio: respetar el turno para hablar, no molestar a los compañeros, cuidar los materiales. En el barrio: no botar basura, respetar a los vecinos, cuidar los espacios comunes. Las normas las hacemos entre todos y todos debemos cumplirlas.",
+      "palabras_clave": ["normas", "convivencia", "reglas", "comunidad", "conflicto", "colegio", "barrio", "respeto", "cuidar", "acuerdo"]
+    },
+    {
+      "id": "soc_g3_017", "grado": 3, "tema": "trabajo y profesiones",
+      "pregunta": "¿Cuáles son las profesiones y oficios más importantes en la comunidad?",
+      "respuesta": "En toda comunidad hay personas con diferentes profesiones y oficios que son necesarios: médicos y enfermeros (cuidan la salud), maestros y profesores (educan), agricultores y pescadores (producen alimentos), constructores y electricistas (construyen), comerciantes (venden), policías y bomberos (protegen), conductores (transportan), artistas y músicos (entretienen). Todos los trabajos son dignos e importantes para la sociedad.",
+      "palabras_clave": ["profesiones", "oficios", "médico", "maestro", "agricultor", "constructor", "comerciante", "policía", "conductor", "artista", "trabajo", "comunidad"]
+    },
+    {
+      "id": "soc_g3_018", "grado": 3, "tema": "democracia escolar",
+      "pregunta": "¿Qué es el gobierno escolar?",
+      "respuesta": "El gobierno escolar es la organización democrática del colegio que permite la participación de estudiantes, profesores y padres de familia. Está compuesto por: el rector (máxima autoridad), el consejo directivo (padres, estudiantes, docentes), el consejo académico, el personero estudiantil (elegido por los estudiantes para defender sus derechos) y el consejo de estudiantes. El gobierno escolar es una práctica de democracia para los niños.",
+      "palabras_clave": ["gobierno escolar", "democracia", "rector", "consejo directivo", "personero", "estudiantes", "participación", "colegio", "elegir", "derechos"]
+    },
+    {
+      "id": "soc_g3_019", "grado": 3, "tema": "Antioquia historia",
+      "pregunta": "¿Cuál es la historia de la colonización antioqueña?",
+      "respuesta": "La colonización antioqueña fue el proceso por el cual el pueblo paisa (de Antioquia) colonizó nuevas tierras en los siglos XVIII y XIX. Partiendo de Antioquia hacia el sur, fundaron pueblos en Caldas, Risaralda, Quindío, norte del Valle del Cauca y noreste del Tolima. Este proceso creó el Eje Cafetero, caracterizado por la cultura cafetera, la arquitectura de bahareque y la colonización campesina familiar. Los colonizadores antioqueños son conocidos por su espíritu emprendedor.",
+      "palabras_clave": ["colonización antioqueña", "paisa", "Antioquia", "Caldas", "Risaralda", "Quindío", "Eje Cafetero", "café", "bahareque", "emprendedor"]
+    },
+    {
+      "id": "soc_g3_020", "grado": 3, "tema": "espacio geográfico",
+      "pregunta": "¿Qué son los puntos cardinales y cómo se usan?",
+      "respuesta": "Los puntos cardinales son las cuatro direcciones principales de la Tierra: Norte (N), Sur (S), Este/Oriente (E), Oeste/Occidente (O). En los mapas, el norte generalmente apunta hacia arriba. La rosa de los vientos tiene además los puntos intermedios: noreste, noroeste, sureste, suroeste. Para orientarse: el sol sale por el este y se pone por el oeste. Una brújula siempre apunta al norte.",
+      "palabras_clave": ["puntos cardinales", "norte", "sur", "este", "oeste", "mapa", "rosa de los vientos", "brújula", "orientar", "noreste", "noroeste"]
+    },
+    {
+      "id": "soc_g3_021", "grado": 3, "tema": "comunicación y medios",
+      "pregunta": "¿Cómo se comunicaban las personas antes del internet?",
+      "respuesta": "Antes del internet, las personas se comunicaban por: cartas (correo postal, tardaban días o semanas), telégrafos (mensajes en código Morse por cables), periódicos y revistas (información impresa), radio (sonido en tiempo real), teléfono fijo (llamadas de voz). Los pregoneros anunciaban las noticias en las plazas. En las comunidades rurales, los correos a caballo o a pie eran comunes. La comunicación ha cambiado enormemente con la tecnología.",
+      "palabras_clave": ["comunicación", "cartas", "correo", "telégrafo", "radio", "periódico", "teléfono", "internet", "pregonero", "historia", "antes"]
+    },
+    {
+      "id": "soc_g3_022", "grado": 3, "tema": "patrimonio cultural",
+      "pregunta": "¿Qué son los Patrimonios de la Humanidad en Colombia?",
+      "respuesta": "Los Patrimonios de la Humanidad son bienes culturales o naturales que la UNESCO protege por su valor universal. Colombia tiene 9: Ciudad Amurallada de Cartagena, Parque Arqueológico de San Agustín, Parque Arqueológico de Tierradentro, Parque Nacional Los Katíos, Malpelo, Paisaje Cultural Cafetero, Centro Histórico de Santa Cruz de Mompox, Carnaval de Barranquilla, Carnaval de Negros y Blancos de Pasto.",
+      "palabras_clave": ["patrimonio", "UNESCO", "Cartagena", "San Agustín", "Tierradentro", "Los Katíos", "Paisaje Cafetero", "Mompox", "Barranquilla", "Pasto", "Colombia"]
+    },
+    {
+      "id": "soc_g3_023", "grado": 3, "tema": "gastronomía colombiana",
+      "pregunta": "¿Cuáles son los platos típicos de Colombia?",
+      "respuesta": "La gastronomía colombiana varía según la región: Bandeja paisa (Antioquia: frijoles, arroz, carne, chorizo, chicharrón, huevo, aguacate, arepa). Sancocho (sopa con carne y tubérculos, nacional). Ajiaco (Bogotá, sopa de papas y pollo). Cazuela de mariscos (Caribe y Pacífico). Lechona (Tolima, cerdo relleno). Tamales. Pandebono. Empanadas. Buñuelos. Arepas (en todo el país, de muchos tipos). Chocolate santafereño. El banano, el café y el cacao son productos colombianos reconocidos mundialmente.",
+      "palabras_clave": ["gastronomía", "bandeja paisa", "sancocho", "ajiaco", "arepa", "empanada", "tamales", "Colombia", "regiones", "comida típica", "café"]
+    },
+    {
+      "id": "soc_g3_024", "grado": 3, "tema": "conflicto y paz",
+      "pregunta": "¿Qué es el conflicto y cómo se resuelve pacíficamente?",
+      "respuesta": "Un conflicto es una situación en que dos o más personas tienen intereses u opiniones distintos. Es natural en la vida social. Lo importante es cómo se resuelve. Formas de solución pacífica: Diálogo (hablar con respeto para llegar a un acuerdo), Mediación (una persona neutra ayuda a resolver el conflicto), Negociación (cada parte cede algo), Conciliación (buscar un acuerdo justo para todos). La violencia no es una solución, empeora los problemas.",
+      "palabras_clave": ["conflicto", "paz", "diálogo", "mediación", "negociación", "conciliación", "resolución", "acuerdo", "violencia", "respeto"]
+    },
+    {
+      "id": "soc_g3_025", "grado": 3, "tema": "geografía",
+      "pregunta": "¿Qué es el clima y cómo varía en Colombia?",
+      "respuesta": "El clima de Colombia varía mucho según la altitud (ya que está en la zona ecuatorial): Tierra caliente (0 a 1000 m): temperatura 24-35°C, ej: la costa Caribe y el Amazonas. Tierra templada (1000 a 2000 m): temperatura 17-24°C, ej: Medellín (ciudad de la eterna primavera). Tierra fría (2000 a 3000 m): 12-17°C, ej: Bogotá. Páramo (3000 a 4200 m): 0-12°C. Nieves perpetuas (más de 4200 m). En Colombia nunca hay invierno ni verano extremo.",
+      "palabras_clave": ["clima", "altitud", "temperatura", "tierra caliente", "tierra templada", "Medellín", "Bogotá", "páramo", "Colombia", "tropical", "ecuatorial"]
+    },
+    {
+      "id": "soc_g3_026", "grado": 3, "tema": "historia de Medellín",
+      "pregunta": "¿Cómo fue fundada Medellín?",
+      "respuesta": "Medellín fue fundada el 2 de noviembre de 1616 (se acepta también 1675 como fecha oficial) en el Valle de Aburrá. Su nombre oficial es 'La Ciudad de Medellín'. Comenzó como un pequeño poblado de españoles y criollos cerca del río Aburrá (hoy Río Medellín). En el siglo XIX creció con la minería y la arriería. En el XX se convirtió en un centro industrial textil. Hoy es una metrópoli conocida por su innovación y transformación social.",
+      "palabras_clave": ["Medellín", "fundación", "1616", "Valle de Aburrá", "españoles", "criollos", "minería", "textil", "innovación", "historia"]
+    },
+    {
+      "id": "soc_g3_027", "grado": 3, "tema": "derechos humanos",
+      "pregunta": "¿Qué son los derechos humanos?",
+      "respuesta": "Los derechos humanos son los derechos que tienen todas las personas por el simple hecho de ser humanas, sin importar su raza, religión, sexo, idioma o condición económica. Fueron proclamados en la Declaración Universal de Derechos Humanos de 1948 (ONU). Los principales: derecho a la vida, a la libertad, a la educación, a la salud, a la no discriminación, a la privacidad. Son universales (para todos), inalienables (no se pueden quitar) e indivisibles.",
+      "palabras_clave": ["derechos humanos", "universales", "ONU", "1948", "vida", "libertad", "educación", "salud", "discriminación", "inalienables"]
+    },
+    {
+      "id": "soc_g3_028", "grado": 3, "tema": "economía Antioquia",
+      "pregunta": "¿Cuáles son las principales actividades económicas de Antioquia?",
+      "respuesta": "Antioquia es el segundo departamento más productivo de Colombia. Sus principales actividades económicas: Textiles y confecciones (Medellín, 'la capital de la moda latinoamericana'). Flores de corte (segunda región exportadora del mundo). Café (especialmente en los municipios de Jardin, Andes, Urrao). Banano del Urabá (exportación). Minería (oro en Segovia y Zaragoza). Construcción. Turismo. La Feria Colombiatex atrae compradores de todo el mundo.",
+      "palabras_clave": ["Antioquia", "textiles", "flores", "café", "banano", "Urabá", "minería", "oro", "Medellín", "economía", "exportar"]
+    },
+    {
+      "id": "soc_g3_029", "grado": 3, "tema": "sistema político Colombia",
+      "pregunta": "¿Qué es un municipio y quién lo gobierna?",
+      "respuesta": "Un municipio es la unidad territorial básica de Colombia. Tiene un alcalde (jefe del gobierno municipal, elegido por voto popular cada 4 años) y un concejo municipal (cuerpo legislativo, también elegido). El alcalde dirige la administración local, maneja el presupuesto y ejecuta los planes de desarrollo. En Medellín, el alcalde gobierna los 16 barrios o comunas. Colombia tiene 1.122 municipios.",
+      "palabras_clave": ["municipio", "alcalde", "concejo", "gobierno municipal", "elecciones", "voto", "4 años", "Colombia", "1122", "comunas", "Medellín"]
+    },
+    {
+      "id": "soc_g3_030", "grado": 3, "tema": "ecología social",
+      "pregunta": "¿Qué es el espacio público y por qué hay que cuidarlo?",
+      "respuesta": "El espacio público es el conjunto de lugares que pertenecen a todos los ciudadanos: parques, plazas, aceras, playas, ríos, bibliotecas públicas. Es fundamental porque: permite el encuentro y la socialización, da acceso a zonas verdes, es el escenario de la vida democrática (manifestaciones, ferias). Debemos cuidarlo: no arrojar basura, no deteriorar los monumentos, respetar las normas de uso. El espacio público bien cuidado mejora la calidad de vida.",
+      "palabras_clave": ["espacio público", "parques", "plazas", "aceras", "ciudadanos", "todos", "cuidar", "basura", "monumentos", "calidad de vida"]
+    },
+    {
+      "id": "soc_g3_031", "grado": 3, "tema": "historia de Colombia",
+      "pregunta": "¿Qué fue la época colonial en Colombia?",
+      "respuesta": "La época colonial fue el período de dominación española en Colombia (1500-1810 aprox.). Los españoles llegaron a finales del siglo XV. En 1499 Alonso de Ojeda exploró las costas. En 1538 Gonzalo Jiménez de Quesada fundó Bogotá. Los españoles: impusieron su idioma, religión y cultura, explotaron los recursos (oro, plata), esclavizaron a indígenas y africanos, crearon el sistema de encomiendas. Los mestizos (mezcla de español e indígena) se convirtieron en la mayoría de la población.",
+      "palabras_clave": ["colonial", "España", "1538", "Quesada", "Bogotá", "oro", "esclavos", "indígenas", "encomienda", "mestizos", "colonia", "1810"]
+    },
+    {
+      "id": "soc_g3_032", "grado": 3, "tema": "cultura musical",
+      "pregunta": "¿Cuáles son los ritmos musicales más importantes de Colombia?",
+      "respuesta": "Colombia es un país con una riqueza musical extraordinaria: Cumbia (de la Costa Caribe, mezcla de ritmos africanos, indígenas y españoles, declarada Patrimonio Cultural). Vallenato (del Caribe, con acordeón, guacharaca y caja, Patrimonio de la UNESCO). Porro (Córdoba y Sucre). Mapalé (danza del Caribe). Currulao (del Pacífico, afro-colombiano). Bambuco (los Andes, considerado el ritmo nacional). Salsa (adoptada especialmente en Cali). Ranchera (Antioquia). Música llanera (llanos orientales).",
+      "palabras_clave": ["música", "cumbia", "vallenato", "bambuco", "salsa", "mapalé", "currulao", "Colombia", "ritmos", "Caribe", "Pacífico", "Andes"]
+    },
+    {
+      "id": "soc_g3_033", "grado": 3, "tema": "producción agrícola",
+      "pregunta": "¿Cuáles son los principales productos agrícolas de Colombia?",
+      "respuesta": "Colombia es una potencia agrícola por su diversidad de climas. Principales productos: Café (Colombia es famoso mundialmente por su café suave de alta calidad). Flores de corte (segundo exportador mundial, principalmente de Bogotá). Banano (exportación masiva del Urabá y Santa Marta). Palma de aceite. Caña de azúcar (Valle del Cauca). Arroz (Meta, Tolima). Cacao (Colombia, tercer en exportaciones de América). Aguacate Hass. Frutas tropicales.",
+      "palabras_clave": ["agricultura", "café", "flores", "banano", "caña de azúcar", "arroz", "cacao", "aguacate", "Colombia", "exportar", "producción"]
+    },
+    {
+      "id": "soc_g3_034", "grado": 3, "tema": "derechos del niño",
+      "pregunta": "¿Qué establece la Convención sobre los Derechos del Niño?",
+      "respuesta": "La Convención sobre los Derechos del Niño (CDN) es un tratado internacional adoptado en 1989 por la ONU que Colombia ratificó. Establece los derechos de todos los menores de 18 años: derecho a la vida, al nombre, a la familia, a la educación, a la salud, al juego y el descanso, a la protección contra el abuso y la explotación, a participar en decisiones, y a la no discriminación. El ICBF en Colombia protege estos derechos.",
+      "palabras_clave": ["Convención Derechos del Niño", "CDN", "ONU", "1989", "Colombia", "ICBF", "menores", "educación", "protección", "participación"]
+    },
+    {
       "id": "soc_g4_001", "grado": 4, "tema": "historia de Colombia",
       "pregunta": "¿Qué fue la independencia de Colombia?",
-      "respuesta": "La independencia de Colombia se celebra el 20 de julio de 1810, cuando los criollos de Bogotá iniciaron el proceso de independencia de España. El grito de Independencia fue motivado por un conflicto por un florero prestado. El proceso culminó el 7 de agosto de 1819 con la Batalla de Boyacá, liderada por Simón Bolívar y Francisco de Paula Santander, que garantizó la libertad definitiva.",
+      "respuesta": "La independencia de Colombia se celebra el 20 de julio de 1810, cuando los criollos de Bogotá iniciaron el proceso de independencia de España. El proceso culminó el 7 de agosto de 1819 con la Batalla de Boyacá, liderada por Simón Bolívar y Francisco de Paula Santander, que garantizó la libertad definitiva.",
       "palabras_clave": ["independencia", "Colombia", "20 de julio", "1810", "España", "Bolívar", "Santander", "Boyacá", "Bogotá", "criollos", "libertad"]
     },
     {
       "id": "soc_g4_002", "grado": 4, "tema": "historia de Colombia",
       "pregunta": "¿Quién fue Simón Bolívar?",
-      "respuesta": "Simón Bolívar (1783-1830) fue un militar y político venezolano conocido como 'El Libertador'. Lideró las guerras de independencia de Venezuela, Colombia, Ecuador, Perú y Bolivia. En Colombia venció en la Batalla de Boyacá (1819). Soñaba con crear una gran nación llamada la Gran Colombia que uniera a todos los países liberados. Es el héroe más importante de la historia latinoamericana.",
+      "respuesta": "Simón Bolívar (1783-1830) fue un militar y político venezolano conocido como 'El Libertador'. Lideró las guerras de independencia de Venezuela, Colombia, Ecuador, Perú y Bolivia. En Colombia venció en la Batalla de Boyacá (1819). Soñaba con crear la Gran Colombia que uniera a todos los países liberados. Es el héroe más importante de la historia latinoamericana.",
       "palabras_clave": ["Bolívar", "Simón Bolívar", "Libertador", "independencia", "Boyacá", "Venezuela", "Gran Colombia", "héroe", "guerra", "historia", "1819"]
+    },
+    {
+      "id": "soc_g4_003", "grado": 4, "tema": "historia colombiana siglo XX",
+      "pregunta": "¿Qué fue el Bogotazo?",
+      "respuesta": "El Bogotazo fue una serie de violentos disturbios que ocurrieron en Bogotá el 9 de abril de 1948, tras el asesinato del líder político liberal Jorge Eliécer Gaitán. La multitud destruyó gran parte del centro de Bogotá. Este evento marcó el inicio del período de violencia política conocido como 'La Violencia' (1948-1958), que causó más de 200.000 muertes en Colombia y fue un factor clave para el surgimiento de los grupos guerrilleros décadas después.",
+      "palabras_clave": ["Bogotazo", "9 de abril", "1948", "Gaitán", "Bogotá", "violencia", "liberal", "disturbios", "La Violencia", "guerrilla", "historia Colombia"]
+    },
+    {
+      "id": "soc_g4_004", "grado": 4, "tema": "geografía política",
+      "pregunta": "¿Cómo se divide políticamente Colombia?",
+      "respuesta": "Colombia se divide en 32 departamentos y el Distrito Capital (Bogotá). Cada departamento tiene una capital y está gobernado por un gobernador. Los departamentos se dividen en municipios (1.122 en total). También existen los territorios indígenas (con autonomía especial). Los departamentos más grandes: Amazonas, Vichada, Guainía. Los más poblados: Bogotá, Antioquia, Valle del Cauca, Cundinamarca, Atlántico.",
+      "palabras_clave": ["departamentos", "32", "Bogotá", "gobernador", "municipios", "1122", "Colombia", "Amazonas", "Antioquia", "Valle", "Cundinamarca"]
+    },
+    {
+      "id": "soc_g4_005", "grado": 4, "tema": "economía colombiana",
+      "pregunta": "¿Qué exporta Colombia?",
+      "respuesta": "Las principales exportaciones de Colombia son: Petróleo y derivados (principal producto, representa el 40% de las exportaciones). Café (Colombia es reconocida mundialmente). Carbón (Cerrejón en la Guajira). Flores (segunda potencia exportadora mundial). Banano, oro, esmeraldas (Colombia es el primer exportador mundial de esmeraldas), ferroníquel, carne. Los principales destinos de exportación son: Estados Unidos, China, Panamá, Ecuador, Bélgica.",
+      "palabras_clave": ["exportar", "petróleo", "café", "carbón", "flores", "esmeraldas", "banano", "oro", "Colombia", "Estados Unidos", "China"]
+    },
+    {
+      "id": "soc_g4_006", "grado": 4, "tema": "historia del mundo",
+      "pregunta": "¿Qué fueron las Guerras Mundiales?",
+      "respuesta": "Primera Guerra Mundial (1914-1918): conflicto que involucró a Europa principalmente. Comenzó tras el asesinato del Archiduque Francisco Fernando. Murieron 17 millones de personas. Segunda Guerra Mundial (1939-1945): conflicto global entre los Aliados (Francia, UK, URSS, EE.UU.) y el Eje (Alemania Nazi, Italia, Japón). Fue la guerra más destructiva de la historia: 70-85 millones de muertos. Terminó con bombas atómicas en Japón. Llevó a la creación de la ONU.",
+      "palabras_clave": ["Guerras Mundiales", "1914", "1918", "1939", "1945", "Aliados", "Eje", "Alemania", "Hitler", "ONU", "bomba atómica", "historia mundial"]
+    },
+    {
+      "id": "soc_g4_007", "grado": 4, "tema": "sistema de gobierno",
+      "pregunta": "¿Cuáles son los tres poderes del Estado colombiano?",
+      "respuesta": "Colombia tiene tres poderes del Estado que se controlan mutuamente: 1) Poder Ejecutivo: el Presidente (elegido cada 4 años), los ministros y las entidades públicas. Ejecuta las leyes y dirige el país. 2) Poder Legislativo: el Congreso (Senado y Cámara de Representantes). Crea las leyes. 3) Poder Judicial: la Corte Suprema, la Corte Constitucional, el Consejo de Estado. Interpreta y aplica las leyes. Esta separación previene la concentración de poder.",
+      "palabras_clave": ["poderes del Estado", "ejecutivo", "legislativo", "judicial", "Presidente", "Congreso", "Corte Suprema", "Colombia", "equilibrio", "ley"]
+    },
+    {
+      "id": "soc_g4_008", "grado": 4, "tema": "historia de América",
+      "pregunta": "¿Qué fue la conquista de América?",
+      "respuesta": "La conquista de América (1492-1550 aprox.) fue el proceso por el cual los europeos (principalmente españoles y portugueses) invadieron y dominaron el continente americano. Inició el 12 de octubre de 1492 cuando Cristóbal Colón llegó al Caribe pensando que era Asia (por eso llamaron 'indios' a los habitantes). Las consecuencias: destrucción de civilizaciones (aztecas, incas, muiscas), muerte de millones de indígenas por enfermedades y violencia, esclavitud, inicio del mestizaje.",
+      "palabras_clave": ["conquista", "América", "1492", "Colón", "España", "Portugal", "aztecas", "incas", "indígenas", "mestizaje", "esclavitud", "Caribe"]
+    },
+    {
+      "id": "soc_g4_009", "grado": 4, "tema": "Colombia contemporánea",
+      "pregunta": "¿Qué es el proceso de paz en Colombia?",
+      "respuesta": "El proceso de paz de Colombia se refiere a las negociaciones entre el gobierno colombiano y grupos armados para poner fin al conflicto armado. El más significativo fue el Acuerdo de Paz firmado en 2016 entre el gobierno del presidente Juan Manuel Santos y las FARC (Fuerzas Armadas Revolucionarias de Colombia). Santos recibió el Premio Nobel de Paz ese año. El acuerdo incluyó: cese al fuego, dejación de armas, reincorporación de combatientes y justicia transicional.",
+      "palabras_clave": ["paz", "Colombia", "FARC", "2016", "Santos", "Nobel de Paz", "acuerdo", "conflicto armado", "guerrilla", "reincorporación"]
+    },
+    {
+      "id": "soc_g4_010", "grado": 4, "tema": "historia antigua",
+      "pregunta": "¿Qué fueron las civilizaciones de Mesopotamia y Egipto?",
+      "respuesta": "Las primeras grandes civilizaciones surgieron hace unos 5000 años. Mesopotamia (actuales Irak, Siria): entre los ríos Tigris y Éufrates. Aquí surgieron los sumerios (inventaron la escritura cuneiforme) y babilonios (Código de Hammurabi). Egipto: a orillas del Nilo en África. Construyeron pirámides, el Esfinge, desarrollaron la escritura jeroglífica. Fueron civilizaciones que inventaron la escritura, las matemáticas, los calendarios y el derecho.",
+      "palabras_clave": ["Mesopotamia", "Egipto", "civilizaciones", "Tigris", "Éufrates", "Nilo", "pirámides", "escritura", "sumerios", "babilonios", "jeroglífico"]
+    },
+    {
+      "id": "soc_g4_011", "grado": 4, "tema": "instituciones colombianas",
+      "pregunta": "¿Para qué sirven las instituciones del Estado colombiano?",
+      "respuesta": "Las instituciones del Estado colombiano prestan servicios a los ciudadanos: ICBF (cuida a niños vulnerables), Ministerio de Educación (regula la educación pública), Ministerio de Salud (coordina el sistema de salud), Policía Nacional (seguridad ciudadana), Ejército (defensa del territorio), SENA (formación técnica gratuita), Fiscalía (investiga delitos), Defensoría del Pueblo (protege derechos humanos). El Estado debe garantizar el bienestar de todos los colombianos.",
+      "palabras_clave": ["instituciones", "ICBF", "Ministerio Educación", "Policía", "Ejército", "SENA", "Fiscalía", "Defensoría", "Estado", "Colombia", "servicios"]
+    },
+    {
+      "id": "soc_g4_012", "grado": 4, "tema": "historia latinoamerica",
+      "pregunta": "¿Qué fue la Gran Colombia?",
+      "respuesta": "La Gran Colombia fue una nación creada por Simón Bolívar en 1819 que agrupó a los actuales Venezuela, Colombia, Ecuador y Panamá (y brevemente Perú y Bolivia). Su capital fue Bogotá. Fue un intento de crear una gran república latinoamericana unida. Sin embargo, las diferencias regionales y políticas llevaron a su disolución en 1831. Cuando se disolvió, Colombia (con Panamá) quedó como Nueva Granada, que más tarde se llamó Colombia.",
+      "palabras_clave": ["Gran Colombia", "Bolívar", "1819", "Venezuela", "Ecuador", "Panamá", "Bogotá", "disolución", "1831", "Nueva Granada", "historia"]
+    },
+    {
+      "id": "soc_g4_013", "grado": 4, "tema": "geografía económica",
+      "pregunta": "¿Qué es el Eje Cafetero y por qué es famoso?",
+      "respuesta": "El Eje Cafetero o Triángulo del Café comprende los departamentos de Caldas (Manizales), Risaralda (Pereira) y Quindío (Armenia). Es la principal región cafetera de Colombia. En 2011, la UNESCO declaró el Paisaje Cultural Cafetero como Patrimonio de la Humanidad. Características: las haciendas cafeteras, la arquitectura de bahareque (guadua y barro), la cultura paisa, la biodiversidad. El turismo cafetero atrae viajeros de todo el mundo.",
+      "palabras_clave": ["Eje Cafetero", "café", "Caldas", "Risaralda", "Quindío", "Manizales", "Pereira", "Armenia", "UNESCO", "Patrimonio", "bahareque", "turismo"]
+    },
+    {
+      "id": "soc_g4_014", "grado": 4, "tema": "historia de los derechos",
+      "pregunta": "¿Cuándo las mujeres colombianas obtuvieron el derecho al voto?",
+      "respuesta": "Las mujeres colombianas obtuvieron el derecho al voto en 1954, durante el gobierno del General Gustavo Rojas Pinilla. El primer plebiscito en que votaron fue en 1957. Antes de eso, solo los hombres podían votar. En el mundo, las mujeres de Nueva Zelanda fueron las primeras en votar (1893). En Suiza, no pudieron hacerlo hasta 1971. El sufragio femenino fue el resultado de muchos años de lucha de las mujeres por la igualdad de derechos.",
+      "palabras_clave": ["voto femenino", "sufragio", "1954", "Colombia", "Rojas Pinilla", "mujeres", "igualdad", "derechos", "1957", "plebiscito"]
+    },
+    {
+      "id": "soc_g4_015", "grado": 4, "tema": "región Caribe",
+      "pregunta": "¿Cuáles son las características de la región Caribe colombiana?",
+      "respuesta": "La región Caribe de Colombia está en el norte del país, con costas en el Mar Caribe. Departamentos: Atlántico, Bolívar, Cesar, Córdoba, La Guajira, Magdalena, Sucre, San Andrés y Providencia. Características: clima cálido y seco, playas, arrecifes de coral. Ciudades: Barranquilla (4ª ciudad), Cartagena (ciudad histórica), Santa Marta (más antigua de Colombia). Cultura: costeña, festiva, con influencia africana e indígena. Música: vallenato y cumbia.",
+      "palabras_clave": ["Caribe", "Barranquilla", "Cartagena", "Santa Marta", "playas", "departamentos", "vallenato", "cumbia", "costeño", "Colombia", "Mar Caribe"]
+    },
+    {
+      "id": "soc_g4_016", "grado": 4, "tema": "historia del mundo",
+      "pregunta": "¿Qué fue la Revolución Francesa?",
+      "respuesta": "La Revolución Francesa (1789-1799) fue un período de radicales transformaciones políticas y sociales en Francia que cambió el mundo. Causas: desigualdad entre nobles y pueblo, crisis económica, ideas ilustradas. Hitos: 14 de julio de 1789, toma de la Bastilla. Declaración de los Derechos del Hombre y del Ciudadano. Fin de la monarquía absoluta. Lema: 'Libertad, Igualdad, Fraternidad'. Sus ideas influyeron en las independencias latinoamericanas, incluyendo la de Colombia.",
+      "palabras_clave": ["Revolución Francesa", "1789", "Francia", "Bastilla", "libertad", "igualdad", "fraternidad", "monarquía", "derechos", "ilustración", "independencia"]
+    },
+    {
+      "id": "soc_g4_017", "grado": 4, "tema": "turismo en Colombia",
+      "pregunta": "¿Cuáles son los destinos turísticos más importantes de Colombia?",
+      "respuesta": "Colombia tiene destinos turísticos increíbles: Cartagena (ciudad amurallada, playas, historia colonial). San Andrés y Providencia (mar de siete colores). Medellín (innovación, cultura, naturaleza). Bogotá (museos, arte, gastronomía). Eje Cafetero (haciendas, naturaleza). Villa de Leyva (pueblo colonial). Amazonia. Los Llanos. La Guajira (Cabo de la Vela). Tayrona (Parque Nacional, playas y selva). Colombia ha ganado múltiples premios internacionales de turismo.",
+      "palabras_clave": ["turismo", "Cartagena", "San Andrés", "Medellín", "Bogotá", "Eje Cafetero", "Villa de Leyva", "Tayrona", "Colombia", "destinos", "playas"]
+    },
+    {
+      "id": "soc_g4_018", "grado": 4, "tema": "migración",
+      "pregunta": "¿Qué es la migración y por qué ocurre?",
+      "respuesta": "La migración es el desplazamiento de personas de un lugar a otro para vivir. Tipos: Interna (dentro del mismo país: del campo a la ciudad en Colombia). Externa (de un país a otro). Causas: económicas (buscar trabajo), políticas (huir de conflictos o dictaduras), ambientales (desastres naturales), familiares (reunificación). Colombia ha sido tanto país de emigración (colombianos en España, EE.UU., Venezuela) como de inmigración reciente (venezolanos en Colombia).",
+      "palabras_clave": ["migración", "emigración", "inmigración", "desplazamiento", "trabajo", "conflicto", "Venezuela", "Colombia", "España", "campo", "ciudad"]
     },
     {
       "id": "soc_g5_001", "grado": 5, "tema": "democracia",
       "pregunta": "¿Qué es la democracia?",
-      "respuesta": "La democracia es el sistema de gobierno donde el poder viene del pueblo. En una democracia, los ciudadanos eligen a sus gobernantes mediante el voto. En Colombia, la Constitución de 1991 establece que es una república democrática, participativa y pluralista. Los colombianos mayores de 18 años tienen derecho a votar. Los tres poderes del Estado son: Ejecutivo (Presidente), Legislativo (Congreso) y Judicial (Cortes).",
-      "palabras_clave": ["democracia", "gobierno", "pueblo", "voto", "votar", "Colombia", "Constitución", "presidente", "congreso", "poderes", "ciudadanos", "participación"]
+      "respuesta": "La democracia es el sistema de gobierno donde el poder viene del pueblo. En una democracia, los ciudadanos eligen a sus gobernantes mediante el voto. En Colombia, la Constitución de 1991 establece que es una república democrática, participativa y pluralista. Los colombianos mayores de 18 años tienen derecho a votar. Los tres poderes del Estado son: Ejecutivo, Legislativo y Judicial.",
+      "palabras_clave": ["democracia", "gobierno", "pueblo", "voto", "votar", "Colombia", "Constitución", "presidente", "congreso", "poderes", "ciudadanos"]
     },
     {
       "id": "soc_g5_002", "grado": 5, "tema": "Latinoamérica",
       "pregunta": "¿Qué es América Latina?",
-      "respuesta": "América Latina o Latinoamérica es la región del continente americano donde se hablan lenguas derivadas del latín (español y portugués principalmente). Comprende 20 países desde México hasta Argentina. Colombia comparte frontera y cultura con Venezuela, Ecuador y Perú. Las características comunes son: historia colonial española/portuguesa, mestizaje cultural, diversidad natural y biodiversidad extraordinaria.",
+      "respuesta": "América Latina es la región del continente americano donde se hablan lenguas derivadas del latín (español y portugués principalmente). Comprende 20 países desde México hasta Argentina. Colombia comparte frontera y cultura con Venezuela, Ecuador y Perú. Las características comunes son: historia colonial española/portuguesa, mestizaje cultural, diversidad natural y biodiversidad extraordinaria.",
       "palabras_clave": ["América Latina", "Latinoamérica", "países", "español", "portugués", "México", "Argentina", "Brasil", "cultura", "región", "continente"]
+    },
+    {
+      "id": "soc_g5_003", "grado": 5, "tema": "globalización",
+      "pregunta": "¿Qué es la globalización?",
+      "respuesta": "La globalización es el proceso de integración económica, política, cultural y tecnológica entre los países del mundo. Causas: avances en comunicación (internet, teléfonos), transporte (aviones, barcos portacontenedores) y comercio internacional. Efectos positivos: acceso a productos y tecnologías del mundo entero, intercambio cultural. Efectos negativos: pérdida de culturas locales, aumento de la desigualdad, dependencia económica. Colombia participa activamente en la globalización exportando café, flores y software.",
+      "palabras_clave": ["globalización", "integración", "económica", "cultural", "internet", "transporte", "comercio", "Colombia", "exportar", "desigualdad", "culturas"]
+    },
+    {
+      "id": "soc_g5_004", "grado": 5, "tema": "historia del mundo",
+      "pregunta": "¿Qué fue la Guerra Fría?",
+      "respuesta": "La Guerra Fría (1947-1991) fue la tensión política, económica e ideológica entre Estados Unidos (capitalismo) y la Unión Soviética - URSS (comunismo) tras la Segunda Guerra Mundial. Nunca hubo combate directo entre ellos (por eso 'fría'). Incluyó: carrera nuclear, carrera espacial (primer satélite: Sputnik, primera persona en el espacio: Gagarin), guerras proxy en Asia, África y América Latina. Terminó con la caída del Muro de Berlín (1989) y la disolución de la URSS (1991).",
+      "palabras_clave": ["Guerra Fría", "1947", "1991", "Estados Unidos", "URSS", "capitalismo", "comunismo", "nuclear", "Berlín", "Sputnik", "Gagarin"]
+    },
+    {
+      "id": "soc_g5_005", "grado": 5, "tema": "continentes del mundo",
+      "pregunta": "¿Cuáles son los continentes y cuáles son sus características principales?",
+      "respuesta": "Los continentes del mundo: Asia (el más grande y poblado, 4.600 millones de personas, China, India, Japón). África (el más biodiverso, 54 países, 1.400 millones personas). América (Norte, Central y Sur; Colombia en Suramérica). Europa (el más desarrollado, Unión Europea). Oceanía (el más pequeño, Australia, Nueva Zelanda). Antártida (el más frío, sin población permanente, solo investigadores). El agua cubre el 71% del planeta.",
+      "palabras_clave": ["continentes", "Asia", "África", "América", "Europa", "Oceanía", "Antártida", "países", "población", "China", "Colombia"]
+    },
+    {
+      "id": "soc_g5_006", "grado": 5, "tema": "ONU y organismos internacionales",
+      "pregunta": "¿Qué es la ONU y cuál es su función?",
+      "respuesta": "La ONU (Organización de las Naciones Unidas) es una organización internacional fundada en 1945 después de la Segunda Guerra Mundial, con sede en Nueva York. Tiene 193 países miembros. Sus objetivos: mantener la paz y seguridad internacional, promover los derechos humanos, el desarrollo sostenible y el derecho internacional. Organismos: UNESCO (educación y cultura), UNICEF (niños), OMS (salud), FAO (alimentación). Colombia es miembro fundador.",
+      "palabras_clave": ["ONU", "Naciones Unidas", "1945", "Nueva York", "paz", "derechos humanos", "UNESCO", "UNICEF", "OMS", "FAO", "Colombia"]
+    },
+    {
+      "id": "soc_g5_007", "grado": 5, "tema": "economía mundial",
+      "pregunta": "¿Qué es el libre comercio y cómo afecta a Colombia?",
+      "respuesta": "El libre comercio es la eliminación de barreras (aranceles, cuotas) al intercambio de bienes y servicios entre países. Colombia ha firmado Tratados de Libre Comercio (TLC) con: EE.UU. (2012), Unión Europea, Chile, Perú, Ecuador, México. Ventajas: Colombia puede exportar más café, flores, frutas; los colombianos acceden a productos importados más baratos. Desventajas: algunos sectores como el agro pueden verse afectados por la competencia extranjera.",
+      "palabras_clave": ["libre comercio", "TLC", "Colombia", "aranceles", "exportar", "importar", "EE.UU.", "Unión Europea", "café", "flores", "acuerdo"]
+    },
+    {
+      "id": "soc_g5_008", "grado": 5, "tema": "historia reciente Colombia",
+      "pregunta": "¿Qué fue el Frente Nacional en Colombia?",
+      "respuesta": "El Frente Nacional (1958-1974) fue un acuerdo político entre los partidos Liberal y Conservador para alternarse en el poder presidencial cada 4 años (durante 16 años), para poner fin a la violencia bipartidista. Fue un período de estabilidad política relativa pero también de exclusión de otros partidos. Aunque terminó formalmente en 1974, sus efectos en la cultura política colombiana duraron décadas. Algunos historiadores lo ven como una causa del surgimiento de guerrillas.",
+      "palabras_clave": ["Frente Nacional", "1958", "1974", "Liberal", "Conservador", "alternancia", "violencia", "Colombia", "bipartidismo", "guerrilla"]
+    },
+    {
+      "id": "soc_g5_009", "grado": 5, "tema": "pueblos indígenas de Colombia",
+      "pregunta": "¿Cuáles son los derechos de los pueblos indígenas en Colombia?",
+      "respuesta": "La Constitución Política de Colombia de 1991 reconoce y protege a los pueblos indígenas: Territorios colectivos inalienables (resguardos indígenas). Jurisdicción especial indígena (se gobiernan por sus propias leyes y costumbres). Representación en el Congreso (circunscripción especial). Reconocimiento de sus lenguas como oficiales en sus territorios. Participación en decisiones que los afecten. Colombia tiene más de 1,4 millones de indígenas de 65 pueblos distintos.",
+      "palabras_clave": ["indígenas", "derechos", "Constitución 1991", "resguardos", "territorios", "lenguas", "Congreso", "Colombia", "65 pueblos", "autonomía"]
+    },
+    {
+      "id": "soc_g5_010", "grado": 5, "tema": "historia del mundo",
+      "pregunta": "¿Qué fue la Revolución Industrial?",
+      "respuesta": "La Revolución Industrial fue el proceso de mecanización de la producción que inició en Inglaterra alrededor de 1760. Transformó la sociedad: de agrícola a industrial. Inventos clave: máquina de vapor (James Watt), telar mecánico, locomotora. Consecuencias: urbanización masiva (la gente migró al campo a las ciudades), surgimiento del proletariado (clase trabajadora), desarrollo del capitalismo, contaminación ambiental. Segunda Revolución Industrial (1870-1914): electricidad, petróleo, acero, teléfono.",
+      "palabras_clave": ["Revolución Industrial", "Inglaterra", "1760", "máquina de vapor", "Watt", "locomotora", "urbanización", "capitalismo", "proletariado", "contaminación"]
+    },
+    {
+      "id": "soc_g5_011", "grado": 5, "tema": "Colombia y el mundo",
+      "pregunta": "¿Qué es la política exterior de Colombia?",
+      "respuesta": "La política exterior de Colombia define cómo el país se relaciona con el resto del mundo. Principios: respeto a la soberanía de los países, no intervención en asuntos internos, promoción de los derechos humanos y la paz. Colombia pertenece a: ONU, OEA (Organización de Estados Americanos), Alianza del Pacífico (con México, Chile, Perú), Comunidad Andina (con Ecuador, Perú, Bolivia). Tiene embajadas en más de 60 países y consulados en muchas ciudades del mundo.",
+      "palabras_clave": ["política exterior", "Colombia", "ONU", "OEA", "Alianza del Pacífico", "Comunidad Andina", "soberanía", "derechos humanos", "paz", "embajada"]
+    },
+    {
+      "id": "soc_g5_012", "grado": 5, "tema": "medio ambiente y política",
+      "pregunta": "¿Qué son los Objetivos de Desarrollo Sostenible (ODS)?",
+      "respuesta": "Los ODS son 17 metas adoptadas por la ONU en 2015 para lograr en 2030. Incluyen: Fin de la pobreza (ODS 1), Hambre cero (2), Salud (3), Educación de calidad (4), Igualdad de género (5), Agua limpia (6), Energía limpia (7), Trabajo decente (8), Ciudades sostenibles (11), Acción climática (13), Vida submarina (14), Vida de ecosistemas (15), Paz y justicia (16), Alianzas (17). Colombia se comprometió con estos objetivos.",
+      "palabras_clave": ["ODS", "desarrollo sostenible", "ONU", "2030", "pobreza", "educación", "salud", "igualdad", "agua", "clima", "paz", "Colombia"]
+    },
+    {
+      "id": "soc_g5_013", "grado": 5, "tema": "identidad nacional",
+      "pregunta": "¿Qué nos hace colombianos?",
+      "respuesta": "La identidad colombiana es el conjunto de características culturales, históricas y sociales que nos unen como pueblo. Elementos: La bandera, el escudo y el himno. La Constitución de 1991. La diversidad étnica y regional. La cultura: el carnaval, el vallenato, el café, las flores, el fútbol. Los valores: la calidez humana, el sentido del humor, la creatividad, la resiliencia. Los paisajes naturales. La historia compartida. Ser colombiano es reconocer nuestra diversidad como riqueza.",
+      "palabras_clave": ["identidad colombiana", "bandera", "Constitución", "diversidad", "cultura", "vallenato", "café", "flores", "fútbol", "resiliencia", "colombia"]
+    },
+    {
+      "id": "soc_g5_014", "grado": 5, "tema": "historia del mundo moderno",
+      "pregunta": "¿Qué fue el Holocausto?",
+      "respuesta": "El Holocausto fue el genocidio sistemático de 6 millones de judíos perpetrado por el régimen nazi de Adolf Hitler durante la Segunda Guerra Mundial (1939-1945). También murieron millones de gitanos, personas con discapacidad, homosexuales y prisioneros de guerra. Se usaron campos de concentración y exterminio como Auschwitz. Fue el crimen más grande contra la humanidad del siglo XX. En memoria de las víctimas se celebra el 27 de enero el Día Internacional del Holocausto.",
+      "palabras_clave": ["Holocausto", "judíos", "Hitler", "Nazi", "genocidio", "6 millones", "Segunda Guerra Mundial", "Auschwitz", "campos concentración", "humanidad"]
+    },
+    {
+      "id": "soc_g5_015", "grado": 5, "tema": "derechos y participación",
+      "pregunta": "¿Cómo pueden participar los jóvenes en la democracia colombiana?",
+      "respuesta": "Los jóvenes colombianos menores de 18 años pueden participar en democracia de diversas formas: gobierno escolar (personero, representante), consejos de juventud (en municipios), organizaciones juveniles culturales, deportivas o ambientales, veedurías ciudadanas (supervisar el uso del dinero público), consultivas de juventud, participación en presupuestos participativos locales. A partir de los 18 años pueden votar. Los jóvenes son agentes de cambio clave en la sociedad colombiana.",
+      "palabras_clave": ["jóvenes", "participación", "democracia", "gobierno escolar", "personero", "veeduría", "voto", "18 años", "consejos de juventud", "Colombia"]
+    },
+    {
+      "id": "soc_g5_016", "grado": 5, "tema": "economía global",
+      "pregunta": "¿Qué es el PIB y cómo se mide la riqueza de un país?",
+      "respuesta": "El PIB (Producto Interno Bruto) es el valor total de todos los bienes y servicios producidos por un país en un año. Mide el tamaño de la economía. El PIB per cápita divide el PIB entre la población y da una idea del nivel de vida promedio. El Colombia tiene un PIB de aprox. 300.000 millones de dólares (puesto 40 en el mundo). Sin embargo, el PIB no mide la desigualdad: el Índice de Desarrollo Humano (IDH) incluye también educación y salud.",
+      "palabras_clave": ["PIB", "Producto Interno Bruto", "economía", "riqueza", "per cápita", "Colombia", "300000 millones", "IDH", "desigualdad", "bienes", "servicios"]
+    },
+    {
+      "id": "soc_g5_017", "grado": 5, "tema": "historia de Colombia siglo XXI",
+      "pregunta": "¿Qué ha pasado en Colombia en el siglo XXI?",
+      "respuesta": "Colombia en el siglo XXI: 2002-2010: gobierno de Álvaro Uribe, política de Seguridad Democrática, debilitamiento de las FARC. 2010-2018: gobierno de Juan Manuel Santos, negociación y firma del Acuerdo de Paz con las FARC (2016), Premio Nobel de Paz. Transformación de Medellín (de ciudad más violenta a ciudad más innovadora). Crecimiento económico. Llegada de millones de migrantes venezolanos. Colombia sigue enfrentando retos: desigualdad, pobreza rural, medio ambiente.",
+      "palabras_clave": ["Colombia", "siglo XXI", "Uribe", "Santos", "FARC", "Acuerdo de Paz", "Medellín", "innovación", "Venezuela", "desigualdad"]
+    },
+    {
+      "id": "soc_g5_018", "grado": 5, "tema": "medio ambiente global",
+      "pregunta": "¿Qué son los Acuerdos de París sobre el cambio climático?",
+      "respuesta": "El Acuerdo de París (2015) es un tratado internacional firmado por 196 países para luchar contra el cambio climático. El objetivo principal: limitar el calentamiento global a 1,5°C o máximo 2°C por encima de los niveles preindustriales. Para lograrlo, los países se comprometieron a reducir sus emisiones de gases de efecto invernadero. Colombia se comprometió a reducir sus emisiones en un 51% para 2030. La COP (Conferencia de las Partes) se reúne cada año para revisar el avance.",
+      "palabras_clave": ["Acuerdo de París", "2015", "cambio climático", "1,5°C", "2°C", "emisiones", "Colombia", "51%", "2030", "COP", "calentamiento global"]
+    },
+    {
+      "id": "soc_g5_019", "grado": 5, "tema": "paz y reconciliación",
+      "pregunta": "¿Qué es la justicia transicional?",
+      "respuesta": "La justicia transicional es el conjunto de mecanismos que una sociedad usa para lidiar con graves violaciones de derechos humanos ocurridas en el pasado (guerras, dictaduras). Incluye: verdad (saber qué pasó), justicia (sancionar a los responsables), reparación (compensar a las víctimas) y garantías de no repetición. En Colombia, la JEP (Jurisdicción Especial para la Paz) y la Comisión de la Verdad son las instituciones de justicia transicional creadas por el Acuerdo de Paz de 2016.",
+      "palabras_clave": ["justicia transicional", "verdad", "justicia", "reparación", "no repetición", "JEP", "Comisión de la Verdad", "Colombia", "víctimas", "paz"]
+    },
+    {
+      "id": "soc_g5_020", "grado": 5, "tema": "ciudadanía global",
+      "pregunta": "¿Qué es ser un ciudadano global?",
+      "respuesta": "Un ciudadano global es alguien que se reconoce como parte de una comunidad mundial, además de su comunidad local o nacional. Características: conoce los problemas globales (cambio climático, pobreza, desigualdad), actúa responsablemente, respeta las diferencias culturales, trabaja por el bien común y la justicia, usa sus habilidades para contribuir a un mundo mejor. En la era de internet y globalización, todos podemos ser ciudadanos globales sin salir de nuestro barrio.",
+      "palabras_clave": ["ciudadano global", "comunidad mundial", "responsabilidad", "cambio climático", "pobreza", "diversidad", "justicia", "internet", "globalización"]
+    },
+    {
+      "id": "soc_g5_021", "grado": 5, "tema": "historia de Colombia siglo XIX",
+      "pregunta": "¿Qué fue la separación de Panamá de Colombia?",
+      "respuesta": "El 3 de noviembre de 1903, Panamá se separó de Colombia y se proclamó república independiente, con el apoyo de Estados Unidos. La razón principal: Colombia rechazó el tratado Herrán-Hay que permitía a EE.UU. construir el Canal de Panamá. Entonces EE.UU. apoyó la separación. La pérdida de Panamá fue un golpe enorme para Colombia. En compensación, EE.UU. pagó 25 millones de dólares. El canal fue construido entre 1904 y 1914 y sigue siendo estratégico para el comercio mundial.",
+      "palabras_clave": ["Panamá", "separación", "1903", "Colombia", "Estados Unidos", "Canal de Panamá", "1914", "independencia", "Herrán-Hay", "comercio"]
     }
   ]
 }

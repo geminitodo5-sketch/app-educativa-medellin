@@ -1,7 +1,7 @@
 {
   "materia": "ingles",
-  "version": "1.0.0",
-  "descripcion": "Knowledge base for English (Inglés) grades 1 to 5 — Colombian curriculum",
+  "version": "2.0.0",
+  "descripcion": "Knowledge base expanded for English (Inglés) grades 1-5 — Colombian curriculum MEN",
   "contenido": [
     {
       "id": "ing_g1_001", "grado": 1, "tema": "greetings",
@@ -12,13 +12,13 @@
     {
       "id": "ing_g1_002", "grado": 1, "tema": "colors",
       "pregunta": "¿Cómo se dicen los colores en inglés?",
-      "respuesta": "Los colores en inglés son: red (rojo), blue (azul), yellow (amarillo), green (verde), orange (naranja), purple (morado), pink (rosado), white (blanco), black (negro), brown (café/marrón), gray (gris). Ejemplo: The sky is blue (El cielo es azul). The apple is red (La manzana es roja).",
+      "respuesta": "Los colores en inglés son: red (rojo), blue (azul), yellow (amarillo), green (verde), orange (naranja), purple (morado), pink (rosado), white (blanco), black (negro), brown (café/marrón), gray (gris). Ejemplo: The sky is blue. The apple is red.",
       "palabras_clave": ["colores", "color", "colors", "red", "blue", "yellow", "green", "orange", "purple", "pink", "white", "black", "inglés"]
     },
     {
       "id": "ing_g1_003", "grado": 1, "tema": "numbers",
       "pregunta": "¿Cómo se dicen los números del 1 al 10 en inglés?",
-      "respuesta": "Los números en inglés del 1 al 10: one (1), two (2), three (3), four (4), five (5), six (6), seven (7), eight (8), nine (9), ten (10). Para continuar: eleven (11), twelve (12), thirteen (13), fourteen (14), fifteen (15). Los números son igual de importantes en cualquier idioma.",
+      "respuesta": "Los números en inglés del 1 al 10: one (1), two (2), three (3), four (4), five (5), six (6), seven (7), eight (8), nine (9), ten (10). Para continuar: eleven (11), twelve (12), thirteen (13), fourteen (14), fifteen (15).",
       "palabras_clave": ["números", "numbers", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "contar", "inglés"]
     },
     {
@@ -30,56 +30,350 @@
     {
       "id": "ing_g2_001", "grado": 2, "tema": "family",
       "pregunta": "¿Cómo se dice la familia en inglés?",
-      "respuesta": "Los miembros de la familia en inglés: mother (mamá), father (papá), sister (hermana), brother (hermano), grandmother (abuela), grandfather (abuelo), aunt (tía), uncle (tío), cousin (primo/prima), daughter (hija), son (hijo). Ejemplo: 'My mother is kind' (Mi mamá es amable).",
+      "respuesta": "Los miembros de la familia en inglés: mother (mamá), father (papá), sister (hermana), brother (hermano), grandmother (abuela), grandfather (abuelo), aunt (tía), uncle (tío), cousin (primo/prima), daughter (hija), son (hijo). Ejemplo: 'My mother is kind'.",
       "palabras_clave": ["familia", "family", "mother", "father", "sister", "brother", "grandmother", "grandfather", "parents", "inglés", "members"]
     },
     {
       "id": "ing_g2_002", "grado": 2, "tema": "animals",
       "pregunta": "¿Cómo se dicen los animales en inglés?",
-      "respuesta": "Los animales en inglés: dog (perro), cat (gato), bird (pájaro), fish (pez), cow (vaca), horse (caballo), pig (cerdo), chicken (pollo), lion (león), tiger (tigre), elephant (elefante), snake (serpiente), butterfly (mariposa), frog (rana). Los animales hacen diferentes sonidos: a dog barks (un perro ladra), a cat meows (un gato maúlla).",
+      "respuesta": "Los animales en inglés: dog (perro), cat (gato), bird (pájaro), fish (pez), cow (vaca), horse (caballo), pig (cerdo), chicken (pollo), lion (león), tiger (tigre), elephant (elefante), snake (serpiente), butterfly (mariposa), frog (rana). A dog barks, a cat meows.",
       "palabras_clave": ["animales", "animals", "dog", "cat", "bird", "fish", "cow", "horse", "lion", "tiger", "elephant", "inglés"]
     },
     {
       "id": "ing_g2_003", "grado": 2, "tema": "days and months",
       "pregunta": "¿Cómo se dicen los días de la semana en inglés?",
-      "respuesta": "Los días de la semana en inglés: Monday (lunes), Tuesday (martes), Wednesday (miércoles), Thursday (jueves), Friday (viernes), Saturday (sábado), Sunday (domingo). La semana empieza el Sunday (domingo) o Monday (lunes) según el país. Today is Monday (Hoy es lunes). Yesterday was Sunday (Ayer fue domingo).",
+      "respuesta": "Los días de la semana en inglés: Monday (lunes), Tuesday (martes), Wednesday (miércoles), Thursday (jueves), Friday (viernes), Saturday (sábado), Sunday (domingo). Today is Monday. Yesterday was Sunday. Tomorrow will be Tuesday.",
       "palabras_clave": ["días", "semana", "days", "week", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "inglés"]
     },
     {
       "id": "ing_g3_001", "grado": 3, "tema": "present simple",
       "pregunta": "¿Qué es el presente simple en inglés?",
-      "respuesta": "El presente simple (Simple Present) se usa para hablar de hábitos, rutinas y hechos generales. Estructura: I / You / We / They + verbo base. He / She / It + verbo + s. Ejemplos: I eat breakfast (Yo desayuno), She goes to school (Ella va al colegio), They play soccer (Ellos juegan fútbol). Negativo: I do not eat = I don't eat.",
+      "respuesta": "El presente simple (Simple Present) se usa para hablar de hábitos, rutinas y hechos generales. Estructura: I/You/We/They + verbo base. He/She/It + verbo + s. Ejemplos: I eat breakfast. She goes to school. They play soccer. Negativo: I do not eat = I don't eat.",
       "palabras_clave": ["presente simple", "simple present", "verbo", "hábito", "rutina", "I", "she", "he", "they", "do", "does", "inglés"]
     },
     {
       "id": "ing_g3_002", "grado": 3, "tema": "food",
       "pregunta": "¿Cómo se dice la comida en inglés?",
-      "respuesta": "Vocabulario de comida en inglés: apple (manzana), banana (banano), orange (naranja), bread (pan), rice (arroz), chicken (pollo), fish (pescado), milk (leche), water (agua), juice (jugo), cake (pastel), egg (huevo), soup (sopa), salad (ensalada). Frase útil: I like... / I don't like... (Me gusta / No me gusta).",
+      "respuesta": "Vocabulario de comida en inglés: apple (manzana), banana (banano), orange (naranja), bread (pan), rice (arroz), chicken (pollo), fish (pescado), milk (leche), water (agua), juice (jugo), cake (pastel), egg (huevo), soup (sopa). Frases: I like... / I don't like... (Me gusta / No me gusta).",
       "palabras_clave": ["comida", "food", "apple", "banana", "bread", "rice", "milk", "water", "juice", "egg", "soup", "inglés", "comer"]
+    },
+    {
+      "id": "ing_g3_003", "grado": 3, "tema": "classroom",
+      "pregunta": "¿Cómo se dicen los objetos del salón de clase en inglés?",
+      "respuesta": "Objetos del salón en inglés: pencil (lápiz), pen (bolígrafo), book (libro), notebook (cuaderno), eraser (borrador), ruler (regla), scissors (tijeras), backpack (mochila), board (tablero), desk (escritorio/mesa), chair (silla), teacher (profesor/a), student (estudiante). Frase: Open your book! / Close your notebook!",
+      "palabras_clave": ["salón", "classroom", "pencil", "book", "notebook", "eraser", "ruler", "backpack", "board", "desk", "teacher", "student"]
+    },
+    {
+      "id": "ing_g3_004", "grado": 3, "tema": "verbo to be",
+      "pregunta": "¿Cómo funciona el verbo 'to be' (ser/estar) en inglés?",
+      "respuesta": "El verbo 'to be' (ser/estar): I am (yo soy/estoy), You are (tú eres/estás), He/She/It is (él/ella es/está), We are (nosotros somos/estamos), They are (ellos son/están). Negativo: I am not = I'm not. Pregunta: Are you happy? Yes, I am / No, I'm not. Es el verbo más importante del inglés.",
+      "palabras_clave": ["to be", "am", "is", "are", "ser", "estar", "I am", "you are", "he is", "she is", "they are", "negativo", "pregunta"]
+    },
+    {
+      "id": "ing_g3_005", "grado": 3, "tema": "numbers advanced",
+      "pregunta": "¿Cómo se dicen los números del 20 al 100 en inglés?",
+      "respuesta": "Decenas: twenty (20), thirty (30), forty (40), fifty (50), sixty (60), seventy (70), eighty (80), ninety (90), one hundred (100). Para los intermedios se une la decena y la unidad: twenty-one (21), thirty-five (35), forty-seven (47), ninety-nine (99). Para los 100: one hundred. Para los miles: one thousand (1000).",
+      "palabras_clave": ["números", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety", "hundred", "thousand", "inglés"]
+    },
+    {
+      "id": "ing_g3_006", "grado": 3, "tema": "adjectives",
+      "pregunta": "¿Cómo se usan los adjetivos en inglés?",
+      "respuesta": "Los adjetivos en inglés van ANTES del sustantivo (diferente al español). Ejemplos: a big house (una casa grande), a beautiful girl (una niña bonita), a small dog (un perro pequeño). Adjetivos comunes: big/small, tall/short, hot/cold, happy/sad, old/young, fast/slow, good/bad, beautiful/ugly, easy/difficult. En inglés NO cambian de género ni número.",
+      "palabras_clave": ["adjetivos", "adjectives", "big", "small", "tall", "short", "happy", "sad", "old", "young", "beautiful", "ugly", "antes", "sustantivo"]
+    },
+    {
+      "id": "ing_g3_007", "grado": 3, "tema": "daily routines",
+      "pregunta": "¿Cómo se describe la rutina diaria en inglés?",
+      "respuesta": "Rutina diaria en inglés: I wake up (me despierto), I brush my teeth (me cepillo los dientes), I have breakfast (desayuno), I go to school (voy al colegio), I study (estudio), I have lunch (almuerzo), I play (juego), I have dinner (ceno), I go to bed (me voy a dormir). Se usa el presente simple para hablar de rutinas.",
+      "palabras_clave": ["rutina", "daily routine", "wake up", "brush teeth", "breakfast", "school", "lunch", "dinner", "bed", "present simple"]
+    },
+    {
+      "id": "ing_g3_008", "grado": 3, "tema": "there is / there are",
+      "pregunta": "¿Cuándo uso 'there is' y 'there are'?",
+      "respuesta": "'There is' (hay) + singular: There is a cat in the room (Hay un gato en el cuarto). 'There are' (hay) + plural: There are five birds in the tree (Hay cinco pájaros en el árbol). Negativo: There isn't a... / There aren't any... Pregunta: Is there a...? / Are there any...? Son muy usados para describir lugares.",
+      "palabras_clave": ["there is", "there are", "hay", "singular", "plural", "room", "cat", "birds", "tree", "negativo", "pregunta"]
+    },
+    {
+      "id": "ing_g3_009", "grado": 3, "tema": "prepositions of place",
+      "pregunta": "¿Cómo se usan las preposiciones de lugar en inglés?",
+      "respuesta": "Preposiciones de lugar más usadas: in (dentro de): The cat is in the box. On (sobre/encima): The book is on the table. Under (debajo): The dog is under the chair. Next to / beside (al lado de). Behind (detrás de). In front of (enfrente de). Between (entre dos). Near (cerca de). Far from (lejos de). Se usan para decir dónde está algo.",
+      "palabras_clave": ["preposiciones", "lugar", "in", "on", "under", "next to", "behind", "in front of", "between", "near", "place", "where"]
+    },
+    {
+      "id": "ing_g3_010", "grado": 3, "tema": "months and seasons",
+      "pregunta": "¿Cómo se dicen los meses del año en inglés?",
+      "respuesta": "Meses del año: January (enero), February (febrero), March (marzo), April (abril), May (mayo), June (junio), July (julio), August (agosto), September (septiembre), October (octubre), November (noviembre), December (diciembre). En inglés los meses siempre van con mayúscula. My birthday is in... (Mi cumpleaños es en...). What month is it? It's October.",
+      "palabras_clave": ["meses", "months", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    },
+    {
+      "id": "ing_g3_011", "grado": 3, "tema": "can / cannot",
+      "pregunta": "¿Cómo uso 'can' para hablar de habilidades?",
+      "respuesta": "'Can' expresa habilidad o posibilidad (poder). I can swim (Puedo nadar / Sé nadar). She can sing (Ella sabe cantar). They can play soccer (Ellos saben jugar fútbol). Negativo: I cannot (can't) fly (No puedo volar). Pregunta: Can you cook? Yes, I can / No, I can't. 'Can' es igual para todas las personas (no cambia). También expresa permiso: Can I go to the bathroom?",
+      "palabras_clave": ["can", "cannot", "can't", "habilidad", "poder", "nadar", "swim", "cantar", "sing", "fútbol", "permiso", "pregunta"]
+    },
+    {
+      "id": "ing_g3_012", "grado": 3, "tema": "colors and descriptions",
+      "pregunta": "¿Cómo describo mi casa o mi cuarto en inglés?",
+      "respuesta": "Para describir tu cuarto: My room is big/small (Mi cuarto es grande/pequeño). The walls are white (Las paredes son blancas). I have a bed, a desk and a wardrobe (Tengo una cama, un escritorio y un armario). There is a window (Hay una ventana). My favorite color is blue (Mi color favorito es azul). Usa adjetivos y 'there is/are' para hacer descripciones.",
+      "palabras_clave": ["describir", "cuarto", "room", "big", "small", "walls", "bed", "desk", "window", "favorite", "color", "description"]
+    },
+    {
+      "id": "ing_g3_013", "grado": 3, "tema": "question words",
+      "pregunta": "¿Cuáles son las palabras interrogativas en inglés?",
+      "respuesta": "Las palabras interrogativas en inglés (Wh-questions): What (qué, cuál): What is your name? Who (quién): Who is your teacher? Where (dónde): Where do you live? When (cuándo): When is your birthday? Why (por qué): Why are you sad? How (cómo): How are you? How many (cuántos): How many books do you have? How much (cuánto): How much does it cost?",
+      "palabras_clave": ["interrogativas", "what", "who", "where", "when", "why", "how", "how many", "how much", "pregunta", "wh-questions"]
+    },
+    {
+      "id": "ing_g3_014", "grado": 3, "tema": "possessives",
+      "pregunta": "¿Cómo expreso posesión en inglés?",
+      "respuesta": "Para expresar posesión: Adjetivos posesivos: my (mi), your (tu), his (su-él), her (su-ella), its (su-objeto), our (nuestro), their (su-ellos). Ejemplo: This is my book. Her cat is white. Genitivo sajón ('s): para indicar que algo pertenece a alguien. John's book (el libro de John). The dog's tail (la cola del perro). María's house (la casa de María).",
+      "palabras_clave": ["posesivos", "my", "your", "his", "her", "our", "their", "genitivo", "sajón", "'s", "posesión", "belongs to"]
+    },
+    {
+      "id": "ing_g3_015", "grado": 3, "tema": "sports",
+      "pregunta": "¿Cómo se dicen los deportes en inglés?",
+      "respuesta": "Deportes en inglés: football/soccer (fútbol), basketball (baloncesto), volleyball (voleibol), swimming (natación), tennis (tenis), cycling (ciclismo), baseball (béisbol), running (atletismo), boxing (boxeo). Frases: I play football (juego fútbol — con pelota), I do swimming (practico natación — individual), I go cycling (voy a montar bicicleta). Play + deportes de equipo. Do + deportes individuales.",
+      "palabras_clave": ["deportes", "sports", "football", "soccer", "basketball", "volleyball", "swimming", "tennis", "cycling", "play", "do", "go"]
+    },
+    {
+      "id": "ing_g3_016", "grado": 3, "tema": "alphabet",
+      "pregunta": "¿Cómo se pronuncia el alfabeto en inglés?",
+      "respuesta": "El alfabeto inglés tiene 26 letras. Pronunciación aproximada: A (ei), B (bi), C (si), D (di), E (i), F (ef), G (yi), H (eich), I (ai), J (yei), K (kei), L (el), M (em), N (en), O (ou), P (pi), Q (kiu), R (ar), S (es), T (ti), U (iu), V (vi), W (dábliu), X (eks), Y (uai), Z (zi). Spell your name: ¿cómo se deletrea tu nombre?",
+      "palabras_clave": ["alfabeto", "alphabet", "letras", "pronunciar", "A", "B", "C", "deletrear", "spell", "26 letras", "inglés"]
+    },
+    {
+      "id": "ing_g3_017", "grado": 3, "tema": "time",
+      "pregunta": "¿Cómo se dice la hora en inglés?",
+      "respuesta": "Para decir la hora: It's one o'clock (Es la una en punto). It's half past two (Son las dos y media). It's quarter past three (Son las tres y cuarto). It's quarter to four (Son las cuatro menos cuarto). It's ten past five (Son las cinco y diez). What time is it? (¿Qué hora es?). In the morning (de la mañana), in the afternoon (de la tarde), at night (de la noche).",
+      "palabras_clave": ["hora", "time", "o'clock", "half past", "quarter past", "quarter to", "what time", "morning", "afternoon", "night"]
     },
     {
       "id": "ing_g4_001", "grado": 4, "tema": "past simple",
       "pregunta": "¿Qué es el pasado simple en inglés?",
-      "respuesta": "El pasado simple (Simple Past) habla de acciones que ya ocurrieron. Los verbos regulares añaden -ed: play → played, walk → walked, watch → watched. Los verbos irregulares cambian de forma: go → went, eat → ate, see → saw, have → had. Negativo: did not (didn't) + verbo base. Ejemplo: Yesterday I played football (Ayer jugué fútbol).",
+      "respuesta": "El pasado simple habla de acciones que ya ocurrieron. Verbos regulares añaden -ed: play→played, walk→walked, watch→watched. Verbos irregulares cambian de forma: go→went, eat→ate, see→saw, have→had. Negativo: did not (didn't) + verbo base. Pregunta: Did you...? Yes, I did / No, I didn't. Yesterday I played football.",
       "palabras_clave": ["pasado simple", "simple past", "ayer", "yesterday", "verbos irregulares", "ed", "went", "played", "ate", "did", "inglés"]
     },
     {
       "id": "ing_g4_002", "grado": 4, "tema": "weather",
       "pregunta": "¿Cómo se describe el clima en inglés?",
-      "respuesta": "Para hablar del clima en inglés: It is sunny (Está soleado), It is raining (Está lloviendo), It is cloudy (Está nublado), It is windy (Está ventoso), It is cold (Hace frío), It is hot (Hace calor), It is foggy (Hay neblina). Pregunta: What's the weather like today? (¿Cómo está el clima hoy?)",
-      "palabras_clave": ["clima", "weather", "sunny", "rain", "cloud", "wind", "cold", "hot", "fog", "inglés", "temperatura"]
+      "respuesta": "Para hablar del clima en inglés: It is sunny (soleado), It is raining (lloviendo), It is cloudy (nublado), It is windy (ventoso), It is cold (frío), It is hot (calor), It is foggy (neblina). Pregunta: What's the weather like today? (¿Cómo está el clima hoy?). In Colombia, Medellín has spring weather all year (Medellín tiene clima de primavera todo el año).",
+      "palabras_clave": ["clima", "weather", "sunny", "rain", "cloud", "wind", "cold", "hot", "fog", "inglés", "temperatura", "Medellín"]
+    },
+    {
+      "id": "ing_g4_003", "grado": 4, "tema": "irregular verbs",
+      "pregunta": "¿Cuáles son los verbos irregulares más comunes en inglés?",
+      "respuesta": "Verbos irregulares más comunes: go→went (ir), come→came (venir), eat→ate (comer), drink→drank (beber), see→saw (ver), do→did (hacer), have→had (tener), say→said (decir), get→got (obtener), take→took (tomar), make→made (hacer/fabricar), know→knew (saber), give→gave (dar), think→thought (pensar), buy→bought (comprar). Deben memorizarse.",
+      "palabras_clave": ["verbos irregulares", "go", "went", "come", "came", "eat", "ate", "see", "saw", "do", "did", "have", "had", "irregular"]
+    },
+    {
+      "id": "ing_g4_004", "grado": 4, "tema": "reading comprehension",
+      "pregunta": "¿Cómo entiendo un texto en inglés que no comprendo completamente?",
+      "respuesta": "Estrategias para leer en inglés: 1) Busca palabras clave que reconozcas. 2) Mira el contexto (las palabras alrededor de la que no entiendes). 3) Busca cognados (palabras similares al español: animal=animal, music=música). 4) Lee el título e imágenes primero. 5) No necesitas entender cada palabra, busca la idea general. 6) Usa el diccionario solo para palabras muy importantes. 7) Practica leyendo textos cortos todos los días.",
+      "palabras_clave": ["comprensión lectora", "leer", "inglés", "contexto", "cognados", "palabras clave", "diccionario", "estrategia", "título", "idea general"]
+    },
+    {
+      "id": "ing_g4_005", "grado": 4, "tema": "future will",
+      "pregunta": "¿Cómo hablo del futuro en inglés?",
+      "respuesta": "Hay dos formas principales de hablar del futuro: 1) Will + verbo base (predicciones y decisiones espontáneas): I will study tomorrow (Estudiaré mañana). It will rain (Va a llover). 2) Going to + verbo base (planes ya decididos): I am going to visit my grandmother (Voy a visitar a mi abuela). Forma negativa: I won't (will not) go. Are you going to...?",
+      "palabras_clave": ["futuro", "will", "going to", "mañana", "tomorrow", "predicción", "plan", "won't", "will not", "are you going to", "inglés"]
+    },
+    {
+      "id": "ing_g4_006", "grado": 4, "tema": "shopping",
+      "pregunta": "¿Cómo comprar cosas en inglés?",
+      "respuesta": "Vocabulario de compras: shop / store (tienda), price (precio), cheap (barato), expensive (caro), sale (oferta), discount (descuento), cash (efectivo), credit card (tarjeta de crédito), receipt (recibo). Frases útiles: How much is this? (¿Cuánto cuesta esto?). I'd like to buy... (Me gustaría comprar...). Do you have...? (¿Tiene...?). I'll take it (Me lo llevo). That's too expensive (Es muy caro).",
+      "palabras_clave": ["comprar", "shopping", "price", "cheap", "expensive", "how much", "buy", "cash", "credit card", "tienda", "caro", "barato"]
+    },
+    {
+      "id": "ing_g4_007", "grado": 4, "tema": "health",
+      "pregunta": "¿Cómo hablar de salud y enfermedades en inglés?",
+      "respuesta": "Vocabulario de salud: I have a headache (Tengo dolor de cabeza), stomachache (dolor de estómago), toothache (dolor de muela), fever (fiebre), cold (gripa), cough (tos), sore throat (dolor de garganta). Doctor (médico), hospital (hospital), medicine (medicina), prescription (receta). Pregunta: What's wrong? (¿Qué te pasa?). I don't feel well (No me siento bien). You should rest (Deberías descansar).",
+      "palabras_clave": ["salud", "health", "headache", "stomachache", "fever", "cold", "cough", "doctor", "hospital", "medicine", "wrong", "feel"]
+    },
+    {
+      "id": "ing_g4_008", "grado": 4, "tema": "connectors",
+      "pregunta": "¿Qué conectores se usan en inglés para escribir textos?",
+      "respuesta": "Conectores en inglés: Para agregar: and (y), also (también), furthermore (además), in addition (adicionalmente). Para contrastar: but (pero), however (sin embargo), although (aunque), on the other hand (por otro lado). Para causa: because (porque), since (ya que). Para efecto: therefore (por lo tanto), so (así que). Para orden: first (primero), then (luego), finally (finalmente). Para concluir: in conclusion, to sum up.",
+      "palabras_clave": ["conectores", "connectors", "and", "but", "however", "because", "therefore", "first", "then", "finally", "although", "in conclusion"]
+    },
+    {
+      "id": "ing_g4_009", "grado": 4, "tema": "environment",
+      "pregunta": "¿Cómo hablar del medio ambiente en inglés?",
+      "respuesta": "Vocabulario ambiental en inglés: environment (medio ambiente), pollution (contaminación), recycle (reciclar), reduce (reducir), reuse (reutilizar), climate change (cambio climático), global warming (calentamiento global), forest (bosque), deforestation (deforestación), endangered (en peligro), protect (proteger), sustainability (sostenibilidad). Frase: We must protect the environment (Debemos proteger el medio ambiente).",
+      "palabras_clave": ["medio ambiente", "environment", "pollution", "recycle", "climate change", "global warming", "forest", "endangered", "protect", "green"]
+    },
+    {
+      "id": "ing_g4_010", "grado": 4, "tema": "modal verbs",
+      "pregunta": "¿Para qué sirven 'should', 'must' y 'have to'?",
+      "respuesta": "'Should' (debería): consejo u obligación suave. You should eat vegetables (Deberías comer verduras). 'Must' (deber/tener que): obligación fuerte o deducción. You must do your homework (Debes hacer la tarea). Students must wear a uniform (obligación). 'Have to' (tener que): obligación externa. I have to wake up early (Tengo que despertar temprano). 'Must not' (no debes — prohibición): You must not smoke here.",
+      "palabras_clave": ["should", "must", "have to", "obligación", "consejo", "deber", "prohibición", "must not", "should not", "modal", "verbo"]
+    },
+    {
+      "id": "ing_g4_011", "grado": 4, "tema": "places in the city",
+      "pregunta": "¿Cómo se dicen los lugares de la ciudad en inglés?",
+      "respuesta": "Lugares de la ciudad: school (escuela), hospital (hospital), park (parque), library (biblioteca), supermarket (supermercado), bank (banco), church (iglesia), museum (museo), police station (estación de policía), restaurant (restaurante), pharmacy/drugstore (farmacia), bus station (terminal de buses), airport (aeropuerto). ¿Dónde está...? Where is the...? It's near/far from here.",
+      "palabras_clave": ["ciudad", "city", "school", "hospital", "park", "library", "supermarket", "bank", "museum", "pharmacy", "airport", "where is"]
+    },
+    {
+      "id": "ing_g4_012", "grado": 4, "tema": "asking for directions",
+      "pregunta": "¿Cómo pido y doy indicaciones para llegar a un lugar en inglés?",
+      "respuesta": "Pedir indicaciones: Excuse me, where is the bank? (Disculpe, ¿dónde está el banco?). Cómo llegar: Go straight ahead (Siga recto), Turn left (Doble a la izquierda), Turn right (Doble a la derecha), Go past (Pase por), It's on the corner (Está en la esquina), It's opposite (Está enfrente), Take the second street (Tome la segunda calle). Near here? (¿Cerca de aquí?).",
+      "palabras_clave": ["indicaciones", "directions", "straight", "left", "right", "corner", "opposite", "turn", "street", "where is", "excuse me", "near"]
+    },
+    {
+      "id": "ing_g4_013", "grado": 4, "tema": "colombia in english",
+      "pregunta": "¿Cómo describo Colombia en inglés?",
+      "respuesta": "Colombia is a beautiful country in South America. The capital is Bogotá. Colombia has two coasts: the Caribbean and the Pacific. It is famous for its coffee, flowers, diversity and biodiversity. The official language is Spanish. The currency is the Colombian peso. Famous cities: Medellín (the City of Eternal Spring), Cartagena (historic city), Cali (salsa capital). Colombia is the only country in South America with two oceans.",
+      "palabras_clave": ["Colombia", "South America", "Bogotá", "Medellín", "Cartagena", "coffee", "biodiversity", "Caribbean", "Pacific", "Spring", "beautiful"]
+    },
+    {
+      "id": "ing_g4_014", "grado": 4, "tema": "expressing opinions",
+      "pregunta": "¿Cómo doy mi opinión en inglés?",
+      "respuesta": "Frases para dar opiniones: I think (Creo/Pienso), I believe (Creo), In my opinion (En mi opinión), I feel that (Siento que), I agree (Estoy de acuerdo), I disagree (No estoy de acuerdo), That's true (Es verdad), That's not true (No es verdad), I'm not sure (No estoy seguro/a), Maybe (Quizás), Definitely (Definitivamente). Ejemplo: In my opinion, reading is very important.",
+      "palabras_clave": ["opinión", "I think", "I believe", "in my opinion", "agree", "disagree", "true", "sure", "maybe", "definitely", "expresar"]
+    },
+    {
+      "id": "ing_g4_015", "grado": 4, "tema": "countable uncountable",
+      "pregunta": "¿Qué son los sustantivos contables e incontables en inglés?",
+      "respuesta": "Contables (countable): se pueden contar. Tienen plural: a book / two books, an apple / three apples. Se usa 'a/an' y 'many'. Incontables (uncountable): no se cuentan individualmente: water, milk, rice, sugar, bread, music, love, information. No tienen plural. Se usa 'much' y 'some'. Ejemplos: How much water? (incontable). How many books? (contable). I need some rice (incontable).",
+      "palabras_clave": ["contable", "incontable", "countable", "uncountable", "many", "much", "some", "water", "rice", "apple", "book", "plural"]
+    },
+    {
+      "id": "ing_g4_016", "grado": 4, "tema": "writing emails",
+      "pregunta": "¿Cómo se escribe un correo electrónico en inglés?",
+      "respuesta": "Partes de un email en inglés: Subject (Asunto). Saludo formal: Dear Mr./Ms. + apellido. Informal: Hi + nombre. Cuerpo: escribe tu mensaje claramente. Despedida formal: Yours sincerely / Best regards. Informal: Take care / Best wishes. Your name (Tu nombre). Ejemplo informal: Hi Ana, How are you? I am writing to invite you to my party on Saturday. Hope to see you! Best, Carlos.",
+      "palabras_clave": ["email", "correo electrónico", "subject", "dear", "regards", "sincerely", "formal", "informal", "writing", "invitation"]
+    },
+    {
+      "id": "ing_g4_017", "grado": 4, "tema": "technology",
+      "pregunta": "¿Cómo hablar de tecnología en inglés?",
+      "respuesta": "Vocabulario de tecnología: computer (computadora), smartphone (teléfono inteligente), tablet, internet, website (sitio web), social media (redes sociales), app (aplicación), download (descargar), upload (subir), password (contraseña), username (nombre de usuario), email (correo electrónico), search engine (buscador), video call (videollamada). Frase: I use my smartphone to do my homework (Uso mi smartphone para hacer la tarea).",
+      "palabras_clave": ["tecnología", "technology", "computer", "smartphone", "internet", "website", "app", "download", "password", "email", "social media"]
     },
     {
       "id": "ing_g5_001", "grado": 5, "tema": "present continuous",
       "pregunta": "¿Qué es el presente continuo en inglés?",
-      "respuesta": "El presente continuo (Present Continuous) describe acciones que están ocurriendo ahora mismo. Estructura: verbo 'to be' (am/is/are) + verbo-ing. Ejemplos: I am reading (Estoy leyendo), She is dancing (Ella está bailando), They are playing (Ellos están jugando). Se diferencia del presente simple porque indica algo que pasa en este momento.",
+      "respuesta": "El presente continuo (Present Continuous) describe acciones que están ocurriendo ahora mismo. Estructura: verbo 'to be' (am/is/are) + verbo-ing. Ejemplos: I am reading (Estoy leyendo), She is dancing (Ella está bailando), They are playing (Ellos están jugando). También se usa para planes futuros cercanos: I am going to the cinema tonight.",
       "palabras_clave": ["presente continuo", "present continuous", "ing", "am", "is", "are", "ahora", "now", "reading", "playing", "inglés"]
     },
     {
       "id": "ing_g5_002", "grado": 5, "tema": "comparatives",
       "pregunta": "¿Cómo se forman los comparativos en inglés?",
-      "respuesta": "Los comparativos se usan para comparar dos cosas. Para adjetivos cortos: añade -er + than. Ejemplo: tall → taller (A is taller than B = A es más alto que B). Para adjetivos largos: more + adjetivo + than. Ejemplo: beautiful → more beautiful. Irregulares: good → better, bad → worse. Ejemplo: She is more intelligent than him.",
-      "palabras_clave": ["comparativo", "comparatives", "taller", "bigger", "more", "than", "better", "worse", "adjetivo", "comparar", "inglés"]
+      "respuesta": "Comparativos para adjetivos cortos: añade -er + than. tall→taller (A is taller than B). Adjetivos largos: more + adjetivo + than. beautiful→more beautiful. Irregulares: good→better, bad→worse. Superlativos: adjetivos cortos: -est (the tallest). Largos: the most + adjetivo (the most beautiful). Irregulares: the best, the worst. Ejemplo: Medellin is more beautiful than I thought.",
+      "palabras_clave": ["comparativo", "comparatives", "taller", "bigger", "more", "than", "better", "worse", "superlative", "best", "worst", "inglés"]
+    },
+    {
+      "id": "ing_g5_003", "grado": 5, "tema": "present perfect",
+      "pregunta": "¿Qué es el presente perfecto en inglés?",
+      "respuesta": "El presente perfecto (Present Perfect) habla de experiencias o acciones pasadas que tienen relación con el presente. Estructura: have/has + participio pasado. Ejemplos: I have visited Cartagena (He visitado Cartagena). She has eaten pizza (Ella ha comido pizza). Have you ever been to Bogotá? (¿Has estado alguna vez en Bogotá?). Se usa con: ever, never, already, yet, just, since, for.",
+      "palabras_clave": ["presente perfecto", "present perfect", "have", "has", "participio", "ever", "never", "already", "yet", "since", "for", "experiencia"]
+    },
+    {
+      "id": "ing_g5_004", "grado": 5, "tema": "passive voice",
+      "pregunta": "¿Qué es la voz pasiva en inglés?",
+      "respuesta": "En la voz activa, el sujeto hace la acción: 'The chef cooks the food.' En la voz pasiva, el sujeto recibe la acción: 'The food is cooked by the chef.' Estructura: be + participio pasado. Presente: is/are + participio. Pasado: was/were + participio. Se usa cuando no sabemos quién hizo la acción o cuando no es importante. Ejemplo: The book was written in 1967 (El libro fue escrito en 1967).",
+      "palabras_clave": ["voz pasiva", "passive voice", "is cooked", "was written", "participio", "be", "activa", "pasiva", "sujeto", "acción"]
+    },
+    {
+      "id": "ing_g5_005", "grado": 5, "tema": "conditional",
+      "pregunta": "¿Cómo se usa el condicional en inglés?",
+      "respuesta": "El primer condicional habla de situaciones reales o posibles en el futuro: If + presente simple, will + verbo. 'If it rains, I will stay home' (Si llueve, me quedaré en casa). El segundo condicional habla de situaciones hipotéticas o poco probables: If + pasado simple, would + verbo. 'If I had a million dollars, I would travel the world' (Si tuviera un millón de dólares, viajaría por el mundo).",
+      "palabras_clave": ["condicional", "conditional", "if", "will", "would", "rains", "stay", "home", "hipotético", "posible", "primero", "segundo"]
+    },
+    {
+      "id": "ing_g5_006", "grado": 5, "tema": "reported speech",
+      "pregunta": "¿Qué es el estilo indirecto en inglés?",
+      "respuesta": "El estilo indirecto (reported speech) transmite lo que alguien dijo sin citar textualmente. Los tiempos cambian: presente→pasado. 'I am happy' → She said (that) she was happy. 'I will call you' → He said he would call me. Las expresiones de tiempo también cambian: now→then, today→that day, tomorrow→the next day. Ejemplo: María said: 'I love Colombia' → María said that she loved Colombia.",
+      "palabras_clave": ["estilo indirecto", "reported speech", "said", "told", "that", "tiempo", "cambia", "María", "Colombia", "love", "indirect"]
+    },
+    {
+      "id": "ing_g5_007", "grado": 5, "tema": "academic writing",
+      "pregunta": "¿Cómo escribo un párrafo en inglés?",
+      "respuesta": "Un párrafo en inglés tiene: Topic sentence (oración temática): la idea principal. Supporting sentences (oraciones de apoyo): detalles, ejemplos, razones. Concluding sentence (oración de cierre): resume o conecta con el siguiente párrafo. Usa conectores: First, Second, Furthermore, However, In conclusion. Ejemplo: 'Reading is very important. First, it improves vocabulary. Furthermore, it develops imagination. In conclusion, everyone should read daily.'",
+      "palabras_clave": ["párrafo", "paragraph", "topic sentence", "supporting", "concluding", "first", "furthermore", "however", "in conclusion", "writing"]
+    },
+    {
+      "id": "ing_g5_008", "grado": 5, "tema": "human rights",
+      "pregunta": "¿Cómo hablar de derechos humanos en inglés?",
+      "respuesta": "Vocabulario de derechos humanos: human rights (derechos humanos), freedom (libertad), equality (igualdad), education (educación), health (salud), peace (paz), justice (justicia), discrimination (discriminación), poverty (pobreza), democracy (democracia), vote (votar), citizen (ciudadano). Frase importante: 'Every person has the right to education' (Toda persona tiene derecho a la educación).",
+      "palabras_clave": ["derechos humanos", "human rights", "freedom", "equality", "education", "health", "peace", "justice", "democracy", "citizen", "rights"]
+    },
+    {
+      "id": "ing_g5_009", "grado": 5, "tema": "colombia culture in english",
+      "pregunta": "¿Cómo hablar de la cultura colombiana en inglés?",
+      "respuesta": "Colombia is rich in culture and traditions. The Flower Festival (Festival de las Flores) is celebrated in Medellín every August. Cumbia and Vallenato are traditional music genres. Colombia is famous for its coffee, emeralds, and flowers. The national sport is cycling. Important holidays: Independence Day (July 20), Christmas (December 25), Carnival of Barranquilla (February). Colombia has 9 UNESCO World Heritage Sites.",
+      "palabras_clave": ["Colombia", "cultura", "culture", "Flower Festival", "Medellín", "cumbia", "vallenato", "coffee", "cycling", "independence", "UNESCO"]
+    },
+    {
+      "id": "ing_g5_010", "grado": 5, "tema": "science vocabulary",
+      "pregunta": "¿Cómo se dicen los temas de ciencias en inglés?",
+      "respuesta": "Vocabulario científico en inglés: photosynthesis (fotosíntesis), ecosystem (ecosistema), food chain (cadena alimenticia), solar system (sistema solar), planet (planeta), atmosphere (atmósfera), cell (célula), DNA (ADN), evolution (evolución), energy (energía), matter (materia), force (fuerza), gravity (gravedad), experiment (experimento), hypothesis (hipótesis), conclusion (conclusión).",
+      "palabras_clave": ["ciencias", "science", "photosynthesis", "ecosystem", "solar system", "planet", "cell", "DNA", "evolution", "energy", "gravity", "experiment"]
+    },
+    {
+      "id": "ing_g5_011", "grado": 5, "tema": "reading strategies",
+      "pregunta": "¿Qué estrategias uso para leer textos en inglés más complejos?",
+      "respuesta": "Estrategias avanzadas: 1) Skimming (lectura rápida): leer el título, primer párrafo y último para tener la idea general. 2) Scanning (búsqueda): buscar información específica sin leer todo. 3) Inferring (inferir): deducir el significado de palabras por el contexto. 4) Identifying the main idea (idea principal). 5) Making connections (conectar con tu vida). 6) Summarizing (resumir) en tus propias palabras.",
+      "palabras_clave": ["estrategias", "skimming", "scanning", "inferring", "main idea", "summarizing", "connecting", "lectura", "inglés", "avanzado"]
+    },
+    {
+      "id": "ing_g5_012", "grado": 5, "tema": "giving a presentation",
+      "pregunta": "¿Cómo hago una presentación oral en inglés?",
+      "respuesta": "Para una presentación oral en inglés: 1) Inicio: Good morning/afternoon, today I'm going to talk about... 2) Desarrollo: First... Second... Furthermore... 3) Transición: Let's move on to... / Now I'd like to talk about... 4) Conclusión: To sum up... / In conclusion... / Thank you for listening. Habla despacio y claro. Practica antes. Usa notas breves, no leas todo. Contacto visual con el público.",
+      "palabras_clave": ["presentación oral", "presentation", "good morning", "talk about", "first", "second", "conclusion", "thank you", "summary", "speaking"]
+    },
+    {
+      "id": "ing_g5_013", "grado": 5, "tema": "phrasal verbs",
+      "pregunta": "¿Qué son los phrasal verbs?",
+      "respuesta": "Los phrasal verbs son verbos seguidos de una preposición o adverbio que cambian completamente su significado. Ejemplos: turn on (encender): Turn on the TV. Turn off (apagar): Turn off the light. Give up (rendirse): Don't give up! Look up (buscar en diccionario): Look up this word. Get up (levantarse): I get up at 6am. Put on (ponerse): Put on your coat. Take off (quitarse / despegar avión). Pick up (recoger).",
+      "palabras_clave": ["phrasal verbs", "turn on", "turn off", "give up", "look up", "get up", "put on", "take off", "pick up", "verbo", "preposición"]
+    },
+    {
+      "id": "ing_g5_014", "grado": 5, "tema": "idioms",
+      "pregunta": "¿Qué son los modismos (idioms) en inglés?",
+      "respuesta": "Los modismos (idioms) son expresiones cuyo significado no se puede deducir literalmente. Ejemplos: Break a leg! (¡Buena suerte!) — literalmente 'rómpete una pierna'. It's raining cats and dogs (Está lloviendo muy fuerte). Hit the books (estudiar). Bite the bullet (aguantar). Cost an arm and a leg (ser muy caro). Under the weather (sentirse mal). Spill the beans (revelar un secreto). Los idioms hacen el inglés más natural y expresivo.",
+      "palabras_clave": ["idioms", "modismos", "break a leg", "raining cats and dogs", "hit the books", "cost an arm", "under the weather", "spill the beans", "expresión"]
+    },
+    {
+      "id": "ing_g5_015", "grado": 5, "tema": "pronunciation",
+      "pregunta": "¿Cómo mejoro mi pronunciación en inglés?",
+      "respuesta": "Para mejorar la pronunciación en inglés: 1) Escucha canciones y repite las letras. 2) Ve películas y series en inglés con subtítulos. 3) Usa aplicaciones como Duolingo o YouTube. 4) Practica los sonidos difíciles para hispanohablantes: la 'th' (think/this), la 'r' americana, las vocales (ship/sheep). 5) Grábate hablando y compara. 6) Habla con personas en inglés. 7) No tengas miedo a equivocarte. La práctica hace al maestro.",
+      "palabras_clave": ["pronunciación", "pronunciation", "escuchar", "canciones", "películas", "aplicación", "th", "vocales", "practicar", "mejorar", "inglés"]
+    },
+    {
+      "id": "ing_g5_016", "grado": 5, "tema": "debate in english",
+      "pregunta": "¿Cómo participo en un debate en inglés?",
+      "respuesta": "Frases útiles para debatir en inglés: I agree with... (Estoy de acuerdo con...). I disagree with... (No estoy de acuerdo con...). In my opinion... (En mi opinión...). I'd like to add that... (Me gustaría añadir que...). Could you explain that? (¿Podría explicar eso?). That's a good point, but... (Es un buen punto, pero...). Evidence shows that... (La evidencia muestra que...). To conclude / In conclusion...",
+      "palabras_clave": ["debate", "agree", "disagree", "opinion", "evidence", "explain", "good point", "conclusion", "English", "argumento"]
+    },
+    {
+      "id": "ing_g5_017", "grado": 5, "tema": "suffixes and prefixes",
+      "pregunta": "¿Para qué sirven los prefijos y sufijos en inglés?",
+      "respuesta": "Los prefijos y sufijos ayudan a deducir el significado de palabras nuevas. Prefijos comunes: un- (unhappy = infeliz), re- (redo = rehacer), dis- (disagree = no estar de acuerdo), pre- (preview = vista previa), over- (overwork = trabajar demasiado). Sufijos comunes: -tion (action, education), -er (teacher, writer), -ful (beautiful, helpful), -less (useless, homeless), -ness (happiness, sadness).",
+      "palabras_clave": ["prefijos", "sufijos", "prefix", "suffix", "un", "re", "dis", "pre", "tion", "er", "ful", "less", "ness", "significado"]
+    },
+    {
+      "id": "ing_g5_018", "grado": 5, "tema": "global english",
+      "pregunta": "¿Por qué es importante aprender inglés en Colombia?",
+      "respuesta": "El inglés es el idioma más hablado en el mundo (1.500 millones de personas). Es el idioma de los negocios internacionales, la ciencia, la tecnología y los viajes. En Colombia, el Plan Nacional de Bilingüismo busca que más colombianos hablen inglés para mejorar las oportunidades laborales y académicas. Con inglés puedes acceder a universidades en el exterior, trabajar en multinacionales y comunicarte con personas de todo el mundo.",
+      "palabras_clave": ["inglés", "Colombia", "bilingüismo", "trabajo", "ciencia", "tecnología", "viajes", "universidad", "multinacional", "mundo", "oportunidades"]
+    },
+    {
+      "id": "ing_g5_019", "grado": 5, "tema": "environmental english",
+      "pregunta": "¿Cómo hablar de los Objetivos de Desarrollo Sostenible en inglés?",
+      "respuesta": "Los Objetivos de Desarrollo Sostenible (Sustainable Development Goals - SDGs): No poverty (Sin pobreza), Zero hunger (Hambre cero), Good health (Buena salud), Quality education (Educación de calidad), Gender equality (Igualdad de género), Clean water (Agua limpia), Affordable energy (Energía asequible), Climate action (Acción climática), Life on land (Vida de ecosistemas terrestres). Son 17 metas de la ONU para 2030.",
+      "palabras_clave": ["SDGs", "sustainable development", "poverty", "hunger", "health", "education", "equality", "water", "climate", "ONU", "2030"]
+    },
+    {
+      "id": "ing_g5_020", "grado": 5, "tema": "expressions of quantity",
+      "pregunta": "¿Cómo se expresan cantidades en inglés?",
+      "respuesta": "Expresiones de cantidad: a lot of / lots of (mucho/a - contable e incontable): I have a lot of books / water. Many (muchos - contable): How many friends do you have? Much (mucho - incontable): How much sugar do you need? A few (unos pocos - contable): I have a few coins. A little (un poco - incontable): Add a little salt. Enough (suficiente): I have enough money. Too many / too much (demasiados/demasiado).",
+      "palabras_clave": ["cantidad", "quantity", "a lot of", "many", "much", "a few", "a little", "enough", "too many", "too much", "contable", "incontable"]
+    },
+    {
+      "id": "ing_g5_021", "grado": 5, "tema": "writing a story",
+      "pregunta": "¿Cómo escribo una historia corta en inglés?",
+      "respuesta": "Para escribir una historia en inglés: 1) Introduction: set the scene (Once upon a time... / One day...). 2) Present the characters: The main character was... 3) The problem/conflict: Suddenly... / Unfortunately... 4) Resolution: Finally... / In the end... 5) Conclusion. Use the past simple for events and past continuous for background: 'It was raining when she arrived.' Use descriptive language: adjectives and adverbs.",
+      "palabras_clave": ["historia", "story", "once upon a time", "suddenly", "finally", "in the end", "past simple", "past continuous", "characters", "writing"]
     }
   ]
 }

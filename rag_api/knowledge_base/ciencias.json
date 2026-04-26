@@ -1,7 +1,7 @@
 {
   "materia": "ciencias",
-  "version": "1.0.0",
-  "descripcion": "Base de conocimiento de Ciencias Naturales para grados 1 a 5 — currículo colombiano",
+  "version": "2.0.0",
+  "descripcion": "Base de conocimiento ampliada de Ciencias Naturales grados 1-5 — currículo colombiano MEN",
   "contenido": [
     {
       "id": "cie_g1_001", "grado": 1, "tema": "seres vivos",
@@ -42,13 +42,13 @@
     {
       "id": "cie_g2_002", "grado": 2, "tema": "agua",
       "pregunta": "¿Por qué es importante el agua?",
-      "respuesta": "El agua es fundamental para la vida. Los seres vivos necesitamos agua para vivir: hidrata nuestro cuerpo, nos ayuda a digerir los alimentos, regula la temperatura y limpia nuestro organismo. Cubre el 71% de la Tierra pero solo el 3% es agua dulce apta para beber. Debemos cuidarla.",
+      "respuesta": "El agua es fundamental para la vida. Los seres vivos necesitamos agua para vivir: hidrata nuestro cuerpo, nos ayuda a digerir los alimentos, regula la temperatura y limpia nuestro organismo. Cubre el 71% de la Tierra pero solo el 3% es agua dulce. Debemos cuidarla.",
       "palabras_clave": ["agua", "importante", "vida", "beber", "hidratar", "cuerpo", "dulce", "cuidar", "Tierra", "océano"]
     },
     {
       "id": "cie_g2_003", "grado": 2, "tema": "hábitats",
       "pregunta": "¿Qué es un hábitat?",
-      "respuesta": "El hábitat es el lugar natural donde vive un animal o una planta. Cada ser vivo está adaptado a su hábitat. Por ejemplo: los peces viven en el hábitat acuático (ríos, mares, lagos), los cóndores en el hábitat montañoso (Sierra Nevada, Andes), y los monos en la selva tropical.",
+      "respuesta": "El hábitat es el lugar natural donde vive un animal o una planta. Cada ser vivo está adaptado a su hábitat. Por ejemplo: los peces viven en el hábitat acuático (ríos, mares, lagos), los cóndores en el hábitat montañoso (Andes), y los monos en la selva tropical.",
       "palabras_clave": ["hábitat", "hábitats", "lugar", "vivir", "animal", "adaptado", "acuático", "montaña", "selva", "bosque", "desierto"]
     },
     {
@@ -60,14 +60,218 @@
     {
       "id": "cie_g3_002", "grado": 3, "tema": "cadena alimenticia",
       "pregunta": "¿Qué es la cadena alimenticia?",
-      "respuesta": "La cadena alimenticia muestra quién come a quién en un ecosistema. Siempre empieza con los productores (plantas que usan el sol para hacer su alimento), luego vienen los consumidores primarios (herbívoros que comen plantas), los consumidores secundarios (carnívoros que comen herbívoros) y los descomponedores (bacterias y hongos que descomponen la materia muerta).",
-      "palabras_clave": ["cadena alimenticia", "cadena", "alimenticia", "productor", "consumidor", "descomponedor", "herbívoro", "carnívoro", "alimento", "eslabón"]
+      "respuesta": "La cadena alimenticia muestra quién come a quién en un ecosistema. Siempre empieza con los productores (plantas que usan el sol), luego los consumidores primarios (herbívoros), los consumidores secundarios (carnívoros) y los descomponedores (bacterias y hongos que descomponen la materia muerta).",
+      "palabras_clave": ["cadena alimenticia", "productor", "consumidor", "descomponedor", "herbívoro", "carnívoro", "alimento", "eslabón"]
     },
     {
       "id": "cie_g3_003", "grado": 3, "tema": "ciclo del agua",
       "pregunta": "¿Qué es el ciclo del agua?",
-      "respuesta": "El ciclo del agua es el movimiento continuo del agua en la naturaleza: 1) Evaporación: el sol calienta el agua de mares y ríos y sube como vapor. 2) Condensación: el vapor se enfría y forma nubes. 3) Precipitación: el agua cae como lluvia, nieve o granizo. 4) Infiltración y escorrentía: el agua vuelve a los ríos y al suelo. El ciclo vuelve a comenzar.",
-      "palabras_clave": ["ciclo del agua", "ciclo", "agua", "evaporación", "condensación", "precipitación", "lluvia", "nube", "vapor", "río", "mar"]
+      "respuesta": "El ciclo del agua es el movimiento continuo del agua en la naturaleza: 1) Evaporación: el sol calienta el agua y sube como vapor. 2) Condensación: el vapor se enfría y forma nubes. 3) Precipitación: el agua cae como lluvia o nieve. 4) El agua vuelve a los ríos. El ciclo vuelve a comenzar.",
+      "palabras_clave": ["ciclo del agua", "evaporación", "condensación", "precipitación", "lluvia", "nube", "vapor", "río", "mar"]
+    },
+    {
+      "id": "cie_g3_004", "grado": 3, "tema": "ecosistemas",
+      "pregunta": "¿Cuáles son los tipos de ecosistemas en Colombia?",
+      "respuesta": "Colombia tiene ecosistemas únicos en el mundo: 1) Selva amazónica (biodiversidad asombrosa). 2) Páramo (solo existe en los Andes tropicales, almacena agua). 3) Manglar (entre la tierra y el mar, cría de muchos animales). 4) Desierto de la Guajira. 5) Llanos orientales (sabana). 6) Arrecifes de coral en el Caribe y el Pacífico.",
+      "palabras_clave": ["ecosistema", "Colombia", "selva", "amazónica", "páramo", "manglar", "desierto", "guajira", "llanos", "arrecife", "coral"]
+    },
+    {
+      "id": "cie_g3_005", "grado": 3, "tema": "fotosíntesis",
+      "pregunta": "¿Qué es la fotosíntesis?",
+      "respuesta": "La fotosíntesis es el proceso por el que las plantas producen su propio alimento usando la luz del sol. Ingredientes: luz solar + agua (del suelo) + dióxido de carbono (CO₂ del aire). Resultado: glucosa (azúcar para la planta) + oxígeno (O₂ que liberan al aire). Por eso las plantas son fundamentales para la vida en la Tierra.",
+      "palabras_clave": ["fotosíntesis", "plantas", "luz solar", "agua", "CO₂", "dióxido de carbono", "glucosa", "oxígeno", "O₂", "clorofila", "hojas"]
+    },
+    {
+      "id": "cie_g3_006", "grado": 3, "tema": "clasificación de animales",
+      "pregunta": "¿Cómo se clasifican los animales según si tienen columna vertebral?",
+      "respuesta": "Vertebrados: tienen columna vertebral (espina dorsal). Se dividen en: mamíferos (vaca, delfín), aves (loro, cóndor), reptiles (iguana, caimán), anfibios (rana, salamandra) y peces (bagre, mojarra). Invertebrados: no tienen columna vertebral. Ejemplos: insectos, arañas, caracoles, cangrejos, lombrices.",
+      "palabras_clave": ["vertebrados", "invertebrados", "columna", "mamíferos", "aves", "reptiles", "anfibios", "peces", "insectos", "clasificar"]
+    },
+    {
+      "id": "cie_g3_007", "grado": 3, "tema": "suelo",
+      "pregunta": "¿Qué es el suelo y por qué es importante?",
+      "respuesta": "El suelo es la capa superficial de la Tierra donde crecen las plantas. Está formado por minerales, materia orgánica (restos de plantas y animales), agua, aire y organismos vivos (lombrices, bacterias). El suelo tarda cientos de años en formarse. Es fundamental porque da sustento a las plantas y a toda la cadena alimenticia.",
+      "palabras_clave": ["suelo", "tierra", "minerales", "orgánica", "lombrices", "bacterias", "plantas", "capas", "erosión", "fertil"]
+    },
+    {
+      "id": "cie_g3_008", "grado": 3, "tema": "reproducción plantas",
+      "pregunta": "¿Cómo se reproducen las plantas?",
+      "respuesta": "Las plantas tienen varios métodos de reproducción: 1) Sexual: mediante semillas (la flor produce semillas que germinan). 2) Asexual: sin semillas. Formas: por esquejes (parte del tallo se planta), por estolones (ramas que crecen horizontales), por bulbos (como la cebolla) y por esporas (como los helechos y hongos).",
+      "palabras_clave": ["reproducción", "plantas", "semillas", "esquejes", "estolones", "bulbos", "esporas", "flor", "germinar", "sexual", "asexual"]
+    },
+    {
+      "id": "cie_g3_009", "grado": 3, "tema": "animales en peligro",
+      "pregunta": "¿Por qué algunos animales están en peligro de extinción en Colombia?",
+      "respuesta": "Algunos animales colombianos están en peligro por: deforestación (destrucción de su hábitat), caza furtiva, contaminación de ríos y mares, cambio climático y tráfico de especies. Animales amenazados: oso de anteojos, danta, cóndor de los Andes, manatí, jaguar, rana venenosa. Es importante protegerlos.",
+      "palabras_clave": ["extinción", "peligro", "Colombia", "oso de anteojos", "danta", "cóndor", "manatí", "jaguar", "deforestar", "caza", "proteger"]
+    },
+    {
+      "id": "cie_g3_010", "grado": 3, "tema": "contaminación",
+      "pregunta": "¿Qué tipos de contaminación ambiental existen?",
+      "respuesta": "Los tipos de contaminación son: 1) Del aire: gases tóxicos, humo de carros y fábricas. 2) Del agua: vertimiento de basuras, químicos y aguas residuales. 3) Del suelo: basura, pesticidas, plásticos. 4) Sonora: ruido excesivo (tráfico, construcción). 5) Visual: exceso de avisos y publicidad. Debemos reducir la contaminación para proteger la vida.",
+      "palabras_clave": ["contaminación", "aire", "agua", "suelo", "sonora", "visual", "basura", "químicos", "pesticida", "plástico", "proteger"]
+    },
+    {
+      "id": "cie_g3_011", "grado": 3, "tema": "reciclaje",
+      "pregunta": "¿Qué es el reciclaje y las 3R?",
+      "respuesta": "Las 3R son: Reducir (usar menos recursos y generar menos basura), Reutilizar (usar los objetos varias veces antes de desecharlos) y Reciclar (transformar los residuos en nuevos materiales). Los colores de las canecas: verde (vidrio), azul (papel y cartón), amarillo (plástico y metal), gris (basura ordinaria).",
+      "palabras_clave": ["reciclaje", "reciclar", "3R", "reducir", "reutilizar", "basura", "vidrio", "papel", "plástico", "caneca", "medio ambiente"]
+    },
+    {
+      "id": "cie_g3_012", "grado": 3, "tema": "cadena alimenticia",
+      "pregunta": "¿Qué pasaría si desapareciera un eslabón de la cadena alimenticia?",
+      "respuesta": "Si desaparece un eslabón de la cadena alimenticia, todo el ecosistema se desequilibra. Ejemplo: si desaparecen las ranas (consumidores de insectos), los mosquitos aumentarían sin control y las serpientes (que comen ranas) disminuirían por falta de alimento. Esto se llama desequilibrio ecológico y puede destruir ecosistemas enteros.",
+      "palabras_clave": ["eslabón", "cadena alimenticia", "desequilibrio", "ranas", "insectos", "serpientes", "ecosistema", "desaparecer", "consecuencia"]
+    },
+    {
+      "id": "cie_g3_013", "grado": 3, "tema": "propiedades del aire",
+      "pregunta": "¿Qué es el aire y cuáles son sus propiedades?",
+      "respuesta": "El aire es una mezcla de gases que rodea la Tierra (atmósfera). Está compuesto principalmente por: nitrógeno (78%), oxígeno (21%) y otros gases (CO₂, argón, etc.). El aire ocupa espacio, tiene masa, ejerce presión y no lo vemos. Sin aire no podemos respirar. El viento es el movimiento del aire.",
+      "palabras_clave": ["aire", "atmósfera", "nitrógeno", "oxígeno", "CO₂", "respirar", "viento", "gases", "presión", "mezcla", "78%", "21%"]
+    },
+    {
+      "id": "cie_g3_014", "grado": 3, "tema": "ciclo de vida",
+      "pregunta": "¿Cuál es el ciclo de vida de una mariposa?",
+      "respuesta": "La mariposa tiene metamorfosis completa: 4 etapas. 1) Huevo: la mariposa pone huevos en hojas. 2) Larva (oruga): come hojas para crecer. 3) Pupa (crisálida): se encierra en un capullo y se transforma. 4) Adulto (mariposa): emerge con alas y vuela. Este proceso se llama metamorfosis completa. Los escarabajos y las moscas también la tienen.",
+      "palabras_clave": ["metamorfosis", "mariposa", "huevo", "larva", "oruga", "pupa", "crisálida", "adulto", "ciclo de vida", "alas", "transformación"]
+    },
+    {
+      "id": "cie_g3_015", "grado": 3, "tema": "energía solar",
+      "pregunta": "¿Qué es la energía solar y cómo nos beneficia?",
+      "respuesta": "La energía solar es la energía que viene del Sol en forma de luz y calor. Beneficios: calienta la Tierra, permite la fotosíntesis (alimento para plantas), ilumina el planeta, permite los ciclos del agua y del viento, y se puede convertir en electricidad con paneles solares. Es una energía limpia y renovable que nunca se acaba.",
+      "palabras_clave": ["energía solar", "sol", "luz", "calor", "fotosíntesis", "panel solar", "renovable", "limpia", "electricidad", "beneficio"]
+    },
+    {
+      "id": "cie_g3_016", "grado": 3, "tema": "reproducción animales",
+      "pregunta": "¿Cómo se reproducen los animales?",
+      "respuesta": "Los animales se reproducen de dos formas: 1) Ovíparos: ponen huevos. Ejemplos: aves, reptiles, peces, insectos, anfibios. 2) Vivíparos: la cría se desarrolla dentro de la madre y nace viva. Ejemplos: mamíferos (ballenas, elefantes, perros, humanos). Los marsupiales (canguro) son vivíparos pero la cría termina de desarrollarse en la bolsa.",
+      "palabras_clave": ["ovíparos", "vivíparos", "huevos", "cría", "reproducción", "mamíferos", "aves", "reptiles", "marsupiales", "canguro", "nacer"]
+    },
+    {
+      "id": "cie_g3_017", "grado": 3, "tema": "movimiento de la Tierra",
+      "pregunta": "¿Qué son la rotación y la traslación de la Tierra?",
+      "respuesta": "Rotación: la Tierra gira sobre su propio eje. Tarda 24 horas (un día completo). Causa el día y la noche: la parte que mira al sol tiene día, la parte opuesta tiene noche. Traslación: la Tierra viaja alrededor del Sol. Tarda 365 días y 6 horas (un año). Causa las estaciones del año (en Colombia: temporadas de lluvia y sequía).",
+      "palabras_clave": ["rotación", "traslación", "Tierra", "eje", "24 horas", "día", "noche", "365 días", "año", "estaciones", "sol"]
+    },
+    {
+      "id": "cie_g3_018", "grado": 3, "tema": "biodiversidad",
+      "pregunta": "¿Por qué Colombia es uno de los países más biodiversos del mundo?",
+      "respuesta": "Colombia es el segundo país con más biodiversidad del mundo (después de Brasil). Razones: tiene acceso a dos océanos, atraviesan los Andes (tres cordilleras), incluye parte de la Amazonía, tiene costas en el Caribe y el Pacífico, y tiene una gran variedad de alturas (de 0 a 5775 msnm). Aquí viven más de 1.900 especies de aves, 500 mamíferos y 45.000 plantas.",
+      "palabras_clave": ["biodiversidad", "Colombia", "especies", "aves", "Andes", "Amazonía", "Caribe", "Pacífico", "plantas", "segundo", "mundo"]
+    },
+    {
+      "id": "cie_g3_019", "grado": 3, "tema": "agua y vida",
+      "pregunta": "¿Cómo se contamina el agua y cómo podemos cuidarla?",
+      "respuesta": "El agua se contamina cuando le arrojamos basura, vertemos químicos, los desagües de fábricas llegan a ríos o el plástico llega al mar. Para cuidarla: no arrojar basura en ríos, no usar pesticidas en exceso, cerrar la llave mientras te cepillas, arreglar grifos que gotean, usar lo necesario. El agua es un recurso escaso y valioso.",
+      "palabras_clave": ["contaminar", "agua", "cuidar", "basura", "ríos", "químicos", "plástico", "mar", "fábrica", "llave", "grifo", "recurso"]
+    },
+    {
+      "id": "cie_g3_020", "grado": 3, "tema": "mezclas",
+      "pregunta": "¿Qué es una mezcla en ciencias?",
+      "respuesta": "Una mezcla es la unión de dos o más sustancias que mantienen sus propiedades. No hay reacción química. Ejemplos de mezclas: agua con sal, granola (cereales mixtos), jugo de naranja con azúcar. Las mezclas pueden separarse por métodos físicos: filtración, decantación, evaporación o tamización.",
+      "palabras_clave": ["mezcla", "sustancias", "propiedades", "filtración", "decantación", "evaporación", "sal", "agua", "granola", "separar", "físico"]
+    },
+    {
+      "id": "cie_g3_021", "grado": 3, "tema": "rocas y minerales",
+      "pregunta": "¿Cuál es la diferencia entre una roca y un mineral?",
+      "respuesta": "Un mineral es una sustancia natural inorgánica con composición química definida (oro, cuarzo, sal). Una roca está formada por uno o más minerales. Tipos de rocas: ígneas (formadas por magma volcánico: basalto, granito), sedimentarias (por capas de sedimentos: arenisca, caliza) y metamórficas (transformadas por presión o calor: mármol, pizarra).",
+      "palabras_clave": ["roca", "mineral", "ígnea", "sedimentaria", "metamórfica", "basalto", "granito", "caliza", "mármol", "magma", "volcán", "mineral"]
+    },
+    {
+      "id": "cie_g3_022", "grado": 3, "tema": "ecología",
+      "pregunta": "¿Qué son los recursos naturales renovables y no renovables?",
+      "respuesta": "Recursos naturales renovables: se pueden regenerar naturalmente en un tiempo razonable. Ejemplos: agua (con el ciclo del agua), luz solar, aire, bosques (si se siembran árboles), animales. No renovables: se agotan y no se regeneran en escala humana. Ejemplos: petróleo, carbón, gas natural, minerales metálicos (oro, hierro). Debemos usar los no renovables con cuidado.",
+      "palabras_clave": ["renovables", "no renovables", "recursos naturales", "agua", "solar", "bosque", "petróleo", "carbón", "gas", "mineral", "agotar"]
+    },
+    {
+      "id": "cie_g3_023", "grado": 3, "tema": "clima",
+      "pregunta": "¿Cuál es la diferencia entre tiempo atmosférico y clima?",
+      "respuesta": "El tiempo atmosférico es el estado del cielo en un momento y lugar específico (puede cambiar cada hora): 'hoy llueve en Bogotá'. El clima es el promedio del tiempo atmosférico de un lugar durante muchos años: 'Medellín tiene clima templado'. El clima de un lugar depende de la altitud, la latitud, la cercanía al mar y otras condiciones geográficas.",
+      "palabras_clave": ["tiempo atmosférico", "clima", "lluvia", "temperatura", "promedio", "altitud", "latitud", "Medellín", "Bogotá", "geográfico"]
+    },
+    {
+      "id": "cie_g3_024", "grado": 3, "tema": "plantas medicinales",
+      "pregunta": "¿Qué son las plantas medicinales y cuáles se usan en Colombia?",
+      "respuesta": "Las plantas medicinales son plantas que se usan para aliviar enfermedades o malestares. En Colombia se usan: manzanilla (para el estómago), menta (para la digestión), sábila o aloe vera (para la piel), eucalipto (para la tos), toronjil (para los nervios), paico (antiparasitario) y ajenjo. El uso de plantas medicinales es una tradición ancestral de los pueblos indígenas colombianos.",
+      "palabras_clave": ["plantas medicinales", "manzanilla", "menta", "sábila", "eucalipto", "toronjil", "Colombia", "indígenas", "curar", "aliviar"]
+    },
+    {
+      "id": "cie_g3_025", "grado": 3, "tema": "alimentación saludable",
+      "pregunta": "¿Qué es una alimentación saludable?",
+      "respuesta": "Una alimentación saludable incluye todos los grupos de alimentos: 1) Proteínas (carnes, huevos, legumbres). 2) Carbohidratos (arroz, papa, yuca, plátano). 3) Frutas y verduras (vitaminas y minerales). 4) Lácteos (calcio para los huesos). 5) Grasas saludables (aguacate, aceite de oliva). La famosa olla nutricional colombiana guía la alimentación equilibrada.",
+      "palabras_clave": ["alimentación saludable", "proteínas", "carbohidratos", "frutas", "verduras", "lácteos", "vitaminas", "minerales", "equilibrada", "olla nutricional"]
+    },
+    {
+      "id": "cie_g3_026", "grado": 3, "tema": "fuerza y movimiento",
+      "pregunta": "¿Qué es la fuerza y cómo mueve los objetos?",
+      "respuesta": "La fuerza es un empuje o jalón que puede mover, detener, acelerar o cambiar la dirección de los objetos. Tipos de fuerza: gravedad (atrae los objetos hacia la Tierra), magnética (imanes), fricción o rozamiento (frena el movimiento entre superficies), muscular (de los músculos), y elástica (resortes). Sin fuerzas, los objetos no cambiarían su movimiento.",
+      "palabras_clave": ["fuerza", "empuje", "jalón", "gravedad", "magnética", "fricción", "rozamiento", "músculo", "elástica", "movimiento", "objeto"]
+    },
+    {
+      "id": "cie_g3_027", "grado": 3, "tema": "magnetismo",
+      "pregunta": "¿Qué es el magnetismo y cómo funciona un imán?",
+      "respuesta": "El magnetismo es una fuerza que tienen algunos materiales de atraer o repeler otros objetos. Un imán tiene dos polos: norte (N) y sur (S). Polos iguales se repelen (N-N o S-S). Polos distintos se atraen (N-S). Los imanes atraen materiales ferromagnéticos (hierro, níquel, cobalto). La Tierra es un gran imán: por eso la brújula señala el norte.",
+      "palabras_clave": ["magnetismo", "imán", "polo norte", "polo sur", "atraer", "repeler", "brújula", "hierro", "ferromagnético", "campo magnético"]
+    },
+    {
+      "id": "cie_g3_028", "grado": 3, "tema": "luz y sombra",
+      "pregunta": "¿Cómo se forma una sombra?",
+      "respuesta": "Una sombra se forma cuando un objeto opaco bloquea la luz. La luz viaja en línea recta y no puede atravesar los objetos opacos (madera, metal, tu mano). La sombra siempre se forma en el lado opuesto a la fuente de luz. Los objetos transparentes (vidrio) no hacen sombra. Los translúcidos (papel vegetal) hacen sombra difusa.",
+      "palabras_clave": ["sombra", "luz", "opaco", "transparente", "translúcido", "bloquear", "línea recta", "fuente de luz", "mano", "sol"]
+    },
+    {
+      "id": "cie_g3_029", "grado": 3, "tema": "calor y temperatura",
+      "pregunta": "¿Cuál es la diferencia entre calor y temperatura?",
+      "respuesta": "La temperatura es la medida de qué tan caliente o frío está un objeto (se mide en °C). El calor es la energía térmica que se transfiere de un cuerpo caliente a uno frío. Cuando tomas una olla caliente, la energía pasa de la olla a tu mano (calor). La temperatura se mide con el termómetro. El calor se propaga por conducción, convección y radiación.",
+      "palabras_clave": ["calor", "temperatura", "°C", "termómetro", "conducción", "convección", "radiación", "energía térmica", "caliente", "frío"]
+    },
+    {
+      "id": "cie_g3_030", "grado": 3, "tema": "cambios de estado",
+      "pregunta": "¿Cómo cambia el estado de la materia con la temperatura?",
+      "respuesta": "Los cambios de estado ocurren por cambios de temperatura: Fusión: sólido → líquido (hielo a agua, se calienta). Solidificación: líquido → sólido (agua a hielo, se enfría). Evaporación: líquido → gas (agua a vapor). Condensación: gas → líquido (vapor a agua en las nubes). Sublimación: sólido → gas directamente (naftalina, hielo seco).",
+      "palabras_clave": ["cambios de estado", "fusión", "solidificación", "evaporación", "condensación", "sublimación", "hielo", "vapor", "temperatura", "calentar"]
+    },
+    {
+      "id": "cie_g3_031", "grado": 3, "tema": "adaptaciones",
+      "pregunta": "¿Qué son las adaptaciones de los seres vivos?",
+      "respuesta": "Las adaptaciones son características que tienen los seres vivos para sobrevivir en su ambiente. Ejemplos: el camaleón cambia de color (camuflaje), el oso polar tiene pelaje blanco y grueso para el frío, el cactus tiene espinas y almacena agua para el desierto, el pato tiene patas palmeadas para nadar, la jirafa tiene cuello largo para alcanzar hojas altas.",
+      "palabras_clave": ["adaptación", "adaptaciones", "sobrevivir", "camaleón", "oso polar", "cactus", "pato", "jirafa", "desierto", "frío", "camuflaje"]
+    },
+    {
+      "id": "cie_g3_032", "grado": 3, "tema": "higiene y salud",
+      "pregunta": "¿Por qué es importante la higiene personal?",
+      "respuesta": "La higiene personal previene enfermedades causadas por bacterias y virus. Hábitos importantes: lavarse las manos antes de comer y después del baño (previene diarrea y gripa), lavarse los dientes al menos 3 veces al día (previene caries), bañarse diariamente, mantener las uñas cortas y limpias, lavar las frutas y verduras antes de comerlas. La higiene nos mantiene sanos.",
+      "palabras_clave": ["higiene", "salud", "manos", "dientes", "bacterias", "virus", "caries", "prevenir", "enfermedad", "hábitos", "limpieza"]
+    },
+    {
+      "id": "cie_g3_033", "grado": 3, "tema": "sistema digestivo",
+      "pregunta": "¿Cómo digiere nuestro cuerpo los alimentos?",
+      "respuesta": "La digestión tiene varias etapas: 1) Boca: los dientes trituran y la saliva empieza a descomponer el alimento. 2) Esófago: lleva el alimento al estómago. 3) Estómago: los jugos gástricos disuelven el alimento (4-5 horas). 4) Intestino delgado: absorbe los nutrientes. 5) Intestino grueso: absorbe el agua y forma las heces. 6) Ano: elimina los desechos.",
+      "palabras_clave": ["digestión", "boca", "esófago", "estómago", "intestino delgado", "intestino grueso", "nutrientes", "alimento", "sistema digestivo"]
+    },
+    {
+      "id": "cie_g3_034", "grado": 3, "tema": "agua y salud",
+      "pregunta": "¿Cuánta agua necesita beber una persona al día?",
+      "respuesta": "Los niños necesitan beber entre 1,5 y 2 litros de agua al día (6-8 vasos). Los adultos deben beber entre 2 y 3 litros. El agua ayuda a: regular la temperatura del cuerpo, transportar nutrientes, eliminar toxinas por la orina, mantener las articulaciones lubricadas y la digestión. Bebe más agua cuando hace calor o cuando haces ejercicio.",
+      "palabras_clave": ["agua", "beber", "litros", "vasos", "niños", "salud", "temperatura", "nutrientes", "ejercicio", "hidratación"]
+    },
+    {
+      "id": "cie_g3_035", "grado": 3, "tema": "volcanes y terremotos",
+      "pregunta": "¿Qué son los volcanes?",
+      "respuesta": "Los volcanes son aberturas en la corteza terrestre por donde sale magma (roca fundida del interior de la Tierra), ceniza y gases. Cuando el magma sale al exterior se llama lava. Colombia tiene volcanes activos: el nevado del Ruiz (erupcionó en 1985), el Galeras, el Cumbal. Los volcanes forman islas y montañas y enriquecen el suelo.",
+      "palabras_clave": ["volcán", "volcanes", "magma", "lava", "corteza terrestre", "ceniza", "Nevado del Ruiz", "Galeras", "Colombia", "erupción", "activo"]
+    },
+    {
+      "id": "cie_g3_036", "grado": 3, "tema": "pájaros de Colombia",
+      "pregunta": "¿Cuáles son algunos pájaros representativos de Colombia?",
+      "respuesta": "Colombia tiene más aves que cualquier otro país del mundo (1.900+ especies). El cóndor de los Andes es el ave nacional. Otros representativos: el tucán (selva), el loro real, el colibrí (tominejo) que es el más pequeño, el flamenco rosado, el pato zambullidor, la reinita, la perdiz, el guacamayo. Los Andes y la Amazonía concentran la mayor diversidad.",
+      "palabras_clave": ["aves", "Colombia", "cóndor", "tucán", "loro", "colibrí", "flamenco", "guacamayo", "biodiversidad", "Andes", "Amazonia"]
+    },
+    {
+      "id": "cie_g3_037", "grado": 3, "tema": "salud ocular",
+      "pregunta": "¿Cómo podemos cuidar nuestra vista?",
+      "respuesta": "Para cuidar la vista: 1) Leer con buena luz (nunca en la oscuridad). 2) Mantener distancia al ver el televisor o pantallas (mínimo 60 cm). 3) Descansar los ojos cada 20 minutos de pantallas. 4) Comer alimentos con vitamina A (zanahoria, mango, espinaca). 5) Usar gafas si el médico las receta. 6) Visitar al oftalmólogo al menos una vez al año.",
+      "palabras_clave": ["vista", "ojos", "cuidar", "luz", "pantalla", "vitamina A", "zanahoria", "gafas", "oftalmólogo", "descanso", "salud"]
     },
     {
       "id": "cie_g4_001", "grado": 4, "tema": "sistema solar",
@@ -78,14 +282,218 @@
     {
       "id": "cie_g4_002", "grado": 4, "tema": "cuerpo humano",
       "pregunta": "¿Cuáles son los sistemas del cuerpo humano?",
-      "respuesta": "El cuerpo humano tiene varios sistemas: Sistema digestivo (procesa los alimentos), Sistema circulatorio (el corazón bombea sangre), Sistema respiratorio (los pulmones intercambian gases), Sistema nervioso (el cerebro controla el cuerpo), Sistema musculoesquelético (huesos y músculos dan forma y movimiento) y Sistema excretor (elimina desechos).",
-      "palabras_clave": ["sistemas", "cuerpo", "digestivo", "circulatorio", "respiratorio", "nervioso", "muscular", "esquelético", "órgano", "corazón", "pulmón", "cerebro"]
+      "respuesta": "El cuerpo humano tiene varios sistemas: Sistema digestivo (procesa alimentos), Sistema circulatorio (el corazón bombea sangre), Sistema respiratorio (los pulmones intercambian gases), Sistema nervioso (el cerebro controla el cuerpo), Sistema musculoesquelético (huesos y músculos) y Sistema excretor (elimina desechos).",
+      "palabras_clave": ["sistemas", "cuerpo", "digestivo", "circulatorio", "respiratorio", "nervioso", "muscular", "esquelético", "corazón", "pulmón", "cerebro"]
     },
     {
       "id": "cie_g4_003", "grado": 4, "tema": "mezclas",
       "pregunta": "¿Cuál es la diferencia entre mezcla homogénea y heterogénea?",
-      "respuesta": "Una mezcla homogénea es aquella en que las sustancias se combinan completamente y no se pueden distinguir a simple vista (ejemplo: agua con sal, café). Una mezcla heterogénea es aquella en que las sustancias se pueden ver por separado (ejemplo: agua con arena, ensalada de frutas). Las mezclas se pueden separar por filtración, decantación o evaporación.",
+      "respuesta": "Mezcla homogénea: las sustancias se combinan completamente y no se distinguen a simple vista (agua con sal, café). Mezcla heterogénea: las sustancias se pueden ver por separado (agua con arena, ensalada de frutas). Las mezclas se separan por filtración, decantación, evaporación o tamización.",
       "palabras_clave": ["mezcla", "homogénea", "heterogénea", "sustancia", "separar", "filtración", "decantación", "sal", "agua", "arena"]
+    },
+    {
+      "id": "cie_g4_004", "grado": 4, "tema": "sistema solar",
+      "pregunta": "¿Qué es una estrella y cómo se diferencia de un planeta?",
+      "respuesta": "Una estrella produce su propia luz y calor mediante reacciones nucleares en su núcleo. El Sol es una estrella. Un planeta no produce luz propia, gira alrededor de una estrella y tiene masa suficiente para tener forma casi esférica. La Tierra, Marte y Júpiter son planetas. Las estrellas que ves en la noche están muy lejos: la más cercana (Próxima Centauri) está a 4,2 años luz.",
+      "palabras_clave": ["estrella", "planeta", "luz propia", "Sol", "Tierra", "Marte", "Júpiter", "Próxima Centauri", "años luz", "nuclear", "diferencia"]
+    },
+    {
+      "id": "cie_g4_005", "grado": 4, "tema": "sistema respiratorio",
+      "pregunta": "¿Cómo funciona el sistema respiratorio?",
+      "respuesta": "El sistema respiratorio permite el intercambio de gases entre el cuerpo y el exterior. Proceso: 1) Inhalar: el aire entra por la nariz, baja por la tráquea a los pulmones. 2) En los alvéolos pulmonares, el oxígeno pasa a la sangre y el CO₂ sale. 3) Exhalar: el aire con CO₂ sale por la nariz o boca. Respiramos unas 16 veces por minuto en reposo.",
+      "palabras_clave": ["respiratorio", "pulmones", "oxígeno", "CO₂", "inhalar", "exhalar", "tráquea", "alvéolos", "respirar", "aire", "gas", "nariz"]
+    },
+    {
+      "id": "cie_g4_006", "grado": 4, "tema": "sistema circulatorio",
+      "pregunta": "¿Cómo funciona el sistema circulatorio?",
+      "respuesta": "El sistema circulatorio transporta sangre por todo el cuerpo. El corazón es la bomba que impulsa la sangre. Arterias: llevan sangre con oxígeno del corazón a los órganos. Venas: devuelven la sangre sin oxígeno al corazón. Capilares: vasos muy finos donde se intercambian nutrientes y desechos. El corazón late unas 100.000 veces al día.",
+      "palabras_clave": ["circulatorio", "corazón", "sangre", "arterias", "venas", "capilares", "oxígeno", "nutrientes", "bombear", "latido", "100000"]
+    },
+    {
+      "id": "cie_g4_007", "grado": 4, "tema": "universo",
+      "pregunta": "¿Qué es el universo y qué contiene?",
+      "respuesta": "El universo es todo lo que existe: materia, energía, espacio y tiempo. Contiene billones de galaxias, cada una con billones de estrellas. Nuestra galaxia se llama Vía Láctea y tiene unos 200.000 millones de estrellas. El universo tiene aprox. 13.800 millones de años. Todo comenzó con el Big Bang (Gran Explosión) hace ese tiempo.",
+      "palabras_clave": ["universo", "galaxia", "Vía Láctea", "estrellas", "Big Bang", "materia", "energía", "espacio", "tiempo", "millones", "origen"]
+    },
+    {
+      "id": "cie_g4_008", "grado": 4, "tema": "sistema nervioso",
+      "pregunta": "¿Cómo funciona el sistema nervioso?",
+      "respuesta": "El sistema nervioso controla todas las funciones del cuerpo. Central: cerebro (piensa, recuerda, controla emociones), cerebelo (equilibrio y coordinación), médula espinal (transmite señales al cuerpo). Periférico: nervios que conectan el cerebro con todos los órganos. Los impulsos nerviosos viajan a gran velocidad (120 m/s). El cerebro es el órgano más complejo del cuerpo.",
+      "palabras_clave": ["nervioso", "cerebro", "cerebelo", "médula espinal", "nervios", "impulso", "control", "equilibrio", "velocidad", "periférico", "central"]
+    },
+    {
+      "id": "cie_g4_009", "grado": 4, "tema": "cambio climático",
+      "pregunta": "¿Qué es el cambio climático y por qué ocurre?",
+      "respuesta": "El cambio climático es la alteración del clima de la Tierra causada principalmente por las actividades humanas. Las fábricas, carros y deforestación emiten gases de efecto invernadero (CO₂, metano) que atrapan el calor del sol en la atmósfera. Consecuencias: aumento de temperatura, derretimiento de glaciares, lluvias extremas, pérdida de biodiversidad.",
+      "palabras_clave": ["cambio climático", "calentamiento global", "gases de efecto invernadero", "CO₂", "metano", "temperatura", "glaciares", "biodiversidad", "fábricas"]
+    },
+    {
+      "id": "cie_g4_010", "grado": 4, "tema": "sistema óseo",
+      "pregunta": "¿Para qué sirven los huesos del cuerpo?",
+      "respuesta": "Los huesos cumplen varias funciones: 1) Dan forma y soporte al cuerpo (esqueleto). 2) Protegen órganos vitales (el cráneo protege el cerebro, las costillas protegen el corazón y pulmones). 3) Permiten el movimiento junto con los músculos. 4) Producen células de la sangre (en la médula ósea). 5) Almacenan calcio y minerales. El cuerpo humano tiene 206 huesos.",
+      "palabras_clave": ["huesos", "esqueleto", "cráneo", "costillas", "médula ósea", "calcio", "movimiento", "206", "cuerpo", "proteger", "soporte"]
+    },
+    {
+      "id": "cie_g4_011", "grado": 4, "tema": "electricidad",
+      "pregunta": "¿Qué es la electricidad y cómo llega a nuestras casas?",
+      "respuesta": "La electricidad es el flujo de electrones a través de un conductor (como un cable de cobre). Se genera en centrales eléctricas (hidroeléctricas, termoeléctricas, eólicas, solares). Luego viaja por cables de alta tensión hasta transformadores que reducen el voltaje. Finalmente llega a nuestras casas. Colombia genera mucha electricidad con centrales hidroeléctricas (ríos).",
+      "palabras_clave": ["electricidad", "electrones", "conductor", "central eléctrica", "hidroeléctrica", "transformador", "cable", "voltaje", "Colombia", "ríos"]
+    },
+    {
+      "id": "cie_g4_012", "grado": 4, "tema": "tipos de plantas",
+      "pregunta": "¿Cuáles son los tipos de plantas según sus características?",
+      "respuesta": "Clasificación de plantas: Por tamaño: árboles (tronco leñoso alto), arbustos (varios tallos, tamaño medio), hierbas (tallos blandos, pequeñas). Por hojas: caducas (pierden las hojas en otoño) y perennes (no las pierden). Por reproducción: con flores (angiospermas: manzano) y sin flores (gimnospermas: pino, coníferas; helechos).",
+      "palabras_clave": ["plantas", "árbol", "arbusto", "hierba", "caducas", "perennes", "angiosperma", "gimnosperma", "flor", "pino", "helecho"]
+    },
+    {
+      "id": "cie_g4_013", "grado": 4, "tema": "fuerza y gravedad",
+      "pregunta": "¿Qué es la gravedad y cómo actúa?",
+      "respuesta": "La gravedad es la fuerza de atracción entre todos los cuerpos con masa. La Tierra atrae todo hacia su centro. Por eso los objetos caen al suelo y los planetas orbitan el Sol. La fuerza de gravedad depende de la masa: más masa = más gravedad. En la Luna, la gravedad es 6 veces menor que en la Tierra; por eso los astronautas saltan muy alto.",
+      "palabras_clave": ["gravedad", "fuerza", "atracción", "masa", "Tierra", "caer", "Luna", "astronauta", "peso", "orbita", "centro"]
+    },
+    {
+      "id": "cie_g4_014", "grado": 4, "tema": "nutrición",
+      "pregunta": "¿Qué nutrientes necesita nuestro cuerpo?",
+      "respuesta": "Los nutrientes esenciales son: 1) Proteínas: construyen músculos y tejidos (carne, huevos, legumbres). 2) Carbohidratos: dan energía (arroz, papa, pan). 3) Lípidos (grasas): energía y protección (aceites, aguacate). 4) Vitaminas: regulan procesos (frutas, verduras). 5) Minerales: forman huesos y sangre (calcio, hierro, potasio). 6) Agua: esencial para todo proceso.",
+      "palabras_clave": ["nutrientes", "proteínas", "carbohidratos", "lípidos", "vitaminas", "minerales", "agua", "energía", "músculo", "tejido", "carne", "huevo"]
+    },
+    {
+      "id": "cie_g4_015", "grado": 4, "tema": "sistema excretor",
+      "pregunta": "¿Cómo elimina desechos nuestro cuerpo?",
+      "respuesta": "El sistema excretor elimina los desechos del metabolismo. Órganos: Riñones (filtran la sangre y producen orina, que elimina urea y sales). Pulmones (exhalan CO₂ y agua). Piel (elimina agua y sales por el sudor). Intestino grueso (elimina las heces). Los riñones filtran unos 180 litros de sangre al día y producen entre 1 y 2 litros de orina.",
+      "palabras_clave": ["excretor", "riñones", "orina", "sudor", "heces", "pulmones", "CO₂", "filtrar", "eliminar", "desechos", "sangre", "180 litros"]
+    },
+    {
+      "id": "cie_g4_016", "grado": 4, "tema": "ecosistemas marinos",
+      "pregunta": "¿Qué ecosistemas marinos existen en Colombia?",
+      "respuesta": "Colombia tiene costas en dos océanos. Ecosistemas marinos: 1) Arrecifes de coral (en el Caribe: Islas del Rosario, San Bernardo, San Andrés): hogar de peces, corales, langostas. 2) Manglares: ecosistemas entre la tierra y el mar, criadero de peces. 3) Fondos arenosos y rocosos. 4) Mar profundo. Colombia tiene gran riqueza marina que debe protegerse.",
+      "palabras_clave": ["marino", "Colombia", "arrecife", "coral", "Caribe", "manglar", "Pacífico", "San Andrés", "islas", "peces", "ecosistema"]
+    },
+    {
+      "id": "cie_g4_017", "grado": 4, "tema": "sonido",
+      "pregunta": "¿Qué es el sonido y cómo se propaga?",
+      "respuesta": "El sonido es una vibración que se propaga como ondas a través de materiales. Necesita un medio para viajar (no se propaga en el vacío). Velocidad: en el aire viaja a 340 m/s, en el agua a 1500 m/s, en el acero a 6000 m/s. El oído capta estas vibraciones. Las características del sonido son: tono (agudo/grave), timbre e intensidad (fuerte/débil).",
+      "palabras_clave": ["sonido", "vibración", "onda", "aire", "agua", "340 m/s", "oído", "tono", "agudo", "grave", "intensidad", "propagar", "vacío"]
+    },
+    {
+      "id": "cie_g4_018", "grado": 4, "tema": "luz",
+      "pregunta": "¿Qué es la luz y cuáles son sus propiedades?",
+      "respuesta": "La luz es una forma de energía electromagnética que viaja en ondas a 300.000 km/s (la velocidad más alta del universo). Propiedades: viaja en línea recta, se refleja (en espejos), se refracta (cambia de dirección al pasar de un medio a otro: lupa, lentes), y se descompone en colores (el arco iris). La luz visible es solo una parte del espectro electromagnético.",
+      "palabras_clave": ["luz", "energía", "ondas", "300000 km/s", "reflexión", "refracción", "espectro", "arco iris", "colores", "lente", "espejo"]
+    },
+    {
+      "id": "cie_g4_019", "grado": 4, "tema": "salud y enfermedades",
+      "pregunta": "¿Cuáles son las enfermedades más comunes en Colombia y cómo prevenirlas?",
+      "respuesta": "Enfermedades comunes: Respiratorias (gripa, bronquitis): prevenir con vacunas, lavado de manos, cubrir la boca al toser. Digestivas (diarrea): agua potable, lavado de alimentos. Dengue (mosquito): eliminar agua estancada. Malaria (regiones tropicales): toldillos y repelentes. Vacunarse según el esquema de vacunación del gobierno colombiano.",
+      "palabras_clave": ["enfermedad", "gripa", "diarrea", "dengue", "malaria", "prevenir", "vacuna", "mosquito", "lavado", "Colombia", "salud"]
+    },
+    {
+      "id": "cie_g4_020", "grado": 4, "tema": "reproducción humana",
+      "pregunta": "¿Cómo crece un ser humano desde la concepción?",
+      "respuesta": "El desarrollo humano: 1) Fertilización: un espermatozoide y un óvulo se unen formando un zigoto. 2) Embrión: primeras semanas de desarrollo en el útero. 3) Feto: de 8 semanas al nacimiento (aprox. 9 meses de gestación). 4) Bebé: al nacer. 5) Niño/a. 6) Adolescente. 7) Adulto. 8) Anciano. Cada etapa tiene características únicas de crecimiento.",
+      "palabras_clave": ["reproducción", "fertilización", "zigoto", "embrión", "feto", "bebé", "niño", "adolescente", "adulto", "útero", "gestación", "9 meses"]
+    },
+    {
+      "id": "cie_g4_021", "grado": 4, "tema": "tecnología y ciencia",
+      "pregunta": "¿Cuál es la diferencia entre ciencia y tecnología?",
+      "respuesta": "La ciencia busca conocimiento y explicaciones sobre cómo funciona el mundo (teorías, leyes). La tecnología aplica ese conocimiento para crear herramientas y soluciones a problemas humanos. Ejemplo: la ciencia descubrió la electricidad → la tecnología creó las bombillas. Sin ciencia no habría tecnología moderna: computadoras, celulares, medicamentos, aviones.",
+      "palabras_clave": ["ciencia", "tecnología", "conocimiento", "herramienta", "solución", "electricidad", "bombilla", "celular", "computadora", "diferencia", "investigación"]
+    },
+    {
+      "id": "cie_g4_022", "grado": 4, "tema": "capas de la Tierra",
+      "pregunta": "¿Cuáles son las capas de la Tierra?",
+      "respuesta": "La Tierra tiene tres capas principales: 1) Corteza: la capa exterior donde vivimos (sólida, 5-70 km de grosor). 2) Manto: capa intermedia de roca sólida y parcialmente fundida (hasta 2890 km). 3) Núcleo: el centro de la Tierra, formado por núcleo externo (líquido, hierro y níquel) y núcleo interno (sólido). La temperatura del núcleo supera los 5000°C.",
+      "palabras_clave": ["corteza", "manto", "núcleo", "Tierra", "capas", "sólido", "líquido", "hierro", "níquel", "temperatura", "5000°C"]
+    },
+    {
+      "id": "cie_g4_023", "grado": 4, "tema": "movimiento tectónico",
+      "pregunta": "¿Qué son las placas tectónicas?",
+      "respuesta": "La corteza terrestre está dividida en grandes piezas llamadas placas tectónicas, que se mueven lentamente (2-10 cm por año). Cuando las placas chocan: forman montañas (los Andes se formaron así). Cuando se separan: crean fondos marinos. Cuando se deslizan: causan terremotos. Colombia está en una zona de encuentro de placas, por eso es sísmica.",
+      "palabras_clave": ["placas tectónicas", "corteza", "terremoto", "Andes", "montañas", "Colombia", "sísmica", "movimiento", "choque", "separar"]
+    },
+    {
+      "id": "cie_g4_024", "grado": 4, "tema": "astronomía",
+      "pregunta": "¿Qué son las estrellas y cómo se forman?",
+      "respuesta": "Las estrellas son enormes esferas de gas (principalmente hidrógeno y helio) que generan energía mediante fusión nuclear: los átomos de hidrógeno se fusionan para formar helio, liberando luz y calor. Se forman a partir de nubes de gas y polvo (nebulosas). Según su tamaño, pueden convertirse en gigantes rojas, enanas blancas o agujeros negros.",
+      "palabras_clave": ["estrellas", "hidrógeno", "helio", "fusión nuclear", "nebulosa", "gigante roja", "enana blanca", "agujero negro", "energía", "gas", "luz"]
+    },
+    {
+      "id": "cie_g4_025", "grado": 4, "tema": "deforestación",
+      "pregunta": "¿Por qué es peligrosa la deforestación?",
+      "respuesta": "La deforestación (tala de bosques) es peligrosa porque: destruye el hábitat de miles de especies, libera CO₂ almacenado en los árboles (contribuye al cambio climático), elimina la protección contra erosión del suelo, reduce la disponibilidad de agua (los bosques regulan el ciclo del agua) y disminuye la biodiversidad. Colombia pierde miles de hectáreas de bosque cada año.",
+      "palabras_clave": ["deforestación", "bosque", "tala", "hábitat", "CO₂", "erosión", "agua", "biodiversidad", "Colombia", "cambio climático", "hectáreas"]
+    },
+    {
+      "id": "cie_g4_026", "grado": 4, "tema": "sistema muscular",
+      "pregunta": "¿Cómo funcionan los músculos del cuerpo?",
+      "respuesta": "Los músculos son tejidos que se contraen y relajan para producir movimiento. Tipos: 1) Voluntarios (esqueléticos): los controlas tú (bíceps, cuádriceps). 2) Involuntarios (lisos): se mueven solos (estómago, intestinos, vasos sanguíneos). 3) Cardíaco: solo en el corazón, involuntario pero con ritmo propio. Los músculos necesitan glucosa (azúcar) y oxígeno para funcionar.",
+      "palabras_clave": ["músculos", "contraer", "relajar", "movimiento", "voluntario", "involuntario", "cardíaco", "corazón", "bíceps", "glucosa", "oxígeno"]
+    },
+    {
+      "id": "cie_g4_027", "grado": 4, "tema": "experimentos científicos",
+      "pregunta": "¿Qué es el método científico?",
+      "respuesta": "El método científico es la forma ordenada de investigar en ciencias: 1) Observación: observas un fenómeno. 2) Pregunta: ¿por qué ocurre? 3) Hipótesis: posible explicación (suposición). 4) Experimento: prueba tu hipótesis. 5) Análisis: analiza los resultados. 6) Conclusión: ¿se confirmó la hipótesis? 7) Comunicación: compartes los hallazgos. Es la base de todo el conocimiento científico.",
+      "palabras_clave": ["método científico", "observación", "hipótesis", "experimento", "análisis", "conclusión", "investigar", "fenómeno", "ciencia", "pasos"]
+    },
+    {
+      "id": "cie_g4_028", "grado": 4, "tema": "energías renovables",
+      "pregunta": "¿Cuáles son las energías renovables y por qué son importantes?",
+      "respuesta": "Las energías renovables se obtienen de fuentes que no se agotan: Solar (paneles fotovoltaicos), Eólica (viento), Hidroeléctrica (agua), Geotérmica (calor interno de la Tierra), Mareomotriz (mareas). Son importantes porque no contaminan como los combustibles fósiles y no se acaban. Colombia produce más del 70% de su electricidad con hidroeléctricas.",
+      "palabras_clave": ["renovable", "solar", "eólica", "hidroeléctrica", "geotérmica", "viento", "agua", "Colombia", "limpia", "no contamina", "70%"]
+    },
+    {
+      "id": "cie_g4_029", "grado": 4, "tema": "selva amazónica",
+      "pregunta": "¿Por qué es importante la selva amazónica?",
+      "respuesta": "La selva amazónica es el bosque tropical más grande del mundo, y Colombia tiene una parte importante. Importancia: 1) Produce el 20% del oxígeno del planeta. 2) Almacena enormes cantidades de CO₂. 3) Regula el clima mundial. 4) Alberga el 10% de toda la biodiversidad terrestre. 5) Es hogar de pueblos indígenas. 6) Regula el ciclo del agua en América del Sur.",
+      "palabras_clave": ["Amazonía", "selva", "oxígeno", "CO₂", "biodiversidad", "20%", "Colombia", "indígenas", "clima", "agua", "bosque tropical"]
+    },
+    {
+      "id": "cie_g4_030", "grado": 4, "tema": "herencia genética",
+      "pregunta": "¿Por qué nos parecemos a nuestros padres?",
+      "respuesta": "Nos parecemos a nuestros padres porque heredamos sus genes. Los genes son instrucciones dentro del ADN de cada célula que determinan características físicas como el color de ojos, cabello, piel, la estatura y muchas más. Recibes la mitad de los genes de tu mamá y la otra mitad de tu papá. Esta herencia genética es la razón de que cada persona sea única.",
+      "palabras_clave": ["genes", "ADN", "herencia", "padres", "características", "ojos", "cabello", "piel", "estatura", "célula", "genética", "único"]
+    },
+    {
+      "id": "cie_g4_031", "grado": 4, "tema": "atmósfera",
+      "pregunta": "¿Qué es la atmósfera terrestre?",
+      "respuesta": "La atmósfera es la capa de gases que rodea la Tierra, mantenida por la gravedad. Capas: Tropósfera (0-12 km, donde ocurre el clima), Estratósfera (12-50 km, capa de ozono protege de rayos UV), Mesósfera (50-80 km), Termósfera (80-700 km) y Exósfera (700 km en adelante). La atmósfera nos protege de meteoritos y radiación, y regula la temperatura.",
+      "palabras_clave": ["atmósfera", "tropósfera", "estratósfera", "ozono", "mesósfera", "termósfera", "gases", "clima", "UV", "proteger", "Tierra"]
+    },
+    {
+      "id": "cie_g4_032", "grado": 4, "tema": "enfermedades prevenibles",
+      "pregunta": "¿Qué vacunas se aplican a los niños en Colombia?",
+      "respuesta": "El Plan Ampliado de Inmunización (PAI) de Colombia incluye vacunas contra: hepatitis B, tuberculosis (BCG), rotavirus, polio, DPT (difteria, tos ferina, tétanos), Haemophilus influenzae, neumococo, sarampión, rubeola, paperas (triple viral), varicela, meningococo, HPV (niñas). Las vacunas son gratuitas en los hospitales públicos. Protegen la vida de los niños.",
+      "palabras_clave": ["vacunas", "PAI", "Colombia", "hepatitis", "polio", "DPT", "sarampión", "varicela", "gratis", "hospital", "inmunización", "prevención"]
+    },
+    {
+      "id": "cie_g4_033", "grado": 4, "tema": "fuerzas y máquinas",
+      "pregunta": "¿Qué son las máquinas simples?",
+      "respuesta": "Las máquinas simples reducen el esfuerzo necesario para hacer un trabajo. Tipos: Palanca (balancín, alicate), Plano inclinado (rampa), Polea (para levantar cargas), Rueda y eje (bicicleta, puerta giratoria), Cuña (hacha, cuchillo), Tornillo. Las máquinas complejas son combinaciones de máquinas simples. Ejemplo: tijeras = dos palancas + dos cuñas.",
+      "palabras_clave": ["máquinas simples", "palanca", "plano inclinado", "polea", "rueda", "cuña", "tornillo", "esfuerzo", "trabajo", "tijeras", "bicicleta"]
+    },
+    {
+      "id": "cie_g4_034", "grado": 4, "tema": "agua y ciclo hidrológico",
+      "pregunta": "¿Por qué hay sequías e inundaciones en Colombia?",
+      "respuesta": "Colombia tiene dos temporadas climáticas: lluvias (invierno) y sequía (verano). El fenómeno de La Niña trae más lluvias e inundaciones. El Niño trae sequía. El cambio climático intensifica estos fenómenos. Además, la deforestación empeora las inundaciones (el suelo sin bosques no retiene el agua) y la sequía (los bosques regulan las lluvias).",
+      "palabras_clave": ["sequía", "inundación", "La Niña", "El Niño", "Colombia", "lluvias", "temporada", "deforestación", "cambio climático", "bosque", "suelo"]
+    },
+    {
+      "id": "cie_g4_035", "grado": 4, "tema": "cuerpo humano avanzado",
+      "pregunta": "¿Qué es la homeostasis?",
+      "respuesta": "La homeostasis es la capacidad del cuerpo de mantener sus condiciones internas estables aunque el ambiente externo cambie. Ejemplos: cuando tienes frío, el cuerpo tiembla para generar calor. Cuando hace calor, sudas para enfriarte. El cuerpo mantiene la temperatura en ~37°C. También regula el azúcar en la sangre, el pH y la presión arterial automáticamente.",
+      "palabras_clave": ["homeostasis", "equilibrio", "temperatura", "37°C", "sudor", "tiritar", "azúcar", "presión", "pH", "autorregulación", "cuerpo"]
+    },
+    {
+      "id": "cie_g4_036", "grado": 4, "tema": "curiosidades científicas",
+      "pregunta": "¿Cuántos huesos tiene el cuerpo humano al nacer y de adulto?",
+      "respuesta": "Los bebés nacen con aproximadamente 270-300 huesos. Al llegar a la adultez, muchos huesos se fusionan y el adulto tiene solo 206. Los huesos que más se fusionan son los del cráneo (que en los bebés tienen fontanelas, espacios blandos) y los de la columna vertebral. Los huesos más pequeños son los del oído: el martillo, el yunque y el estribo.",
+      "palabras_clave": ["huesos", "bebé", "270", "adulto", "206", "fusión", "cráneo", "columna", "oído", "martillo", "yunque", "estribo", "fontanela"]
+    },
+    {
+      "id": "cie_g4_037", "grado": 4, "tema": "insectos de Colombia",
+      "pregunta": "¿Por qué los insectos son importantes para el ecosistema?",
+      "respuesta": "Los insectos son fundamentales para los ecosistemas: 1) Polinización: las abejas y mariposas polinizan el 80% de las plantas con flores, incluidas frutas y verduras que comemos. 2) Reciclaje: los escarabajos y lombrices descomponen materia orgánica. 3) Alimento: son base de la cadena alimenticia (pájaros, peces, anfibios los comen). Sin insectos, los ecosistemas colapsarían.",
+      "palabras_clave": ["insectos", "abejas", "mariposas", "polinización", "escarabajos", "descomposición", "cadena alimenticia", "frutas", "verduras", "ecosistema"]
     },
     {
       "id": "cie_g5_001", "grado": 5, "tema": "célula",
@@ -96,14 +504,206 @@
     {
       "id": "cie_g5_002", "grado": 5, "tema": "energía",
       "pregunta": "¿Qué tipos de energía existen?",
-      "respuesta": "Existen varios tipos de energía: cinética (de los objetos en movimiento), potencial (almacenada por posición), térmica (calor), luminosa (luz), eléctrica (electricidad), química (en alimentos y combustibles) y nuclear (en el núcleo del átomo). La energía no se crea ni se destruye, solo se transforma de un tipo a otro.",
-      "palabras_clave": ["energía", "tipos", "cinética", "potencial", "térmica", "luminosa", "eléctrica", "química", "nuclear", "transformación", "calor", "luz"]
+      "respuesta": "Existen varios tipos de energía: cinética (de los objetos en movimiento), potencial (almacenada por posición), térmica (calor), luminosa (luz), eléctrica (electricidad), química (en alimentos y combustibles) y nuclear. La energía no se crea ni se destruye, solo se transforma.",
+      "palabras_clave": ["energía", "tipos", "cinética", "potencial", "térmica", "luminosa", "eléctrica", "química", "nuclear", "transformación"]
     },
     {
       "id": "cie_g5_003", "grado": 5, "tema": "cambios de la materia",
       "pregunta": "¿Cuál es la diferencia entre cambio físico y cambio químico?",
-      "respuesta": "Un cambio físico modifica la forma o el estado de la materia pero NO cambia su composición química (ejemplo: romper un papel, derretir hielo, hervir agua). Un cambio químico transforma la materia en una nueva sustancia diferente (ejemplo: quemar papel, oxidar el hierro, cocinar huevos). En los cambios químicos suele haber cambio de color, desprendimiento de gas o calor.",
-      "palabras_clave": ["cambio físico", "cambio químico", "materia", "composición", "transformación", "quemar", "oxidar", "hervir", "derretir", "nueva sustancia"]
+      "respuesta": "Cambio físico: modifica la forma o el estado sin cambiar la composición química (romper papel, derretir hielo). Cambio químico: transforma la materia en una nueva sustancia (quemar papel, oxidar hierro). En los cambios químicos suele haber cambio de color, desprendimiento de gas o calor.",
+      "palabras_clave": ["cambio físico", "cambio químico", "composición", "quemar", "oxidar", "hervir", "derretir", "nueva sustancia"]
+    },
+    {
+      "id": "cie_g5_004", "grado": 5, "tema": "genética y evolución",
+      "pregunta": "¿Qué es la evolución de las especies?",
+      "respuesta": "La evolución es el proceso por el cual las especies cambian lentamente a lo largo de millones de años. Charles Darwin propuso la teoría de la evolución: los organismos con características mejor adaptadas al ambiente sobreviven más y se reproducen más (selección natural). Con el tiempo, acumulan cambios y aparecen nuevas especies. Las evidencias son los fósiles, el ADN y la anatomía comparada.",
+      "palabras_clave": ["evolución", "especies", "Darwin", "selección natural", "adaptación", "sobrevivir", "fósil", "ADN", "cambio", "millones de años"]
+    },
+    {
+      "id": "cie_g5_005", "grado": 5, "tema": "ecología avanzada",
+      "pregunta": "¿Qué es la huella ecológica?",
+      "respuesta": "La huella ecológica es la medida del impacto de una persona o comunidad en el planeta. Incluye: cuánta tierra se necesita para producir los alimentos que comes, la energía que usas, el agua que consumes, la basura que produces. Si todos viviéramos como los colombianos, necesitaríamos 1,8 planetas Tierra. Los países más ricos tienen huellas ecológicas mucho mayores.",
+      "palabras_clave": ["huella ecológica", "impacto", "planeta", "tierra", "energía", "agua", "basura", "colombianos", "planeta", "consumo", "recursos"]
+    },
+    {
+      "id": "cie_g5_006", "grado": 5, "tema": "células tipos",
+      "pregunta": "¿Cuál es la diferencia entre célula animal y célula vegetal?",
+      "respuesta": "Célula animal: tiene membrana celular, citoplasma, núcleo. NO tiene pared celular, cloroplastos ni vacuola central grande. Célula vegetal: tiene todo lo anterior MÁS: pared celular rígida (celulosa), cloroplastos (para fotosíntesis), vacuola central grande (almacena agua). Por eso las plantas son rígidas y pueden hacer su propio alimento.",
+      "palabras_clave": ["célula animal", "célula vegetal", "pared celular", "cloroplastos", "vacuola", "fotosíntesis", "celulosa", "diferencia", "membrana", "citoplasma"]
+    },
+    {
+      "id": "cie_g5_007", "grado": 5, "tema": "ADN y genética",
+      "pregunta": "¿Qué es el ADN y por qué es tan importante?",
+      "respuesta": "El ADN (Ácido Desoxirribonucleico) es la molécula que contiene las instrucciones para construir y mantener vivo a un ser vivo. Está en el núcleo de cada célula. Tiene forma de doble hélice (como una escalera enrollada). Los genes son segmentos de ADN. El ADN humano tiene 3.000 millones de pares de bases y si lo desenrollas de una célula mide 2 metros.",
+      "palabras_clave": ["ADN", "ácido desoxirribonucleico", "genes", "núcleo", "doble hélice", "instrucciones", "célula", "herencia", "2 metros", "3000 millones"]
+    },
+    {
+      "id": "cie_g5_008", "grado": 5, "tema": "reproducción celular",
+      "pregunta": "¿Cómo se reproducen las células?",
+      "respuesta": "Las células se reproducen por división celular. Mitosis: la célula se divide en dos células idénticas (para crecer y reparar tejidos). Meiosis: produce células sexuales (espermatozoides y óvulos) con la mitad de los cromosomas. Cuando se unen el espermatozoide y el óvulo, restauran el número completo de 46 cromosomas en el nuevo ser humano.",
+      "palabras_clave": ["mitosis", "meiosis", "división celular", "cromosomas", "46", "reproducción", "espermatozoide", "óvulo", "tejidos", "idénticas"]
+    },
+    {
+      "id": "cie_g5_009", "grado": 5, "tema": "microorganismos",
+      "pregunta": "¿Qué son los microorganismos y cuáles son sus tipos?",
+      "respuesta": "Los microorganismos son seres vivos tan pequeños que solo se ven con microscopio. Tipos: Bacterias (unicelulares sin núcleo definido: causan enfermedades como la tuberculosis pero también hacen el yogur). Virus (no son células: causan gripa, COVID-19). Hongos microscópicos (levaduras para el pan). Protistas (amebas, algas unicelulares). Son importantes para los ecosistemas y la medicina.",
+      "palabras_clave": ["microorganismos", "bacterias", "virus", "hongos", "protistas", "microscopio", "enfermedad", "yogur", "gripa", "COVID", "tuberculosis"]
+    },
+    {
+      "id": "cie_g5_010", "grado": 5, "tema": "tecnología médica",
+      "pregunta": "¿Cómo ayuda la tecnología a la medicina?",
+      "respuesta": "La tecnología médica ha revolucionado la salud: Rayos X y resonancias magnéticas (ven dentro del cuerpo sin cirugía), antibióticos (matan bacterias), vacunas (previenen enfermedades), cirugía laparoscópica (mini-cámaras dentro del cuerpo), trasplantes de órganos, prótesis biónicas, inteligencia artificial en diagnósticos. Colombia tiene hospitales y centros de investigación de avanzada.",
+      "palabras_clave": ["tecnología médica", "rayos X", "resonancia", "antibiótico", "vacuna", "cirugía", "trasplante", "prótesis", "inteligencia artificial", "Colombia"]
+    },
+    {
+      "id": "cie_g5_011", "grado": 5, "tema": "ecosistemas y cambio climático",
+      "pregunta": "¿Cómo afecta el cambio climático a los ecosistemas colombianos?",
+      "respuesta": "El cambio climático en Colombia causa: 1) Derretimiento de nevados (Nevado del Ruiz, glaciares de la Sierra Nevada). 2) Intensificación de lluvias e inundaciones. 3) Sequías más intensas. 4) Extinción de especies que no pueden adaptarse. 5) Blanqueamiento de corales. 6) Desplazamiento de comunidades. Colombia es muy vulnerable al cambio climático por su biodiversidad y geografía.",
+      "palabras_clave": ["cambio climático", "Colombia", "nevados", "glaciares", "inundaciones", "sequía", "extinción", "corales", "biodiversidad", "vulnerable"]
+    },
+    {
+      "id": "cie_g5_012", "grado": 5, "tema": "materia y átomos",
+      "pregunta": "¿Qué son los átomos y las moléculas?",
+      "respuesta": "El átomo es la unidad más pequeña de un elemento químico. Está formado por: protones y neutrones (en el núcleo) y electrones (que orbitan). Las moléculas son grupos de átomos unidos por enlaces químicos. Ejemplo: H₂O (agua) = 2 átomos de hidrógeno + 1 de oxígeno. CO₂ = 1 carbono + 2 oxígenos. Los átomos son tan pequeños que en 1 cm³ de agua caben 33 sextillones de moléculas.",
+      "palabras_clave": ["átomo", "molécula", "electrones", "protones", "neutrones", "H₂O", "agua", "CO₂", "elemento", "enlace", "núcleo"]
+    },
+    {
+      "id": "cie_g5_013", "grado": 5, "tema": "fuerzas avanzadas",
+      "pregunta": "¿Qué es la fricción y cuándo es útil?",
+      "respuesta": "La fricción (rozamiento) es la fuerza que se opone al movimiento entre dos superficies que se tocan. Puede ser útil o perjudicial. Útil: los frenos del carro, los zapatos adheridos al piso, escribir con lápiz. Perjudicial: desgaste de máquinas y neumáticos. Para reducir la fricción: usar lubricantes (aceite), superficies lisas, rodamientos. Para aumentarla: superficies rugosas, caucho.",
+      "palabras_clave": ["fricción", "rozamiento", "fuerza", "movimiento", "frenos", "zapatos", "lubricante", "aceite", "útil", "perjudicial", "desgaste"]
+    },
+    {
+      "id": "cie_g5_014", "grado": 5, "tema": "sistema endocrino",
+      "pregunta": "¿Qué son las hormonas?",
+      "respuesta": "Las hormonas son mensajeros químicos producidos por glándulas del sistema endocrino que viajan por la sangre y regulan funciones del cuerpo. Ejemplos: insulina (regula el azúcar en sangre, producida por el páncreas), hormona del crecimiento (producida por la hipófisis), adrenalina (reacción al miedo o estrés), hormonas sexuales (estrógeno y testosterona). La diabetes es un problema de insulina.",
+      "palabras_clave": ["hormonas", "insulina", "crecimiento", "adrenalina", "estrógeno", "testosterona", "páncreas", "hipófisis", "diabetes", "sangre", "sistema endocrino"]
+    },
+    {
+      "id": "cie_g5_015", "grado": 5, "tema": "biodiversidad de Colombia",
+      "pregunta": "¿Qué animales endémicos tiene Colombia?",
+      "respuesta": "Los animales endémicos son los que solo existen en un lugar específico del mundo. Colombia tiene muchos: el colibrí pico de espada (solo en los Andes colombo-ecuatorianos), la rana venenosa dorada (solo en el Chocó), el mono noche del Chocó, la tortuga caná, el cóndor de los Andes. La conservación de estos animales es prioridad porque si se extinguen en Colombia, desaparecen del mundo.",
+      "palabras_clave": ["endémico", "Colombia", "colibrí", "rana venenosa", "mono", "cóndor", "Chocó", "Andes", "extinción", "conservación", "único"]
+    },
+    {
+      "id": "cie_g5_016", "grado": 5, "tema": "principio de conservación de energía",
+      "pregunta": "¿Qué dice el principio de conservación de la energía?",
+      "respuesta": "El principio de conservación de la energía dice: 'La energía no se crea ni se destruye, solo se transforma de una forma a otra'. Ejemplos: una pelota en lo alto tiene energía potencial → al caer se convierte en energía cinética → al golpear el piso se convierte en calor y sonido. Una planta capta energía solar (luminosa) y la convierte en energía química (glucosa).",
+      "palabras_clave": ["conservación de energía", "no se crea", "no se destruye", "transforma", "potencial", "cinética", "calor", "sonido", "fotosíntesis"]
+    },
+    {
+      "id": "cie_g5_017", "grado": 5, "tema": "salud mental",
+      "pregunta": "¿Qué es la salud mental y cómo cuidarla?",
+      "respuesta": "La salud mental es el bienestar emocional y psicológico. Es tan importante como la salud física. Para cuidarla: dormir 8-10 horas, hacer ejercicio regularmente, hablar de tus emociones, mantener amistades saludables, limitar el tiempo en redes sociales, tener hobbies, y pedir ayuda a un adulto de confianza si estás triste o ansioso. Los problemas de salud mental son enfermedades que tienen tratamiento.",
+      "palabras_clave": ["salud mental", "bienestar", "emocional", "dormir", "ejercicio", "emociones", "amistades", "redes sociales", "hobbies", "ayuda", "ansiedad"]
+    },
+    {
+      "id": "cie_g5_018", "grado": 5, "tema": "energía eléctrica",
+      "pregunta": "¿Cómo funciona un circuito eléctrico?",
+      "respuesta": "Un circuito eléctrico es el camino cerrado por donde fluye la electricidad. Necesita: fuente de energía (pila o batería), conductores (cables de cobre), y receptores (bombilla, motor). El circuito DEBE estar cerrado para que fluya la corriente. Si hay un interruptor y lo abres, el circuito se interrumpe y la bombilla se apaga. Los circuitos pueden ser en serie o en paralelo.",
+      "palabras_clave": ["circuito eléctrico", "corriente", "pila", "batería", "conductor", "cable", "bombilla", "interruptor", "cerrado", "serie", "paralelo"]
+    },
+    {
+      "id": "cie_g5_019", "grado": 5, "tema": "óptica",
+      "pregunta": "¿Cómo funciona el ojo humano?",
+      "respuesta": "El ojo funciona como una cámara fotográfica. La luz entra por la pupila (se ajusta con el iris). El cristalino (lente natural) enfoca la luz en la retina (la 'pantalla' del ojo). Los fotorreceptores de la retina (conos para colores, bastones para luz/sombra) convierten la luz en señales eléctricas que viajan al cerebro por el nervio óptico. El cerebro interpreta la imagen.",
+      "palabras_clave": ["ojo", "pupila", "iris", "cristalino", "retina", "conos", "bastones", "nervio óptico", "cerebro", "luz", "visión", "cámara"]
+    },
+    {
+      "id": "cie_g5_020", "grado": 5, "tema": "investigación científica Colombia",
+      "pregunta": "¿Qué científicos colombianos han destacado?",
+      "respuesta": "Científicos colombianos destacados: Manuel Elkin Patarroyo (biología molecular, vacuna contra la malaria). Rodolfo Llinás (neurociencia, estudia la consciencia). Ángela Restrepo (micología, especialista en hongos). Jorge Reynolds (electrónica, miniaturizó el marcapasos). Eduardo Posada Flórez (física). Colombia invierte en ciencia y tecnología a través de Minciencias (antiguo Colciencias).",
+      "palabras_clave": ["científicos colombianos", "Patarroyo", "malaria", "Llinás", "neurociencia", "Reynolds", "marcapasos", "Minciencias", "Colombia", "ciencia"]
+    },
+    {
+      "id": "cie_g5_021", "grado": 5, "tema": "biomas mundiales",
+      "pregunta": "¿Cuáles son los principales biomas del mundo?",
+      "respuesta": "Los biomas son grandes regiones con clima y vegetación similares: 1) Selva tropical (Ecuador, Colombia, Brasil): cálida y húmeda. 2) Desierto (Sahara, Atacama): muy seco. 3) Tundra (ártico): helado. 4) Taiga o bosque boreal (Canadá, Siberia): coníferas. 5) Sabana (África, llanos colombianos): hierba con árboles dispersos. 6) Bosque templado (Europa, norte de EE.UU.). 7) Pradera (Argentina, Kansas).",
+      "palabras_clave": ["biomas", "selva tropical", "desierto", "tundra", "taiga", "sabana", "bosque", "Colombia", "clima", "vegetación"]
+    },
+    {
+      "id": "cie_g5_022", "grado": 5, "tema": "contaminación avanzada",
+      "pregunta": "¿Qué es la lluvia ácida?",
+      "respuesta": "La lluvia ácida ocurre cuando los gases contaminantes (SO₂ y NOₓ) emitidos por fábricas y carros se mezclan con el agua de lluvia y forman ácidos (sulfúrico, nítrico). Esta lluvia daña bosques, acidifica ríos y lagos (matando peces), deteriora edificios y monumentos históricos. La solución es reducir las emisiones de gases contaminantes.",
+      "palabras_clave": ["lluvia ácida", "SO₂", "NOₓ", "contaminación", "fábricas", "ácido sulfúrico", "bosques", "ríos", "edificios", "emisiones", "dañar"]
+    },
+    {
+      "id": "cie_g5_023", "grado": 5, "tema": "paleontología",
+      "pregunta": "¿Qué son los fósiles y qué nos enseñan?",
+      "respuesta": "Los fósiles son restos o huellas de seres vivos de épocas pasadas, conservados en rocas sedimentarias. Pueden ser huesos, conchas, huellas, o incluso insectos en ámbar. Los fósiles nos enseñan cómo eran los animales y plantas extintos, cómo evolucionaron las especies, cómo era el clima en el pasado. Colombia tiene importantes yacimientos fósiles de titanosaurios en Villa de Leyva y megaterios en Bogotá.",
+      "palabras_clave": ["fósiles", "roca sedimentaria", "extinción", "evolución", "hueso", "ámbar", "Colombia", "Villa de Leyva", "titanosaurio", "pasado", "paleontología"]
+    },
+    {
+      "id": "cie_g5_024", "grado": 5, "tema": "física avanzada",
+      "pregunta": "¿Qué son la velocidad y la aceleración?",
+      "respuesta": "Velocidad: qué tan rápido se mueve un objeto = distancia ÷ tiempo. Unidades: m/s, km/h. Ejemplo: si recorres 100 km en 2 horas, tu velocidad es 50 km/h. Aceleración: qué tan rápido cambia la velocidad = cambio de velocidad ÷ tiempo. Un carro que va de 0 a 100 km/h en 10 segundos tiene aceleración de 10 km/h por segundo. Fórmula de Galileo: d = v × t.",
+      "palabras_clave": ["velocidad", "aceleración", "distancia", "tiempo", "m/s", "km/h", "100 km", "2 horas", "50 km/h", "fórmula", "movimiento"]
+    },
+    {
+      "id": "cie_g5_025", "grado": 5, "tema": "nutrición avanzada",
+      "pregunta": "¿Qué son las vitaminas y cuáles son las más importantes?",
+      "respuesta": "Las vitaminas son compuestos orgánicos esenciales que el cuerpo necesita en pequeñas cantidades. Vitamina A (zanahoria, mango): visión y piel. Vitamina C (naranja, guayaba): sistema inmune, cicatrización. Vitamina D (sol, leche): huesos. Vitamina B12 (carnes, huevos): sangre y nervios. Vitamina K (espinaca, brócoli): coagulación. La guayaba tiene más vitamina C que la naranja.",
+      "palabras_clave": ["vitaminas", "vitamina A", "C", "D", "B12", "K", "zanahoria", "naranja", "guayaba", "sol", "inmune", "huesos", "sangre"]
+    },
+    {
+      "id": "cie_g5_026", "grado": 5, "tema": "impacto ambiental",
+      "pregunta": "¿Qué es el plástico y por qué contamina tanto?",
+      "respuesta": "El plástico es un material sintético derivado del petróleo. Tarda entre 100 y 1000 años en degradarse. El microplástico (partículas muy pequeñas) está llegando a los océanos, ríos, aire y alimentos. Afecta animales marinos, animales terrestres y ya se encontró microplástico en la sangre humana. Soluciones: reducir el uso, reciclar, usar alternativas biodegradables (bolsas de tela, vidrio).",
+      "palabras_clave": ["plástico", "contaminación", "petróleo", "microplástico", "océano", "mar", "degradar", "100 años", "sangre", "reciclar", "biodegradable"]
+    },
+    {
+      "id": "cie_g5_027", "grado": 5, "tema": "alimentación y salud",
+      "pregunta": "¿Qué es la diabetes y cómo se previene?",
+      "respuesta": "La diabetes es una enfermedad en la que el cuerpo no regula bien el azúcar en la sangre. Tipo 1: el páncreas no produce insulina (genético, desde niño). Tipo 2: el cuerpo no usa bien la insulina (relacionada con sobrepeso, sedentarismo y mala alimentación). Prevención tipo 2: alimentación saludable, ejercicio diario, mantener peso adecuado y reducir el consumo de azúcar y grasas.",
+      "palabras_clave": ["diabetes", "insulina", "azúcar", "sangre", "páncreas", "tipo 1", "tipo 2", "prevención", "ejercicio", "alimentación", "sobrepeso"]
+    },
+    {
+      "id": "cie_g5_028", "grado": 5, "tema": "investigación",
+      "pregunta": "¿Cómo podemos hacer un experimento científico en casa?",
+      "respuesta": "Experimento casero del volcán: Necesitas: bicarbonato de sodio, vinagre, recipiente. Pasos: 1) Pon bicarbonato en el recipiente. 2) Agrega colorante rojo. 3) Vierte vinagre lentamente. 4) Observa la 'erupción'. Explicación: es una reacción química (cambio químico). El ácido acético del vinagre reacciona con el bicarbonato produciendo CO₂ (la burbuja de gas) y agua.",
+      "palabras_clave": ["experimento", "volcán", "bicarbonato", "vinagre", "reacción química", "CO₂", "casa", "ácido acético", "erupción", "burbuja"]
+    },
+    {
+      "id": "cie_g5_029", "grado": 5, "tema": "energía nuclear",
+      "pregunta": "¿Qué es la energía nuclear?",
+      "respuesta": "La energía nuclear se libera cuando se divide el núcleo de un átomo (fisión) o cuando se unen dos núcleos (fusión). La fisión se usa en las centrales nucleares para generar electricidad. La fusión es lo que ocurre en el sol. Las ventajas: produce mucha energía sin CO₂. Desventajas: genera residuos radiactivos que tardan miles de años en degradarse. Colombia no tiene plantas nucleares.",
+      "palabras_clave": ["nuclear", "fisión", "fusión", "átomo", "central nuclear", "electricidad", "radiactivo", "residuos", "sol", "energía", "Colombia"]
+    },
+    {
+      "id": "cie_g5_030", "grado": 5, "tema": "cuerpo y adolescencia",
+      "pregunta": "¿Qué cambios ocurren en el cuerpo durante la adolescencia?",
+      "respuesta": "La adolescencia es la etapa de transición de niño a adulto (entre 10 y 18 años). En niñas: desarrollo de senos, inicio de la menstruación, cambio de silueta. En niños: voz más grave, vello facial, crecimiento del cuerpo. En ambos: aumento de estatura, aparición de vello corporal, acné, cambios emocionales. Estos cambios son normales y son producidos por las hormonas.",
+      "palabras_clave": ["adolescencia", "pubertad", "hormonas", "menstruación", "cambios", "niñas", "niños", "voz", "estatura", "acné", "emociones"]
+    },
+    {
+      "id": "cie_g5_031", "grado": 5, "tema": "ecología aplicada",
+      "pregunta": "¿Qué podemos hacer para ayudar al medio ambiente desde el colegio?",
+      "respuesta": "Acciones concretas desde el colegio: 1) Separar los residuos (papel, plástico, orgánico). 2) Apagar las luces y equipos cuando no se usan. 3) Usar vasos reutilizables. 4) Sembrar un árbol. 5) Hacer compostera con residuos orgánicos. 6) Compartir el transporte. 7) Reducir el uso de plástico de un solo uso. 8) Organizar campañas de concientización. Pequeñas acciones hacen grandes cambios.",
+      "palabras_clave": ["medio ambiente", "colegio", "separar residuos", "apagar", "árbol", "compostera", "plástico", "reutilizar", "acciones", "concientización"]
+    },
+    {
+      "id": "cie_g5_032", "grado": 5, "tema": "física y tecnología",
+      "pregunta": "¿Cómo funcionan los smartphones?",
+      "respuesta": "Un smartphone combina varias tecnologías: Pantalla táctil (detecta el calor/presión de tu dedo). Procesador (cerebro del teléfono, procesa millones de operaciones por segundo). Memoria RAM y almacenamiento. Cámara (lente + sensor de imagen). Batería de litio. Antenas (WiFi, Bluetooth, 4G/5G para internet). GPS (satélites). Todo encerrado en una placa electrónica (placa madre).",
+      "palabras_clave": ["smartphone", "pantalla táctil", "procesador", "memoria", "cámara", "batería", "WiFi", "Bluetooth", "GPS", "satélite", "tecnología"]
+    },
+    {
+      "id": "cie_g5_033", "grado": 5, "tema": "astronomía avanzada",
+      "pregunta": "¿Qué es un agujero negro?",
+      "respuesta": "Un agujero negro es una región del espacio donde la gravedad es tan intensa que nada, ni siquiera la luz, puede escapar. Se forman cuando una estrella muy masiva explota (supernova) y su núcleo colapsa. El horizonte de eventos es el borde del agujero negro. En 2019 se fotografió por primera vez un agujero negro (M87). En el centro de la Vía Láctea hay un agujero negro supermasivo llamado Sagitario A*.",
+      "palabras_clave": ["agujero negro", "gravedad", "luz", "estrella", "supernova", "horizonte de eventos", "M87", "Sagitario A*", "Vía Láctea", "espacio"]
+    },
+    {
+      "id": "cie_g5_034", "grado": 5, "tema": "páramos de Colombia",
+      "pregunta": "¿Por qué son tan importantes los páramos colombianos?",
+      "respuesta": "Los páramos son ecosistemas únicos de alta montaña (por encima de 3.000 m) que solo existen en la zona tropical andina. Colombia tiene el 70% de todos los páramos del mundo. Son vitales porque: 1) Son la principal fuente de agua dulce de Colombia (abastecen ciudades como Bogotá y Medellín). 2) Almacenan carbono. 3) Son refugio de especies únicas (oso de anteojos, frailejón). Están amenazados por el cambio climático.",
+      "palabras_clave": ["páramos", "Colombia", "70%", "agua dulce", "Bogotá", "Medellín", "oso de anteojos", "frailejón", "montaña", "3000 m", "carbono"]
+    },
+    {
+      "id": "cie_g5_035", "grado": 5, "tema": "química básica",
+      "pregunta": "¿Qué son los ácidos y las bases?",
+      "respuesta": "Los ácidos son sustancias que tienen pH menor a 7. Son agrios, reaccionan con metales. Ejemplos: jugo de limón (pH 2), vinagre (pH 3), jugo gástrico (pH 1,5). Las bases (o álcalis) tienen pH mayor a 7. Son resbaladizas y amargas. Ejemplos: jabón (pH 9), bicarbonato (pH 8,3), lejía (pH 13). El agua pura es neutra (pH 7). La escala pH va de 0 a 14.",
+      "palabras_clave": ["ácido", "base", "pH", "neutro", "7", "limón", "vinagre", "jabón", "bicarbonato", "escala", "agrio", "amargo"]
     }
   ]
 }
