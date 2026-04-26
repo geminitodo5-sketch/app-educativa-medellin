@@ -5,6 +5,7 @@ Búsqueda semántica con FAISS + fastembed (ONNX, sin PyTorch) cuando los
 paquetes ML están instalados; los endpoints de descarga siempre funcionan.
 """
 
+import asyncio
 import json
 import os
 import zipfile
@@ -105,26 +106,42 @@ def _maybe_rebuild(materia: str) -> None:
         _indexes[materia] = _build_faiss_index(materia, _model)
 
 
+# ── Inicialización FAISS en background ───────────────────────────────────────
+
+async def _init_faiss_background() -> None:
+    """Carga el modelo fastembed y construye índices FAISS sin bloquear el startup."""
+    global _model
+    if not _ML_AVAILABLE:
+        print("[FAISS] fastembed / faiss no instalados — búsqueda semántica desactivada.")
+        return
+    try:
+        print("[FAISS] Cargando modelo fastembed (ONNX) en background…")
+        loop = asyncio.get_event_loop()
+        # Ejecutar código bloqueante en un thread separado para no bloquear el event loop
+        _model = await loop.run_in_executor(
+            None,
+            lambda: TextEmbedding(
+                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+            ),
+        )
+        for materia in MATERIAS:
+            print(f"[FAISS] Construyendo índice para {materia}…")
+            idx = await loop.run_in_executor(
+                None, lambda m=materia: _build_faiss_index(m, _model)
+            )
+            _indexes[materia] = idx
+        print("[FAISS] Índices listos.")
+    except Exception as exc:
+        print(f"[FAISS] No se pudo inicializar la búsqueda semántica: {exc}")
+        _model = None
+
+
 # ── Lifespan (startup / shutdown) ────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    global _model
-    if _ML_AVAILABLE:
-        try:
-            print("[FAISS] Cargando modelo fastembed (ONNX)…")
-            _model = TextEmbedding(
-                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-            )
-            for materia in MATERIAS:
-                print(f"[FAISS] Construyendo índice para {materia}…")
-                _indexes[materia] = _build_faiss_index(materia, _model)
-            print("[FAISS] Índices listos.")
-        except Exception as exc:
-            print(f"[FAISS] No se pudo inicializar la búsqueda semántica: {exc}")
-            _model = None
-    else:
-        print("[FAISS] fastembed / faiss no instalados — búsqueda semántica desactivada.")
+    # Lanza FAISS en background → servidor responde al health check de Railway inmediatamente
+    asyncio.create_task(_init_faiss_background())
     yield
     _indexes.clear()
     _model = None
