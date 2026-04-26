@@ -1,32 +1,45 @@
 // ─────────────────────────────────────────────────────────────
 //  lib/data/services/rag_service.dart
-//  Motor RAG 100% offline: recupera la respuesta más relevante
-//  de base_conocimiento usando coincidencia de palabras clave.
+//  Motor RAG offline con stemming español, búsqueda multi-grado
+//  y conversión de operadores matemáticos a palabras.
 // ─────────────────────────────────────────────────────────────
 
 import 'sqlite_service.dart';
 
 class RagService {
   final SqliteService _db;
-
   RagService(this._db);
 
-  // ── Stopwords en español (palabras que no aportan al índice) ──
+  // ─── Stopwords normalizadas (sin tildes) ──────────────────
   static const _stopwords = {
     'el','la','los','las','un','una','unos','unas','de','del','al','a','en',
-    'y','o','pero','que','como','es','son','ser','fue','era','si','no','se',
-    'me','te','le','nos','con','por','para','su','sus','mi','mis','tu','tus',
+    'y','o','pero','que','es','son','ser','fue','era','si','no','se',
+    'me','te','le','nos','con','para','su','sus','mi','mis','tu','tus',
     'este','esta','estos','estas','ese','esa','esos','esas','lo','hay','mas',
-    'muy','bien','ya','tambien','porque','cuando','donde','quien','que','como',
-    'cual','cuales','cuando','donde','quien','cuanto','cuantos',
-    'sobre','entre','hasta','desde','hacia','durante','sin','ante','bajo',
+    'muy','bien','ya','tambien','porque','cuando','donde','quien',
+    'cual','cuales','cuanto','cuantos','sobre','entre','hasta','desde',
+    'hacia','durante','sin','ante','bajo','puedo','puede','puedes',
+    'quiero','quisiera','dime','como','favor','porfavor',
+    'forma','manera','modo','simple','facil','ayuda',
+    'quiere','hacer','hago','haces',
   };
 
-  // ── API pública ───────────────────────────────────────────────
+  // ─── Sufijos para stemming español ───────────────────────
+  // Se prueban de mayor a menor longitud; raíz mínima = 3 chars.
+  static const _sufijos = [
+    'aciones','amiento','amiento','imientos','imientos',
+    'acion','iones','iendo','mente','ando',
+    'ados','idas','idos','adas',
+    'ado','ida','ido','ada',
+    'ares','eres','ires',
+    'amos','emos','imos',
+    'cion','ncia','nces',
+    'ar','er','ir',
+    'es','as',
+  ];
 
-  /// Busca la mejor respuesta offline para [pregunta] dentro de
-  /// [materia] y [grado]. Devuelve texto formateado listo para
-  /// mostrar al estudiante.
+  // ─── API pública ──────────────────────────────────────────
+
   Future<RagRespuesta> responder({
     required String pregunta,
     required String materia,
@@ -36,14 +49,13 @@ class RagService {
 
     if (tokens.isEmpty) {
       return RagRespuesta(
-        texto: 'Por favor escribe una pregunta sobre $materia.',
-        encontrado: false,
-        tema: '',
+        texto: 'Escribe una pregunta sobre $materia y te ayudo.',
+        encontrado: false, tema: '',
       );
     }
 
-    // Carga entradas de la BD para esta materia y grado
-    final entradas = await _db.consultar(
+    // 1. Busca en el grado exacto
+    var entradas = await _db.consultar(
       'base_conocimiento',
       where: 'materia = ? AND grado = ?',
       whereArgs: [materia, grado],
@@ -51,46 +63,46 @@ class RagService {
 
     if (entradas.isEmpty) {
       return RagRespuesta(
-        texto: 'Aún no has descargado el contenido de $materia. '
-               'Ve a la sección de descarga para obtenerlo.',
-        encontrado: false,
-        tema: '',
+        texto: 'Aún no descargaste el contenido de $materia. '
+               'Toca "Descargar" en el menú para continuar.',
+        encontrado: false, tema: '',
       );
     }
 
-    // Puntúa cada entrada
-    final scored = entradas.map((e) {
-      return _EntradaPuntuada(
-        entrada: e,
-        puntaje: _puntuar(e, tokens),
+    var scored = _puntuar(entradas, tokens);
+    final mejorExacto = scored.first;
+
+    // 2. Si el puntaje en el grado exacto es bajo, busca en otros grados
+    if (mejorExacto.puntaje < 0.4) {
+      final todasEntradas = await _db.consultar(
+        'base_conocimiento',
+        where: 'materia = ?',
+        whereArgs: [materia],
       );
-    }).toList()
-      ..sort((a, b) => b.puntaje.compareTo(a.puntaje));
+      final scoredTodas = _puntuar(todasEntradas, tokens);
+      if (scoredTodas.first.puntaje > mejorExacto.puntaje) {
+        scored = scoredTodas;
+      }
+    }
 
     final mejor = scored.first;
 
-    // Umbral mínimo: al menos 1 coincidencia
-    if (mejor.puntaje < 0.05) {
+    if (mejor.puntaje < 0.1) {
       return RagRespuesta(
-        texto: 'No encontré información exacta sobre eso en $materia '
-               '(grado $grado). Intenta reformular tu pregunta usando '
-               'palabras clave del tema.',
-        encontrado: false,
-        tema: '',
+        texto: 'No encontré eso en $materia para grado $grado. '
+               'Intenta preguntar con otras palabras, por ejemplo: '
+               '"¿Qué es la multiplicación?" o "¿Cómo se divide?"',
+        encontrado: false, tema: '',
       );
     }
 
-    final respuesta = mejor.entrada['respuesta'] as String;
-    final tema      = mejor.entrada['tema'] as String;
-
     return RagRespuesta(
-      texto: respuesta,
+      texto: mejor.entrada['respuesta'] as String,
       encontrado: true,
-      tema: tema,
+      tema: mejor.entrada['tema'] as String,
     );
   }
 
-  /// Devuelve las preguntas sugeridas para [materia] y [grado].
   Future<List<String>> preguntasSugeridas({
     required String materia,
     required int grado,
@@ -100,13 +112,13 @@ class RagService {
       'base_conocimiento',
       where: 'materia = ? AND grado = ?',
       whereArgs: [materia, grado],
-      limit: cantidad,
+      limit: cantidad * 2,
     );
-    return entradas.map((e) => e['pregunta'] as String).toList();
+    final lista = entradas.map((e) => e['pregunta'] as String).toList();
+    lista.shuffle();
+    return lista.take(cantidad).toList();
   }
 
-  /// Guarda en historial_rag (solo grados 3-5).
-  /// historial_rag usa 'español' con acento; mapeamos 'espanol' → 'español'.
   Future<void> guardarHistorial({
     required int estudianteId,
     required String pregunta,
@@ -126,63 +138,111 @@ class RagService {
     });
   }
 
-  // ── Privado ───────────────────────────────────────────────────
+  // ─── Scoring ──────────────────────────────────────────────
+
+  List<_EP> _puntuar(List<Map<String, dynamic>> entradas, List<String> tokens) {
+    final stems = tokens.map(_stem).toList();
+
+    final lista = entradas.map((e) {
+      double score = 0;
+
+      final claves = (e['palabras_clave'] as String)
+          .split(',')
+          .map((w) => _stem(_normalizar(w.trim())))
+          .toSet();
+
+      final pregTokens = _tokenizar(e['pregunta'] as String)
+          .map(_stem)
+          .toSet();
+      final respTokens = _tokenizar(e['respuesta'] as String)
+          .map(_stem)
+          .toSet();
+
+      for (final stem in stems) {
+        // Coincidencia exacta de stem en palabras clave → mayor peso
+        if (claves.contains(stem)) {
+          score += 2.0;
+        } else {
+          // Coincidencia parcial: el stem es prefijo de una clave o viceversa
+          for (final c in claves) {
+            if (c.startsWith(stem) || stem.startsWith(c)) {
+              score += 0.8;
+              break;
+            }
+          }
+        }
+
+        if (pregTokens.contains(stem)) score += 1.2;
+        if (respTokens.contains(stem)) score += 0.4;
+      }
+
+      // Bonus si varios tokens coinciden (relevancia concentrada)
+      final coincidencias = stems.where(claves.contains).length;
+      if (coincidencias >= 2) score += coincidencias * 0.5;
+
+      return _EP(entrada: e, puntaje: stems.isEmpty ? 0 : score / stems.length);
+    }).toList()
+      ..sort((a, b) => b.puntaje.compareTo(a.puntaje));
+
+    return lista;
+  }
+
+  // ─── Tokenizador ──────────────────────────────────────────
 
   List<String> _tokenizar(String texto) {
-    return texto
+    // Convierte operadores a palabras antes de tokenizar
+    var t = texto
         .toLowerCase()
-        .replaceAll(RegExp(r'[áàä]'), 'a')
-        .replaceAll(RegExp(r'[éèë]'), 'e')
-        .replaceAll(RegExp(r'[íìï]'), 'i')
-        .replaceAll(RegExp(r'[óòö]'), 'o')
-        .replaceAll(RegExp(r'[úùü]'), 'u')
-        .replaceAll(RegExp(r'[ñ]'), 'n')
-        .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
-        .split(RegExp(r'\s+'))
-        .where((w) => w.length > 2 && !_stopwords.contains(w))
-        .toList();
+        .replaceAll('+', ' mas ')
+        .replaceAll('×', ' por ')
+        .replaceAll('*', ' por ')
+        .replaceAll('÷', ' entre ')
+        .replaceAll('/', ' entre ')
+        .replaceAll('-', ' menos ');
+
+    t = _normalizar(t)
+        .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ');
+
+    return t.split(RegExp(r'\s+')).where((w) {
+      if (w.isEmpty) return false;
+      // Siempre conserva números, aunque sean de 1 dígito
+      if (RegExp(r'^\d+$').hasMatch(w)) return true;
+      // Texto: mínimo 3 chars y no stopword
+      return w.length >= 3 && !_stopwords.contains(w);
+    }).toList();
   }
 
-  double _puntuar(Map<String, dynamic> entrada, List<String> tokens) {
-    if (tokens.isEmpty) return 0;
+  // ─── Stemmer (sufijos en español normalizados) ────────────
 
-    final claves = (entrada['palabras_clave'] as String)
-        .split(',')
-        .map(_normalizarToken)
-        .toSet();
-
-    final preguntaTokens = _tokenizar(entrada['pregunta'] as String).toSet();
-    final respuestaTokens = _tokenizar(entrada['respuesta'] as String).toSet();
-
-    double score = 0;
-    for (final t in tokens) {
-      final norm = _normalizarToken(t);
-      if (claves.contains(norm)) score += 1.0;
-      if (preguntaTokens.contains(norm)) score += 0.8;
-      if (respuestaTokens.contains(norm)) score += 0.3;
+  String _stem(String word) {
+    final w = _normalizar(word);
+    for (final sufijo in _sufijos) {
+      if (w.endsWith(sufijo) && w.length - sufijo.length >= 3) {
+        return w.substring(0, w.length - sufijo.length);
+      }
     }
-
-    // Normaliza por longitud de la consulta
-    return score / tokens.length;
+    return w;
   }
 
-  String _normalizarToken(String t) {
+  // ─── Normalización de acentos ─────────────────────────────
+
+  String _normalizar(String t) {
     return t
         .toLowerCase()
-        .replaceAll(RegExp(r'[áàä]'), 'a')
-        .replaceAll(RegExp(r'[éèë]'), 'e')
-        .replaceAll(RegExp(r'[íìï]'), 'i')
-        .replaceAll(RegExp(r'[óòö]'), 'o')
-        .replaceAll(RegExp(r'[úùü]'), 'u')
-        .replaceAll(RegExp(r'[ñ]'), 'n')
+        .replaceAll(RegExp(r'[áàâä]'), 'a')
+        .replaceAll(RegExp(r'[éèêë]'), 'e')
+        .replaceAll(RegExp(r'[íìîï]'), 'i')
+        .replaceAll(RegExp(r'[óòôö]'), 'o')
+        .replaceAll(RegExp(r'[úùûü]'), 'u')
+        .replaceAll('ñ', 'n')
         .trim();
   }
 }
 
-class _EntradaPuntuada {
+class _EP {
   final Map<String, dynamic> entrada;
   final double puntaje;
-  _EntradaPuntuada({required this.entrada, required this.puntaje});
+  _EP({required this.entrada, required this.puntaje});
 }
 
 class RagRespuesta {

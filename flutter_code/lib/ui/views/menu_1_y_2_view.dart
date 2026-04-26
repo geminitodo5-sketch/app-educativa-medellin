@@ -16,7 +16,6 @@ import 'ingles_view.dart';
 import 'espanol_view.dart';
 import 'ciencias_sociales_view.dart';
 import 'configuracion_view.dart';
-import 'asistente_ia/asistente_ia_view.dart';
 
 class Menu1Y2Screen extends ConsumerStatefulWidget {
   final String nombre;
@@ -307,23 +306,6 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
                     ),
                     tooltip: 'Actualizar progreso',
                   ),
-                  // Asistente IA (solo grados 3-5)
-                  if (nivel >= 3)
-                    IconButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => AsistenteIaView(
-                            gradoInicial: nivel,
-                          ),
-                        ),
-                      ),
-                      icon: const Icon(
-                        Icons.psychology_rounded,
-                        color: Colors.white,
-                        size: 34,
-                      ),
-                      tooltip: 'Asistente IA',
-                    ),
                   // Configuración
                   IconButton(
                     onPressed: () => Navigator.of(context).push(

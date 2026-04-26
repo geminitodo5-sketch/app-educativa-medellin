@@ -14,7 +14,7 @@ import 'sqlite_service.dart';
 class DescargaPaqueteService {
   // ── Cambia esta URL cuando despliegues el backend ────────────
   static const String _apiBase =
-      'https://rag-api-numi.railway.app'; // producción
+      'https://app-educativa-medellin-production.up.railway.app'; // producción
   // Para pruebas locales usa: 'http://10.0.2.2:8000' (Android emulador)
   // o 'http://localhost:8000' (Windows/desktop)
 

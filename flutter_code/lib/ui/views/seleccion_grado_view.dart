@@ -10,6 +10,7 @@ import 'package:media_kit/media_kit.dart'; // ✅ Reemplaza just_audio
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
 import 'menu_1_y_2_view.dart';
+import 'menu_3_a_5_view.dart';
 
 class SeleccionGradoView extends ConsumerStatefulWidget {
   const SeleccionGradoView({super.key});
@@ -51,20 +52,6 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   }
 
   Future<void> _onGradeSelected(int grade) async {
-    if (grade > 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '¡El $grade° grado estará disponible muy pronto! 🚀',
-            style: const TextStyle(fontFamily: 'Hiruko', fontSize: 16),
-          ),
-          backgroundColor: const Color(0xFF1E293B),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      return;
-    }
-
     setState(() => _cargando = true);
 
     try {
@@ -77,13 +64,20 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
       ref.read(estudianteActivoProvider.notifier).state = actualizado;
 
       if (!mounted) return;
+
+      // Grados 1 y 2 → menú de actividades
+      // Grados 3, 4 y 5 → menú del asistente RAG
+      final destino = grade <= 2
+          ? Menu1Y2Screen(
+              nombre: actualizado.nombre,
+              avatar: actualizado.personaje,
+              nivel: actualizado.grado,
+            )
+          : const Menu3A5Screen();
+
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (ctx, a, _) => Menu1Y2Screen(
-            nombre: actualizado.nombre,
-            avatar: actualizado.personaje,
-            nivel: actualizado.grado,
-          ),
+          pageBuilder: (ctx, a, _) => destino,
           transitionsBuilder: (ctx, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),
           transitionDuration: const Duration(milliseconds: 400),
@@ -226,32 +220,32 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Fila 3° y 4° (próximamente)
+                          // Fila 3° y 4°
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               GradeButton(
                                 text: '3°',
                                 color: const Color(0xFF59E347),
-                                activo: false,
+                                activo: true,
                                 onTap: () => _onGradeSelected(3),
                               ),
                               const SizedBox(width: 24),
                               GradeButton(
                                 text: '4°',
                                 color: const Color(0xFFB41EFF),
-                                activo: false,
+                                activo: true,
                                 onTap: () => _onGradeSelected(4),
                               ),
                             ],
                           ),
                           const SizedBox(height: 24),
 
-                          // Grado 5° (próximamente)
+                          // Grado 5°
                           GradeButton(
                             text: '5°',
                             color: const Color(0xFFF65757),
-                            activo: false,
+                            activo: true,
                             onTap: () => _onGradeSelected(5),
                           ),
 
