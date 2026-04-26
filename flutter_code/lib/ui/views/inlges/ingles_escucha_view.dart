@@ -1,40 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'ingles_congratulations_view.dart';
+import 'dart:math';
 
 const _img = 'assets/images/areas/ingles/juego_1/imagenes_1/';
 const _aud = 'assets/images/areas/ingles/juego_1/audios_1/';
 
-final _niveles = [
+// ── Banco de preguntas por categoría ─────────────────────────
+// Cada entrada tiene: audio de pregunta, lista de opciones (img+audio)
+// La correcta se sortea aleatoriamente al iniciar
+
+final _bancoFrutas = [
   {
     'pregunta': '${_aud}strawberry.mp3',
-    'correcta': 1,
-    'opciones': [
-      {'img': '${_img}manzana.png', 'audio': '${_aud}apple.mp3'},
-      {'img': '${_img}fresa.png', 'audio': '${_aud}strawberry.mp3'},
-      {'img': '${_img}uva.png', 'audio': '${_aud}grapes.mp3'},
-      {'img': '${_img}banana.png', 'audio': '${_aud}banana.mp3'},
-    ],
+    'img': '${_img}fresa.png',
+    'audio': '${_aud}strawberry.mp3',
+  },
+  {
+    'pregunta': '${_aud}apple.mp3',
+    'img': '${_img}manzana.png',
+    'audio': '${_aud}apple.mp3',
+  },
+  {
+    'pregunta': '${_aud}banana.mp3',
+    'img': '${_img}banana.png',
+    'audio': '${_aud}banana.mp3',
+  },
+  {
+    'pregunta': '${_aud}grapes.mp3',
+    'img': '${_img}uva.png',
+    'audio': '${_aud}grapes.mp3',
+  },
+];
+
+final _bancoNumeros = [
+  {
+    'pregunta': '${_aud}four.mp3',
+    'img': '${_img}4.png',
+    'audio': '${_aud}four.mp3',
   },
   {
     'pregunta': '${_aud}three.mp3',
-    'correcta': 1,
-    'opciones': [
-      {'img': '${_img}4.png', 'audio': '${_aud}four.mp3'},
-      {'img': '${_img}3.png', 'audio': '${_aud}three.mp3'},
-      {'img': '${_img}0.png', 'audio': '${_aud}zero.mp3'},
-      {'img': '${_img}1.png', 'audio': '${_aud}one.mp3'},
-    ],
+    'img': '${_img}3.png',
+    'audio': '${_aud}three.mp3',
+  },
+  {
+    'pregunta': '${_aud}zero.mp3',
+    'img': '${_img}0.png',
+    'audio': '${_aud}zero.mp3',
+  },
+  {
+    'pregunta': '${_aud}one.mp3',
+    'img': '${_img}1.png',
+    'audio': '${_aud}one.mp3',
+  },
+];
+
+final _bancoAnimales = [
+  {
+    'pregunta': '${_aud}dog.mp3',
+    'img': '${_img}perro.png',
+    'audio': '${_aud}dog.mp3',
+  },
+  {
+    'pregunta': '${_aud}cat.mp3',
+    'img': '${_img}gato.png',
+    'audio': '${_aud}cat.mp3',
   },
   {
     'pregunta': '${_aud}bear.mp3',
-    'correcta': 3,
-    'opciones': [
-      {'img': '${_img}perro.png', 'audio': '${_aud}dog.mp3'},
-      {'img': '${_img}pato.png', 'audio': '${_aud}duck.mp3'},
-      {'img': '${_img}gato.png', 'audio': '${_aud}cat.mp3'},
-      {'img': '${_img}oso.png', 'audio': '${_aud}bear.mp3'},
-    ],
+    'img': '${_img}oso.png',
+    'audio': '${_aud}bear.mp3',
+  },
+  {
+    'pregunta': '${_aud}duck.mp3',
+    'img': '${_img}pato.png',
+    'audio': '${_aud}duck.mp3',
   },
 ];
 
@@ -46,9 +87,29 @@ const _colores = [
 ];
 
 const _etiquetas = ['Fruits', 'Numbers', 'Animals'];
+const _audioInstruccion = '${_aud}audio.mp3';
 
-// Ruta del audio de instrucción general
-const _audioInstruccion = 'assets/images/areas/ingles/juego_1/audios_1/audio.mp3';
+// ── Genera una ronda aleatoria para una categoría ─────────────
+Map<String, dynamic> _generarNivel(List<Map<String, dynamic>> banco) {
+  final rng = Random();
+  final correctaIdx = rng.nextInt(banco.length);
+  final correcta = banco[correctaIdx];
+
+  // 3 distractores distintos a la correcta
+  final otros = [...banco]..removeAt(correctaIdx);
+  otros.shuffle(rng);
+  final distractores = otros.take(3).toList();
+
+  // Insertar la correcta en posición aleatoria 0-3
+  final posicion = rng.nextInt(4);
+  distractores.insert(posicion, correcta);
+
+  return {
+    'pregunta': correcta['pregunta'],
+    'correcta': posicion,
+    'opciones': distractores,
+  };
+}
 
 class InglesEscuchaView extends StatefulWidget {
   const InglesEscuchaView({super.key, this.onCompleted});
@@ -60,6 +121,7 @@ class InglesEscuchaView extends StatefulWidget {
 
 class _InglesEscuchaViewState extends State<InglesEscuchaView> {
   late final Player _player;
+  late List<Map<String, dynamic>> _niveles;
 
   int _nivel = 0;
   int _seleccion = -1;
@@ -74,10 +136,23 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
   void initState() {
     super.initState();
     _player = Player();
-    // Reproduce instrucción automáticamente al entrar
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _reproducirInstruccion();
+    _generarRonda();
+
+    // 1) Reproduce instrucción al entrar
+    // 2) Tras 2 s reproduce el audio de la pregunta
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _reproducirInstruccion();
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) await _play(_data['pregunta'] as String);
     });
+  }
+
+  void _generarRonda() {
+    _niveles = [
+      _generarNivel(_bancoFrutas),
+      _generarNivel(_bancoNumeros),
+      _generarNivel(_bancoAnimales),
+    ];
   }
 
   @override
@@ -86,7 +161,6 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
     super.dispose();
   }
 
-  /// Reproduce el audio de instrucción general
   Future<void> _reproducirInstruccion() async {
     try {
       await _player.open(Media('asset:///$_audioInstruccion'));
@@ -96,7 +170,6 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
     }
   }
 
-  /// Reproduce cualquier audio por ruta
   Future<void> _play(String assetPath) async {
     try {
       await _player.open(Media('asset:///$assetPath'));
@@ -142,9 +215,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto
-                          ? Colors.green[900]
-                          : Colors.red[900],
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
@@ -203,6 +274,10 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
               _seleccion = -1;
               _respondido = false;
             });
+            // Reproduce la pregunta de nuevo tras reintentar
+            Future.delayed(const Duration(milliseconds: 300), () {
+              if (mounted) _play(_data['pregunta'] as String);
+            });
           }
         });
       }
@@ -215,6 +290,10 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
         _nivel++;
         _seleccion = -1;
         _respondido = false;
+      });
+      // Reproduce automáticamente la siguiente pregunta
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) _play(_data['pregunta'] as String);
       });
     } else {
       widget.onCompleted?.call();
@@ -359,11 +438,11 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                           itemCount: 4,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 14,
-                            mainAxisSpacing: 14,
-                            childAspectRatio: 1.0,
-                          ),
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 14,
+                                mainAxisSpacing: 14,
+                                childAspectRatio: 1.0,
+                              ),
                           itemBuilder: (context, i) {
                             final op = _opciones[i];
                             final esCorrecta = i == _correcta;

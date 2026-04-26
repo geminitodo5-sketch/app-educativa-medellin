@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import 'registro_view.dart';
+import 'inicio_view.dart';
 
 class ConfiguracionView extends ConsumerStatefulWidget {
   const ConfiguracionView({super.key});
@@ -121,6 +122,48 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     ref.read(estudianteActivoProvider.notifier).state = actualizado;
   }
 
+  // ── Reiniciar base de datos ───────────────────────────────────
+  Future<void> _confirmarReset() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Reiniciar base de datos',
+            style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+        content: const Text(
+          '¿Borrar todos los datos y empezar desde cero?\nEsta acción no se puede deshacer.',
+          style: TextStyle(fontFamily: 'Poppins', fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar',
+                style: TextStyle(fontFamily: 'Poppins')),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF5353),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Borrar',
+                style: TextStyle(fontFamily: 'Poppins')),
+          ),
+        ],
+      ),
+    );
+    if (confirmar != true || !mounted) return;
+    await ref.read(resetDbProvider)();
+    await ref.read(sqliteServiceProvider).database;
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const InicioView()),
+      (_) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final estudiante = ref.watch(estudianteActivoProvider);
@@ -229,6 +272,10 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
 
                   // ── Sync info ──────────────────────────────────
                   _buildSyncCard(),
+                  const SizedBox(height: 12),
+
+                  // ── Reiniciar BD ────────────────────────────────
+                  _buildResetCard(),
                   const SizedBox(height: 12),
 
                   // ── Cerrar sesión ───────────────────────────────
@@ -454,6 +501,50 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildResetCard() {
+    return GestureDetector(
+      onTap: _confirmarReset,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFF8C00),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.delete_forever_rounded, color: Colors.white, size: 36),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Reiniciar base de datos',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'Borra todos los datos y empieza desde cero',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

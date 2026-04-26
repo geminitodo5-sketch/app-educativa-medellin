@@ -9,6 +9,7 @@ import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
 import 'menu_1_y_2_view.dart';
 import 'bienvenida.dart';
+import 'registro_view.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -18,7 +19,7 @@ class LoginView extends ConsumerStatefulWidget {
 }
 
 class _LoginViewState extends ConsumerState<LoginView> {
-  final _emailController      = TextEditingController();
+  final _emailController = TextEditingController();
   final _contrasenaController = TextEditingController();
   bool _mostrarContrasena = false;
   bool _cargando = false;
@@ -31,7 +32,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 
   Future<void> _login() async {
-    final email      = _emailController.text.trim();
+    final email = _emailController.text.trim();
     final contrasena = _contrasenaController.text.trim();
 
     if (email.isEmpty || contrasena.isEmpty) {
@@ -42,8 +43,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
     setState(() => _cargando = true);
 
     try {
-      final repo       = ref.read(estudianteRepositoryProvider);
-      final estudiante = await repo.buscarPorEmailYContrasena(email, contrasena);
+      final repo = ref.read(estudianteRepositoryProvider);
+      final estudiante = await repo.buscarPorEmailYContrasena(
+        email,
+        contrasena,
+      );
 
       if (!mounted) return;
 
@@ -58,7 +62,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
       if (!mounted) return;
 
-      // Si aún no tiene nombre/avatar, completar registro
       if (estudiante.nombre.isEmpty || estudiante.personaje.isEmpty) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
@@ -76,7 +79,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           pageBuilder: (ctx, a, _) => Menu1Y2Screen(
             nombre: estudiante.nombre,
             avatar: estudiante.personaje,
-            nivel:  estudiante.grado,
+            nivel: estudiante.grado,
           ),
           transitionsBuilder: (ctx, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),
@@ -95,12 +98,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
   void _mostrarError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg,
-            style: const TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            )),
+        content: Text(
+          msg,
+          style: const TextStyle(
+            fontFamily: 'Hiruko',
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xFFEF5353),
       ),
     );
@@ -115,7 +120,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
       body: SizedBox.expand(
         child: Stack(
           children: [
-            // Fondo
+            // ── Fondo ─────────────────────────────────────────
             Positioned.fill(
               child: Image.asset(
                 'assets/images/bienvenida/fondos (1).png',
@@ -123,7 +128,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ),
             ),
 
-            // Contenido principal
+            // ── Contenido principal ───────────────────────────
             SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.zero,
@@ -131,9 +136,46 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   width: double.infinity,
                   child: Column(
                     children: [
-                      SizedBox(height: size.height * 0.09),
+                      SizedBox(height: size.height * 0.04),
 
-                      // Título
+                      // ── Botón volver ───────────────────────
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16),
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (_) => const RegistroView(),
+                              ),
+                            ),
+                            child: Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                size: 18,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: size.height * 0.04),
+
+                      // ── Título ─────────────────────────────
                       const Text(
                         'Inicia Sesión',
                         style: TextStyle(
@@ -146,7 +188,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
                       SizedBox(height: size.height * 0.05),
 
-                      // Tarjeta del formulario
+                      // ── Tarjeta del formulario ─────────────
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 28),
                         padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
@@ -255,30 +297,52 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ),
             ),
 
-            // Pollito (esquina inferior izquierda)
-            Positioned(
-              bottom: 0,
-              left: -8,
-              child: IgnorePointer(
-                child: Image.asset(
-                  'assets/images/bienvenida/pollo1.png',
-                  height: size.height * 0.20,
-                  fit: BoxFit.contain,
-                ),
-              ),
+            // ── Pollito — responsive y reactivo al teclado ────
+            Builder(
+              builder: (context) {
+                final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+                final pollitoHeight = size.height * 0.17;
+
+                return AnimatedPositioned(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  bottom: bottomInset > 0 ? -(pollitoHeight * 0.6) : 0,
+                  left: -8,
+                  child: IgnorePointer(
+                    child: Image.asset(
+                      'assets/images/bienvenida/pollo1.png',
+                      height: pollitoHeight,
+                      width: size.width * 0.35,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomLeft,
+                    ),
+                  ),
+                );
+              },
             ),
 
-            // Mono (esquina inferior derecha)
-            Positioned(
-              bottom: 0,
-              right: -10,
-              child: IgnorePointer(
-                child: Image.asset(
-                  'assets/images/bienvenida/mono.png',
-                  height: size.height * 0.22,
-                  fit: BoxFit.contain,
-                ),
-              ),
+            // ── Mono — responsive y reactivo al teclado ───────
+            Builder(
+              builder: (context) {
+                final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+                final monoHeight = size.height * 0.22;
+
+                return AnimatedPositioned(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  bottom: bottomInset > 0 ? -(monoHeight * 0.6) : 0,
+                  right: -10,
+                  child: IgnorePointer(
+                    child: Image.asset(
+                      'assets/images/bienvenida/mono.png',
+                      height: monoHeight,
+                      width: size.width * 0.38,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomRight,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -313,8 +377,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
@@ -343,8 +409,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
@@ -358,8 +426,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           borderSide: const BorderSide(color: Color(0xFF4DC63D), width: 1.5),
         ),
         suffixIcon: GestureDetector(
-          onTap: () =>
-              setState(() => _mostrarContrasena = !_mostrarContrasena),
+          onTap: () => setState(() => _mostrarContrasena = !_mostrarContrasena),
           child: Icon(
             _mostrarContrasena ? Icons.visibility : Icons.visibility_off,
             color: Colors.grey,
@@ -388,16 +455,16 @@ class _GoogleLogoPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-    final r  = size.width / 2;
+    final r = size.width / 2;
 
     canvas.drawCircle(Offset(cx, cy), r, Paint()..color = Colors.white);
 
     final rect = Rect.fromCircle(center: Offset(cx, cy), radius: r);
     final segments = [
-      (Colors.red,   -30.0, 90.0),
-      (Colors.amber,  60.0, 90.0),
+      (Colors.red, -30.0, 90.0),
+      (Colors.amber, 60.0, 90.0),
       (Colors.green, 150.0, 90.0),
-      (Colors.blue,  240.0, 90.0),
+      (Colors.blue, 240.0, 90.0),
     ];
     for (final seg in segments) {
       canvas.drawArc(

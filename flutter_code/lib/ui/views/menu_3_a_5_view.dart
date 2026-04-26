@@ -4,13 +4,13 @@
 //  Toda la interacción pasa por el asistente RAG offline.
 // ─────────────────────────────────────────────────────────────
 
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/services/descarga_paquete_service.dart';
-import 'inicio_view.dart';
 import 'configuracion_view.dart';
 import 'asistente_ia/asistente_ia_view.dart';
 
@@ -19,6 +19,8 @@ import 'asistente_ia/asistente_ia_view.dart';
 class _MateriaInfo {
   final String clave;
   final String nombre;
+  final String categoria;
+  final String titulo;
   final Color color;
   final Color sombra;
   final IconData icono;
@@ -27,6 +29,8 @@ class _MateriaInfo {
   const _MateriaInfo({
     required this.clave,
     required this.nombre,
+    required this.categoria,
+    required this.titulo,
     required this.color,
     required this.sombra,
     required this.icono,
@@ -38,6 +42,8 @@ const _materias = [
   _MateriaInfo(
     clave: 'matematicas',
     nombre: 'Matemáticas',
+    categoria: 'Matemática',
+    titulo: 'Matemática Divertida',
     color: Color(0xFF3E7DFE),
     sombra: Color(0xFF2C60D2),
     icono: Icons.calculate_rounded,
@@ -46,6 +52,8 @@ const _materias = [
   _MateriaInfo(
     clave: 'ciencias',
     nombre: 'Ciencias',
+    categoria: 'Ciencias Naturales',
+    titulo: 'Mis Pequeñas Ciencias',
     color: Color(0xFF3DCC52),
     sombra: Color(0xFF22A45D),
     icono: Icons.science_rounded,
@@ -54,14 +62,18 @@ const _materias = [
   _MateriaInfo(
     clave: 'espanol',
     nombre: 'Español',
-    color: Color(0xFFB83232),
-    sombra: Color(0xFF8B1A1A),
+    categoria: 'Español',
+    titulo: 'Español Avanzado',
+    color: Color(0xFFEF5353),
+    sombra: Color(0xFFC53030),
     icono: Icons.menu_book_rounded,
     imagen: 'assets/images/menu_materias/alfabeto_1.png',
   ),
   _MateriaInfo(
     clave: 'sociales',
     nombre: 'Sociales',
+    categoria: 'Ciencias Sociales',
+    titulo: 'Explorando el Mundo',
     color: Color(0xFFF5A623),
     sombra: Color(0xFFB8710A),
     icono: Icons.public_rounded,
@@ -70,10 +82,61 @@ const _materias = [
   _MateriaInfo(
     clave: 'ingles',
     nombre: 'Inglés',
+    categoria: 'Inglés',
+    titulo: 'Inglés Explorando',
     color: Color(0xFF8B5CF6),
     sombra: Color(0xFF6A3592),
     icono: Icons.language_rounded,
     imagen: 'assets/images/menu_materias/libros_1.png',
+  ),
+];
+
+// ── Item para barras de progreso ──────────────────────────────
+
+class _ProgresoItem {
+  final String clave;
+  final String etiqueta;
+  final Color color;
+  final Color sombra;
+
+  const _ProgresoItem({
+    required this.clave,
+    required this.etiqueta,
+    required this.color,
+    required this.sombra,
+  });
+}
+
+const _progresoItems = [
+  _ProgresoItem(
+    clave: 'matematicas',
+    etiqueta: 'matemáticas',
+    color: Color(0xFF3E7DFE),
+    sombra: Color(0xFF2C60D2),
+  ),
+  _ProgresoItem(
+    clave: 'ingles',
+    etiqueta: 'inglés',
+    color: Color(0xFF8B5CF6),
+    sombra: Color(0xFF6A3592),
+  ),
+  _ProgresoItem(
+    clave: 'ciencias',
+    etiqueta: 'ciencias naturales',
+    color: Color(0xFF3DCC52),
+    sombra: Color(0xFF22A45D),
+  ),
+  _ProgresoItem(
+    clave: 'español',
+    etiqueta: 'español',
+    color: Color(0xFFEF5353),
+    sombra: Color(0xFFC53030),
+  ),
+  _ProgresoItem(
+    clave: 'sociales',
+    etiqueta: 'sociales',
+    color: Color(0xFFF5A623),
+    sombra: Color(0xFFB8710A),
   ),
 ];
 
@@ -87,18 +150,55 @@ class Menu3A5Screen extends ConsumerStatefulWidget {
 }
 
 class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
+  int _tabIndex   = 0;
+  int _currentPage = 0;
+
   final Map<String, bool>   _descargado        = {};
   final Map<String, double> _progresosDescarga = {};
   final Set<String>         _descargando       = {};
   bool _verificando = true;
 
   late final DescargaPaqueteService _svc;
+  late final PageController _pageController;
+  Timer? _carruselTimer;
+  bool _pausarCarrusel = false;
 
   @override
   void initState() {
     super.initState();
     _svc = DescargaPaqueteService(ref.read(sqliteServiceProvider));
     _verificarDescargas();
+    _pageController = PageController(viewportFraction: 0.82);
+    _iniciarCarrusel();
+  }
+
+  void _iniciarCarrusel() {
+    _carruselTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted || !_pageController.hasClients || _pausarCarrusel) return;
+      final next = (_currentPage + 1) % _materias.length;
+      _pageController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  void _onScrollStart() {
+    if (!_pausarCarrusel) setState(() => _pausarCarrusel = true);
+  }
+
+  void _onScrollEnd() {
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted && _pausarCarrusel) setState(() => _pausarCarrusel = false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _carruselTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _verificarDescargas() async {
@@ -157,169 +257,66 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
         .then((_) => _verificarDescargas());
   }
 
-  Future<void> _confirmarReset() async {
-    final confirmar = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Reiniciar base de datos'),
-        content: const Text(
-            '¿Borrar todos los datos y empezar desde cero?\nEsta acción no se puede deshacer.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Borrar', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-    if (confirmar != true || !mounted) return;
-    await ref.read(resetDbProvider)();
-    await ref.read(sqliteServiceProvider).database;
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const InicioView()),
-      (_) => false,
-    );
+  String get _saludo {
+    final h = DateTime.now().hour;
+    if (h < 12) return 'Buenos días';
+    if (h < 18) return 'Buenas tardes';
+    return 'Buenas noches';
   }
 
   @override
   Widget build(BuildContext context) {
-    final estudiante = ref.watch(estudianteActivoProvider);
-    final nombre = estudiante?.nombre ?? 'Estudiante';
-    final avatar = estudiante?.personaje ?? 'pollito';
-    final nivel = estudiante?.grado ?? 3;
+    final estudiante  = ref.watch(estudianteActivoProvider);
+    final nombre      = estudiante?.nombre ?? 'Estudiante';
+    final avatar      = estudiante?.personaje ?? 'pollito';
+    final nivel       = estudiante?.grado ?? 3;
+    final progresoAsync = ref.watch(menuProgresoProvider);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       body: Stack(
         children: [
-          // ── Fondo degradado ───────────────────────────────────
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF1A3A6B), Color(0xFF7BD0E8)],
-                stops: [0.0, 0.55],
+          IndexedStack(
+            index: _tabIndex,
+            children: [
+              _HomeTab(
+                saludo: _saludo,
+                nombre: nombre,
+                avatar: avatar,
+                nivel: nivel,
+                verificando: _verificando,
+                descargado: _descargado,
+                descargando: _descargando,
+                progresosDescarga: _progresosDescarga,
+                pageController: _pageController,
+                currentPage: _currentPage,
+                onPageChanged: (i) => setState(() => _currentPage = i),
+                onDescargar: _descargar,
+                onAbrir: _abrirAsistente,
               ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Image.asset(
-              'assets/images/bienvenida/fondos (1).png',
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.bottomCenter,
-              errorBuilder: (_, _, _) => const SizedBox(),
-            ),
-          ),
-
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ── Barra de perfil ──────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-                  child: _BarraPerfil(
-                    nombre: nombre,
-                    avatar: avatar,
-                    nivel: nivel,
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-
-                // ── Cabecera IA ──────────────────────────────────
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: _CabeceraIA(),
-                ),
-
-                const SizedBox(height: 14),
-
-                // ── Cuadrícula de las 5 materias ─────────────────
-                Expanded(
-                  child: _verificando
-                      ? const Center(
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
-                      : SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
-                          child: Column(
-                            children: [
-                              // Fila 1: Matemáticas + Ciencias
-                              _FilaTarjetas(
-                                izquierda: _materias[0],
-                                derecha: _materias[1],
-                                descargado: _descargado,
-                                descargando: _descargando,
-                                progresos: _progresosDescarga,
-                                onDescargar: _descargar,
-                                onAbrir: _abrirAsistente,
-                              ),
-                              const SizedBox(height: 14),
-                              // Fila 2: Español + Sociales
-                              _FilaTarjetas(
-                                izquierda: _materias[2],
-                                derecha: _materias[3],
-                                descargado: _descargado,
-                                descargando: _descargando,
-                                progresos: _progresosDescarga,
-                                onDescargar: _descargar,
-                                onAbrir: _abrirAsistente,
-                              ),
-                              const SizedBox(height: 14),
-                              // Fila 3: Inglés (ancho completo)
-                              _TarjetaMateria(
-                                info: _materias[4],
-                                descargado: _descargado[_materias[4].clave] ?? false,
-                                descargando: _descargando.contains(_materias[4].clave),
-                                progreso: _progresosDescarga[_materias[4].clave] ?? 0.0,
-                                anchoCompleto: true,
-                                onDescargar: () => _descargar(_materias[4].clave),
-                                onAbrir: () => _abrirAsistente(_materias[4]),
-                              ),
-                            ],
-                          ),
-                        ),
-                ),
-              ],
-            ),
-          ),
-
-          // ── Debug reset ──────────────────────────────────────
-          if (kDebugMode)
-            Positioned(
-              top: 12,
-              right: 12,
-              child: SafeArea(
-                child: IconButton(
-                  icon: const Icon(Icons.delete_forever,
-                      color: Colors.white38, size: 26),
-                  tooltip: 'Reiniciar BD',
-                  onPressed: _confirmarReset,
-                ),
+              _ProgresoTab(
+                nombre: nombre,
+                avatar: avatar,
+                nivel: nivel,
+                progresoAsync: progresoAsync,
               ),
-            ),
+            ],
+          ),
 
-          // ── Barra de navegación inferior ─────────────────────
+          // Barra de navegación inferior
           Align(
             alignment: Alignment.bottomCenter,
             child: _NavBar(
-              onInicio: () {},
+              selectedIndex: _tabIndex,
+              onHome: () => setState(() => _tabIndex = 0),
               onAsistente: () {
-                // Abre la materia que ya esté descargada, o la primera
                 final primera = _materias.firstWhere(
                   (m) => _descargado[m.clave] == true,
                   orElse: () => _materias.first,
                 );
                 _abrirAsistente(primera);
               },
+              onProgreso: () => setState(() => _tabIndex = 1),
               onConfiguracion: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const ConfiguracionView(),
@@ -333,86 +330,373 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
   }
 }
 
-// ── Fila de dos tarjetas ──────────────────────────────────────
+// ── Tab: Inicio ───────────────────────────────────────────────
 
-class _FilaTarjetas extends StatelessWidget {
-  final _MateriaInfo izquierda;
-  final _MateriaInfo derecha;
+class _HomeTab extends StatelessWidget {
+  final String saludo;
+  final String nombre;
+  final String avatar;
+  final int nivel;
+  final bool verificando;
   final Map<String, bool>   descargado;
   final Set<String>         descargando;
-  final Map<String, double> progresos;
+  final Map<String, double> progresosDescarga;
+  final PageController      pageController;
+  final int                 currentPage;
+  final ValueChanged<int>   onPageChanged;
   final void Function(String)       onDescargar;
   final void Function(_MateriaInfo) onAbrir;
 
-  const _FilaTarjetas({
-    required this.izquierda,
-    required this.derecha,
+  const _HomeTab({
+    required this.saludo,
+    required this.nombre,
+    required this.avatar,
+    required this.nivel,
+    required this.verificando,
     required this.descargado,
     required this.descargando,
-    required this.progresos,
+    required this.progresosDescarga,
+    required this.pageController,
+    required this.currentPage,
+    required this.onPageChanged,
     required this.onDescargar,
     required this.onAbrir,
   });
 
+  String get _avatarPath => avatar == 'pollito'
+      ? 'assets/images/bienvenida/pollo feliz 2 (2).png'
+      : 'assets/images/bienvenida/mono.png';
+
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: _TarjetaMateria(
-              info: izquierda,
-              descargado: descargado[izquierda.clave] ?? false,
-              descargando: descargando.contains(izquierda.clave),
-              progreso: progresos[izquierda.clave] ?? 0.0,
-              onDescargar: () => onDescargar(izquierda.clave),
-              onAbrir: () => onAbrir(izquierda),
+            // ── Header ────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          saludo,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          '$nombre!',
+                          style: const TextStyle(
+                            fontFamily: 'Hiruko',
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Píldora blanca con "Nivel X" + avatar
+                  Container(
+                    padding: const EdgeInsets.only(
+                        left: 16, top: 6, bottom: 6, right: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.10),
+                          blurRadius: 12,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Nivel $nivel',
+                          style: const TextStyle(
+                            fontFamily: 'Hiruko',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFFFF0D6),
+                          ),
+                          padding: const EdgeInsets.all(2),
+                          child: ClipOval(
+                            child: Image.asset(
+                              _avatarPath,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, _, _) => const Icon(
+                                Icons.person,
+                                color: Color(0xFF3B74FF),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: _TarjetaMateria(
-              info: derecha,
-              descargado: descargado[derecha.clave] ?? false,
-              descargando: descargando.contains(derecha.clave),
-              progreso: progresos[derecha.clave] ?? 0.0,
-              onDescargar: () => onDescargar(derecha.clave),
-              onAbrir: () => onAbrir(derecha),
+
+            const SizedBox(height: 20),
+
+            // ── Banner ────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                height: 210,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topCenter,
+                  children: [
+                    // Contenedor con color cambiante según materia activa
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        height: 155,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(26),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _materias[currentPage.clamp(0, _materias.length - 1)].sombra,
+                              blurRadius: 0,
+                              offset: const Offset(0, 8),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.06),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeInOut,
+                            color: _materias[currentPage.clamp(0, _materias.length - 1)].color,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              '¡No pares de aprender!',
+                                              style: TextStyle(
+                                                fontFamily: 'Hiruko',
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            const Text(
+                                              'Cada pregunta es un nuevo descubrimiento',
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontSize: 13,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFF8C00),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: const Icon(
+                                          Icons.arrow_forward_rounded,
+                                          color: Colors.white,
+                                          size: 22,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Mascota asomándose desde arriba
+                    Positioned(
+                      top: -35,
+                      child: ClipRect(
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          heightFactor: 0.78,
+                          child: Image.asset(
+                            _avatarPath,
+                            height: 170,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => const SizedBox(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
+
+            const SizedBox(height: 44),
+
+            // ── Título "Mis Clases" ────────────────────────────
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Mis Clases',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // ── Carrusel de clases ─────────────────────────────
+            if (verificando)
+              const SizedBox(
+                height: 260,
+                child: Center(
+                  child: CircularProgressIndicator(
+                      color: Color(0xFF3E7DFE)),
+                ),
+              )
+            else ...[
+              SizedBox(
+                height: 260,
+                child: PageView.builder(
+                  controller: pageController,
+                  onPageChanged: onPageChanged,
+                  physics: const PageScrollPhysics(),
+                  itemCount: _materias.length,
+                  padEnds: false,
+                  clipBehavior: Clip.none,
+                  itemBuilder: (context, i) {
+                    final m = _materias[i];
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 10),
+                      child: _ClaseCard(
+                        info: m,
+                        descargado: descargado[m.clave] ?? false,
+                        descargando: descargando.contains(m.clave),
+                        progreso: progresosDescarga[m.clave] ?? 0.0,
+                        onDescargar: () => onDescargar(m.clave),
+                        onAbrir: () => onAbrir(m),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Puntos indicadores (tapeables)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  _materias.length,
+                  (i) => GestureDetector(
+                    onTap: () => pageController.animateToPage(
+                      i,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                    ),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: i == currentPage ? 20 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: i == currentPage
+                            ? const Color(0xFF3E7DFE)
+                            : Colors.grey[300],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+            ],
+          ],
+        ),
     );
   }
 }
 
-// ── Tarjeta de materia ────────────────────────────────────────
+// ── Tarjeta de clase ──────────────────────────────────────────
 
-class _TarjetaMateria extends StatefulWidget {
+class _ClaseCard extends StatefulWidget {
   final _MateriaInfo info;
   final bool descargado;
   final bool descargando;
-  final double progreso;        // 0.0–1.0 mientras descarga
-  final bool anchoCompleto;
+  final double progreso;
   final VoidCallback onDescargar;
   final VoidCallback onAbrir;
 
-  const _TarjetaMateria({
+  const _ClaseCard({
     required this.info,
     required this.descargado,
     required this.descargando,
     required this.progreso,
     required this.onDescargar,
     required this.onAbrir,
-    this.anchoCompleto = false,
   });
 
   @override
-  State<_TarjetaMateria> createState() => _TarjetaMateriaState();
+  State<_ClaseCard> createState() => _ClaseCardState();
 }
 
-class _TarjetaMateriaState extends State<_TarjetaMateria>
+class _ClaseCardState extends State<_ClaseCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
     vsync: this,
@@ -429,75 +713,159 @@ class _TarjetaMateriaState extends State<_TarjetaMateria>
 
   @override
   Widget build(BuildContext context) {
-    final info = widget.info;
-    final listo = widget.descargado;
-    final descargando = widget.descargando;
+    final info      = widget.info;
+    final listo     = widget.descargado;
+    final enDescarga = widget.descargando;
 
     return GestureDetector(
-      onTapDown: listo ? (_) => _ctrl.forward() : null,
-      onTapUp: listo
-          ? (_) {
-              _ctrl.reverse();
-              widget.onAbrir();
-            }
-          : null,
-      onTapCancel: listo ? () => _ctrl.reverse() : null,
+      onTapDown: (_) => _ctrl.forward(),
+      onTapUp: (_) {
+        _ctrl.reverse();
+        if (listo) {
+          widget.onAbrir();
+        } else if (!enDescarga) {
+          widget.onDescargar();
+        }
+      },
+      onTapCancel: () => _ctrl.reverse(),
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          // Altura mínima garantizada para el card
-          constraints: BoxConstraints(
-            minHeight: widget.anchoCompleto ? 100 : 155,
-          ),
           decoration: BoxDecoration(
-            color: info.color,
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                 color: info.sombra,
                 blurRadius: 0,
-                offset: const Offset(0, 5),
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              // Imagen de fondo tenue
-              Positioned(
-                right: -8,
-                bottom: -8,
-                child: Opacity(
-                  opacity: 0.12,
-                  child: Image.asset(
-                    info.imagen,
-                    width: 72,
-                    height: 72,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, _, _) => const SizedBox(),
-                  ),
-                ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
-
-              // Contenido principal
-              Padding(
-                padding: const EdgeInsets.all(14),
-                child: widget.anchoCompleto
-                    ? _ContenidoHorizontal(
-                        info: info,
-                        listo: listo,
-                        descargando: descargando,
-                        progreso: widget.progreso,
-                        onDescargar: widget.onDescargar,
-                      )
-                    : _ContenidoVertical(
-                        info: info,
-                        listo: listo,
-                        descargando: descargando,
-                        progreso: widget.progreso,
-                        onDescargar: widget.onDescargar,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Área de imagen
+                  Expanded(
+                    flex: 62,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: info.color,
                       ),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Image.asset(
+                              info.imagen,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, _, _) => Icon(
+                                info.icono,
+                                color: Colors.white,
+                                size: 52,
+                              ),
+                            ),
+                          ),
+                          if (!listo)
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.25),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: enDescarga
+                                    ? SizedBox(
+                                        width: 14,
+                                        height: 14,
+                                        child: CircularProgressIndicator(
+                                          value: widget.progreso > 0
+                                              ? widget.progreso
+                                              : null,
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.download_rounded,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Texto inferior
+                  Expanded(
+                    flex: 38,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            info.categoria,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: info.color,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            info.titulo,
+                            style: const TextStyle(
+                              fontFamily: 'Hiruko',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.access_time_rounded,
+                                size: 14,
+                                color: Colors.grey[500],
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                '10 minutos',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -505,390 +873,236 @@ class _TarjetaMateriaState extends State<_TarjetaMateria>
   }
 }
 
-// ── Layout vertical (tarjetas cuadradas) ──────────────────────
+// ── Tab: Progreso ─────────────────────────────────────────────
 
-class _ContenidoVertical extends StatelessWidget {
-  final _MateriaInfo info;
-  final bool listo;
-  final bool descargando;
-  final double progreso;
-  final VoidCallback onDescargar;
-
-  const _ContenidoVertical({
-    required this.info,
-    required this.listo,
-    required this.descargando,
-    required this.progreso,
-    required this.onDescargar,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Ícono + badge estado
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(info.icono, color: Colors.white, size: 22),
-            ),
-            if (listo)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.check_circle_rounded, color: Colors.white, size: 12),
-                    SizedBox(width: 3),
-                    Text('Listo',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        )),
-                  ],
-                ),
-              ),
-          ],
-        ),
-
-        const SizedBox(height: 10),
-
-        // Nombre
-        Text(
-          info.nombre,
-          style: const TextStyle(
-            fontFamily: 'Hiruko',
-            fontSize: 17,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        // Botón o barra de progreso
-        if (descargando) ...[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: progreso,
-              minHeight: 7,
-              backgroundColor: Colors.white24,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${(progreso * 100).toInt()}%',
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 10,
-              color: Colors.white70,
-            ),
-          ),
-        ] else if (!listo)
-          SizedBox(
-            width: double.infinity,
-            height: 34,
-            child: ElevatedButton.icon(
-              onPressed: onDescargar,
-              icon: const Icon(Icons.download_rounded, size: 14),
-              label: const Text(
-                'Descargar',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black87,
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 0,
-              ),
-            ),
-          )
-        else
-          const Text(
-            'Toca para preguntar',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 11,
-              color: Colors.white70,
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-// ── Layout horizontal (tarjeta de ancho completo — Inglés) ────
-
-class _ContenidoHorizontal extends StatelessWidget {
-  final _MateriaInfo info;
-  final bool listo;
-  final bool descargando;
-  final double progreso;
-  final VoidCallback onDescargar;
-
-  const _ContenidoHorizontal({
-    required this.info,
-    required this.listo,
-    required this.descargando,
-    required this.progreso,
-    required this.onDescargar,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Ícono
-        Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.25),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Icon(info.icono, color: Colors.white, size: 26),
-        ),
-        const SizedBox(width: 14),
-
-        // Nombre + subtítulo
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                info.nombre,
-                style: const TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
-              if (descargando) ...[
-                const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: LinearProgressIndicator(
-                    value: progreso,
-                    minHeight: 7,
-                    backgroundColor: Colors.white24,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${(progreso * 100).toInt()}%',
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 10,
-                    color: Colors.white70,
-                  ),
-                ),
-              ] else
-                Text(
-                  listo ? 'Toca para preguntar' : 'Base de conocimiento disponible',
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    color: Colors.white70,
-                  ),
-                ),
-            ],
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        // Botón o check
-        if (!descargando)
-          listo
-              ? const Icon(Icons.arrow_forward_ios_rounded,
-                  color: Colors.white70, size: 20)
-              : ElevatedButton.icon(
-                  onPressed: onDescargar,
-                  icon: const Icon(Icons.download_rounded, size: 16),
-                  label: const Text(
-                    'Descargar',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black87,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                ),
-      ],
-    );
-  }
-}
-
-// ── Barra de perfil ───────────────────────────────────────────
-
-class _BarraPerfil extends StatelessWidget {
+class _ProgresoTab extends StatelessWidget {
   final String nombre;
   final String avatar;
   final int nivel;
+  final AsyncValue<Map<String, double>> progresoAsync;
 
-  const _BarraPerfil({
+  const _ProgresoTab({
     required this.nombre,
     required this.avatar,
     required this.nivel,
+    required this.progresoAsync,
   });
+
+  String get _avatarPath => avatar == 'pollito'
+      ? 'assets/images/bienvenida/pollo feliz 2 (2).png'
+      : 'assets/images/bienvenida/mono.png';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.white24),
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+
+            // Tarjeta de perfil
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                height: 110,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF45C0D0),
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF2DA0AE),
+                      blurRadius: 0,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Avatar centrado verticalmente
+                    Positioned(
+                      top: 10,
+                      left: 16,
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.all(color: Colors.white, width: 4),
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            _avatarPath,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.person,
+                              color: Color(0xFF45C0D0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Nombre y grado
+                    Positioned(
+                      left: 120,
+                      top: 22,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nombre,
+                            style: const TextStyle(
+                              fontFamily: 'Hiruko',
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF8C00),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFCC6600),
+                                  blurRadius: 0,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              '$nivel°',
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 60),
+
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Tu progreso',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            progresoAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 40),
+                child: Center(
+                  child: CircularProgressIndicator(
+                      color: Color(0xFF3E7DFE)),
+                ),
+              ),
+              error: (_, _) => _buildBarras({}),
+              data: (progreso) => _buildBarras(progreso),
+            ),
+          ],
+        ),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-            padding: const EdgeInsets.all(4),
-            child: ClipOval(
-              child: Image.asset(
-                avatar == 'pollito'
-                    ? 'assets/images/bienvenida/pollo feliz 2 (2).png'
-                    : 'assets/images/bienvenida/mono.png',
-                fit: BoxFit.contain,
-                errorBuilder: (_, _, _) =>
-                    const Icon(Icons.person, color: Color(0xFF3B74FF)),
-              ),
+    );
+  }
+
+  Widget _buildBarras(Map<String, double> progreso) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: _progresoItems.map((item) {
+          final pct = (progreso[item.clave] ?? 0.0).clamp(0.0, 100.0);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: _BarraProgreso(
+              etiqueta: item.etiqueta,
+              porcentaje: pct,
+              color: item.color,
+              sombra: item.sombra,
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              nombre,
-              style: const TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '$nivel° Grado',
-              style: const TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
 }
 
-// ── Cabecera IA ───────────────────────────────────────────────
+// ── Barra de progreso ─────────────────────────────────────────
 
-class _CabeceraIA extends StatelessWidget {
-  const _CabeceraIA();
+class _BarraProgreso extends StatelessWidget {
+  final String etiqueta;
+  final double porcentaje;
+  final Color color;
+  final Color sombra;
+
+  const _BarraProgreso({
+    required this.etiqueta,
+    required this.porcentaje,
+    required this.color,
+    required this.sombra,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFF3475F7),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF3475F7).withValues(alpha: 0.5),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 28),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Asistente IA',
-                  style: TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'Descarga una materia y pregunta lo que quieras',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 11,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
+        color: color,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: sombra,
+            blurRadius: 0,
+            offset: const Offset(0, 10),
           ),
         ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              etiqueta,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              '${porcentaje.toInt()}%',
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -897,13 +1111,17 @@ class _CabeceraIA extends StatelessWidget {
 // ── Barra de navegación inferior ─────────────────────────────
 
 class _NavBar extends StatelessWidget {
-  final VoidCallback onInicio;
+  final int selectedIndex;
+  final VoidCallback onHome;
   final VoidCallback onAsistente;
+  final VoidCallback onProgreso;
   final VoidCallback onConfiguracion;
 
   const _NavBar({
-    required this.onInicio,
+    required this.selectedIndex,
+    required this.onHome,
     required this.onAsistente,
+    required this.onProgreso,
     required this.onConfiguracion,
   });
 
@@ -913,12 +1131,12 @@ class _NavBar extends StatelessWidget {
       margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
       height: 68,
       decoration: BoxDecoration(
-        color: const Color(0xFF1A3A6B),
+        color: const Color(0xFF45C0D0),
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 16,
+            color: const Color(0xFF2DA0AE).withValues(alpha: 0.45),
+            blurRadius: 20,
             offset: const Offset(0, 4),
           ),
         ],
@@ -926,36 +1144,60 @@ class _NavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          IconButton(
-            onPressed: onInicio,
-            icon: const Icon(Icons.home_rounded, color: Colors.white, size: 32),
-            tooltip: 'Inicio',
+          _NavItem(
+            icon: Icons.home_rounded,
+            selected: selectedIndex == 0,
+            onTap: onHome,
           ),
-          GestureDetector(
+          _NavItem(
+            icon: Icons.psychology_rounded,
+            selected: false,
             onTap: onAsistente,
-            child: Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                color: const Color(0xFF3475F7),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF3475F7).withValues(alpha: 0.5),
-                    blurRadius: 12,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.psychology_rounded, color: Colors.white, size: 28),
-            ),
           ),
-          IconButton(
-            onPressed: onConfiguracion,
-            icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 32),
-            tooltip: 'Configuración',
+          _NavItem(
+            icon: Icons.emoji_events_rounded,
+            selected: selectedIndex == 1,
+            onTap: onProgreso,
+          ),
+          _NavItem(
+            icon: Icons.settings_rounded,
+            selected: false,
+            onTap: onConfiguracion,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: selected
+              ? Colors.white.withValues(alpha: 0.25)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(
+          icon,
+          size: 28,
+          color: Colors.white,
+        ),
       ),
     );
   }

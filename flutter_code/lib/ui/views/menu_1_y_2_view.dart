@@ -4,12 +4,9 @@
 //  Muestra las 5 materias con barra de progreso real desde la BD.
 // ─────────────────────────────────────────────────────────────
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
-import '../../data/providers/database_provider.dart';
-import 'inicio_view.dart';
 import 'matematicas_view.dart';
 import 'ciencias_view.dart';
 import 'ingles_view.dart';
@@ -34,33 +31,6 @@ class Menu1Y2Screen extends ConsumerStatefulWidget {
 }
 
 class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
-  Future<void> _confirmarReset() async {
-    final confirmar = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Reiniciar base de datos'),
-        content: const Text(
-            '¿Borrar todos los datos y empezar desde cero?\nEsta acción no se puede deshacer.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar')),
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Borrar', style: TextStyle(color: Colors.red))),
-        ],
-      ),
-    );
-    if (confirmar != true || !mounted) return;
-    await ref.read(resetDbProvider)();
-    await ref.read(sqliteServiceProvider).database;
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const InicioView()),
-      (_) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // Lee el progreso de todas las materias desde la BD
@@ -250,21 +220,6 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
               ],
             ),
           ),
-
-          // ── Botón debug: reiniciar BD (solo en modo debug) ──
-          if (kDebugMode)
-            Positioned(
-              top: 12,
-              right: 12,
-              child: SafeArea(
-                child: IconButton(
-                  icon: const Icon(Icons.delete_forever,
-                      color: Colors.white54, size: 28),
-                  tooltip: 'Reiniciar base de datos',
-                  onPressed: _confirmarReset,
-                ),
-              ),
-            ),
 
           // ── Barra de navegación inferior ────────────────────
           Align(

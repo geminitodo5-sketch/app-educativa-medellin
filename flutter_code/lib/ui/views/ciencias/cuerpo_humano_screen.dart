@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ media_kit en lugar de just_audio
+import 'package:media_kit/media_kit.dart';
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
 import '../../../data/models/sync_queue_model.dart';
@@ -16,23 +16,29 @@ const _p4 = 'assets/images/actividades/ciencias_naturales/pantalla 4/';
 const _p5 = 'assets/images/actividades/ciencias_naturales/pantalla 5/';
 const _p6 = 'assets/images/actividades/ciencias_naturales/pantalla 6/';
 
-// ── Rutas de audio ───────────────────────────────────────────────────────────
-const _audio4 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_mezcla.mp3';
-const _audio5 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales5_mezcla.mp3';
-const _audio6 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_mezcla.mp3';
+const _audio4 =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_mezcla.mp3';
+const _audio5 =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales5_mezcla.mp3';
+const _audio6 =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_mezcla.mp3';
 
-// Audios por parte del cuerpo (Actividad 1)
-const _audioOjos    = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_ojos_mezcla.mp3';
-const _audioManos   = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_manos_mezcla.mp3';
-const _audioPiernas = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_piernas_mezcla.mp3';
+const _audioOjos =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_ojos_mezcla.mp3';
+const _audioManos =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_manos_mezcla.mp3';
+const _audioPiernas =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales4_piernas_mezcla.mp3';
 
-// Audios por pregunta (Actividad 3)
-const _audioAct3Vista  = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_arcoiris_mezcla.mp3';
-const _audioAct3Oido   = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_musica_mezcla.mp3';
-const _audioAct3Tacto  = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_objetos_mezcla.mp3';
-const _audioAct3Gusto  = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_alimentos_mezcla.mp3';
+const _audioAct3Vista =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_arcoiris_mezcla.mp3';
+const _audioAct3Oido =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_musica_mezcla.mp3';
+const _audioAct3Tacto =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_objetos_mezcla.mp3';
+const _audioAct3Gusto =
+    'assets/images/actividades/ciencias_naturales/audios/audio_naturales6_alimentos_mezcla.mp3';
 
-// ── Helper: reproduce un asset con media_kit ─────────────────────────────────
 Future<void> _playAsset(Player player, String assetPath) async {
   try {
     await player.open(Media('asset:///$assetPath'));
@@ -41,8 +47,11 @@ Future<void> _playAsset(Player player, String assetPath) async {
   }
 }
 
-// ── Popup de retroalimentación ────────────────────────────────────────────
-void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onAction}) {
+void _mostrarFeedback(
+  BuildContext context,
+  bool correcto, {
+  VoidCallback? onAction,
+}) {
   showModalBottomSheet(
     context: context,
     isDismissible: false,
@@ -64,7 +73,9 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
               children: [
                 Icon(
                   correcto ? Icons.check_circle : Icons.cancel,
-                  color: correcto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                  color: correcto
+                      ? const Color(0xFF59E347)
+                      : const Color(0xFFF65757),
                   size: 40,
                 ),
                 const SizedBox(width: 15),
@@ -85,8 +96,12 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: correcto ? const Color(0xFF59E347) : const Color(0xFFF65757),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  backgroundColor: correcto
+                      ? const Color(0xFF59E347)
+                      : const Color(0xFFF65757),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -109,10 +124,6 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
     },
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Pantalla principal que contiene las 3 actividades
-// ─────────────────────────────────────────────────────────────────────────────
 
 class CuerpoHumanoScreen extends ConsumerStatefulWidget {
   const CuerpoHumanoScreen({super.key});
@@ -153,17 +164,19 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
       actividad: 'Cuerpo humano',
       porcentaje: 100.0,
     );
-    await queue.encolar(SyncQueueModel(
-      tipoAccion: 'progreso',
-      payload: jsonEncode({
-        'estudianteId': estudiante.id,
-        'grado': estudiante.grado,
-        'materia': 'ciencias',
-        'actividad': 'Cuerpo humano',
-        'porcentaje': 100.0,
-      }),
-      fecha: DateTime.now().toIso8601String(),
-    ));
+    await queue.encolar(
+      SyncQueueModel(
+        tipoAccion: 'progreso',
+        payload: jsonEncode({
+          'estudianteId': estudiante.id,
+          'grado': estudiante.grado,
+          'materia': 'ciencias',
+          'actividad': 'Cuerpo humano',
+          'porcentaje': 100.0,
+        }),
+        fecha: DateTime.now().toIso8601String(),
+      ),
+    );
   }
 
   void _irATerminado() {
@@ -226,7 +239,11 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
                       color: Colors.white.withOpacity(0.35),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -249,7 +266,9 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
             width: _pagina == i ? 14 : 10,
             height: 10,
             decoration: BoxDecoration(
-              color: _pagina == i ? const Color(0xFF3DCC52) : const Color(0xFFCCCCCC),
+              color: _pagina == i
+                  ? const Color(0xFF3DCC52)
+                  : const Color(0xFFCCCCCC),
               borderRadius: BorderRadius.circular(5),
             ),
           );
@@ -258,10 +277,6 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ACTIVIDAD 1
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _Forma {
   final Offset centro;
@@ -311,11 +326,11 @@ class _Actividad1State extends State<_Actividad1>
   Size _containerSize = Size.zero;
 
   final Player _playerInstruccion = Player();
-  final Player _playerParte       = Player();
+  final Player _playerParte = Player();
 
   static const _audioPorParte = {
-    'ojos':    _audioOjos,
-    'manos':   _audioManos,
+    'ojos': _audioOjos,
+    'manos': _audioManos,
     'piernas': _audioPiernas,
   };
 
@@ -334,7 +349,6 @@ class _Actividad1State extends State<_Actividad1>
   void initState() {
     super.initState();
     _cargarTamanioImagen();
-
     Future.microtask(() async {
       if (!mounted) return;
       await _playAsset(_playerInstruccion, _audio4);
@@ -345,8 +359,9 @@ class _Actividad1State extends State<_Actividad1>
 
   Future<void> _cargarTamanioImagen() async {
     final completer = Completer<ui.Image>();
-    final stream =
-        const AssetImage('${_p4}niño.png').resolve(const ImageConfiguration());
+    final stream = const AssetImage(
+      '${_p4}niño.png',
+    ).resolve(const ImageConfiguration());
     late ImageStreamListener listener;
     listener = ImageStreamListener((info, _) {
       if (!completer.isCompleted) completer.complete(info.image);
@@ -356,18 +371,20 @@ class _Actividad1State extends State<_Actividad1>
     final img = await completer.future;
     if (mounted) {
       setState(
-          () => _imageSize = Size(img.width.toDouble(), img.height.toDouble()));
+        () => _imageSize = Size(img.width.toDouble(), img.height.toDouble()),
+      );
     }
   }
 
   Offset _normalizarEnImagen(Offset local) {
     if (_imageSize == null) {
       return Offset(
-          local.dx / _containerSize.width, local.dy / _containerSize.height);
+        local.dx / _containerSize.width,
+        local.dy / _containerSize.height,
+      );
     }
     final imgAspect = _imageSize!.width / _imageSize!.height;
     final ctnAspect = _containerSize.width / _containerSize.height;
-
     double imgLeft, imgTop, imgW, imgH;
     if (imgAspect > ctnAspect) {
       imgW = _containerSize.width;
@@ -380,7 +397,6 @@ class _Actividad1State extends State<_Actividad1>
       imgLeft = (_containerSize.width - imgW) / 2;
       imgTop = 0;
     }
-
     return Offset(
       ((local.dx - imgLeft) / imgW).clamp(0.0, 1.0),
       ((local.dy - imgTop) / imgH).clamp(0.0, 1.0),
@@ -393,25 +409,27 @@ class _Actividad1State extends State<_Actividad1>
     final objetivo = _preguntas[_ronda];
     final zona = _zonas.firstWhere((z) => z.nombre == objetivo);
     final correcto = zona.contiene(normalizado);
-
     setState(() => _acierto = correcto);
     if (!correcto) _shake.forward(from: 0);
-
-    _mostrarFeedback(context, correcto, onAction: () {
-      if (correcto) {
-        setState(() {
-          _acierto = null;
-          _ronda++;
-        });
-        if (_ronda >= _preguntas.length) {
-          Future.delayed(const Duration(milliseconds: 300), widget.onNext);
+    _mostrarFeedback(
+      context,
+      correcto,
+      onAction: () {
+        if (correcto) {
+          setState(() {
+            _acierto = null;
+            _ronda++;
+          });
+          if (_ronda >= _preguntas.length) {
+            Future.delayed(const Duration(milliseconds: 300), widget.onNext);
+          } else {
+            _playAudioParte(_preguntas[_ronda]);
+          }
         } else {
-          _playAudioParte(_preguntas[_ronda]);
+          setState(() => _acierto = null);
         }
-      } else {
-        setState(() => _acierto = null);
-      }
-    });
+      },
+    );
   }
 
   @override
@@ -426,7 +444,6 @@ class _Actividad1State extends State<_Actividad1>
   Widget build(BuildContext context) {
     if (_ronda >= _preguntas.length) return const SizedBox();
     final objetivo = _preguntas[_ronda];
-
     return _Tarjeta(
       child: Column(
         children: [
@@ -454,12 +471,18 @@ class _Actividad1State extends State<_Actividad1>
                             ? 8.0 * sin(_shake.value * pi * 5)
                             : 0.0;
                         return Transform.translate(
-                            offset: Offset(dx, 0), child: child);
+                          offset: Offset(dx, 0),
+                          child: child,
+                        );
                       },
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.asset('${_p4}niño.png', fit: BoxFit.contain, filterQuality: ui.FilterQuality.high),
+                          Image.asset(
+                            '${_p4}niño.png',
+                            fit: BoxFit.contain,
+                            filterQuality: ui.FilterQuality.high,
+                          ),
                           if (_acierto != null)
                             Container(
                               decoration: BoxDecoration(
@@ -493,9 +516,10 @@ class _Actividad1State extends State<_Actividad1>
             child: Text(
               objetivo[0].toUpperCase() + objetivo.substring(1),
               style: const TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold),
+                fontFamily: 'Hiruko',
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -503,10 +527,6 @@ class _Actividad1State extends State<_Actividad1>
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Componentes visuales reutilizables
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _Tarjeta extends StatelessWidget {
   final Widget child;
@@ -519,7 +539,11 @@ class _PageCard extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget dots;
-  const _PageCard({required this.title, required this.child, required this.dots});
+  const _PageCard({
+    required this.title,
+    required this.child,
+    required this.dots,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -584,13 +608,11 @@ class _InstruccionState extends State<_Instruccion> {
 
   Future<void> _reproducir() async {
     if (widget.player == null || widget.audioPath == null) return;
-
     if (_reproduciendo) {
       await widget.player!.stop();
       if (mounted) setState(() => _reproduciendo = false);
       return;
     }
-
     if (mounted) setState(() => _reproduciendo = true);
     try {
       await widget.player!.open(Media('asset:///${widget.audioPath!}'));
@@ -647,15 +669,12 @@ class _InstruccionState extends State<_Instruccion> {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 2  –  Armar la figura
+// ACTIVIDAD 2
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _PiezaCuerpo {
   final String nombre;
   final String ruta;
-  // ── Tolerancia relativa: fracción del área (0–1) ──────────────────────────
-  // Se evalúa sobre el CENTRO de la pieza ya colocada.
-  // Ajusta solo si la posición "correcta" cambia respecto al diseño.
   final Rect toleranceRect;
   final double anchoFraccion;
   final double altoFraccion;
@@ -670,7 +689,7 @@ class _PiezaCuerpo {
 
 class _PiezaEstado {
   final String nombre;
-  Offset posicion; // centro de la pieza en fracción del área (0–1)
+  Offset posicion;
   bool colocada;
   _PiezaEstado(this.nombre, {required this.posicion, this.colocada = false});
 }
@@ -683,33 +702,67 @@ class _Actividad2 extends StatefulWidget {
 }
 
 class _Actividad2State extends State<_Actividad2> {
-  // ── Definición base (anchoFraccion / altoFraccion se recalculan luego) ────
+  // ── MODIFICADO: toleranceRect ampliados ───────────────────────────────────
   static const _piezasBase = [
-    _PiezaCuerpo('piernas', '${_p5}piernas.png',
-        toleranceRect: Rect.fromLTWH(0.20, 0.55, 0.60, 0.35),
-        anchoFraccion: 0.55, altoFraccion: 0.35),
-    _PiezaCuerpo('manos', '${_p5}manos.png',
-        toleranceRect: Rect.fromLTWH(0.05, 0.30, 0.90, 0.40),
-        anchoFraccion: 0.88, altoFraccion: 0.15),
-    _PiezaCuerpo('camisa', '${_p5}camisa.png',
-        toleranceRect: Rect.fromLTWH(0.20, 0.25, 0.60, 0.45),
-        anchoFraccion: 0.65, altoFraccion: 0.28),
-    _PiezaCuerpo('cabeza', '${_p5}cabeza.png',
-        toleranceRect: Rect.fromLTWH(0.20, 0.02, 0.60, 0.35),
-        anchoFraccion: 0.55, altoFraccion: 0.30),
-    _PiezaCuerpo('cabello', '${_p5}cabello.png',
-        toleranceRect: Rect.fromLTWH(0.20, 0.00, 0.60, 0.28),
-        anchoFraccion: 0.62, altoFraccion: 0.22),
-    _PiezaCuerpo('ojos', '${_p5}ojos.png',
-        toleranceRect: Rect.fromLTWH(0.28, 0.08, 0.44, 0.18),
-        anchoFraccion: 0.06, altoFraccion: 0.02),
-    _PiezaCuerpo('boca', '${_p5}boca.png',
-        toleranceRect: Rect.fromLTWH(0.30, 0.15, 0.40, 0.20),
-        anchoFraccion: 0.08, altoFraccion: 0.03),
+    _PiezaCuerpo(
+      'piernas',
+      '${_p5}piernas.png',
+      toleranceRect: Rect.fromLTWH(0.10, 0.45, 0.80, 0.50),
+      anchoFraccion: 0.55,
+      altoFraccion: 0.35,
+    ),
+    _PiezaCuerpo(
+      'manos',
+      '${_p5}manos.png',
+      toleranceRect: Rect.fromLTWH(0.02, 0.20, 0.96, 0.55),
+      anchoFraccion: 0.88,
+      altoFraccion: 0.15,
+    ),
+    _PiezaCuerpo(
+      'camisa',
+      '${_p5}camisa.png',
+      toleranceRect: Rect.fromLTWH(0.10, 0.15, 0.80, 0.60),
+      anchoFraccion: 0.65,
+      altoFraccion: 0.28,
+    ),
+    _PiezaCuerpo(
+      'cabeza',
+      '${_p5}cabeza.png',
+      toleranceRect: Rect.fromLTWH(0.10, 0.00, 0.80, 0.45),
+      anchoFraccion: 0.55,
+      altoFraccion: 0.30,
+    ),
+    _PiezaCuerpo(
+      'cabello',
+      '${_p5}cabello.png',
+      toleranceRect: Rect.fromLTWH(0.10, 0.00, 0.80, 0.35),
+      anchoFraccion: 0.62,
+      altoFraccion: 0.22,
+    ),
+    _PiezaCuerpo(
+      'ojos',
+      '${_p5}ojos.png',
+      toleranceRect: Rect.fromLTWH(0.15, 0.04, 0.70, 0.28),
+      anchoFraccion: 0.06,
+      altoFraccion: 0.02,
+    ),
+    _PiezaCuerpo(
+      'boca',
+      '${_p5}boca.png',
+      toleranceRect: Rect.fromLTWH(0.15, 0.10, 0.70, 0.30),
+      anchoFraccion: 0.08,
+      altoFraccion: 0.03,
+    ),
   ];
 
   static const _renderOrder = [
-    'cabello', 'piernas', 'manos', 'camisa', 'cabeza', 'ojos', 'boca'
+    'cabello',
+    'piernas',
+    'manos',
+    'camisa',
+    'cabeza',
+    'ojos',
+    'boca',
   ];
 
   List<_PiezaCuerpo> _piezas = List.of(_piezasBase);
@@ -718,7 +771,6 @@ class _Actividad2State extends State<_Actividad2> {
   bool _imagenesListas = false;
 
   final _areaKey = GlobalKey();
-
   final Player _player = Player();
 
   Future<void> _playAudio() async => _playAsset(_player, _audio5);
@@ -728,7 +780,9 @@ class _Actividad2State extends State<_Actividad2> {
     super.initState();
     _inicializarEstados();
     _calcularFraccionesDesdeImagenes();
-    Future.microtask(() { if (mounted) _playAudio(); });
+    Future.microtask(() {
+      if (mounted) _playAudio();
+    });
   }
 
   Future<void> _calcularFraccionesDesdeImagenes() async {
@@ -749,43 +803,34 @@ class _Actividad2State extends State<_Actividad2> {
         sizes[p.nombre] = const Size(100, 100);
       }
     }
-
     if (!mounted) return;
-
-    // Usamos la cabeza como referencia de escala (ancho = 50 % del área)
-    final cabezaSize    = sizes['cabeza']!;
-    const cabezaAncho   = 0.50; // fracción del área que debe ocupar el ancho de la cabeza
-    final pixelPorFrac  = cabezaSize.width / cabezaAncho;
-
-    // ── Escalas visuales por pieza ──────────────────────────────────────────
-    // Ajusta estos valores si las proporciones siguen viéndose mal.
+    final cabezaSize = sizes['cabeza']!;
+    const cabezaAncho = 0.50;
+    final pixelPorFrac = cabezaSize.width / cabezaAncho;
     const escala = {
-      'cabeza'  : 0.50,
-      'cabello' : 0.55,
-      'camisa'  : 0.45,
-      'piernas' : 0.28,
-      'manos'   : 0.45,
-      'ojos'    : 0.18,
-      'boca'    : 0.18,
+      'cabeza': 0.50,
+      'cabello': 0.65,
+      'camisa': 0.40,
+      'piernas': 0.26,
+      'manos': 0.40,
+      'ojos': 0.18,
+      'boca': 0.18,
     };
-
     final List<_PiezaCuerpo> nuevas = _piezasBase.map((p) {
       final imgSize = sizes[p.nombre]!;
-      final esc     = escala[p.nombre] ?? 0.50;
-
-      final anchoFrac = (imgSize.width  / pixelPorFrac * esc).clamp(0.04, 0.95);
-      final altoFrac  = (imgSize.height / pixelPorFrac * esc).clamp(0.02, 0.55);
-
+      final esc = escala[p.nombre] ?? 0.50;
+      final anchoFrac = (imgSize.width / pixelPorFrac * esc).clamp(0.04, 0.95);
+      final altoFrac = (imgSize.height / pixelPorFrac * esc).clamp(0.02, 0.55);
       return _PiezaCuerpo(
-        p.nombre, p.ruta,
+        p.nombre,
+        p.ruta,
         toleranceRect: p.toleranceRect,
         anchoFraccion: anchoFrac,
-        altoFraccion:  altoFrac,
+        altoFraccion: altoFrac,
       );
     }).toList();
-
     setState(() {
-      _piezas        = nuevas;
+      _piezas = nuevas;
       _imagenesListas = true;
     });
   }
@@ -801,13 +846,16 @@ class _Actividad2State extends State<_Actividad2> {
 
   bool get _todoColocado => _estados.every((e) => e.colocada);
 
+  // ── MODIFICADO: márgenes de tolerancia ampliados ──────────────────────────
   bool _esCorrecto(String nombre) {
     final e = _estados.firstWhere((e) => e.nombre == nombre);
     final p = _piezas.firstWhere((p) => p.nombre == nombre);
 
     if (nombre == 'camisa') {
-      return e.posicion.dx >= 0.30 && e.posicion.dx <= 0.70 &&
-             e.posicion.dy >= 0.30 && e.posicion.dy <= 0.65;
+      return e.posicion.dx >= 0.20 &&
+          e.posicion.dx <= 0.80 &&
+          e.posicion.dy >= 0.20 &&
+          e.posicion.dy <= 0.75;
     }
 
     if (nombre == 'cabeza' || nombre == 'manos' || nombre == 'piernas') {
@@ -815,24 +863,26 @@ class _Actividad2State extends State<_Actividad2> {
       if (!eCamisa.colocada) return p.toleranceRect.contains(e.posicion);
       final diff = e.posicion - eCamisa.posicion;
       if (nombre == 'cabeza') {
-        return diff.dy < -0.12 && diff.dy > -0.38 && diff.dx.abs() < 0.18;
+        return diff.dy < -0.08 && diff.dy > -0.50 && diff.dx.abs() < 0.28;
       }
       if (nombre == 'piernas') {
-        return diff.dy > 0.05 && diff.dy < 0.65 && diff.dx.abs() < 0.40;
+        return diff.dy > 0.02 && diff.dy < 0.80 && diff.dx.abs() < 0.55;
       }
       if (nombre == 'manos') {
-        return diff.dy.abs() < 0.15 && diff.dx.abs() < 0.38;
+        return diff.dy.abs() < 0.25 && diff.dx.abs() < 0.50;
       }
     }
 
     if (nombre == 'ojos' || nombre == 'boca' || nombre == 'cabello') {
-      final eCabeza = _estados.firstWhere((estado) => estado.nombre == 'cabeza');
+      final eCabeza = _estados.firstWhere(
+        (estado) => estado.nombre == 'cabeza',
+      );
       if (!eCabeza.colocada) return p.toleranceRect.contains(e.posicion);
-      final diff    = e.posicion - eCabeza.posicion;
+      final diff = e.posicion - eCabeza.posicion;
       final distancia = diff.distance;
-      if (nombre == 'cabello') return distancia < 0.18 && diff.dy <= -0.02;
-      if (nombre == 'ojos')    return distancia < 0.04;
-      if (nombre == 'boca')    return distancia < 0.16;
+      if (nombre == 'cabello') return distancia < 0.28 && diff.dy <= 0.05;
+      if (nombre == 'ojos') return distancia < 0.12;
+      if (nombre == 'boca') return distancia < 0.24;
     }
 
     return p.toleranceRect.contains(e.posicion);
@@ -845,10 +895,16 @@ class _Actividad2State extends State<_Actividad2> {
 
   void _verificar(BuildContext context) {
     setState(() => _verificado = true);
-    _mostrarFeedback(context, _todoOk, onAction: () {
-      if (_todoOk) widget.onNext();
-      else _reintentar();
-    });
+    _mostrarFeedback(
+      context,
+      _todoOk,
+      onAction: () {
+        if (_todoOk)
+          widget.onNext();
+        else
+          _reintentar();
+      },
+    );
   }
 
   void _reintentar() {
@@ -863,39 +919,31 @@ class _Actividad2State extends State<_Actividad2> {
     });
   }
 
-  // ── FIX PRINCIPAL: posicionamiento exacto al soltar ───────────────────────
-  // Estrategia: usamos childDragAnchorStrategy (la pieza se arrastra desde su
-  // esquina superior-izquierda). Al recibir `details.offset` en onDragEnd,
-  // ese offset ES la posición global de la esquina superior-izquierda del
-  // feedback. Sumamos la mitad del tamaño para obtener el centro.
   void _colocarPieza(String nombre, Offset globalTopLeft) {
     final ro = _areaKey.currentContext?.findRenderObject() as RenderBox?;
     if (ro == null) return;
-
     final areaSize = ro.size;
-    final p        = _piezas.firstWhere((p) => p.nombre == nombre);
-    final pxW      = areaSize.width  * p.anchoFraccion;
-    final pxH      = areaSize.height * p.altoFraccion;
-
-    // Centro del feedback en coordenadas globales
+    final p = _piezas.firstWhere((p) => p.nombre == nombre);
+    final pxW = areaSize.width * p.anchoFraccion;
+    final pxH = areaSize.height * p.altoFraccion;
     final globalCenter = globalTopLeft + Offset(pxW / 2, pxH / 2);
-    // Convertir a coordenadas locales del área
-    final localCenter  = ro.globalToLocal(globalCenter);
-
-    // Verificar que el centro aterrizó dentro del área (con margen)
-    if (localCenter.dx < -pxW / 2 || localCenter.dx > areaSize.width  + pxW / 2 ||
-        localCenter.dy < -pxH / 2 || localCenter.dy > areaSize.height + pxH / 2) {
-      return; // soltó fuera del área → no mover
+    final localCenter = ro.globalToLocal(globalCenter);
+    if (localCenter.dx < -pxW / 2 ||
+        localCenter.dx > areaSize.width + pxW / 2 ||
+        localCenter.dy < -pxH / 2 ||
+        localCenter.dy > areaSize.height + pxH / 2) {
+      return;
     }
-
-    // Convertir a fracción y clampear para que la pieza no salga del área
-    final fracX = (localCenter.dx / areaSize.width ).clamp(
-        p.anchoFraccion / 2, 1.0 - p.anchoFraccion / 2);
+    final fracX = (localCenter.dx / areaSize.width).clamp(
+      p.anchoFraccion / 2,
+      1.0 - p.anchoFraccion / 2,
+    );
     final fracY = (localCenter.dy / areaSize.height).clamp(
-        p.altoFraccion  / 2, 1.0 - p.altoFraccion  / 2);
-
+      p.altoFraccion / 2,
+      1.0 - p.altoFraccion / 2,
+    );
     setState(() {
-      final e    = _estados.firstWhere((e) => e.nombre == nombre);
+      final e = _estados.firstWhere((e) => e.nombre == nombre);
       e.posicion = Offset(fracX, fracY);
       e.colocada = true;
       _verificado = false;
@@ -911,7 +959,6 @@ class _Actividad2State extends State<_Actividad2> {
   @override
   Widget build(BuildContext context) {
     final enBandeja = _enBandeja;
-
     return _Tarjeta(
       child: Column(
         children: [
@@ -924,166 +971,194 @@ class _Actividad2State extends State<_Actividad2> {
             flex: 5,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-              child: LayoutBuilder(builder: (_, constraints) {
-                final areaW = constraints.maxWidth;
-                final areaH = constraints.maxHeight;
-
-                return DragTarget<String>(
-                  onAcceptWithDetails: (details) {
-                    // details.offset = posición global de la esquina sup-izq del feedback
-                    _colocarPieza(details.data, details.offset);
-                  },
-                  builder: (ctx, candidateData, rejectedData) {
-                    return Container(
-                      key: _areaKey,
-                      width: areaW,
-                      height: areaH,
-                      decoration: BoxDecoration(
-                        color: candidateData.isNotEmpty
-                            ? const Color(0xFFE8F5E9)
-                            : const Color(0xFFF5FFF6),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
+              child: LayoutBuilder(
+                builder: (_, constraints) {
+                  final areaW = constraints.maxWidth;
+                  final areaH = constraints.maxHeight;
+                  return DragTarget<String>(
+                    onAcceptWithDetails: (details) {
+                      _colocarPieza(details.data, details.offset);
+                    },
+                    builder: (ctx, candidateData, rejectedData) {
+                      return Container(
+                        key: _areaKey,
+                        width: areaW,
+                        height: areaH,
+                        decoration: BoxDecoration(
                           color: candidateData.isNotEmpty
-                              ? const Color(0xFF3DCC52)
-                              : const Color(0xFFBBEEC4),
-                          width: candidateData.isNotEmpty ? 2.5 : 1.5,
+                              ? const Color(0xFFE8F5E9)
+                              : const Color(0xFFF5FFF6),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: candidateData.isNotEmpty
+                                ? const Color(0xFF3DCC52)
+                                : const Color(0xFFBBEEC4),
+                            width: candidateData.isNotEmpty ? 2.5 : 1.5,
+                          ),
                         ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Stack(
-                          clipBehavior: Clip.hardEdge,
-                          children: [
-                            if (_enBandeja.length == _piezas.length)
-                              const Center(
-                                child: Text('⬆ Arrastra las piezas aquí',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Stack(
+                            clipBehavior: Clip.hardEdge,
+                            children: [
+                              if (_enBandeja.length == _piezas.length)
+                                const Center(
+                                  child: Text(
+                                    '⬆ Arrastra las piezas aquí',
                                     style: TextStyle(
-                                        color: Color(0xFF9E9E9E),
-                                        fontSize: 13,
-                                        fontFamily: 'Poppins')),
-                              ),
-
-                            // ── Piezas ya colocadas en el área ───────────────
-                            ..._renderOrder.map((nombre) {
-                              final e = _estados.firstWhere((e) => e.nombre == nombre);
-                              if (!e.colocada) return const SizedBox.shrink();
-                              final p = _piezas.firstWhere((p) => p.nombre == nombre);
-
-                              final pxW  = areaW * p.anchoFraccion;
-                              final pxH  = areaH * p.altoFraccion;
-                              final left = (e.posicion.dx * areaW - pxW / 2)
-                                  .clamp(0.0, (areaW - pxW).clamp(0.0, areaW));
-                              final top  = (e.posicion.dy * areaH - pxH / 2)
-                                  .clamp(0.0, (areaH - pxH).clamp(0.0, areaH));
-                              final correcto = _verificado ? _esCorrecto(nombre) : null;
-
-                              return Positioned(
-                                left: left, top: top, width: pxW, height: pxH,
-                                child: Draggable<String>(
-                                  data: nombre,
-                                  // childDragAnchorStrategy: la esquina sup-izq
-                                  // del feedback coincide con el puntero →
-                                  // details.offset en onDragEnd es la posición
-                                  // global de esa esquina. Simple y exacto.
-                                  dragAnchorStrategy: childDragAnchorStrategy,
-                                  feedback: Material(
-                                    color: Colors.transparent,
-                                    child: Opacity(
-                                      opacity: 0.88,
-                                      child: SizedBox(
-                                        width: pxW, height: pxH,
-                                        child: Image.asset(p.ruta,
+                                      color: Color(0xFF9E9E9E),
+                                      fontSize: 13,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ),
+                              ..._renderOrder.map((nombre) {
+                                final e = _estados.firstWhere(
+                                  (e) => e.nombre == nombre,
+                                );
+                                if (!e.colocada) return const SizedBox.shrink();
+                                final p = _piezas.firstWhere(
+                                  (p) => p.nombre == nombre,
+                                );
+                                final pxW = areaW * p.anchoFraccion;
+                                final pxH = areaH * p.altoFraccion;
+                                final left = (e.posicion.dx * areaW - pxW / 2)
+                                    .clamp(
+                                      0.0,
+                                      (areaW - pxW).clamp(0.0, areaW),
+                                    );
+                                final top = (e.posicion.dy * areaH - pxH / 2)
+                                    .clamp(
+                                      0.0,
+                                      (areaH - pxH).clamp(0.0, areaH),
+                                    );
+                                final correcto = _verificado
+                                    ? _esCorrecto(nombre)
+                                    : null;
+                                return Positioned(
+                                  left: left,
+                                  top: top,
+                                  width: pxW,
+                                  height: pxH,
+                                  child: Draggable<String>(
+                                    data: nombre,
+                                    dragAnchorStrategy: childDragAnchorStrategy,
+                                    feedback: Material(
+                                      color: Colors.transparent,
+                                      child: Opacity(
+                                        opacity: 0.88,
+                                        child: SizedBox(
+                                          width: pxW,
+                                          height: pxH,
+                                          child: Image.asset(
+                                            p.ruta,
                                             fit: BoxFit.contain,
-                                            filterQuality: FilterQuality.high),
-                                      ),
-                                    ),
-                                  ),
-                                  childWhenDragging: Opacity(
-                                    opacity: 0.20,
-                                    child: SizedBox(
-                                      width: pxW, height: pxH,
-                                      child: Image.asset(p.ruta,
-                                          fit: BoxFit.contain,
-                                          filterQuality: FilterQuality.high),
-                                    ),
-                                  ),
-                                  onDragEnd: (details) {
-                                    // Si no fue aceptado por un DragTarget,
-                                    // el onAcceptWithDetails del DragTarget
-                                    // ya lo maneja. Aquí solo necesitamos
-                                    // manejar el caso en que se suelte FUERA
-                                    // del área: devolver a bandeja.
-                                    if (!details.wasAccepted) {
-                                      setState(() {
-                                        final est = _estados.firstWhere(
-                                            (est) => est.nombre == nombre);
-                                        est.colocada = false;
-                                        est.posicion = const Offset(-999, -999);
-                                        _verificado  = false;
-                                      });
-                                    }
-                                  },
-                                  child: Stack(children: [
-                                    SizedBox(
-                                      width: pxW, height: pxH,
-                                      child: Image.asset(p.ruta,
-                                          fit: BoxFit.contain,
-                                          filterQuality: FilterQuality.high),
-                                    ),
-                                    if (correcto != null)
-                                      Positioned.fill(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: correcto
-                                                ? const Color(0x2200CC44)
-                                                : const Color(0x44FF0000),
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              correcto
-                                                  ? Icons.check_circle_rounded
-                                                  : Icons.cancel_rounded,
-                                              color: correcto
-                                                  ? const Color(0xFF2E7D32)
-                                                  : const Color(0xFFB71C1C),
-                                              size: 24,
-                                            ),
+                                            filterQuality: FilterQuality.high,
                                           ),
                                         ),
                                       ),
-                                  ]),
-                                ),
-                              );
-                            }),
-                          ],
+                                    ),
+                                    childWhenDragging: Opacity(
+                                      opacity: 0.20,
+                                      child: SizedBox(
+                                        width: pxW,
+                                        height: pxH,
+                                        child: Image.asset(
+                                          p.ruta,
+                                          fit: BoxFit.contain,
+                                          filterQuality: FilterQuality.high,
+                                        ),
+                                      ),
+                                    ),
+                                    onDragEnd: (details) {
+                                      if (!details.wasAccepted) {
+                                        setState(() {
+                                          final est = _estados.firstWhere(
+                                            (est) => est.nombre == nombre,
+                                          );
+                                          est.colocada = false;
+                                          est.posicion = const Offset(
+                                            -999,
+                                            -999,
+                                          );
+                                          _verificado = false;
+                                        });
+                                      }
+                                    },
+                                    child: Stack(
+                                      children: [
+                                        SizedBox(
+                                          width: pxW,
+                                          height: pxH,
+                                          child: Image.asset(
+                                            p.ruta,
+                                            fit: BoxFit.contain,
+                                            filterQuality: FilterQuality.high,
+                                          ),
+                                        ),
+                                        if (correcto != null)
+                                          Positioned.fill(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: correcto
+                                                    ? const Color(0x2200CC44)
+                                                    : const Color(0x44FF0000),
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: Center(
+                                                child: Icon(
+                                                  correcto
+                                                      ? Icons
+                                                            .check_circle_rounded
+                                                      : Icons.cancel_rounded,
+                                                  color: correcto
+                                                      ? const Color(0xFF2E7D32)
+                                                      : const Color(0xFFB71C1C),
+                                                  size: 24,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
-
           if (_todoColocado && !_verificado)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: ElevatedButton.icon(
                 onPressed: () => _verificar(context),
                 icon: const Icon(Icons.check_rounded),
-                label: const Text('Verificar',
-                    style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Verificar',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3DCC52),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 36,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 3,
                 ),
               ),
@@ -1094,63 +1169,74 @@ class _Actividad2State extends State<_Actividad2> {
               child: ElevatedButton.icon(
                 onPressed: _reintentar,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Reintentar',
-                    style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Reintentar',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE53935),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 36,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 3,
                 ),
               ),
             ),
-
-          // ── Bandeja de piezas ─────────────────────────────────────────────
           if (enBandeja.isNotEmpty)
             SizedBox(
               height: 100,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding:
-                    const EdgeInsets.only(left: 6, right: 6, top: 4, bottom: 4),
+                padding: const EdgeInsets.only(
+                  left: 6,
+                  right: 6,
+                  top: 4,
+                  bottom: 4,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: _piezas
                       .where((p) => enBandeja.contains(p.nombre))
                       .map((p) {
-                    const thumbSize = 72.0;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Draggable<String>(
-                        data: p.nombre,
-                        dragAnchorStrategy: childDragAnchorStrategy,
-                        feedback: Material(
-                          color: Colors.transparent,
-                          child: Opacity(
-                            opacity: 0.88,
-                            child: SizedBox(
-                              width: thumbSize, height: thumbSize,
-                              child: Image.asset(p.ruta,
-                                  fit: BoxFit.contain,
-                                  filterQuality: FilterQuality.high),
+                        const thumbSize = 72.0;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Draggable<String>(
+                            data: p.nombre,
+                            dragAnchorStrategy: childDragAnchorStrategy,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: Opacity(
+                                opacity: 0.88,
+                                child: SizedBox(
+                                  width: thumbSize,
+                                  height: thumbSize,
+                                  child: Image.asset(
+                                    p.ruta,
+                                    fit: BoxFit.contain,
+                                    filterQuality: FilterQuality.high,
+                                  ),
+                                ),
+                              ),
                             ),
+                            childWhenDragging: Opacity(
+                              opacity: 0.30,
+                              child: _piezaEnBandeja(p.nombre, p.ruta),
+                            ),
+                            child: _piezaEnBandeja(p.nombre, p.ruta),
                           ),
-                        ),
-                        childWhenDragging: Opacity(
-                          opacity: 0.30,
-                          child: _piezaEnBandeja(p.nombre, p.ruta),
-                        ),
-                        // La bandeja NO usa onDragEnd para posicionar:
-                        // el DragTarget del área lo hace via onAcceptWithDetails.
-                        child: _piezaEnBandeja(p.nombre, p.ruta),
-                      ),
-                    );
-                  }).toList(),
+                        );
+                      })
+                      .toList(),
                 ),
               ),
             ),
@@ -1165,7 +1251,8 @@ class _Actividad2State extends State<_Actividad2> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 72, height: 72,
+          width: 72,
+          height: 72,
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -1173,26 +1260,35 @@ class _Actividad2State extends State<_Actividad2> {
             border: Border.all(color: const Color(0xFF3DCC52), width: 1.5),
             boxShadow: const [
               BoxShadow(
-                  color: Color(0x22000000), blurRadius: 6, offset: Offset(0, 3))
+                color: Color(0x22000000),
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              ),
             ],
           ),
-          child: Image.asset(ruta,
-              fit: BoxFit.contain, filterQuality: FilterQuality.high),
+          child: Image.asset(
+            ruta,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+          ),
         ),
         const SizedBox(height: 2),
-        Text(label,
-            style: const TextStyle(
-                fontSize: 10,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF444444))),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF444444),
+          ),
+        ),
       ],
     );
   }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// ACTIVIDAD 3: Sentidos y funciones
+// ACTIVIDAD 3
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _Actividad3 extends StatefulWidget {
@@ -1205,7 +1301,7 @@ class _Actividad3 extends StatefulWidget {
 class _Actividad3State extends State<_Actividad3> {
   static const _audioPorRespuesta = {
     'vista': _audioAct3Vista,
-    'oido':  _audioAct3Oido,
+    'oido': _audioAct3Oido,
     'tacto': _audioAct3Tacto,
     'gusto': _audioAct3Gusto,
   };
@@ -1213,10 +1309,22 @@ class _Actividad3State extends State<_Actividad3> {
   late final List<Map<String, String>> _preguntas;
 
   final _botones = [
-    {'id': 'vista', 'img': '${_p6}boton vista.png', 'c': const Color(0xFF1565C0)},
-    {'id': 'oido',  'img': '${_p6}boton oido.png',  'c': const Color(0xFFE65100)},
-    {'id': 'tacto', 'img': '${_p6}boton tacto.png', 'c': const Color(0xFF2E7D32)},
-    {'id': 'gusto', 'img': '${_p6}boton gusto.png', 'c': const Color(0xFF6A1B9A)},
+    {
+      'id': 'vista',
+      'img': '${_p6}boton vista.png',
+      'c': const Color(0xFF1565C0),
+    },
+    {'id': 'oido', 'img': '${_p6}boton oido.png', 'c': const Color(0xFFE65100)},
+    {
+      'id': 'tacto',
+      'img': '${_p6}boton tacto.png',
+      'c': const Color(0xFF2E7D32),
+    },
+    {
+      'id': 'gusto',
+      'img': '${_p6}boton gusto.png',
+      'c': const Color(0xFF6A1B9A),
+    },
   ];
 
   int _ronda = 0;
@@ -1234,31 +1342,47 @@ class _Actividad3State extends State<_Actividad3> {
   void initState() {
     super.initState();
     final lista = [
-      {'txt': '¿Con qué parte del cuerpo puedo mirar los colores del arcoíris?', 'ans': 'vista'},
+      {
+        'txt':
+            '¿Con qué parte del cuerpo puedo mirar los colores del arcoíris?',
+        'ans': 'vista',
+      },
       {'txt': '¿Con qué parte del cuerpo escucho música?', 'ans': 'oido'},
       {'txt': '¿Con qué parte del cuerpo toco los objetos?', 'ans': 'tacto'},
-      {'txt': '¿Con qué parte del cuerpo saboreo los alimentos?', 'ans': 'gusto'},
+      {
+        'txt': '¿Con qué parte del cuerpo saboreo los alimentos?',
+        'ans': 'gusto',
+      },
     ]..shuffle(Random());
     _preguntas = lista;
-    Future.microtask(() { if (mounted) _playAudioRonda(); });
+    Future.microtask(() {
+      if (mounted) _playAudioRonda();
+    });
   }
 
   void _responder(BuildContext context, String id) {
     if (_seleccion != null) return;
     setState(() => _seleccion = id);
     final correcto = id == _preguntas[_ronda]['ans'];
-    _mostrarFeedback(context, correcto, onAction: () {
-      if (correcto) {
-        if (_ronda < _preguntas.length - 1) {
-          setState(() { _ronda++; _seleccion = null; });
-          _playAudioRonda();
+    _mostrarFeedback(
+      context,
+      correcto,
+      onAction: () {
+        if (correcto) {
+          if (_ronda < _preguntas.length - 1) {
+            setState(() {
+              _ronda++;
+              _seleccion = null;
+            });
+            _playAudioRonda();
+          } else {
+            widget.onFinish();
+          }
         } else {
-          widget.onFinish();
+          setState(() => _seleccion = null);
         }
-      } else {
-        setState(() => _seleccion = null);
-      }
-    });
+      },
+    );
   }
 
   @override
@@ -1287,9 +1411,11 @@ class _Actividad3State extends State<_Actividad3> {
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                   children: _botones.map((b) {
-                    final esCorrecto = _seleccion == b['id'] &&
+                    final esCorrecto =
+                        _seleccion == b['id'] &&
                         b['id'] == _preguntas[_ronda]['ans'];
-                    final esError = _seleccion == b['id'] &&
+                    final esError =
+                        _seleccion == b['id'] &&
                         b['id'] != _preguntas[_ronda]['ans'];
                     return GestureDetector(
                       onTap: () => _responder(context, b['id'] as String),
@@ -1304,8 +1430,10 @@ class _Actividad3State extends State<_Actividad3> {
                             width: 4,
                           ),
                         ),
-                        child: Image.asset(b['img'] as String,
-                            filterQuality: ui.FilterQuality.high),
+                        child: Image.asset(
+                          b['img'] as String,
+                          filterQuality: ui.FilterQuality.high,
+                        ),
                       ),
                     );
                   }).toList(),

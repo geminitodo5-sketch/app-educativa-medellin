@@ -5,13 +5,18 @@ import 'ingles_congratulations_view.dart';
 
 const _j2 = 'assets/images/areas/ingles/juego_2/';
 const _a1 = 'assets/images/areas/ingles/juego_1/audios_1/';
-const _audioInstruccion = 'assets/images/areas/ingles/juego_2/une_la_pareja.mp3';
+const _audioInstruccion =
+    'assets/images/areas/ingles/juego_2/une_la_pareja.mp3';
 
 final _niveles = [
   {
     'pares': [
       {'img': '${_j2}balon.png', 'palabra': 'ball', 'audio': '${_a1}ball.mp3'},
-      {'img': '${_j2}manzana.png', 'palabra': 'apple', 'audio': '${_a1}apple.mp3'},
+      {
+        'img': '${_j2}manzana.png',
+        'palabra': 'apple',
+        'audio': '${_a1}apple.mp3',
+      },
       {'img': '${_j2}gato.png', 'palabra': 'cat', 'audio': '${_a1}cat.mp3'},
     ],
     'palabrasOrden': [1, 0, 2],
@@ -26,7 +31,11 @@ final _niveles = [
   },
   {
     'pares': [
-      {'img': '${_j2}uva-8.png', 'palabra': 'grapes', 'audio': '${_a1}grapes.mp3'},
+      {
+        'img': '${_j2}uva-8.png',
+        'palabra': 'grapes',
+        'audio': '${_a1}grapes.mp3',
+      },
       {'img': '${_j2}carro.png', 'palabra': 'car', 'audio': '${_a1}car.mp3'},
       {'img': '${_j2}perro.png', 'palabra': 'dog', 'audio': '${_a1}dog.mp3'},
     ],
@@ -53,6 +62,9 @@ class _InglesParejaViewState extends State<InglesParejaView> {
   int _errorImg = -1;
   int _errorPal = -1;
 
+  // ── NUEVO: orden aleatorio de imágenes ──────────────────────────────────
+  late List<int> _imgsOrden;
+
   List get _pares => (_niveles[_nivel]['pares'] as List);
   List get _palabrasOrden => (_niveles[_nivel]['palabrasOrden'] as List);
   bool get _nivelCompleto => _conectados.length == _pares.length;
@@ -60,11 +72,19 @@ class _InglesParejaViewState extends State<InglesParejaView> {
   late List<GlobalKey> _imgKeys;
   late List<GlobalKey> _palKeys;
 
+  // ── NUEVO: genera orden aleatorio para imágenes ─────────────────────────
+  List<int> _generarOrdenAleatorio() {
+    final orden = List<int>.generate(_pares.length, (i) => i);
+    orden.shuffle(math.Random());
+    return orden;
+  }
+
   @override
   void initState() {
     super.initState();
     _player = Player();
     _resetKeys();
+    _imgsOrden = _generarOrdenAleatorio(); // ← NUEVO
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _reproducirInstruccion();
     });
@@ -135,9 +155,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto
-                          ? Colors.green[900]
-                          : Colors.red[900],
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
@@ -152,7 +170,8 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                         ? const Color(0xFF59E347)
                         : const Color(0xFFF65757),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -176,7 +195,9 @@ class _InglesParejaViewState extends State<InglesParejaView> {
     );
   }
 
-  void _tocarImagen(int parIdx) {
+  // ── _tocarImagen recibe la posición visual → obtiene el parIdx real ─────
+  void _tocarImagen(int posicion) {
+    final parIdx = _imgsOrden[posicion]; // ← NUEVO: índice real del par
     if (_conectados.contains(parIdx)) return;
     setState(() {
       _imgSeleccionada = parIdx;
@@ -225,6 +246,8 @@ class _InglesParejaViewState extends State<InglesParejaView> {
         _errorImg = -1;
         _errorPal = -1;
         _resetKeys();
+        _imgsOrden =
+            _generarOrdenAleatorio(); // ← NUEVO: nuevo orden al cambiar nivel
       });
     } else {
       widget.onCompleted?.call();
@@ -283,8 +306,11 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                     alignment: Alignment.topRight,
                     child: GestureDetector(
                       onTap: () => Navigator.maybePop(context),
-                      child: const Icon(Icons.close,
-                          color: Colors.white, size: 26),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 26,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -316,7 +342,6 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                   padding: const EdgeInsets.fromLTRB(20, 36, 20, 0),
                   child: Column(
                     children: [
-                      // Ícono de instrucción tappable
                       Row(
                         children: [
                           GestureDetector(
@@ -327,8 +352,11 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                                 color: const Color(0xFFF0F4FF),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Icon(Icons.volume_up_rounded,
-                                  color: Color(0xFF3475F7), size: 22),
+                              child: const Icon(
+                                Icons.volume_up_rounded,
+                                color: Color(0xFF3475F7),
+                                size: 22,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -354,81 +382,80 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                                       imgKeys: _imgKeys,
                                       palKeys: _palKeys,
                                       palabrasOrden: _palabrasOrden,
+                                      // ← NUEVO: painter necesita saber el orden visual
+                                      imgsOrden: _imgsOrden,
                                       conectados: _conectados,
                                       seleccionada: _imgSeleccionada,
                                     ),
                                   ),
                                 ),
                                 Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(
                                       width: 100,
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
-                                        children: List.generate(
-                                          _pares.length,
-                                          (i) {
-                                            final par = _pares[i];
-                                            final conectado =
-                                                _conectados.contains(i);
-                                            final seleccion =
-                                                _imgSeleccionada == i;
-                                            final esError = _errorImg == i;
+                                        children: List.generate(_pares.length, (
+                                          pos,
+                                        ) {
+                                          // ── NUEVO: pos es posición visual, parIdx es el par real
+                                          final parIdx = _imgsOrden[pos];
+                                          final par = _pares[parIdx];
+                                          final conectado = _conectados
+                                              .contains(parIdx);
+                                          final seleccion =
+                                              _imgSeleccionada == parIdx;
+                                          final esError = _errorImg == parIdx;
 
-                                            return GestureDetector(
-                                              key: _imgKeys[i],
-                                              onTap: () => _tocarImagen(i),
-                                              child: AnimatedContainer(
-                                                duration: const Duration(
-                                                    milliseconds: 200),
-                                                width: 80,
-                                                height: 80,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: esError
-                                                      ? Colors.red.shade100
-                                                      : seleccion
-                                                          ? const Color(
-                                                                  0xFF8B2FC9)
-                                                              .withOpacity(
-                                                                  0.12)
-                                                          : Colors
-                                                              .grey.shade100,
-                                                  border: seleccion
-                                                      ? Border.all(
-                                                          color: const Color(
-                                                              0xFF8B2FC9),
-                                                          width: 2.5,
-                                                        )
-                                                      : conectado
-                                                          ? Border.all(
-                                                              color:
-                                                                  _coloresPar[
-                                                                      i],
-                                                              width: 2.5,
-                                                            )
-                                                          : null,
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Opacity(
-                                                  opacity:
-                                                      conectado ? 0.5 : 1.0,
-                                                  child: Image.asset(
-                                                    par['img'] as String,
-                                                    fit: BoxFit.contain,
-                                                    errorBuilder: (_, __,
-                                                            ___) =>
-                                                        const SizedBox(),
-                                                  ),
+                                          return GestureDetector(
+                                            key:
+                                                _imgKeys[pos], // key por posición visual
+                                            onTap: () => _tocarImagen(pos),
+                                            child: AnimatedContainer(
+                                              duration: const Duration(
+                                                milliseconds: 200,
+                                              ),
+                                              width: 80,
+                                              height: 80,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: esError
+                                                    ? Colors.red.shade100
+                                                    : seleccion
+                                                    ? const Color(
+                                                        0xFF8B2FC9,
+                                                      ).withOpacity(0.12)
+                                                    : Colors.grey.shade100,
+                                                border: seleccion
+                                                    ? Border.all(
+                                                        color: const Color(
+                                                          0xFF8B2FC9,
+                                                        ),
+                                                        width: 2.5,
+                                                      )
+                                                    : conectado
+                                                    ? Border.all(
+                                                        color:
+                                                            _coloresPar[parIdx],
+                                                        width: 2.5,
+                                                      )
+                                                    : null,
+                                              ),
+                                              padding: const EdgeInsets.all(10),
+                                              child: Opacity(
+                                                opacity: conectado ? 0.5 : 1.0,
+                                                child: Image.asset(
+                                                  par['img'] as String,
+                                                  fit: BoxFit.contain,
+                                                  errorBuilder: (_, __, ___) =>
+                                                      const SizedBox(),
                                                 ),
                                               ),
-                                            );
-                                          },
-                                        ),
+                                            ),
+                                          );
+                                        }),
                                       ),
                                     ),
                                     const Spacer(),
@@ -447,27 +474,24 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                                             final par = _pares[parIdx];
                                             final conectado = _conectados
                                                 .contains(parIdx);
-                                            final esError =
-                                                _errorPal == parIdx;
-                                            final color =
-                                                _coloresPar[parIdx];
+                                            final esError = _errorPal == parIdx;
+                                            final color = _coloresPar[parIdx];
 
                                             return GestureDetector(
                                               key: _palKeys[pos],
-                                              onTap: () =>
-                                                  _tocarPalabra(pos),
+                                              onTap: () => _tocarPalabra(pos),
                                               child: AnimatedContainer(
                                                 duration: const Duration(
-                                                    milliseconds: 200),
+                                                  milliseconds: 200,
+                                                ),
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                  horizontal: 10,
-                                                  vertical: 8,
-                                                ),
+                                                      horizontal: 10,
+                                                      vertical: 8,
+                                                    ),
                                                 decoration: BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(
-                                                          8),
+                                                      BorderRadius.circular(8),
                                                   color: esError
                                                       ? Colors.red.shade50
                                                       : Colors.transparent,
@@ -477,13 +501,12 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                                                   style: TextStyle(
                                                     fontFamily: 'Hiruko',
                                                     fontSize: 26,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    fontWeight: FontWeight.bold,
                                                     color: conectado
                                                         ? Colors.grey.shade300
                                                         : esError
-                                                            ? Colors.red
-                                                            : color,
+                                                        ? Colors.red
+                                                        : color,
                                                   ),
                                                 ),
                                               ),
@@ -501,16 +524,18 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                       ),
                       if (_nivelCompleto)
                         Padding(
-                          padding:
-                              const EdgeInsets.only(bottom: 24, top: 12),
+                          padding: const EdgeInsets.only(bottom: 24, top: 12),
                           child: ElevatedButton(
                             onPressed: _siguiente,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF8B2FC9),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 48, vertical: 14),
+                                horizontal: 48,
+                                vertical: 14,
+                              ),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                               elevation: 4,
                             ),
                             child: Text(
@@ -544,6 +569,7 @@ class _FlechasPainter extends CustomPainter {
   final List<GlobalKey> imgKeys;
   final List<GlobalKey> palKeys;
   final List palabrasOrden;
+  final List<int> imgsOrden; // ← NUEVO
   final Set<int> conectados;
   final int seleccionada;
 
@@ -551,6 +577,7 @@ class _FlechasPainter extends CustomPainter {
     required this.imgKeys,
     required this.palKeys,
     required this.palabrasOrden,
+    required this.imgsOrden, // ← NUEVO
     required this.conectados,
     required this.seleccionada,
   });
@@ -584,12 +611,14 @@ class _FlechasPainter extends CustomPainter {
 
     final angle = (to - from).direction;
     const size = 12.0;
-    final p1 = to +
+    final p1 =
+        to +
         Offset(
           size * math.cos(angle + math.pi - 0.4),
           size * math.sin(angle + math.pi - 0.4),
         );
-    final p2 = to +
+    final p2 =
+        to +
         Offset(
           size * math.cos(angle + math.pi + 0.4),
           size * math.sin(angle + math.pi + 0.4),
@@ -611,10 +640,12 @@ class _FlechasPainter extends CustomPainter {
     if (paintBox == null) return;
 
     for (final parIdx in conectados) {
+      // ── NUEVO: buscar la posición visual de esta imagen en _imgsOrden ──
+      final posImg = imgsOrden.indexWhere((p) => p == parIdx);
       final posEnPal = palabrasOrden.indexWhere((p) => p == parIdx);
-      if (posEnPal == -1) continue;
+      if (posImg == -1 || posEnPal == -1) continue;
 
-      final origen = _localCenter(imgKeys[parIdx], paintBox);
+      final origen = _localCenter(imgKeys[posImg], paintBox); // ← usa posImg
       final destinoLeft = _localLeft(palKeys[posEnPal], paintBox);
       if (origen == null || destinoLeft == null) continue;
 

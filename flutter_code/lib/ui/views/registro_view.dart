@@ -5,6 +5,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
 import 'bienvenida.dart';
@@ -18,45 +19,149 @@ class RegistroView extends ConsumerStatefulWidget {
 }
 
 class _RegistroViewState extends ConsumerState<RegistroView> {
-  final _edadController      = TextEditingController();
-  final _generoController    = TextEditingController();
-  final _emailController     = TextEditingController();
+  final _edadController = TextEditingController();
+  final _emailController = TextEditingController();
   final _contrasenaController = TextEditingController();
+
+  String? _generoSeleccionado;
   bool _mostrarContrasena = false;
   bool _cargando = false;
+
+  // ── Errores inline ──────────────────────────────────────────
+  String? _errorEdad;
+  String? _errorGenero;
+  String? _errorEmail;
+  String? _errorContrasena;
 
   @override
   void dispose() {
     _edadController.dispose();
-    _generoController.dispose();
     _emailController.dispose();
     _contrasenaController.dispose();
     super.dispose();
   }
 
+  // ── Validaciones individuales ────────────────────────────────
+
+  String? _validarEdad(String valor) {
+    if (valor.isEmpty) return 'La edad es obligatoria';
+    final edad = int.tryParse(valor);
+    if (edad == null || edad <= 0) return 'Ingresa una edad válida';
+    if (edad > 99) return 'La edad no puede ser mayor a 99';
+    return null;
+  }
+
+  String? _validarEmail(String email) {
+    if (email.isEmpty) return 'El email es obligatorio';
+
+    final formatoBasico = RegExp(
+      r'^[a-zA-Z0-9._\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}$',
+    );
+    if (!formatoBasico.hasMatch(email)) {
+      return 'Ingresa un email válido (sin caracteres especiales)';
+    }
+
+    const dominiosPermitidos = [
+      'gmail.com',
+      'hotmail.com',
+      'hotmail.es',
+      'outlook.com',
+      'outlook.es',
+      'yahoo.com',
+      'yahoo.es',
+      'icloud.com',
+      'live.com',
+      'live.es',
+      'protonmail.com',
+      'proton.me',
+      'unal.edu.co',
+      'udea.edu.co',
+      'uniandes.edu.co',
+      'javeriana.edu.co',
+      'urosario.edu.co',
+      'eafit.edu.co',
+      'uninorte.edu.co',
+      'icesi.edu.co',
+    ];
+
+    const extensionesValidas = [
+      '.com',
+      '.co',
+      '.es',
+      '.org',
+      '.net',
+      '.edu',
+      '.edu.co',
+      '.gov',
+      '.gov.co',
+      '.io',
+      '.me',
+      '.info',
+    ];
+
+    final partes = email.split('@');
+    final dominio = partes[1].toLowerCase();
+
+    final dominioExactoValido = dominiosPermitidos.contains(dominio);
+    final extensionValida = extensionesValidas.any(
+      (ext) => dominio.endsWith(ext),
+    );
+
+    if (!dominioExactoValido && !extensionValida) {
+      return 'Usa un correo de Gmail, Hotmail, Outlook u otro proveedor válido';
+    }
+
+    final usuario = partes[0];
+    if (usuario.length < 6) {
+      return 'El nombre de usuario debe tener al menos 6 caracteres';
+    }
+    if (usuario.startsWith('.') || usuario.endsWith('.')) {
+      return 'El email no puede empezar ni terminar con punto';
+    }
+    if (usuario.contains('..')) {
+      return 'El email no puede tener puntos seguidos';
+    }
+
+    return null;
+  }
+
+  String? _validarContrasena(String contrasena) {
+    if (contrasena.isEmpty) return 'La contraseña es obligatoria';
+    if (contrasena.length < 8) return 'Mínimo 8 caracteres';
+    if (!contrasena.contains(RegExp(r'[A-Z]'))) {
+      return 'Debe contener al menos una mayúscula';
+    }
+    if (!contrasena.contains(RegExp(r'[0-9]'))) {
+      return 'Debe contener al menos un número';
+    }
+    return null;
+  }
+
+  // ── Acción principal ─────────────────────────────────────────
+
   Future<void> _continuar() async {
-    final edad      = _edadController.text.trim();
-    final genero    = _generoController.text.trim();
-    final email     = _emailController.text.trim();
+    final edad = _edadController.text.trim();
+    final email = _emailController.text.trim();
     final contrasena = _contrasenaController.text.trim();
 
-    if (edad.isEmpty || genero.isEmpty || email.isEmpty || contrasena.isEmpty) {
-      _mostrarError('¡Completa todos los campos!');
+    setState(() {
+      _errorEdad = _validarEdad(edad);
+      _errorGenero = _generoSeleccionado == null
+          ? 'Selecciona un género'
+          : null;
+      _errorEmail = _validarEmail(email);
+      _errorContrasena = _validarContrasena(contrasena);
+    });
+
+    if (_errorEdad != null ||
+        _errorGenero != null ||
+        _errorEmail != null ||
+        _errorContrasena != null)
       return;
-    }
-    if (!email.contains('@')) {
-      _mostrarError('Ingresa un email válido');
-      return;
-    }
-    if (contrasena.length < 6) {
-      _mostrarError('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
 
     setState(() => _cargando = true);
 
     try {
-      // Verificar que el email no esté ya registrado
       final repo = ref.read(estudianteRepositoryProvider);
       final todos = await repo.listarTodos();
       final emailOcupado = todos.any((e) => e.email == email);
@@ -64,7 +169,9 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
       if (!mounted) return;
 
       if (emailOcupado) {
-        _mostrarError('Ese email ya está registrado. ¡Inicia sesión!');
+        setState(
+          () => _errorEmail = 'Ese email ya está registrado. ¡Inicia sesión!',
+        );
         setState(() => _cargando = false);
         return;
       }
@@ -72,10 +179,10 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (ctx, a, _) => WelcomeScreen(
-            email:      email,
+            email: email,
             contrasena: contrasena,
-            edad:       int.tryParse(edad),
-            genero:     genero,
+            edad: int.tryParse(edad),
+            genero: _generoSeleccionado!,
           ),
           transitionsBuilder: (ctx, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),
@@ -83,20 +190,23 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
         ),
       );
     } catch (e) {
-      if (mounted) _mostrarError('Error al registrar: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error al registrar: $e',
+              style: const TextStyle(fontFamily: 'Poppins'),
+            ),
+            backgroundColor: const Color(0xFFEF5353),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _cargando = false);
     }
   }
 
-  void _mostrarError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg, style: const TextStyle(fontFamily: 'Poppins')),
-        backgroundColor: const Color(0xFFEF5353),
-      ),
-    );
-  }
+  // ── Build ────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +234,6 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                   children: [
                     SizedBox(height: size.height * 0.06),
 
-                    // Título
                     const Text(
                       'Regístrate',
                       style: TextStyle(
@@ -137,7 +246,6 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
 
                     SizedBox(height: size.height * 0.04),
 
-                    // Tarjeta del formulario
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 28),
                       padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
@@ -148,38 +256,106 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Edad
+                          // ── Edad ──────────────────────────────
                           _buildLabel('Edad'),
                           const SizedBox(height: 6),
-                          _buildTextField(
+                          TextField(
                             controller: _edadController,
                             keyboardType: TextInputType.number,
+                            // Solo dígitos, máximo 2 caracteres (bloquea el 3er dígito)
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(2),
+                            ],
+                            onChanged: (val) => setState(
+                              () => _errorEdad = _validarEdad(val.trim()),
+                            ),
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 15,
+                              color: Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF4A8BF5),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
                           ),
+                          _buildErrorText(_errorEdad),
                           const SizedBox(height: 18),
 
-                          // Género
+                          // ── Género ────────────────────────────
                           _buildLabel('Género'),
                           const SizedBox(height: 6),
-                          _buildTextField(controller: _generoController),
+                          _buildGeneroSelector(),
+                          _buildErrorText(_errorGenero),
                           const SizedBox(height: 18),
 
-                          // Email
+                          // ── Email ─────────────────────────────
                           _buildLabel('Email'),
                           const SizedBox(height: 6),
                           _buildTextField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
+                            onChanged: (val) => setState(
+                              () => _errorEmail = _validarEmail(val.trim()),
+                            ),
                           ),
+                          _buildErrorText(_errorEmail),
                           const SizedBox(height: 18),
 
-                          // Contraseña
+                          // ── Contraseña ────────────────────────
                           _buildLabel('Contraseña'),
                           const SizedBox(height: 6),
                           _buildPasswordField(),
+                          _buildErrorText(_errorContrasena),
+                          if (_errorContrasena == null &&
+                              _contrasenaController.text.isNotEmpty)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Text(
+                                '✓ Contraseña válida',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  color: Color(0xFF34A853),
+                                ),
+                              ),
+                            ),
+                          if (_contrasenaController.text.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Text(
+                                'Mín. 8 caracteres, una mayúscula y un número',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 11,
+                                  color: Colors.black45,
+                                ),
+                              ),
+                            ),
 
                           const SizedBox(height: 28),
 
-                          // Botón Continuar
+                          // ── Botón Continuar ───────────────────
                           SizedBox(
                             width: double.infinity,
                             height: 52,
@@ -223,12 +399,14 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                                   PageRouteBuilder(
                                     pageBuilder: (ctx, a, _) =>
                                         const LoginView(),
-                                    transitionsBuilder:
-                                        (ctx, anim, _, child) =>
-                                            FadeTransition(
-                                                opacity: anim, child: child),
-                                    transitionDuration:
-                                        const Duration(milliseconds: 400),
+                                    transitionsBuilder: (ctx, anim, _, child) =>
+                                        FadeTransition(
+                                          opacity: anim,
+                                          child: child,
+                                        ),
+                                    transitionDuration: const Duration(
+                                      milliseconds: 400,
+                                    ),
                                   ),
                                 );
                               },
@@ -264,22 +442,35 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
             ),
           ),
 
-          // Mono (Numi) en la esquina inferior derecha
-          Positioned(
-            bottom: 0,
-            right: -10,
-            child: IgnorePointer(
-              child: Image.asset(
-                'assets/images/bienvenida/mono.png',
-                height: size.height * 0.22,
-                fit: BoxFit.contain,
-              ),
-            ),
+          // Mono (Numi) — responsive y reactivo al teclado
+          Builder(
+            builder: (context) {
+              final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+              final monoHeight = size.height * 0.22;
+
+              return AnimatedPositioned(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                bottom: bottomInset > 0 ? -(monoHeight * 0.6) : 0,
+                right: -10,
+                child: IgnorePointer(
+                  child: Image.asset(
+                    'assets/images/bienvenida/mono.png',
+                    height: monoHeight,
+                    width: size.width * 0.45,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.bottomRight,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
     );
   }
+
+  // ── Widgets helpers ──────────────────────────────────────────
 
   Widget _buildLabel(String text) {
     return Text(
@@ -293,13 +484,67 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
     );
   }
 
+  Widget _buildErrorText(String? error) {
+    if (error == null) return const SizedBox(height: 4);
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Text(
+        error,
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 12,
+          color: Color(0xFFEF5353),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGeneroSelector() {
+    const opciones = ['Masculino', 'Femenino'];
+    return Row(
+      children: opciones.map((opcion) {
+        final seleccionado = _generoSeleccionado == opcion;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => setState(() {
+              _generoSeleccionado = opcion;
+              _errorGenero = null;
+            }),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: EdgeInsets.only(right: opcion == 'Masculino' ? 8 : 0),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              decoration: BoxDecoration(
+                color: seleccionado ? const Color(0xFF4A8BF5) : Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  opcion,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: seleccionado ? Colors.white : Colors.black54,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _buildTextField({
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
+    void Function(String)? onChanged,
   }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
+      onChanged: onChanged,
       style: const TextStyle(
         fontFamily: 'Poppins',
         fontSize: 15,
@@ -308,8 +553,10 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
@@ -330,6 +577,8 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
     return TextField(
       controller: _contrasenaController,
       obscureText: !_mostrarContrasena,
+      onChanged: (val) =>
+          setState(() => _errorContrasena = _validarContrasena(val.trim())),
       style: const TextStyle(
         fontFamily: 'Poppins',
         fontSize: 15,
@@ -338,8 +587,10 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
@@ -353,8 +604,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
           borderSide: const BorderSide(color: Color(0xFF4A8BF5), width: 1.5),
         ),
         suffixIcon: GestureDetector(
-          onTap: () =>
-              setState(() => _mostrarContrasena = !_mostrarContrasena),
+          onTap: () => setState(() => _mostrarContrasena = !_mostrarContrasena),
           child: Icon(
             _mostrarContrasena ? Icons.visibility : Icons.visibility_off,
             color: Colors.grey,
