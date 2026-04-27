@@ -194,10 +194,9 @@ def _buscar_contexto_json(
 
     tokens = {w for w in _n(pregunta).split() if len(w) >= 3 and w not in _stop}
 
-    # Sin tokens útiles → devuelve entradas del grado como contexto base
+    # Sin tokens útiles → sin contexto (Gemini admitirá que no tiene info)
     if not tokens:
-        base = [e for e in entries if e.get("grado") == grado][:top_k]
-        return [{**e, "similitud": 0.05} for e in base]
+        return []
 
     scored = []
     for entry in entries:
@@ -214,11 +213,7 @@ def _buscar_contexto_json(
         scored.append({**entry, "similitud": round(sim, 4)})
 
     scored.sort(key=lambda x: x["similitud"], reverse=True)
-
-    if not scored:
-        base = [e for e in entries if e.get("grado") == grado][:top_k]
-        return [{**e, "similitud": 0.05} for e in base]
-
+    # Si nada coincide → lista vacía; el prompt indicará "sin contexto disponible"
     return scored[:top_k]
 
 
@@ -591,28 +586,41 @@ async def preguntar(req: PreguntaLLMRequest):
     llm_usado = False
     texto     = ""
 
-    if _gemini_client is not None and contexto:
+    if _gemini_client is not None:
         try:
-            prompt   = _construir_prompt(req.pregunta, materia, grado, contexto)
-            response = await _gemini_client.aio.models.generate_content(
-                model=_GEMINI_MODEL_NAME,
-                contents=prompt,
-                config=_genai_types.GenerateContentConfig(
-                    max_output_tokens=350,
-                    temperature=0.4,
+            prompt = _construir_prompt(req.pregunta, materia, grado, contexto)
+            loop   = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None,
+                lambda: _gemini_client.models.generate_content(
+                    model=_GEMINI_MODEL_NAME,
+                    contents=prompt,
+                    config=_genai_types.GenerateContentConfig(
+                        max_output_tokens=350,
+                        temperature=0.4,
+                    ),
                 ),
             )
-            # response.text puede lanzar ValueError si el contenido fue bloqueado
             texto = (response.text or "").strip()
             if texto:
                 llm_usado = True
         except Exception as exc:
-            print(f"[Gemini] Error en /api/preguntar: {exc}")
+            print(f"[Gemini] Error en /api/preguntar: {type(exc).__name__}: {exc}")
             texto = ""
 
-    # ── 3. Fallback RAG puro (si Gemini no disponible o falló) ────────────────
-    if not texto and contexto:
-        texto = contexto[0].get("respuesta", "")
+    # ── 3. Si Gemini no respondió → devolver encontrado=false ────────────────
+    # Flutter caerá a su pipeline BM25 + TFLite + _interpretarParaNino,
+    # que formatea correctamente la respuesta para el grado del estudiante.
+    if not texto:
+        return {
+            "pregunta":   req.pregunta,
+            "materia":    materia,
+            "grado":      grado,
+            "texto":      "",
+            "tema":       tema,
+            "encontrado": False,
+            "llm_usado":  False,
+        }
 
     return {
         "pregunta":   req.pregunta,

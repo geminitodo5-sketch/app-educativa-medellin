@@ -14,6 +14,7 @@ import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
 import 'registro_view.dart';
 import 'menu_1_y_2_view.dart';
+import 'menu_3_a_5_view.dart';
 
 class InicioView extends ConsumerStatefulWidget {
   const InicioView({super.key});
@@ -81,13 +82,17 @@ class _InicioViewState extends ConsumerState<InicioView> {
   }
 
   void _irAMenuDirecto(EstudianteModel estudiante) {
+    final Widget destino = estudiante.grado <= 2
+        ? Menu1Y2Screen(
+            nombre: estudiante.nombre,
+            avatar: estudiante.personaje,
+            nivel: estudiante.grado,
+          )
+        : const Menu3A5Screen();
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (ctx, a, _) => Menu1Y2Screen(
-          nombre: estudiante.nombre,
-          avatar: estudiante.personaje,
-          nivel: estudiante.grado,
-        ),
+        pageBuilder: (ctx, a, _) => destino,
         transitionsBuilder: (ctx, anim, _, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 500),
