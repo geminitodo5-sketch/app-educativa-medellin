@@ -1,19 +1,23 @@
 // ─────────────────────────────────────────────────────────────
-//  lib/data/services/rag_service.dart  v3.0
-//  Motor RAG offline — BM25 + expansión conceptual + reranking TFLite
+//  lib/data/services/rag_service.dart  v4.0
+//  Motor RAG — FAISS (servidor) + BM25 offline + TFLite reranking
 //
 //  Flujo de búsqueda:
 //    1. Evaluador aritmético (solo matemáticas)
-//    2. Tokenización + expansión de conceptos por materia
-//    3. BM25 sobre corpus completo de la materia
-//    4. Reranking semántico TFLite (si el modelo está disponible)
+//    2. Intenta búsqueda semántica FAISS en el servidor (si hay red)
+//    3. Si no hay red: BM25 local + expansión de conceptos
+//    4. Reranking semántico TFLite (siempre activo)
 //    5. Decisión por umbral:
-//         ≥ minScore  → respuesta directa + tema relacionado si aplica
-//         ≥ softMin   → "¿quisiste preguntar sobre X?"
-//         < softMin   → fallback con preguntas reales del grado del estudiante
+//         ≥ minScore → respuesta interpretada y adaptada al grado
+//         ≥ softMin  → sugerencia amigable de tema relacionado
+//         < softMin  → fallback con preguntas reales del grado
+//
+//  Respuestas: se interpretan y formatean por grado (3, 4, 5).
+//  Nunca se devuelve un copy-paste del campo `respuesta` de la KB.
 // ─────────────────────────────────────────────────────────────
 
 import 'dart:math';
+import 'package:dio/dio.dart';
 import 'sqlite_service.dart';
 import 'embedding_service.dart';
 
@@ -236,6 +240,10 @@ class RagService {
     'sociales':    '¿Qué es la Constitución de Colombia?\n¿Cuáles son las regiones de Colombia?\n¿Qué es la democracia?',
   };
 
+  // ─── URL del servidor RAG ─────────────────────────────────
+  static const String _apiBase =
+      'https://app-educativa-medellin-production.up.railway.app';
+
   // ═══════════════════════════════════════════════════════════
   //  API PÚBLICA
   // ═══════════════════════════════════════════════════════════
@@ -255,13 +263,16 @@ class RagService {
     final tokens = _tokenizar(pregunta);
     if (tokens.isEmpty) {
       return RagRespuesta(
-        texto: '¡Hola! Pregúntame algo sobre ${_nombreMateria(materia)}.\n'
-               'Por ejemplo:\n${_ejemplos[materia] ?? '¿Qué es...?'}',
+        texto: grado == 3
+            ? '¡Hola! Hazme una pregunta sobre ${_nombreMateria(materia)} 😊\n'
+              'Por ejemplo:\n${_ejemplos[materia] ?? '¿Qué es...?'}'
+            : 'Hazme una pregunta sobre ${_nombreMateria(materia)}.\n'
+              'Por ejemplo:\n${_ejemplos[materia] ?? '¿Qué es...?'}',
         encontrado: false, tema: '',
       );
     }
 
-    // 3. Cargar corpus completo de la materia (IDF preciso en BM25)
+    // 3. Cargar corpus local (siempre necesario para el fallback)
     final corpus = await _db.consultar(
       'base_conocimiento',
       where: 'materia = ?',
@@ -269,22 +280,31 @@ class RagService {
     );
     if (corpus.isEmpty) {
       return RagRespuesta(
-        texto: 'Aún no descargaste el contenido de ${_nombreMateria(materia)}. '
-               'Toca "Descargar" en el menú para continuar.',
+        texto: grado == 3
+            ? '¡Primero hay que descargar el contenido! 📥\n'
+              'Toca el botón "Descargar" para continuar.'
+            : 'Aún no descargaste el contenido de ${_nombreMateria(materia)}.\n'
+              'Toca "Descargar" en el menú para continuar.',
         encontrado: false, tema: '',
       );
     }
 
-    // 4. BM25 con expansión conceptual
-    //    Los tokens se expanden con sinónimos/conceptos relacionados
-    //    para que el sistema entienda el mismo tema desde distintos ángulos.
-    final tokensExpandidos = _expandirConceptos(tokens, materia);
-    final scored = _puntuarBM25(corpus, tokensExpandidos, gradoPreferido: grado);
+    // 4. Búsqueda FAISS en servidor (semántica, si hay internet)
+    //    Si el servidor no responde, se usa BM25 local automáticamente.
+    List<_EP> scored;
+    final faissResult = await _buscarConFAISS(pregunta, materia, grado);
+    if (faissResult != null && faissResult.isNotEmpty) {
+      scored = faissResult;
+    } else {
+      // BM25 local + expansión conceptual (offline)
+      final tokensExpandidos = _expandirConceptos(tokens, materia);
+      scored = _puntuarBM25(corpus, tokensExpandidos, gradoPreferido: grado);
+    }
 
-    // 5. Reranking semántico con TFLite (activo solo si el modelo está cargado)
+    // 5. Reranking semántico TFLite (siempre activo)
     final reranked = await _rerancarConTFLite(scored, pregunta);
 
-    final top = reranked.first;
+    final top  = reranked.first;
     final top5 = reranked.take(5).toList();
 
     // 6. Decisión por umbral
@@ -295,6 +315,39 @@ class RagService {
       return _respuestaAproximada(top, materia, grado);
     }
     return _fallbackInteligente(corpus, materia, grado);
+  }
+
+  // ─── Búsqueda semántica FAISS en el servidor ──────────────
+  // Timeout corto: si el servidor tarda, cae silenciosamente al BM25 local.
+  Future<List<_EP>?> _buscarConFAISS(
+    String pregunta, String materia, int grado,
+  ) async {
+    try {
+      final dio = Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 6),
+        receiveTimeout: const Duration(seconds: 8),
+      ));
+      final resp = await dio.post(
+        '$_apiBase/api/buscar_semantico',
+        data: {'pregunta': pregunta, 'materia': materia, 'grado': grado, 'top_k': 5},
+      );
+      if (resp.statusCode != 200) return null;
+      final lista = (resp.data['resultados'] as List<dynamic>?) ?? [];
+      if (lista.isEmpty) return null;
+
+      return lista.map((r) {
+        final m = Map<String, dynamic>.from(r as Map);
+        // Normalizar palabras_clave: el servidor devuelve List, SQLite String
+        final kw = m['palabras_clave'];
+        if (kw is List) m['palabras_clave'] = kw.join(', ');
+        return _EP(
+          entrada: m,
+          puntaje: (m['similitud'] as num?)?.toDouble() ?? 0.0,
+        );
+      }).toList();
+    } catch (_) {
+      return null; // Sin internet → BM25 local
+    }
   }
 
   Future<List<String>> preguntasSugeridas({
@@ -401,57 +454,184 @@ class RagService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  CONSTRUCCIÓN DE RESPUESTAS
+  //  CONSTRUCCIÓN DE RESPUESTAS — interpretadas por grado
   // ═══════════════════════════════════════════════════════════
 
   // Respuesta directa (puntaje ≥ minScore)
   RagRespuesta _construirRespuesta(
     _EP top, List<_EP> candidatos, String materia, int grado,
   ) {
-    final buffer = StringBuffer();
-    buffer.write(top.entrada['respuesta'] as String);
+    final tema    = (top.entrada['tema'] as String?)?.trim() ?? '';
+    final respRaw = (top.entrada['respuesta'] as String?)?.trim() ?? '';
 
-    // Si hay un segundo resultado relevante con tema distinto, sugerirlo
+    final texto = _interpretarParaNino(respRaw, tema, grado);
+
+    final buffer = StringBuffer(texto);
+
+    // Sugerir tema relacionado si es relevante y diferente
     if (candidatos.length > 1) {
-      final segundo   = candidatos[1];
-      final temaTop   = (top.entrada['tema'] as String).toLowerCase();
-      final temaSeg   = (segundo.entrada['tema'] as String).toLowerCase();
-      final puntSeg   = segundo.puntaje;
-
-      if (puntSeg >= _minScore * 0.72 && temaSeg != temaTop) {
-        buffer.write('\n\n▸ También relacionado con tu pregunta: '
-                     '${segundo.entrada['tema']}');
-        buffer.write('\n  Puedes preguntar: "${segundo.entrada['pregunta']}"');
+      final seg     = candidatos[1];
+      final temaTop = tema.toLowerCase();
+      final temaSeg = ((seg.entrada['tema'] as String?)?.toLowerCase() ?? '');
+      if (seg.puntaje >= _minScore * 0.72 &&
+          temaSeg != temaTop &&
+          temaSeg.isNotEmpty) {
+        buffer.write(
+          grado == 3
+              ? '\n\n💡 ¿También quieres que te explique sobre: $temaSeg?'
+              : '\n\n💡 También puedo explicarte sobre: $temaSeg.',
+        );
       }
     }
 
     return RagRespuesta(
-      texto:      buffer.toString(),
-      encontrado: true,
-      tema:       top.entrada['tema'] as String,
+      texto: buffer.toString().trim(), encontrado: true, tema: tema,
     );
   }
 
-  // Respuesta aproximada (softMin ≤ puntaje < minScore)
+  // ── Formateador inteligente ────────────────────────────────
+  // Divide la respuesta en ideas clave y las presenta de forma
+  // estructurada y adaptada al grado (3, 4 o 5).
+  String _interpretarParaNino(String respRaw, String tema, int grado) {
+    final ideas   = _extraerIdeas(respRaw);
+    final ejemplo = _extraerEjemplo(respRaw);
+    final sb      = StringBuffer();
+
+    // Apertura adaptada al grado
+    sb.writeln(_apertura(tema, grado));
+    sb.writeln();
+
+    // Ideas principales como bullet points
+    if (ideas.length == 1) {
+      sb.writeln(ideas.first);
+    } else {
+      final maxIdeas = grado == 3 ? 3 : grado == 4 ? 4 : 5;
+      for (final idea in ideas.take(maxIdeas)) {
+        sb.writeln('• $idea');
+      }
+    }
+
+    // Ejemplo destacado (si la KB lo incluye)
+    if (ejemplo != null) {
+      sb.writeln();
+      sb.writeln(grado == 3
+          ? 'Mira este ejemplo: $ejemplo'
+          : 'Ejemplo: $ejemplo');
+    }
+
+    // Cierre motivador adaptado al grado
+    sb.writeln();
+    sb.write(_cierre(grado));
+
+    return sb.toString().trim();
+  }
+
+  // Divide el texto en ideas/oraciones individuales para los bullet points
+  List<String> _extraerIdeas(String texto) {
+    // Quitar sección de ejemplo explícito (se maneja aparte)
+    final sinEjemplo = texto
+        .replaceAll(RegExp(r'[Ee]jemplo:.*', dotAll: true), '')
+        .replaceAll(RegExp(r'[Pp]or ejemplo[,:].*', dotAll: true), '')
+        .trim();
+
+    // Intentar split por punto seguido de mayúscula (oraciones completas)
+    var partes = sinEjemplo
+        .split(RegExp(r'(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ¿¡"«0-9])'))
+        .map((s) => s.trim().replaceAll(RegExp(r'\s+'), ' '))
+        .where((s) => s.length > 8)
+        .toList();
+
+    if (partes.isEmpty) {
+      // Fallback: split por salto de línea o punto y coma
+      partes = sinEjemplo
+          .split(RegExp(r'[\n;]'))
+          .map((s) => s.trim())
+          .where((s) => s.length > 8)
+          .toList();
+    }
+
+    if (partes.isEmpty) return [sinEjemplo.trim()];
+    return partes.take(5).toList();
+  }
+
+  // Extrae el ejemplo explícito del texto si existe
+  String? _extraerEjemplo(String texto) {
+    final m1 = RegExp(r'[Ee]jemplo:?\s*(.+?)(?:\.|$)').firstMatch(texto);
+    if (m1 != null) return m1.group(1)?.trim();
+    final m2 = RegExp(r'[Pp]or ejemplo[,:]?\s*(.+?)(?:\.|$)').firstMatch(texto);
+    if (m2 != null) return m2.group(1)?.trim();
+    return null;
+  }
+
+  // ── Textos de apertura por grado ──────────────────────────
+  String _apertura(String tema, int grado) {
+    final t = tema.isNotEmpty ? tema.toLowerCase() : 'este tema';
+    switch (grado) {
+      case 3:  return '¡Buenísima pregunta! Te cuento sobre $t de forma muy sencilla:';
+      case 4:  return 'Muy bien. Aquí va la explicación sobre $t:';
+      default: return 'Excelente. Analicemos el tema de $t:';
+    }
+  }
+
+  // ── Textos de cierre por grado (variados para no repetirse) ─
+  static const _cierres3 = [
+    '¿Lo entendiste? 😊 ¡Sigue así, eres muy inteligente!',
+    '¡Lo estás haciendo genial! ¿Tienes más preguntas? 🌟',
+    '¡Eso es! Aprender es divertido. ¿Quieres saber más? 🐒',
+  ];
+  static const _cierres4 = [
+    '¿Quedó claro? ¡No dudes en preguntar más!',
+    '¡Excelente curiosidad! ¿Hay algo más sobre este tema?',
+    'Si tienes más dudas, ¡aquí estoy para ayudarte!',
+  ];
+  static const _cierres5 = [
+    '¿Quieres que profundicemos más en algún punto?',
+    '¿Hay algún aspecto que quieras explorar con más detalle?',
+    '¿Tienes más preguntas sobre este tema u otros relacionados?',
+  ];
+
+  String _cierre(int grado) {
+    final list = grado == 3 ? _cierres3 : grado == 4 ? _cierres4 : _cierres5;
+    return list[Random().nextInt(list.length)];
+  }
+
+  // ── Respuesta aproximada (softMin ≤ puntaje < minScore) ───
   RagRespuesta _respuestaAproximada(_EP top, String materia, int grado) {
-    final tema     = top.entrada['tema'] as String;
-    final pregSug  = top.entrada['pregunta'] as String;
-    return RagRespuesta(
-      texto: 'No encontré exactamente eso en ${_nombreMateria(materia)} '
-             'para grado $grado, pero lo más cercano que tengo es sobre "$tema".\n\n'
-             '¿Quisiste preguntar: "$pregSug"?\n\n'
-             'Escríbela así y te respondo completo.',
-      encontrado: false,
-      tema: tema,
-    );
+    final tema    = (top.entrada['tema'] as String?)?.trim() ?? '';
+    final pregSug = (top.entrada['pregunta'] as String?)?.trim() ?? '';
+
+    final String texto;
+    switch (grado) {
+      case 3:
+        texto = 'Hmm, no tengo exactamente eso 🤔\n\n'
+                'Pero sé algo muy parecido sobre:\n'
+                '👉 "$tema"\n\n'
+                '¿Puedo responderte esta pregunta?\n'
+                '"$pregSug"\n\n'
+                '¡Escríbela así y te ayudo! 😊';
+        break;
+      case 4:
+        texto = 'No encontré exactamente eso en ${_nombreMateria(materia)} '
+                'para grado $grado.\n\n'
+                'Lo más parecido que tengo es sobre "$tema".\n\n'
+                '¿Quisiste preguntar:\n"$pregSug"?\n\n'
+                'Escríbela así y te respondo completo.';
+        break;
+      default:
+        texto = 'No encontré una respuesta exacta para esa pregunta en '
+                '${_nombreMateria(materia)} (grado $grado).\n\n'
+                'El tema más relacionado es: "$tema".\n\n'
+                'Intenta con esta pregunta:\n"$pregSug"';
+    }
+
+    return RagRespuesta(texto: texto, encontrado: false, tema: tema);
   }
 
-  // Fallback inteligente (puntaje < softMin)
+  // ── Fallback inteligente (puntaje < softMin) ───────────────
   // Sugiere preguntas reales del grado del estudiante desde la KB.
   RagRespuesta _fallbackInteligente(
     List<Map<String, dynamic>> corpus, String materia, int grado,
   ) {
-    // Filtrar entradas del grado del estudiante
     final delGrado = corpus
         .where((e) => e['grado'] == grado)
         .map((e) => e['pregunta'] as String)
@@ -460,20 +640,27 @@ class RagService {
 
     final sugeridas = delGrado.take(3).toList();
 
-    final buffer = StringBuffer();
-    buffer.write(
-      'Hmm, no encontré información sobre ese tema en '
-      '${_nombreMateria(materia)} para grado $grado. '
-      'Es posible que ese contenido aún no esté disponible, '
-      'pero seguiremos ampliando poco a poco.',
-    );
-
-    if (sugeridas.isNotEmpty) {
-      buffer.write('\n\nSí sé responder cosas como estas (grado $grado):');
-      for (final p in sugeridas) {
-        buffer.write('\n• $p');
-      }
+    final String intro;
+    switch (grado) {
+      case 3:
+        intro = '¡Ups! Todavía no tengo esa información 😅\n\n'
+                'Pero sí puedo ayudarte con cosas como estas:';
+        break;
+      case 4:
+        intro = 'Ese tema aún no está disponible en ${_nombreMateria(materia)} '
+                'para grado $grado.\n\nSí puedo responder preguntas como:';
+        break;
+      default:
+        intro = 'No encontré información sobre ese tema en '
+                '${_nombreMateria(materia)} para grado $grado.\n\n'
+                'Estas son algunas preguntas que sí puedo responder:';
     }
+
+    final buffer = StringBuffer(intro);
+    for (final p in sugeridas) {
+      buffer.write('\n• $p');
+    }
+    if (grado == 3) buffer.write('\n\n¡Anímate y pregunta! 🌟');
 
     return RagRespuesta(texto: buffer.toString(), encontrado: false, tema: '');
   }
