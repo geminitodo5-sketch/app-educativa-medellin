@@ -244,6 +244,34 @@ class RagService {
   static const String _apiBase =
       'https://app-educativa-medellin-production.up.railway.app';
 
+  // ─── LLM endpoint (Gemini en servidor) ───────────────────
+  // Timeout mayor que FAISS porque Gemini necesita tiempo de inferencia.
+  // Devuelve null ante cualquier fallo → flujo BM25/FAISS continúa.
+  Future<RagRespuesta?> _preguntarConLLM(
+    String pregunta, String materia, int grado,
+  ) async {
+    try {
+      final dio = Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 8),
+        receiveTimeout: const Duration(seconds: 18),
+      ));
+      final resp = await dio.post(
+        '$_apiBase/api/preguntar',
+        data: {'pregunta': pregunta, 'materia': materia, 'grado': grado},
+      );
+      if (resp.statusCode != 200) return null;
+      final data      = resp.data as Map<String, dynamic>?;
+      if (data == null) return null;
+      final encontrado = data['encontrado'] as bool? ?? false;
+      final texto      = data['texto']     as String? ?? '';
+      final tema       = data['tema']      as String? ?? '';
+      if (!encontrado || texto.isEmpty) return null;
+      return RagRespuesta(texto: texto, encontrado: true, tema: tema);
+    } catch (_) {
+      return null; // Sin internet o Gemini no configurado → BM25/FAISS local
+    }
+  }
+
   // ═══════════════════════════════════════════════════════════
   //  API PÚBLICA
   // ═══════════════════════════════════════════════════════════
@@ -289,7 +317,13 @@ class RagService {
       );
     }
 
-    // 4. Búsqueda FAISS en servidor (semántica, si hay internet)
+    // 4. LLM endpoint: Gemini + FAISS en servidor → respuesta generativa.
+    //    Si el servidor no tiene Gemini configurado, devuelve RAG puro (también útil).
+    //    Si falla la conexión, continúa silenciosamente con BM25/FAISS local.
+    final llmResp = await _preguntarConLLM(pregunta, materia, grado);
+    if (llmResp != null) return llmResp;
+
+    // 5. Búsqueda FAISS en servidor (semántica, si hay internet)
     //    Si el servidor no responde, se usa BM25 local automáticamente.
     List<_EP> scored;
     final faissResult = await _buscarConFAISS(pregunta, materia, grado);
@@ -301,13 +335,13 @@ class RagService {
       scored = _puntuarBM25(corpus, tokensExpandidos, gradoPreferido: grado);
     }
 
-    // 5. Reranking semántico TFLite (siempre activo)
+    // 6. Reranking semántico TFLite (siempre activo)
     final reranked = await _rerancarConTFLite(scored, pregunta);
 
     final top  = reranked.first;
     final top5 = reranked.take(5).toList();
 
-    // 6. Decisión por umbral
+    // 7. Decisión por umbral
     if (top.puntaje >= _minScore) {
       return _construirRespuesta(top, top5, materia, grado);
     }
