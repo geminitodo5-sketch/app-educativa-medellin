@@ -40,6 +40,8 @@ class AsistenteIaEstado {
   final Map<String, double> progresosDescarga;
   final String materiaActual;
   final int gradoActual;
+  final List<String> opcionesDisplay; // texto visible de cada opción numerada
+  final List<String> opcionesQuery;   // query enviado al RAG para cada opción
 
   const AsistenteIaEstado({
     this.mensajes = const [],
@@ -48,6 +50,8 @@ class AsistenteIaEstado {
     this.progresosDescarga = const {},
     this.materiaActual = 'matematicas',
     this.gradoActual = 1,
+    this.opcionesDisplay = const [],
+    this.opcionesQuery = const [],
   });
 
   AsistenteIaEstado copyWith({
@@ -57,6 +61,8 @@ class AsistenteIaEstado {
     Map<String, double>? progresosDescarga,
     String? materiaActual,
     int? gradoActual,
+    List<String>? opcionesDisplay,
+    List<String>? opcionesQuery,
   }) =>
       AsistenteIaEstado(
         mensajes: mensajes ?? this.mensajes,
@@ -65,6 +71,8 @@ class AsistenteIaEstado {
         progresosDescarga: progresosDescarga ?? this.progresosDescarga,
         materiaActual: materiaActual ?? this.materiaActual,
         gradoActual: gradoActual ?? this.gradoActual,
+        opcionesDisplay: opcionesDisplay ?? this.opcionesDisplay,
+        opcionesQuery: opcionesQuery ?? this.opcionesQuery,
       );
 
   bool get materiaDescargada => descargado[materiaActual] ?? false;
@@ -102,22 +110,65 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
       materiaActual: materia,
       gradoActual: grado,
       mensajes: const [],
+      opcionesDisplay: const [],
+      opcionesQuery: const [],
     );
     await _verificarDescargados();
 
-    if (state.materiaDescargada) {
-      final sugeridas = await _rag.preguntasSugeridas(
-        materia: materia,
-        grado: grado,
-      );
-      if (sugeridas.isNotEmpty) {
-        final bienvenida = MensajeChat(
-          texto: _mensajeBienvenida(materia, grado, sugeridas),
-          rol: RolMensaje.asistente,
-        );
-        state = state.copyWith(mensajes: [bienvenida]);
+    if (!state.materiaDescargada) return;
+
+    final sugeridas = await _rag.preguntasSugeridas(
+      materia: materia,
+      grado: grado,
+      cantidad: 3,
+    );
+
+    // Construir opciones: temas del currículo + preguntas sugeridas del RAG
+    final temas = _temasPorMateria(materia, grado);
+    final display = <String>[];
+    final query = <String>[];
+
+    for (final tema in temas.take(5)) {
+      display.add(tema);
+      query.add('Explícame sobre $tema');
+    }
+    for (final q in sugeridas) {
+      display.add(q);
+      query.add(q);
+    }
+
+    // Mensaje 1: saludo breve
+    final msg1 = MensajeChat(
+      texto: 'Bienvenido. Soy el asistente RAG para grado $grado.\n'
+             'Puedo enseñarte temas específicos de ${_nombreMateria(materia)}.',
+      rol: RolMensaje.asistente,
+    );
+
+    // Mensaje 2: opciones numeradas
+    final buf = StringBuffer('¿Qué quieres aprender hoy? Elige un número:\n');
+    for (int i = 0; i < display.length; i++) {
+      buf.writeln('${i + 1}. ${display[i]}');
+    }
+    final actividades = _actividadesPorMateria(materia);
+    if (actividades.isNotEmpty) {
+      buf.writeln();
+      buf.writeln('Actividades disponibles (en el menú):');
+      for (final a in actividades) {
+        buf.writeln('  • $a');
       }
     }
+    buf.write('\nO escribe tu propia pregunta directamente.');
+
+    final msg2 = MensajeChat(
+      texto: buf.toString().trim(),
+      rol: RolMensaje.asistente,
+    );
+
+    state = state.copyWith(
+      mensajes: [msg1, msg2],
+      opcionesDisplay: display,
+      opcionesQuery: query,
+    );
   }
 
   // ── Cambio de materia / grado ──────────────────────────────
@@ -126,28 +177,46 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     state = state.copyWith(
       materiaActual: materia,
       mensajes: const [],
+      opcionesDisplay: const [],
+      opcionesQuery: const [],
     );
     inicializar(materia: materia, grado: state.gradoActual);
   }
 
   void cambiarGrado(int grado) {
-    state = state.copyWith(gradoActual: grado, mensajes: const []);
+    state = state.copyWith(
+      gradoActual: grado,
+      mensajes: const [],
+      opcionesDisplay: const [],
+      opcionesQuery: const [],
+    );
     inicializar(materia: state.materiaActual, grado: grado);
   }
 
   // ── Preguntar ──────────────────────────────────────────────
 
-  Future<void> preguntar(String pregunta, {int? estudianteId}) async {
-    if (pregunta.trim().isEmpty || state.respondiendo) return;
+  Future<void> preguntar(String input, {int? estudianteId}) async {
+    final inputTrim = input.trim();
+    if (inputTrim.isEmpty || state.respondiendo) return;
 
-    final msgUsuario = MensajeChat(
-      texto: pregunta.trim(),
-      rol: RolMensaje.usuario,
-    );
-    final placeholder = const MensajeChat(
-      texto: '...',
-      rol: RolMensaje.asistente,
-      esCargando: true,
+    // Si el usuario escribe un número, lo mapeamos a la opción correspondiente
+    final numero = int.tryParse(inputTrim);
+    final String queryRAG;
+    final String textoVisible;
+
+    if (numero != null &&
+        numero >= 1 &&
+        numero <= state.opcionesDisplay.length) {
+      textoVisible = '$numero. ${state.opcionesDisplay[numero - 1]}';
+      queryRAG = state.opcionesQuery[numero - 1];
+    } else {
+      textoVisible = inputTrim;
+      queryRAG = inputTrim;
+    }
+
+    final msgUsuario = MensajeChat(texto: textoVisible, rol: RolMensaje.usuario);
+    const placeholder = MensajeChat(
+      texto: '...', rol: RolMensaje.asistente, esCargando: true,
     );
 
     state = state.copyWith(
@@ -157,7 +226,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
 
     try {
       final resultado = await _rag.responder(
-        pregunta: pregunta,
+        pregunta: queryRAG,
         materia: state.materiaActual,
         grado: state.gradoActual,
       );
@@ -165,21 +234,16 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
       if (estudianteId != null && resultado.encontrado) {
         await _rag.guardarHistorial(
           estudianteId: estudianteId,
-          pregunta: pregunta,
+          pregunta: queryRAG,
           respuesta: resultado.texto,
           materia: state.materiaActual,
           grado: state.gradoActual,
         );
       }
 
-      final respMsg = MensajeChat(
-        texto: resultado.texto,
-        rol: RolMensaje.asistente,
-      );
-
       final msgs = List<MensajeChat>.from(state.mensajes)..removeLast();
       state = state.copyWith(
-        mensajes: [...msgs, respMsg],
+        mensajes: [...msgs, MensajeChat(texto: resultado.texto, rol: RolMensaje.asistente)],
         respondiendo: false,
       );
     } catch (_) {
@@ -237,30 +301,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
   }
 
   // ── Helpers ────────────────────────────────────────────────
-
-  static String _mensajeBienvenida(String materia, int grado, List<String> sugeridas) {
-    final nombre = _nombreMateria(materia);
-    final temas = _temasPorMateria(materia, grado);
-    final actividades = _actividadesPorMateria(materia);
-
-    final buf = StringBuffer();
-    buf.writeln('¡Bienvenido! Soy tu asistente de $nombre para grado $grado.');
-    buf.writeln();
-    buf.writeln('Puedo enseñarte temas como:');
-    for (final t in temas) {
-      buf.writeln('  • $t');
-    }
-    buf.writeln();
-    buf.writeln('Por ejemplo, puedes preguntarme:');
-    for (final s in sugeridas.take(3)) {
-      buf.writeln('  • $s');
-    }
-    if (actividades.isNotEmpty) {
-      buf.writeln();
-      buf.write('Tambien tienes actividades interactivas disponibles: ${actividades.join(', ')}. ¡Explorelas en el menu de la materia!');
-    }
-    return buf.toString().trim();
-  }
 
   static List<String> _temasPorMateria(String materia, int grado) {
     const mapa = <String, Map<int, List<String>>>{

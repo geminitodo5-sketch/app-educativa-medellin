@@ -1915,737 +1915,6 @@
         "grado quinto"
       ]
     },
-    [
-      {
-        "id": "esp_g3_037",
-        "grado": 3,
-        "tema": "signos de puntuación avanzados",
-        "pregunta": "¿Cómo se usan los signos de interrogación y exclamación en español?",
-        "respuesta": "En español, a diferencia de otros idiomas, usamos doble signo: uno de apertura y uno de cierre. Interrogación: ¿...? Ejemplo: '¿Cómo te llamas?' El signo de apertura (¿) es obligatorio en español. Exclamación: ¡...! Ejemplo: '¡Qué día tan bonito!' También se pueden combinar para expresar sorpresa o incredulidad: '¿¡No lo puedo creer!?' Errores comunes: escribir solo el signo de cierre (como en inglés). Siempre abre y cierra correctamente.",
-        "palabras_clave": [
-          "signos de interrogación",
-          "signos de exclamación",
-          "¿?",
-          "¡!",
-          "apertura",
-          "cierre",
-          "español",
-          "pregunta",
-          "emoción",
-          "ortografía"
-        ]
-      },
-      {
-        "id": "esp_g3_038",
-        "grado": 3,
-        "tema": "familia de palabras",
-        "pregunta": "¿Qué es la familia de palabras?",
-        "respuesta": "Una familia de palabras es un grupo de palabras que comparten la misma raíz y están relacionadas por su significado. Ejemplo: la raíz 'mar' da: mar, marino, marinero, maremoto, submarino, marítimo. La raíz 'libro' da: libro, librería, librero, libreto, librito. Conocer familias de palabras nos ayuda a entender palabras nuevas y a aumentar el vocabulario. La parte común que comparten se llama raíz o lexema.",
-        "palabras_clave": [
-          "familia de palabras",
-          "raíz",
-          "lexema",
-          "mar",
-          "marino",
-          "libro",
-          "librería",
-          "vocabulario",
-          "relacionadas",
-          "derivar"
-        ]
-      },
-      {
-        "id": "esp_g3_039",
-        "grado": 3,
-        "tema": "prefijos y sufijos",
-        "pregunta": "¿Qué son los prefijos y los sufijos?",
-        "respuesta": "Los prefijos son partículas que se añaden al inicio de una palabra para modificar su significado. Ejemplos: des- (deshacer, desorden), in- (incompleto, incapaz), re- (rehacer, releer), pre- (prehistoria, prevenir). Los sufijos van al final: -ero (panadero, cartero), -ción (nación, acción), -ito/-ita (gatito, casita = diminutivo), -ísimo (grandísimo = aumentativo). Reconocer prefijos y sufijos ayuda a entender palabras desconocidas.",
-        "palabras_clave": [
-          "prefijo",
-          "sufijo",
-          "des-",
-          "in-",
-          "re-",
-          "-ción",
-          "-ero",
-          "diminutivo",
-          "aumentativo",
-          "modificar",
-          "palabra",
-          "raíz"
-        ]
-      },
-      {
-        "id": "esp_g3_040",
-        "grado": 3,
-        "tema": "tipos de oraciones",
-        "pregunta": "¿Cuáles son los tipos de oraciones según su propósito?",
-        "respuesta": "Las oraciones se clasifican según lo que queremos comunicar: Declarativas o enunciativas: afirman o niegan algo. 'El sol brilla.' / 'No llueve hoy.' Interrogativas: hacen una pregunta. '¿Qué hora es?' Exclamativas: expresan emoción fuerte. '¡Qué frío hace!' Imperativas o exhortativas: dan una orden o una petición. 'Cierra la puerta.' / 'Por favor, habla más despacio.' Desiderativas: expresan un deseo. 'Ojalá llegue pronto.' Dubitativas: expresan duda. 'Quizás venga mañana.'",
-        "palabras_clave": [
-          "tipos de oraciones",
-          "declarativa",
-          "interrogativa",
-          "exclamativa",
-          "imperativa",
-          "desiderativa",
-          "dubitativa",
-          "comunicar",
-          "propósito",
-          "enunciativa"
-        ]
-      },
-      {
-        "id": "esp_g3_041",
-        "grado": 3,
-        "tema": "mitos colombianos",
-        "pregunta": "¿Qué es un mito y cuáles son los mitos más famosos de Colombia?",
-        "respuesta": "Un mito es una narración tradicional que explica el origen del mundo, de la naturaleza o de fenómenos que los seres humanos no podían comprender. A diferencia de la leyenda, el mito tiene personajes sagrados o divinos. Mitos colombianos importantes: El mito de Bachué (diosa muisca del agua que salió de la laguna de Iguaque con un niño y pobló la tierra). El mito de Bochica (dios muisca del sol que enseñó a tejer). El Dorado (ciudad de oro buscada por los conquistadores). Los mitos indígenas de Colombia son patrimonio cultural.",
-        "palabras_clave": [
-          "mito",
-          "Colombia",
-          "Bachué",
-          "Bochica",
-          "muisca",
-          "El Dorado",
-          "origen",
-          "dioses",
-          "sagrado",
-          "tradición",
-          "Iguaque",
-          "narración"
-        ]
-      },
-      {
-        "id": "esp_g3_042",
-        "grado": 3,
-        "tema": "trabalenguas y adivinanzas",
-        "pregunta": "¿Qué son los trabalenguas y las adivinanzas?",
-        "respuesta": "Los trabalenguas son frases con sonidos difíciles de pronunciar que se repiten rápidamente. Su objetivo es practicar la pronunciación y divertirse. Ejemplo: 'Tres tristes tigres tragaban trigo en un trigal'. Las adivinanzas son preguntas o acertijos en los que hay que descubrir de qué objeto o ser vivo se habla a partir de pistas. Ejemplo: 'Soy redonda como el sol, amarilla y sin rincones, con mi jugo se hacen miles de ricos limonadas. ¿Qué soy?' (el limón). Ambos son parte de la tradición oral y del folclor.",
-        "palabras_clave": [
-          "trabalenguas",
-          "adivinanzas",
-          "pronunciación",
-          "acertijo",
-          "folclor",
-          "tradición oral",
-          "tigres",
-          "limón",
-          "juego",
-          "oral"
-        ]
-      },
-      {
-        "id": "esp_g3_043",
-        "grado": 3,
-        "tema": "ortografía uso h",
-        "pregunta": "¿Cuándo se usa la letra 'h' en español?",
-        "respuesta": "La 'h' en español es muda (no suena) pero su escritura es obligatoria. Reglas principales: 1) Palabras que empiezan con los diptongos 'hie-' y 'hue-': hierba, hierro, huevo, hueso. 2) Palabras con las sílabas 'ha', 'he', 'hi', 'ho', 'hu' al inicio: hablar, hacer, hijo, hombre, humano. 3) El verbo 'haber' y sus formas: ha, has, han, había, hubiera. 4) Palabras compuestas que empiezan con 'hidro-' (agua), 'hiper-', 'hipo-', 'homo-', 'hetero-'. Truco: si suena igual con o sin 'h', busca en el diccionario.",
-        "palabras_clave": [
-          "h",
-          "muda",
-          "haber",
-          "hacer",
-          "hablar",
-          "hijo",
-          "huevo",
-          "hueso",
-          "hierba",
-          "ortografía",
-          "regla",
-          "hie",
-          "hue"
-        ]
-      },
-      {
-        "id": "esp_g3_044",
-        "grado": 3,
-        "tema": "diálogo y guion",
-        "pregunta": "¿Cómo se escribe un diálogo correctamente?",
-        "respuesta": "Un diálogo es la conversación entre dos o más personajes en un texto. Se escribe usando el guion largo (—) al inicio de cada intervención. Reglas: 1) El guion largo (—) indica que un personaje habla. 2) Después del guion va el texto del personaje con minúscula. 3) Se puede incluir el narrador entre guiones. Ejemplo: '—Hola, ¿cómo estás? —dijo María. —Muy bien, gracias —respondió Juan.' Las comillas se usan para citar palabras dentro de un texto, no para diálogos en narrativa española. El diálogo hace los cuentos más vivos y dinámicos.",
-        "palabras_clave": [
-          "diálogo",
-          "guion largo",
-          "—",
-          "personajes",
-          "conversación",
-          "habla",
-          "narrador",
-          "comillas",
-          "cuento",
-          "escritura",
-          "ortografía"
-        ]
-      },
-      {
-        "id": "esp_g3_045",
-        "grado": 3,
-        "tema": "refranes colombianos",
-        "pregunta": "¿Qué son los refranes y cuáles son los más conocidos en Colombia?",
-        "respuesta": "Los refranes son dichos populares cortos que contienen una enseñanza o sabiduría popular. Son parte de la tradición oral. Refranes colombianos y en español: 'Camarón que se duerme, se lo lleva la corriente' (hay que estar atento y aprovechar las oportunidades). 'No hay mal que por bien no venga' (de las situaciones difíciles pueden salir cosas buenas). 'Al mal tiempo, buena cara' (mantener el ánimo en momentos difíciles). 'Más vale tarde que nunca' (es mejor hacer algo con retraso que no hacerlo). 'A caballo regalado no se le mira el colmillo' (no se critica lo que se recibe como regalo).",
-        "palabras_clave": [
-          "refranes",
-          "Colombia",
-          "camarón",
-          "tradición oral",
-          "sabiduría",
-          "popular",
-          "enseñanza",
-          "dicho",
-          "folclor",
-          "mal tiempo",
-          "buena cara"
-        ]
-      },
-      {
-        "id": "esp_g3_046",
-        "grado": 3,
-        "tema": "escritura proceso",
-        "pregunta": "¿Cuáles son los pasos del proceso de escritura?",
-        "respuesta": "Escribir bien tiene un proceso con etapas: 1) Planeación: define el tema, a quién va dirigido, qué tipo de texto escribirás. Organiza ideas con mapa mental o lluvia de ideas. 2) Escritura del borrador: escribe libremente sin preocuparte demasiado por errores. 3) Revisión: lee tu texto y pregúntate: ¿tiene sentido?, ¿las ideas están en orden?, ¿se entiende? 4) Corrección: corrige ortografía, signos de puntuación y mejora las palabras. 5) Publicación o versión final: escribe el texto corregido en limpio. Este proceso aplica a todos los textos: cuentos, descripciones, cartas, informes.",
-        "palabras_clave": [
-          "proceso de escritura",
-          "planeación",
-          "borrador",
-          "revisión",
-          "corrección",
-          "publicación",
-          "mapa mental",
-          "lluvia de ideas",
-          "etapas",
-          "texto",
-          "escribir"
-        ]
-      },
-      {
-        "id": "esp_g4_028",
-        "grado": 4,
-        "tema": "análisis personajes literarios",
-        "pregunta": "¿Cómo analizo a un personaje literario?",
-        "respuesta": "Para analizar un personaje en un texto literario examina: 1) Descripción física: ¿cómo es su aspecto? 2) Descripción psicológica: ¿cómo es su personalidad, sus miedos, sus deseos? 3) Rol en la historia: protagonista (héroe), antagonista (villano), personaje secundario (apoya la trama). 4) Evolución: ¿cambia a lo largo de la historia? Los personajes planos no cambian; los redondos (complejos) sí evolucionan. 5) Relaciones con otros personajes. 6) Lo que dice y lo que hace (sus acciones revelan su carácter). Ejemplo: en 'Rin Rin Renacuajo' de Rafael Pombo, Rin Rin es curioso y desobediente, lo que lo lleva a su fin.",
-        "palabras_clave": [
-          "personaje",
-          "protagonista",
-          "antagonista",
-          "análisis",
-          "físico",
-          "psicológico",
-          "evolución",
-          "plano",
-          "redondo",
-          "Rin Rin Renacuajo",
-          "Rafael Pombo",
-          "secundario"
-        ]
-      },
-      {
-        "id": "esp_g4_029",
-        "grado": 4,
-        "tema": "texto instructivo",
-        "pregunta": "¿Qué es un texto instructivo y cómo se escribe?",
-        "respuesta": "Un texto instructivo explica cómo realizar una acción o proceso paso a paso. Su propósito es guiar al lector. Características: usa verbos en modo imperativo (corta, añade, mezcla) o infinitivo (cortar, añadir, mezclar), numeración o viñetas para los pasos, lenguaje claro y preciso. Ejemplos: recetas de cocina, manuales de uso, instrucciones de juegos de mesa, guías para armar algo. Estructura: título, materiales o ingredientes necesarios, pasos en orden, resultado esperado. En Colombia, las recetas de cocina son un buen ejemplo: 'Para preparar arepas: 1) Mezcla la harina de maíz con agua y sal...'",
-        "palabras_clave": [
-          "texto instructivo",
-          "instrucciones",
-          "receta",
-          "manual",
-          "pasos",
-          "imperativo",
-          "infinitivo",
-          "numeración",
-          "proceso",
-          "guiar",
-          "arepas",
-          "Colombia"
-        ]
-      },
-      {
-        "id": "esp_g4_030",
-        "grado": 4,
-        "tema": "debate escolar",
-        "pregunta": "¿Cómo participo en un debate escolar?",
-        "respuesta": "Un debate es una discusión organizada donde dos o más personas defienden posiciones diferentes sobre un tema. Para participar bien: 1) Prepárate: conoce el tema a fondo, define si estás a favor o en contra. 2) Construye al menos 3 argumentos con evidencia (datos, ejemplos). 3) Anticipa los argumentos del otro lado para rebatirlos. 4) Escucha con atención antes de responder. 5) Habla con respeto, sin atacar a la persona. 6) Usa conectores de argumento: 'sin embargo', 'en cambio', 'aunque', 'por lo tanto'. 7) Cierra con una conclusión clara. El debate desarrolla el pensamiento crítico y la expresión oral.",
-        "palabras_clave": [
-          "debate",
-          "argumento",
-          "a favor",
-          "en contra",
-          "escuchar",
-          "respeto",
-          "evidencia",
-          "contraargumento",
-          "conclusión",
-          "expresión oral",
-          "pensamiento crítico"
-        ]
-      },
-      {
-        "id": "esp_g4_031",
-        "grado": 4,
-        "tema": "literatura infantil colombiana",
-        "pregunta": "¿Qué otros autores de literatura infantil colombiana debo conocer además de Rafael Pombo?",
-        "respuesta": "Además de Rafael Pombo, Colombia tiene otros grandes autores para niños: Triunfo Arciniegas (cuentos y teatro infantil, ganador de premios internacionales). Irene Vasco (autora de 'Paso a paso' y muchos álbumes ilustrados). Celso Román (cuentos de ciencia ficción y fantasía para jóvenes, 'Los amigos del hombre'). Ivar Da Coll (ilustrador y autor de los entrañables 'Chigüiro'). Gloria Cecilia Díaz (Premio Hans Christian Andersen para América Latina). Estos autores reflejan la diversidad cultural, los paisajes y la vida cotidiana de Colombia.",
-        "palabras_clave": [
-          "literatura infantil colombiana",
-          "Triunfo Arciniegas",
-          "Irene Vasco",
-          "Celso Román",
-          "Ivar Da Coll",
-          "Chigüiro",
-          "Gloria Cecilia Díaz",
-          "Rafael Pombo",
-          "autores",
-          "Colombia"
-        ]
-      },
-      {
-        "id": "esp_g4_032",
-        "grado": 4,
-        "tema": "textos periodísticos",
-        "pregunta": "¿Cuáles son los tipos de textos periodísticos?",
-        "respuesta": "Los textos periodísticos informan sobre la actualidad. Tipos principales: Noticia: informa sobre un hecho reciente con objetividad (qué, quién, cuándo, dónde, cómo, por qué). Reportaje: profundiza en un tema con más detalle y contexto que la noticia. Entrevista: preguntas y respuestas a una persona importante o experta. Editorial: opinión del periódico sobre un tema de interés público. Crónica: relato de un hecho con estilo más literario, en orden temporal. Caricatura: crítica visual con humor. En Colombia, medios como El Colombiano, El Tiempo y El Espectador publican estos géneros.",
-        "palabras_clave": [
-          "textos periodísticos",
-          "noticia",
-          "reportaje",
-          "entrevista",
-          "editorial",
-          "crónica",
-          "caricatura",
-          "Colombia",
-          "El Tiempo",
-          "El Colombiano",
-          "periodismo",
-          "actualidad"
-        ]
-      },
-      {
-        "id": "esp_g4_033",
-        "grado": 4,
-        "tema": "lectura de imágenes",
-        "pregunta": "¿Cómo leo e interpreto una imagen o afiche?",
-        "respuesta": "Leer una imagen o afiche es interpretar su mensaje visual. Pasos: 1) Observa el conjunto: ¿qué ves en general? 2) Identifica los elementos: personas, objetos, colores, texto. 3) Analiza los colores: el rojo puede significar peligro o amor; el verde, naturaleza; el amarillo, alegría o advertencia. 4) Lee el texto: título, slogan, información. 5) Pregúntate: ¿qué quiere comunicar?, ¿a quién va dirigido?, ¿qué emoción busca despertar? 6) Identifica el propósito: ¿informa, publicita, concientiza? Los afiches de salud pública, publicidad y campañas sociales son ejemplos comunes en Colombia.",
-        "palabras_clave": [
-          "imagen",
-          "afiche",
-          "leer imágenes",
-          "interpretar",
-          "colores",
-          "visual",
-          "mensaje",
-          "propósito",
-          "publicidad",
-          "texto",
-          "campaña",
-          "Colombia"
-        ]
-      },
-      {
-        "id": "esp_g4_034",
-        "grado": 4,
-        "tema": "diccionario y uso",
-        "pregunta": "¿Cómo uso el diccionario correctamente?",
-        "respuesta": "El diccionario es la herramienta más importante para ampliar el vocabulario. Cómo usarlo: 1) Las palabras están en orden alfabético. 2) Busca la forma base: para verbos busca el infinitivo (correr, no corrió); para sustantivos, el singular (árbol, no árboles). 3) La entrada muestra: palabra, categoría gramatical (s. = sustantivo, v. = verbo, adj. = adjetivo), definición(es) numeradas y ejemplos. 4) Algunas palabras tienen varias acepciones (significados): el número indica cuál es cuál. 5) El diccionario de la Real Academia Española (RAE) es la autoridad oficial del español. También puedes usar dle.rae.es en internet.",
-        "palabras_clave": [
-          "diccionario",
-          "RAE",
-          "alfabético",
-          "infinitivo",
-          "singular",
-          "acepción",
-          "definición",
-          "vocabulario",
-          "búsqueda",
-          "gramática",
-          "dle.rae.es",
-          "significado"
-        ]
-      },
-      {
-        "id": "esp_g4_035",
-        "grado": 4,
-        "tema": "texto publicitario",
-        "pregunta": "¿Qué es un texto publicitario y cómo funciona?",
-        "respuesta": "Un texto publicitario tiene como objetivo persuadir al receptor para que compre un producto, adopte una conducta o apoye una causa. Características: slogan (frase corta y memorable), imagen llamativa, lenguaje positivo y seductor, datos selectivos (muestra lo bueno y oculta lo malo). Recursos que usa: repetición del nombre de la marca, rima o juegos de palabras, uso de personajes famosos (testimonios), cifras que impresionan. Es importante leer la publicidad de forma crítica: ¿qué te están vendiendo realmente? ¿Qué información ocultan? Los niños son un público objetivo frecuente.",
-        "palabras_clave": [
-          "texto publicitario",
-          "publicidad",
-          "slogan",
-          "persuadir",
-          "marca",
-          "receptor",
-          "lectura crítica",
-          "imagen",
-          "testimonio",
-          "niños",
-          "mercadeo",
-          "Colombia"
-        ]
-      },
-      {
-        "id": "esp_g4_036",
-        "grado": 4,
-        "tema": "género poético canciones",
-        "pregunta": "¿Cuál es la relación entre poesía y música en la cultura colombiana?",
-        "respuesta": "La poesía y la música están profundamente unidas en Colombia. Las letras de los géneros musicales tradicionales colombianos son poesía oral: la cumbia, el vallenato, el bambuco, el porro y la mapalé. Los vallenatos de Carlos Vives, Diomedes Díaz o el legendario Carlos Garufa son verdaderos poemas cantados. El bambuco es el ritmo nacional y sus letras suelen describir el paisaje y los sentimientos del campo colombiano. Las canciones tienen rima, ritmo, metáforas y otros recursos poéticos. Aprender poesía a través de la música es una estrategia muy efectiva en el aula.",
-        "palabras_clave": [
-          "poesía",
-          "música",
-          "Colombia",
-          "vallenato",
-          "cumbia",
-          "bambuco",
-          "Carlos Vives",
-          "Diomedes Díaz",
-          "rima",
-          "ritmo",
-          "folclor",
-          "cultura colombiana",
-          "letra canción"
-        ]
-      },
-      {
-        "id": "esp_g5_028",
-        "grado": 5,
-        "tema": "ensayo argumentativo avanzado",
-        "pregunta": "¿Cómo escribo un ensayo argumentativo de calidad en grado quinto?",
-        "respuesta": "Un ensayo argumentativo de calidad en grado 5 debe tener: 1) Introducción impactante: empieza con una pregunta retórica, dato sorprendente o cita que atrape al lector; luego presenta el tema y tu tesis con claridad. 2) Desarrollo: mínimo 2-3 párrafos con argumentos diferentes; cada párrafo empieza con la idea principal, luego la evidencia (dato, ejemplo, cita) y finalmente un conector de conclusión parcial. 3) Contraargumento reconocido y rebatido: 'Aunque algunos piensan que... sin embargo...'. 4) Conclusión: no solo repite la tesis sino que la amplía con reflexión. 5) Lenguaje preciso: evita 'yo creo que', 'pienso que' (debilitan la tesis); usa 'se puede afirmar', 'la evidencia demuestra'. 6) Fuentes citadas si usas datos.",
-        "palabras_clave": [
-          "ensayo argumentativo",
-          "introducción",
-          "tesis",
-          "evidencia",
-          "contraargumento",
-          "conclusión",
-          "calidad",
-          "grado quinto",
-          "lenguaje preciso",
-          "fuentes",
-          "párrafo",
-          "dato",
-          "ejemplo"
-        ]
-      },
-      {
-        "id": "esp_g5_029",
-        "grado": 5,
-        "tema": "ortografía avanzada grado quinto",
-        "pregunta": "¿Cuáles son los errores ortográficos más frecuentes en grado quinto y cómo evitarlos?",
-        "respuesta": "Errores ortográficos frecuentes en grado 5 y cómo evitarlos: 1) Omisión de tilde: 'el' (artículo) vs 'él' (pronombre); 'tu' vs 'tú'; 'si' vs 'sí'. Estrategia: aprende los tildes diacríticos de memoria. 2) Confusión haber/a ver: 'Debe haber un error' vs 'Voy a ver qué pasó'. 3) Confusión hay/ahí/ay: 'Hay mucha gente' (haber), 'Está ahí' (lugar), '¡Ay, qué dolor!' (exclamación). 4) Porque/por qué/porqué/por que: en preguntas '¿Por qué?' con tilde; como explicación 'porque'; como sustantivo 'el porqué'; en algunos contextos 'por que'. 5) Confusión a/ha: 'ha comido' (verbo haber), 'a comer' (preposición). 6) Mayúsculas en nombres propios: siempre en nombres de personas, ciudades y países.",
-        "palabras_clave": [
-          "ortografía",
-          "errores frecuentes",
-          "tilde",
-          "haber",
-          "hay",
-          "ahí",
-          "porque",
-          "por qué",
-          "mayúsculas",
-          "diacrítico",
-          "grado quinto",
-          "a ver",
-          "ha"
-        ]
-      },
-      {
-        "id": "esp_g5_030",
-        "grado": 5,
-        "tema": "comprensión lectora niveles avanzados",
-        "pregunta": "¿Cuáles son los tres niveles de comprensión lectora y cómo los aplico?",
-        "respuesta": "Los tres niveles de comprensión lectora son: 1) Nivel literal: comprendes lo que el texto dice explícitamente. Preguntas: ¿qué pasó?, ¿quién lo hizo?, ¿cuándo?, ¿dónde? Respuestas que se encuentran directamente en el texto. 2) Nivel inferencial: deduces lo que el texto sugiere sin decirlo directamente. Combinas información del texto con tu conocimiento previo. Preguntas: ¿por qué crees que...?, ¿qué crees que pasará después?, ¿qué quiso decir el autor con...? 3) Nivel crítico-valorativo: evalúas y opinas sobre el texto. Distingues hechos de opiniones, identificas el propósito del autor, valoras si la información es confiable. Preguntas: ¿estás de acuerdo?, ¿qué mensaje transmite?, ¿cómo se relaciona con tu vida? Los tres niveles se aplican en el orden indicado.",
-        "palabras_clave": [
-          "comprensión lectora",
-          "nivel literal",
-          "nivel inferencial",
-          "nivel crítico",
-          "deducir",
-          "evaluar",
-          "hechos",
-          "opiniones",
-          "explícito",
-          "implícito",
-          "propósito",
-          "valorar"
-        ]
-      },
-      {
-        "id": "esp_g5_031",
-        "grado": 5,
-        "tema": "crónica literaria",
-        "pregunta": "¿Qué es una crónica y cómo se diferencia de una noticia?",
-        "respuesta": "Una crónica es un texto que narra hechos reales en orden temporal, pero con un estilo más literario y personal que la noticia. Características: narra en orden cronológico (de lo primero a lo último), puede incluir descripciones detalladas, reflexiones del autor y lenguaje más expresivo. En Colombia hay grandes cronistas: Tomás González, Alfredo Molano (crónicas sobre el campo y la violencia), Daniel Samper Pizano (crónicas humorísticas). Diferencias con la noticia: la noticia es objetiva y sigue la pirámide invertida; la crónica tiene más libertad estilística y voz personal del autor. Ambas hablan de hechos reales.",
-        "palabras_clave": [
-          "crónica",
-          "noticia",
-          "narrativa",
-          "orden cronológico",
-          "literario",
-          "Colombia",
-          "Alfredo Molano",
-          "Daniel Samper",
-          "Tomás González",
-          "real",
-          "periodismo",
-          "voz personal"
-        ]
-      },
-      {
-        "id": "esp_g5_032",
-        "grado": 5,
-        "tema": "variedad lingüística en Colombia",
-        "pregunta": "¿Por qué el español se habla diferente en distintas regiones de Colombia?",
-        "respuesta": "El español tiene variedades regionales llamadas dialectos o hablas regionales. En Colombia existen diferencias notables: el costeño (Caribe colombiano: Barranquilla, Cartagena) es más rápido, aspira la 's' final (loh niñoh) y tiene influencia africana. El rolo o bogotano es más formal y cuidado. El paisa (Antioquia, Eje Cafetero) usa el 'vos' en lugar de 'tú' ('¿Cómo estás vos?'). El caleño (Valle del Cauca) tiene su propio ritmo. El llanero y el amazónico tienen influencia indígena. Estas variantes son igualmente válidas; ninguna es más correcta que otra. La diversidad lingüística refleja la riqueza cultural de Colombia.",
-        "palabras_clave": [
-          "variedades lingüísticas",
-          "dialectos",
-          "costeño",
-          "paisa",
-          "rolo",
-          "bogotano",
-          "caleño",
-          "vos",
-          "Colombia",
-          "Antioquia",
-          "Caribe",
-          "diversidad",
-          "español colombiano",
-          "regional"
-        ]
-      },
-      {
-        "id": "esp_g5_033",
-        "grado": 5,
-        "tema": "texto dramático teatro",
-        "pregunta": "¿Qué es un texto dramático y cómo se escribe una obra de teatro?",
-        "respuesta": "Un texto dramático está escrito para ser representado en un escenario. Elementos: acotaciones (indicaciones del autor sobre movimientos, gestos, escenografía, escritas entre paréntesis o en cursiva), diálogos (el texto que dicen los personajes, precedido por el nombre del personaje), actos (divisiones grandes de la obra) y escenas (subdivisiones dentro del acto). Para escribir una obra corta: 1) Define los personajes y su conflicto. 2) Organiza la trama en inicio, nudo y desenlace. 3) Escribe los diálogos con el nombre del personaje antes. 4) Añade acotaciones para indicar gestos y movimientos. El teatro en Colombia tiene importantes representantes como Enrique Buenaventura.",
-        "palabras_clave": [
-          "texto dramático",
-          "teatro",
-          "obra de teatro",
-          "acotaciones",
-          "diálogos",
-          "actos",
-          "escenas",
-          "personajes",
-          "conflicto",
-          "Enrique Buenaventura",
-          "Colombia",
-          "representar"
-        ]
-      },
-      {
-        "id": "esp_g5_034",
-        "grado": 5,
-        "tema": "lenguaje no verbal",
-        "pregunta": "¿Qué es el lenguaje no verbal y por qué es importante en la comunicación?",
-        "respuesta": "El lenguaje no verbal es toda la comunicación que se hace sin palabras: gestos, expresiones faciales, postura corporal, contacto visual, distancia entre personas, tono de voz y silencio. Estudios demuestran que más del 60% de la comunicación humana es no verbal. Ejemplos: cruzar los brazos puede indicar defensividad; sonreír transmite apertura; el tono de voz cambia el significado de las palabras (decir 'qué bien' en tono irónico significa lo contrario). En la expresión oral escolar es importante: mantener contacto visual, postura segura, gestos naturales y voz clara. El lenguaje no verbal complementa y a veces contradice el lenguaje verbal.",
-        "palabras_clave": [
-          "lenguaje no verbal",
-          "gestos",
-          "expresión facial",
-          "postura",
-          "contacto visual",
-          "tono de voz",
-          "silencio",
-          "comunicación",
-          "ironia",
-          "corporal",
-          "expresión oral"
-        ]
-      },
-      {
-        "id": "esp_g5_035",
-        "grado": 5,
-        "tema": "literatura de terror y suspenso",
-        "pregunta": "¿Cómo se crean el suspenso y el terror en un texto literario?",
-        "respuesta": "El suspenso y el terror son recursos narrativos que mantienen al lector en tensión. Técnicas para crear suspenso: 1) Dejar información incompleta (el lector quiere saber qué pasa). 2) Usar puntos suspensivos (...) para crear pausa dramática. 3) Describir el ambiente con detalles sombríos (noche oscura, sonidos extraños, silencio pesado). 4) Mostrar el miedo del personaje a través de sus reacciones (corazón acelerado, manos frías). 5) Usar frases cortas en los momentos de mayor tensión. 6) Retrasar la resolución del misterio. Edgar Allan Poe es el maestro universal del terror. En Colombia, algunos cuentos de García Márquez también usan elementos de suspenso.",
-        "palabras_clave": [
-          "suspenso",
-          "terror",
-          "narrativa",
-          "técnicas",
-          "ambiente",
-          "misterio",
-          "Poe",
-          "puntos suspensivos",
-          "tensión",
-          "miedo",
-          "personaje",
-          "García Márquez",
-          "descripción"
-        ]
-      },
-      {
-        "id": "esp_g5_036",
-        "grado": 5,
-        "tema": "medios digitales y veracidad",
-        "pregunta": "¿Cómo identifico una noticia falsa (fake news)?",
-        "respuesta": "Las noticias falsas o fake news son informaciones incorrectas, inventadas o manipuladas que se difunden como si fueran reales. Cómo identificarlas: 1) Verifica la fuente: ¿es un medio reconocido y confiable? 2) Busca la fecha: noticias viejas a veces se hacen pasar por actuales. 3) Contrasta con otras fuentes: si solo un medio lo dice, desconfía. 4) Revisa las fotos: pueden estar sacadas de contexto (puedes buscar la imagen en Google). 5) Lee más allá del titular: muchas veces el título exagera o distorsiona el contenido. 6) Usa verificadores de noticias: ColombiaCheck y AFP Factual verifican noticias en Colombia. 7) Desconfía de lo que genera emociones muy fuertes: el miedo y la rabia se explotan para compartir sin pensar.",
-        "palabras_clave": [
-          "noticias falsas",
-          "fake news",
-          "verificar",
-          "fuente",
-          "ColombiaCheck",
-          "AFP Factual",
-          "internet",
-          "redes sociales",
-          "titular",
-          "foto",
-          "contrastar",
-          "desinformación",
-          "Colombia"
-        ]
-      },
-      {
-        "id": "esp_g5_037",
-        "grado": 5,
-        "tema": "sinonimia antonimia avanzada",
-        "pregunta": "¿Cómo uso los sinónimos y antónimos para mejorar mis textos en grado quinto?",
-        "respuesta": "En grado 5, el uso avanzado de sinónimos y antónimos mejora la calidad de los textos: Sinónimos para evitar repetición: en lugar de 'dijo' puedes usar expresó, afirmó, declaró, comentó, murmuró, exclamó (cada uno con matiz diferente). En lugar de 'bonito': hermoso, bello, precioso, encantador. Sinónimos con matiz: no todos los sinónimos son exactamente iguales; 'delgado' y 'flaco' son sinónimos pero 'flaco' puede tener connotación negativa. Antónimos para crear contraste literario: 'la luz brillaba donde antes reinaba la oscuridad'. En poesía, los antónimos crean oxímoron: 'silencio ensordecedor', 'oscura claridad'. Diccionario de sinónimos (tesauro) es la herramienta ideal para buscarlos.",
-        "palabras_clave": [
-          "sinónimos",
-          "antónimos",
-          "tesauro",
-          "matiz",
-          "evitar repetición",
-          "contraste",
-          "oxímoron",
-          "dijo",
-          "bonito",
-          "flaco",
-          "delgado",
-          "vocabulario",
-          "escritura avanzada"
-        ]
-      },
-      {
-        "id": "esp_g5_038",
-        "grado": 5,
-        "tema": "biografía y autobiografía",
-        "pregunta": "¿Qué es una biografía y cómo se diferencia de una autobiografía?",
-        "respuesta": "Una biografía es el relato de la vida de una persona escrito por otra persona. Ejemplos: una biografía de García Márquez escrita por un periodista. Una autobiografía es cuando la persona cuenta su propia vida. García Márquez escribió 'Vivir para contarla', sus memorias autobiográficas. Características de ambas: orden cronológico (nacimiento, infancia, vida adulta, logros), datos verificables (fechas, lugares, hechos), lenguaje informativo con toques narrativos. La diferencia principal es el narrador: tercera persona en la biografía ('García Márquez nació en Aracataca...') y primera persona en la autobiografía ('Nací en Aracataca...'). Ambas son géneros de no ficción.",
-        "palabras_clave": [
-          "biografía",
-          "autobiografía",
-          "García Márquez",
-          "Vivir para contarla",
-          "narrador",
-          "primera persona",
-          "tercera persona",
-          "no ficción",
-          "cronológico",
-          "memorias",
-          "Colombia",
-          "vida"
-        ]
-      },
-      {
-        "id": "esp_g3_047",
-        "grado": 3,
-        "tema": "rima y ritmo poético",
-        "pregunta": "¿Cómo identifico la rima y el ritmo en un poema?",
-        "respuesta": "La rima es la repetición de sonidos al final de los versos. Para identificarla: lee los últimos versos en voz alta y escucha qué sonidos se repiten. Ejemplo en Rafael Pombo: 'Rin Rin Renacuajo salió de paseo / sin pedir permiso a la mamá Ranea'. Los finales 'paseo' y 'Ranea' no riman perfectamente (asonante). El ritmo es el patrón musical del poema, creado por la distribución de sílabas acentuadas y no acentuadas. Para sentirlo: lee el poema en voz alta y nota dónde recae el golpe de voz. Los poemas infantiles suelen tener ritmo muy marcado, lo que los hace fáciles de memorizar. La rima consonante es perfecta (canción/corazón); la asonante es parcial (peine/reyes).",
-        "palabras_clave": [
-          "rima",
-          "ritmo",
-          "poema",
-          "verso",
-          "consonante",
-          "asonante",
-          "Rafael Pombo",
-          "Rin Rin Renacuajo",
-          "acentuada",
-          "musical",
-          "voz alta",
-          "memorizar"
-        ]
-      },
-      {
-        "id": "esp_g4_037",
-        "grado": 4,
-        "tema": "escritura creativa avanzada grado cuarto",
-        "pregunta": "¿Cómo desarrollo la creatividad en la escritura en grado cuarto?",
-        "respuesta": "Para desarrollar la creatividad en la escritura: 1) Usa el 'Y si...' para generar ideas: '¿Y si los animales hablaran en el colegio?' 2) Combina elementos inesperados: un robot en la época de los dinosaurios. 3) Escribe desde perspectivas inusuales: narra un día escolar desde la perspectiva de un borrador. 4) Usa los cinco sentidos en tus descripciones. 5) Inspírate en tu entorno colombiano: describe una plaza de mercado, una tarde lluviosa en Medellín, las flores de la Feria de las Flores. 6) Lee mucho para tener más recursos. 7) No tengas miedo de cometer errores en el borrador: primero crea, luego corrige. La creatividad se ejercita como un músculo.",
-        "palabras_clave": [
-          "creatividad",
-          "escritura creativa",
-          "y si",
-          "perspectiva",
-          "cinco sentidos",
-          "Colombia",
-          "Medellín",
-          "Feria de las Flores",
-          "borrador",
-          "inspiración",
-          "grado cuarto"
-        ]
-      },
-      {
-        "id": "esp_g3_048",
-        "grado": 3,
-        "tema": "lectura en voz alta",
-        "pregunta": "¿Por qué es importante leer en voz alta y cómo se hace bien?",
-        "respuesta": "Leer en voz alta tiene muchos beneficios: mejora la pronunciación, la fluidez lectora, la comprensión y la expresión oral. Para leer bien en voz alta: 1) Lee con voz clara y audible, sin murmurar. 2) Respeta los signos de puntuación: pausa en la coma, pausa más larga en el punto, inflexión en las preguntas. 3) Varía el tono: más alto en los momentos emocionantes, más lento en las partes importantes. 4) No silabees (no leas sílaba por sílaba). 5) Lee en grupos de palabras con sentido. 6) Practica previamente el texto. La lectura en voz alta expresiva se llama declamación cuando es poesía y narración oral cuando es prosa.",
-        "palabras_clave": [
-          "lectura en voz alta",
-          "fluidez",
-          "pronunciación",
-          "puntuación",
-          "tono",
-          "expresivo",
-          "declamación",
-          "narración oral",
-          "pausa",
-          "comprensión",
-          "practicar"
-        ]
-      },
-      {
-        "id": "esp_g5_039",
-        "grado": 5,
-        "tema": "literatura precolombina colombiana",
-        "pregunta": "¿Qué es la literatura precolombina en Colombia y cuáles son sus expresiones?",
-        "respuesta": "La literatura precolombina es el conjunto de expresiones orales y escritas de los pueblos indígenas antes de la llegada de los españoles en 1492. En Colombia, esta literatura era principalmente oral. Expresiones principales: Los mitos de origen muisca: la historia de Bachué, el dios Bochica, el mito del diluvio muisca. La tradición oral wayúu: narrativas del pueblo Wayúu de La Guajira, incluyendo sus sueños como fuente de conocimiento. Cantos y ceremonias: los cantos chamánicos de los pueblos amazónicos como los Uitoto y los Tikuna. Petroglifos: grabados en roca que son formas de comunicación gráfica. Esta literatura es fundamental para entender la identidad cultural de Colombia.",
-        "palabras_clave": [
-          "literatura precolombina",
-          "Colombia",
-          "muisca",
-          "Bachué",
-          "Bochica",
-          "wayúu",
-          "Guajira",
-          "Uitoto",
-          "Tikuna",
-          "oral",
-          "mito",
-          "petroglifos",
-          "indígena",
-          "identidad"
-        ]
-      },
-      {
-        "id": "esp_g5_040",
-        "grado": 5,
-        "tema": "coherencia cohesion textual avanzada",
-        "pregunta": "¿Cuál es la diferencia entre coherencia y cohesión en un texto?",
-        "respuesta": "Coherencia y cohesión son dos propiedades esenciales de un texto bien escrito. Coherencia: tiene que ver con el sentido global del texto. Un texto es coherente cuando sus ideas se relacionan lógicamente, no se contradicen y giran alrededor de un tema central. Es la 'columna vertebral' del texto. Cohesión: se refiere a los mecanismos lingüísticos que conectan las palabras y oraciones entre sí. Se logra mediante: pronombres (que evitan repetir el sustantivo), sinónimos (variedad léxica), conectores ('además', 'sin embargo', 'porque'), elipsis (omitir algo que ya se mencionó). Ejemplo de texto incoherente: 'Me gustan los perros. Colombia tiene 32 departamentos. El azul es un color bonito.' (no hay tema central). Ejemplo cohesionado: 'Me gustan los perros. Ellos son leales. Además, son excelentes compañeros.'",
-        "palabras_clave": [
-          "coherencia",
-          "cohesión",
-          "texto",
-          "conectores",
-          "pronombres",
-          "sinónimos",
-          "elipsis",
-          "tema central",
-          "lógico",
-          "propiedad textual",
-          "grado quinto",
-          "escribir"
-        ]
-      }
-    ],
     {
       "id": "esp_g3_037",
       "grado": 3,
@@ -3140,6 +2409,156 @@
         "redes",
         "verificar",
         "fuente"
+      ]
+    },
+    {
+      "id": "esp_g5_036",
+      "grado": 5,
+      "tema": "medios digitales y veracidad",
+      "pregunta": "¿Cómo identifico una noticia falsa (fake news)?",
+      "respuesta": "Las noticias falsas o fake news son informaciones incorrectas, inventadas o manipuladas que se difunden como si fueran reales. Cómo identificarlas: 1) Verifica la fuente: ¿es un medio reconocido y confiable? 2) Busca la fecha: noticias viejas a veces se hacen pasar por actuales. 3) Contrasta con otras fuentes: si solo un medio lo dice, desconfía. 4) Revisa las fotos: pueden estar sacadas de contexto (puedes buscar la imagen en Google). 5) Lee más allá del titular: muchas veces el título exagera o distorsiona el contenido. 6) Usa verificadores de noticias: ColombiaCheck y AFP Factual verifican noticias en Colombia. 7) Desconfía de lo que genera emociones muy fuertes: el miedo y la rabia se explotan para compartir sin pensar.",
+      "palabras_clave": [
+        "noticias falsas",
+        "fake news",
+        "verificar",
+        "fuente",
+        "ColombiaCheck",
+        "AFP Factual",
+        "internet",
+        "redes sociales",
+        "titular",
+        "foto",
+        "contrastar",
+        "desinformación",
+        "Colombia"
+      ]
+    },
+    {
+      "id": "esp_g5_037",
+      "grado": 5,
+      "tema": "sinonimia antonimia avanzada",
+      "pregunta": "¿Cómo uso los sinónimos y antónimos para mejorar mis textos en grado quinto?",
+      "respuesta": "En grado 5, el uso avanzado de sinónimos y antónimos mejora la calidad de los textos: Sinónimos para evitar repetición: en lugar de 'dijo' puedes usar expresó, afirmó, declaró, comentó, murmuró, exclamó (cada uno con matiz diferente). En lugar de 'bonito': hermoso, bello, precioso, encantador. Sinónimos con matiz: no todos los sinónimos son exactamente iguales; 'delgado' y 'flaco' son sinónimos pero 'flaco' puede tener connotación negativa. Antónimos para crear contraste literario: 'la luz brillaba donde antes reinaba la oscuridad'. En poesía, los antónimos crean oxímoron: 'silencio ensordecedor', 'oscura claridad'. Diccionario de sinónimos (tesauro) es la herramienta ideal para buscarlos.",
+      "palabras_clave": [
+        "sinónimos",
+        "antónimos",
+        "tesauro",
+        "matiz",
+        "evitar repetición",
+        "contraste",
+        "oxímoron",
+        "dijo",
+        "bonito",
+        "flaco",
+        "delgado",
+        "vocabulario",
+        "escritura avanzada"
+      ]
+    },
+    {
+      "id": "esp_g5_038",
+      "grado": 5,
+      "tema": "biografía y autobiografía",
+      "pregunta": "¿Qué es una biografía y cómo se diferencia de una autobiografía?",
+      "respuesta": "Una biografía es el relato de la vida de una persona escrito por otra persona. Ejemplos: una biografía de García Márquez escrita por un periodista. Una autobiografía es cuando la persona cuenta su propia vida. García Márquez escribió 'Vivir para contarla', sus memorias autobiográficas. Características de ambas: orden cronológico (nacimiento, infancia, vida adulta, logros), datos verificables (fechas, lugares, hechos), lenguaje informativo con toques narrativos. La diferencia principal es el narrador: tercera persona en la biografía ('García Márquez nació en Aracataca...') y primera persona en la autobiografía ('Nací en Aracataca...'). Ambas son géneros de no ficción.",
+      "palabras_clave": [
+        "biografía",
+        "autobiografía",
+        "García Márquez",
+        "Vivir para contarla",
+        "narrador",
+        "primera persona",
+        "tercera persona",
+        "no ficción",
+        "cronológico",
+        "memorias",
+        "Colombia",
+        "vida"
+      ]
+    },
+    {
+      "id": "esp_g3_047",
+      "grado": 3,
+      "tema": "rima y ritmo poético",
+      "pregunta": "¿Cómo identifico la rima y el ritmo en un poema?",
+      "respuesta": "La rima es la repetición de sonidos al final de los versos. Para identificarla: lee los últimos versos en voz alta y escucha qué sonidos se repiten. Ejemplo en Rafael Pombo: 'Rin Rin Renacuajo salió de paseo / sin pedir permiso a la mamá Ranea'. Los finales 'paseo' y 'Ranea' no riman perfectamente (asonante). El ritmo es el patrón musical del poema, creado por la distribución de sílabas acentuadas y no acentuadas. Para sentirlo: lee el poema en voz alta y nota dónde recae el golpe de voz. Los poemas infantiles suelen tener ritmo muy marcado, lo que los hace fáciles de memorizar. La rima consonante es perfecta (canción/corazón); la asonante es parcial (peine/reyes).",
+      "palabras_clave": [
+        "rima",
+        "ritmo",
+        "poema",
+        "verso",
+        "consonante",
+        "asonante",
+        "Rafael Pombo",
+        "Rin Rin Renacuajo",
+        "acentuada",
+        "musical",
+        "voz alta",
+        "memorizar"
+      ]
+    },
+    {
+      "id": "esp_g3_048",
+      "grado": 3,
+      "tema": "lectura en voz alta",
+      "pregunta": "¿Por qué es importante leer en voz alta y cómo se hace bien?",
+      "respuesta": "Leer en voz alta tiene muchos beneficios: mejora la pronunciación, la fluidez lectora, la comprensión y la expresión oral. Para leer bien en voz alta: 1) Lee con voz clara y audible, sin murmurar. 2) Respeta los signos de puntuación: pausa en la coma, pausa más larga en el punto, inflexión en las preguntas. 3) Varía el tono: más alto en los momentos emocionantes, más lento en las partes importantes. 4) No silabees (no leas sílaba por sílaba). 5) Lee en grupos de palabras con sentido. 6) Practica previamente el texto. La lectura en voz alta expresiva se llama declamación cuando es poesía y narración oral cuando es prosa.",
+      "palabras_clave": [
+        "lectura en voz alta",
+        "fluidez",
+        "pronunciación",
+        "puntuación",
+        "tono",
+        "expresivo",
+        "declamación",
+        "narración oral",
+        "pausa",
+        "comprensión",
+        "practicar"
+      ]
+    },
+    {
+      "id": "esp_g5_039",
+      "grado": 5,
+      "tema": "literatura precolombina colombiana",
+      "pregunta": "¿Qué es la literatura precolombina en Colombia y cuáles son sus expresiones?",
+      "respuesta": "La literatura precolombina es el conjunto de expresiones orales y escritas de los pueblos indígenas antes de la llegada de los españoles en 1492. En Colombia, esta literatura era principalmente oral. Expresiones principales: Los mitos de origen muisca: la historia de Bachué, el dios Bochica, el mito del diluvio muisca. La tradición oral wayúu: narrativas del pueblo Wayúu de La Guajira, incluyendo sus sueños como fuente de conocimiento. Cantos y ceremonias: los cantos chamánicos de los pueblos amazónicos como los Uitoto y los Tikuna. Petroglifos: grabados en roca que son formas de comunicación gráfica. Esta literatura es fundamental para entender la identidad cultural de Colombia.",
+      "palabras_clave": [
+        "literatura precolombina",
+        "Colombia",
+        "muisca",
+        "Bachué",
+        "Bochica",
+        "wayúu",
+        "Guajira",
+        "Uitoto",
+        "Tikuna",
+        "oral",
+        "mito",
+        "petroglifos",
+        "indígena",
+        "identidad"
+      ]
+    },
+    {
+      "id": "esp_g5_040",
+      "grado": 5,
+      "tema": "coherencia cohesion textual avanzada",
+      "pregunta": "¿Cuál es la diferencia entre coherencia y cohesión en un texto?",
+      "respuesta": "Coherencia y cohesión son dos propiedades esenciales de un texto bien escrito. Coherencia: tiene que ver con el sentido global del texto. Un texto es coherente cuando sus ideas se relacionan lógicamente, no se contradicen y giran alrededor de un tema central. Es la 'columna vertebral' del texto. Cohesión: se refiere a los mecanismos lingüísticos que conectan las palabras y oraciones entre sí. Se logra mediante: pronombres (que evitan repetir el sustantivo), sinónimos (variedad léxica), conectores ('además', 'sin embargo', 'porque'), elipsis (omitir algo que ya se mencionó). Ejemplo de texto incoherente: 'Me gustan los perros. Colombia tiene 32 departamentos. El azul es un color bonito.' (no hay tema central). Ejemplo cohesionado: 'Me gustan los perros. Ellos son leales. Además, son excelentes compañeros.'",
+      "palabras_clave": [
+        "coherencia",
+        "cohesión",
+        "texto",
+        "conectores",
+        "pronombres",
+        "sinónimos",
+        "elipsis",
+        "tema central",
+        "lógico",
+        "propiedad textual",
+        "grado quinto",
+        "escribir"
       ]
     }
   ]

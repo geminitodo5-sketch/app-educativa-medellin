@@ -115,14 +115,22 @@ class DescargaPaqueteService {
 
       // Inserta todas las entradas nuevas
       for (final entry in contenido) {
-        final e = entry as Map<String, dynamic>;
-        final palabras = (e['palabras_clave'] as List<dynamic>).join(',');
+        // Salta entradas malformadas (arrays anidados en lugar de maps)
+        if (entry is! Map) continue;
+        final e = Map<String, dynamic>.from(entry);
+
+        // palabras_clave puede venir como List (JSON) o String (legacy)
+        final kw = e['palabras_clave'];
+        final palabras = kw is List
+            ? kw.map((w) => w.toString()).join(',')
+            : (kw?.toString() ?? '');
+
         await txn.insert('base_conocimiento', {
           'materia': materia,
-          'grado': e['grado'] as int,
-          'tema': e['tema'] as String,
-          'pregunta': e['pregunta'] as String,
-          'respuesta': e['respuesta'] as String,
+          'grado': (e['grado'] as num?)?.toInt() ?? 0,
+          'tema': (e['tema'] as String?) ?? '',
+          'pregunta': (e['pregunta'] as String?) ?? '',
+          'respuesta': (e['respuesta'] as String?) ?? '',
           'palabras_clave': palabras,
           'version_paquete': version,
         });

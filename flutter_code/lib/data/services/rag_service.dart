@@ -335,16 +335,19 @@ class RagService {
       final lista = (resp.data['resultados'] as List<dynamic>?) ?? [];
       if (lista.isEmpty) return null;
 
-      return lista.map((r) {
-        final m = Map<String, dynamic>.from(r as Map);
-        // Normalizar palabras_clave: el servidor devuelve List, SQLite String
-        final kw = m['palabras_clave'];
-        if (kw is List) m['palabras_clave'] = kw.join(', ');
-        return _EP(
-          entrada: m,
-          puntaje: (m['similitud'] as num?)?.toDouble() ?? 0.0,
-        );
-      }).toList();
+      return lista
+          .whereType<Map>()
+          .map((r) {
+            final m = Map<String, dynamic>.from(r);
+            // Normalizar palabras_clave: el servidor devuelve List, SQLite String
+            final kw = m['palabras_clave'];
+            if (kw is List) m['palabras_clave'] = kw.join(', ');
+            return _EP(
+              entrada: m,
+              puntaje: (m['similitud'] as num?)?.toDouble() ?? 0.0,
+            );
+          })
+          .toList();
     } catch (_) {
       return null; // Sin internet → BM25 local
     }
@@ -667,9 +670,119 @@ class RagService {
 
   // ═══════════════════════════════════════════════════════════
   //  EVALUADOR ARITMÉTICO COMPLETO
-  //  Maneja: casos especiales (doble/mitad/triple/cuadrado/raíz),
-  //  frases compuestas, operadores en palabra, operadores símbolo.
+  //  Maneja: fracciones paso a paso, casos especiales
+  //  (doble/mitad/triple/cuadrado/raíz), frases compuestas,
+  //  operadores en palabra, operadores símbolo.
   // ═══════════════════════════════════════════════════════════
+
+  // ── GCD auxiliar para simplificar fracciones ──────────────
+  static int _gcd(int a, int b) => b == 0 ? a.abs() : _gcd(b, a % b);
+
+  // ── Evaluador de operaciones entre fracciones ─────────────
+  // Detecta el patrón "a/b [op] c/d" antes de que los operadores
+  // en palabra sean reemplazados por símbolos.
+  static RagRespuesta? _evaluarFraccion(String t) {
+    // Normalizar operadores en palabra a símbolos provisionales
+    final tn = t
+        .replaceAll(RegExp(r'multiplicado\s+(?:por|x)?\s*'), '×')
+        .replaceAll(RegExp(r'dividido\s+(?:entre|por)?\s*'), '÷')
+        .replaceAll(RegExp(r'\bpor\b|\bveces\b'), '×')
+        .replaceAll(RegExp(r'\bentre\b'), '÷')
+        .replaceAll(RegExp(r'\bmas\b'), '+')
+        .replaceAll(RegExp(r'\bmenos\b'), '-')
+        .replaceAll('×', '×') // idempotente
+        .trim();
+
+    // Patrón: entero/entero operador entero/entero
+    final m = RegExp(
+      r'^(\d+)\s*/\s*(\d+)\s*([+\-×÷*])\s*(\d+)\s*/\s*(\d+)$',
+    ).firstMatch(tn);
+    if (m == null) return null;
+
+    final a = int.parse(m.group(1)!);
+    final b = int.parse(m.group(2)!);
+    final op = m.group(3)!;
+    final c = int.parse(m.group(4)!);
+    final d = int.parse(m.group(5)!);
+
+    if (b == 0 || d == 0) {
+      return const RagRespuesta(
+        texto: '¡El denominador de una fracción no puede ser cero!',
+        encontrado: true, tema: 'fracciones',
+      );
+    }
+
+    int numR, denR;
+    String pasos;
+
+    if (op == '+') {
+      final g = _gcd(b, d);
+      final mcm = (b * d) ~/ g;
+      final na = a * (mcm ~/ b);
+      final nc = c * (mcm ~/ d);
+      numR = na + nc;
+      denR = mcm;
+      pasos = 'Suma de fracciones: $a/$b + $c/$d\n\n'
+              'Paso 1: Denominador común (MCM de $b y $d) = $mcm\n'
+              'Paso 2: Convierte cada fracción:\n'
+              '  • $a/$b = $na/$mcm\n'
+              '  • $c/$d = $nc/$mcm\n'
+              'Paso 3: Suma los numeradores: $na + $nc = $numR\n\n'
+              'Resultado: $numR/$denR';
+    } else if (op == '-') {
+      final g = _gcd(b, d);
+      final mcm = (b * d) ~/ g;
+      final na = a * (mcm ~/ b);
+      final nc = c * (mcm ~/ d);
+      numR = na - nc;
+      denR = mcm;
+      pasos = 'Resta de fracciones: $a/$b - $c/$d\n\n'
+              'Paso 1: Denominador común (MCM de $b y $d) = $mcm\n'
+              'Paso 2: Convierte cada fracción:\n'
+              '  • $a/$b = $na/$mcm\n'
+              '  • $c/$d = $nc/$mcm\n'
+              'Paso 3: Resta los numeradores: $na - $nc = $numR\n\n'
+              'Resultado: $numR/$denR';
+    } else if (op == '×' || op == '*') {
+      numR = a * c;
+      denR = b * d;
+      pasos = 'Multiplicación de fracciones: $a/$b × $c/$d\n\n'
+              'Paso 1: Multiplica los numeradores: $a × $c = $numR\n'
+              'Paso 2: Multiplica los denominadores: $b × $d = $denR\n\n'
+              'Resultado: $numR/$denR';
+    } else { // ÷
+      if (c == 0) {
+        return const RagRespuesta(
+          texto: '¡No se puede dividir entre cero!',
+          encontrado: true, tema: 'fracciones',
+        );
+      }
+      numR = a * d;
+      denR = b * c;
+      pasos = 'División de fracciones: $a/$b ÷ $c/$d\n\n'
+              'Paso 1: Invierte la segunda fracción: $c/$d → $d/$c\n'
+              'Paso 2: Ahora multiplica: $a/$b × $d/$c\n'
+              'Paso 3: Numeradores: $a × $d = $numR\n'
+              'Paso 4: Denominadores: $b × $c = $denR\n\n'
+              'Resultado: $numR/$denR';
+    }
+
+    // Simplificar resultado
+    if (denR != 0) {
+      final g = _gcd(numR.abs(), denR.abs());
+      if (g > 1) {
+        final sN = numR ~/ g;
+        final sD = denR ~/ g;
+        pasos += sD == 1 ? ' = $sN (número entero)' : ' = $sN/$sD (simplificado)';
+      } else if (numR > 0 && denR > 0 && numR > denR) {
+        final ent = numR ~/ denR;
+        final rem = numR % denR;
+        if (rem != 0) pasos += ' → número mixto: $ent y $rem/$denR';
+      }
+    }
+
+    return RagRespuesta(texto: pasos, encontrado: true, tema: 'fracciones');
+  }
 
   static RagRespuesta? _calcularExpresion(String texto) {
     var t = _quitarAcentos(texto.toLowerCase())
@@ -683,6 +796,10 @@ class RagService {
         .replaceAll(RegExp(r'^(el\s+)?(resultado\s+de|resultado)\s+'), '')
         .replaceAll(RegExp(r'^que\s+(es|vale|da)\s+'), '')
         .trim();
+
+    // Detectar operaciones entre fracciones antes de normalizar operadores
+    final fracResult = _evaluarFraccion(t);
+    if (fracResult != null) return fracResult;
 
     // Casos especiales
     var m = RegExp(r'^(el\s+)?doble\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);

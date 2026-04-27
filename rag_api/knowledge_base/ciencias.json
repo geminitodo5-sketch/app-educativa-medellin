@@ -3340,6 +3340,120 @@
         "paralelo",
         "cable"
       ]
+    },
+    {
+      "id": "cie_g3_054",
+      "grado": 3,
+      "tema": "por qué el cielo es azul",
+      "pregunta": "¿Por qué el cielo es azul?",
+      "respuesta": "La luz del sol parece blanca, pero en realidad tiene todos los colores del arcoíris juntos: rojo, anaranjado, amarillo, verde, azul y violeta. Cuando esa luz viaja por el aire choca con partículas muy pequeñitas del aire. El color azul \"rebota\" (se dispersa) mucho más que los otros colores. Por eso cuando miramos el cielo vemos azul. Es como si el aire fuera un filtro gigante que deja pasar los otros colores pero \"esparca\" el azul en todas direcciones.",
+      "palabras_clave": [
+        "cielo azul",
+        "luz solar",
+        "colores",
+        "dispersión",
+        "aire",
+        "arcoíris",
+        "partículas",
+        "luz blanca",
+        "óptica"
+      ]
+    },
+    {
+      "id": "cie_g4_053",
+      "grado": 4,
+      "tema": "dispersión de la luz y el cielo azul",
+      "pregunta": "¿Por qué el cielo es azul? ¿Tiene que ver con la luz?",
+      "respuesta": "Sí, tiene todo que ver con la luz. La luz solar es blanca porque contiene todos los colores del espectro (como un arcoíris). Cuando choca con las moléculas de nitrógeno y oxígeno del aire, ocurre algo llamado dispersión: los colores con ondas cortas (azul y violeta) se dispersan mucho más que los colores con ondas largas (rojo y amarillo). Nuestros ojos son más sensibles al azul que al violeta, por eso el cielo nos parece azul. Al amanecer y atardecer, la luz viaja más distancia por el aire, el azul se dispersa antes de llegar a ti y quedan los rojos y naranjas.",
+      "palabras_clave": [
+        "cielo azul",
+        "dispersión de la luz",
+        "espectro",
+        "ondas",
+        "azul",
+        "violeta",
+        "rojo",
+        "atardecer",
+        "moléculas",
+        "óptica",
+        "luz solar"
+      ]
+    },
+    {
+      "id": "cie_g5_053",
+      "grado": 5,
+      "tema": "dispersión de Rayleigh y color del cielo",
+      "pregunta": "¿Por qué el cielo es azul? ¿Qué es la dispersión de Rayleigh?",
+      "respuesta": "El cielo es azul por un fenómeno llamado dispersión de Rayleigh, descubierto por el físico Lord Rayleigh en 1871. La luz solar blanca contiene todos los colores del espectro electromagnético. Cuando las ondas de luz chocan con moléculas del aire (N₂ y O₂), la intensidad de dispersión es inversamente proporcional a la cuarta potencia de la longitud de onda (I ∝ 1/λ⁴). Esto significa que el azul (λ ≈ 450 nm) se dispersa unas 5.5 veces más que el rojo (λ ≈ 700 nm). Durante el atardecer, la luz recorre más atmósfera; el azul se dispersa antes de llegar y predominan los rojos y naranjas.",
+      "palabras_clave": [
+        "dispersión de Rayleigh",
+        "cielo azul",
+        "longitud de onda",
+        "espectro electromagnético",
+        "luz solar",
+        "moléculas",
+        "óptica",
+        "física",
+        "atardecer",
+        "azul"
+      ]
+    },
+    {
+      "id": "cie_g4_054",
+      "grado": 4,
+      "tema": "colores del atardecer",
+      "pregunta": "¿Por qué el cielo se pone rojo y naranja al atardecer?",
+      "respuesta": "Al amanecer y al atardecer, el sol está muy bajo en el horizonte y su luz debe atravesar una capa mucho más gruesa de atmósfera para llegar a tus ojos. Durante ese trayecto largo, la luz azul se dispersa completamente hacia los lados antes de llegar a ti. Solo los colores de onda larga (rojo, naranja, amarillo) llegan directamente a tus ojos. Por eso el cielo se ve de esos colores cálidos al atardecer. Es el mismo fenómeno del cielo azul, ¡pero al revés!",
+      "palabras_clave": [
+        "atardecer",
+        "amanecer",
+        "rojo",
+        "naranja",
+        "dispersión",
+        "luz",
+        "atmósfera",
+        "horizonte",
+        "cielo",
+        "colores"
+      ]
+    },
+    {
+      "id": "cie_g3_055",
+      "grado": 3,
+      "tema": "colores de la luz y arcoíris",
+      "pregunta": "¿Por qué el arcoíris tiene esos colores?",
+      "respuesta": "El arcoíris aparece cuando hay gotitas de agua en el aire (como después de la lluvia) y el sol brilla. Cada gotita actúa como un pequeño prisma: separa la luz blanca del sol en todos sus colores. La luz entra a la gotita, rebota adentro y sale dividida en rojo, naranja, amarillo, verde, azul, índigo y violeta. Cada color sale en un ángulo diferente. Por eso vemos el arcoíris con colores bien separados. El rojo siempre va por fuera y el violeta por dentro.",
+      "palabras_clave": [
+        "arcoíris",
+        "colores",
+        "luz blanca",
+        "prisma",
+        "gotas de agua",
+        "lluvia",
+        "sol",
+        "refracción",
+        "espectro",
+        "rojo verde azul"
+      ]
+    },
+    {
+      "id": "cie_g5_054",
+      "grado": 5,
+      "tema": "espectro electromagnético",
+      "pregunta": "¿Qué es el espectro electromagnético?",
+      "respuesta": "El espectro electromagnético es el conjunto de todas las ondas electromagnéticas ordenadas por su longitud de onda o frecuencia. De mayor a menor longitud de onda: ondas de radio (1m a 100km), microondas (1mm a 1m), infrarrojo (700nm a 1mm), luz visible (400-700nm), ultravioleta (10-400nm), rayos X (0.01-10nm) y rayos gamma (<0.01nm). La luz visible, que percibimos como colores, es solo una pequeña franja: el violeta tiene la longitud de onda más corta (~400nm) y el rojo la más larga (~700nm). La energía aumenta al disminuir la longitud de onda (E = hf = hc/λ).",
+      "palabras_clave": [
+        "espectro electromagnético",
+        "ondas",
+        "longitud de onda",
+        "frecuencia",
+        "luz visible",
+        "ultravioleta",
+        "infrarrojo",
+        "rayos X",
+        "radio",
+        "microondas"
+      ]
     }
   ]
 }
