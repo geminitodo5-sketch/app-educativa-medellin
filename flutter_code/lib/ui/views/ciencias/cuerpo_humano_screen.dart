@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:math' show sin, pi, Random;
 import 'dart:ui' as ui;
@@ -80,7 +80,7 @@ void _mostrarFeedback(
                 ),
                 const SizedBox(width: 15),
                 Text(
-                  correcto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  correcto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                   style: TextStyle(
                     fontFamily: 'Hiruko',
                     fontSize: 24,

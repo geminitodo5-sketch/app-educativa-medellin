@@ -1,4 +1,4 @@
-// lib/ui/views/ciencias/las_plantas_screen.dart
+﻿// lib/ui/views/ciencias/las_plantas_screen.dart
 
 import 'dart:async';
 import 'dart:convert';
@@ -51,7 +51,7 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
                 ),
                 const SizedBox(width: 15),
                 Text(
-                  correcto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  correcto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                   style: TextStyle(
                     fontFamily: 'Hiruko',
                     fontSize: 24,

@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'ingles_congratulations_view.dart';
@@ -150,7 +150,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       fontSize: 24,

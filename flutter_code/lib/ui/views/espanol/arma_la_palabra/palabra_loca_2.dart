@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import '../../../viewmodels/palabra_loca_view_model.dart';
@@ -94,7 +94,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                 ),
                 const SizedBox(width: 15),
                 Text(
-                  esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                   style: TextStyle(
                     fontFamily: 'Hiruko',
                     fontSize: 24,
@@ -197,7 +197,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
                       // ── MARGEN SUPERIOR instrucción: cambia el 24 ──────
                       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                       child: _InstruccionRow(
-                        texto: 'Arma la palabra de la imagen.',
+                        texto: 'Arma  la palabra de  la imagen.',
                         onPlay: _reproducirAudio,
                       ),
                     ),
@@ -276,7 +276,7 @@ class _Header extends StatelessWidget {
           height: 80,
           child: Center(
             child: const Text(
-              'Arma la palabra',
+              'Arma  la palabra',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22,

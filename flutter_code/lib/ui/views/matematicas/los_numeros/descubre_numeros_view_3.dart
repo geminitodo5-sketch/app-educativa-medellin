@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import '../../../../data/providers/app_state_provider.dart';
@@ -125,7 +125,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       fontSize: 24,

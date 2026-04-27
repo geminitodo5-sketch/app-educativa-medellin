@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'pasado_presente_3_screen.dart';
 
@@ -130,7 +130,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       fontSize: 24,

@@ -192,11 +192,16 @@ def _buscar_contexto_json(
                 .replace('á','a').replace('é','e').replace('í','i')
                 .replace('ó','o').replace('ú','u').replace('ñ','n'))
 
-    tokens = {w for w in _n(pregunta).split() if len(w) >= 3 and w not in _stop}
+    raw_words = _n(pregunta).split()
+    tokens = [w for w in raw_words if len(w) >= 3 and w not in _stop]
 
     # Sin tokens útiles → sin contexto (Gemini admitirá que no tiene info)
     if not tokens:
         return []
+
+    # Bigramas de la pregunta para detectar frases exactas (ej: "primera guerra")
+    bigrams = [f"{tokens[i]} {tokens[i+1]}" for i in range(len(tokens) - 1)]
+    max_score = len(bigrams) * 2 + len(tokens)
 
     scored = []
     for entry in entries:
@@ -204,10 +209,16 @@ def _buscar_contexto_json(
             f"{entry.get('pregunta','')} {entry.get('respuesta','')} "
             f"{' '.join(entry.get('palabras_clave', []))}"
         )
-        hits = sum(1 for t in tokens if t in text)
-        if hits == 0:
+        text_words = set(text.split())
+
+        # Bigramas valen 2 puntos (coincidencia de frase exacta)
+        score = sum(2 for bg in bigrams if bg in text)
+        # Unigramas valen 1 punto solo si la palabra completa existe
+        score += sum(1 for t in tokens if t in text_words)
+
+        if score == 0:
             continue
-        sim = hits / len(tokens)
+        sim = score / max_score if max_score > 0 else 0
         if entry.get("grado") != grado:
             sim *= 0.80
         scored.append({**entry, "similitud": round(sim, 4)})
@@ -278,22 +289,22 @@ Tu tono debe ser {tono}.
 {idioma_inst}
 Tu respuesta debe tener {longitud}.
 
-REGLAS IMPORTANTES:
-- Basa tu respuesta PRINCIPALMENTE en el contexto educativo proporcionado abajo.
-- Si la información NO está en el contexto, admítelo honestamente con frases como \
-"No tengo esa información aquí, pero..." y da una orientación básica.
-- NUNCA inventes datos académicos incorrectos (fechas, fórmulas, nombres, conceptos).
-- Explica con tus propias palabras adaptadas al nivel del estudiante. \
-No copies el contexto textualmente.
-- Si el contexto no es relevante para la pregunta, dilo amablemente y sugiere \
-reformularla.
-
-CONTEXTO EDUCATIVO ({nombre_materia}, Grado {grado}):
-{ctx_text}
-
 PREGUNTA DEL ESTUDIANTE: {pregunta}
 
-RESPUESTA:"""
+INSTRUCCIONES:
+- Responde EXACTAMENTE esa pregunta — no la cambies ni respondas otra cosa.
+- Basa tu respuesta en el contexto educativo de abajo cuando sea relevante.
+- Si el contexto habla de un tema distinto al de la pregunta, ignóralo y \
+responde con tu conocimiento general del currículo escolar.
+- Si genuinamente no sabes, dilo con "No tengo esa información aquí, pero..." \
+y da una orientación básica.
+- NUNCA inventes datos académicos incorrectos (fechas, fórmulas, nombres, conceptos).
+- Explica con tus propias palabras, adaptadas al nivel del estudiante.
+
+CONTEXTO DE REFERENCIA ({nombre_materia}, Grado {grado}):
+{ctx_text}
+
+RESPUESTA (sobre "{pregunta}"):"""
 
 
 # ── Inicialización FAISS en background ───────────────────────────────────────
@@ -596,8 +607,8 @@ async def preguntar(req: PreguntaLLMRequest):
                     model=_GEMINI_MODEL_NAME,
                     contents=prompt,
                     config=_genai_types.GenerateContentConfig(
-                        max_output_tokens=350,
-                        temperature=0.4,
+                        max_output_tokens=500,
+                        temperature=0.35,
                     ),
                 ),
             )

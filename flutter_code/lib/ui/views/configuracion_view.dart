@@ -10,6 +10,8 @@ import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import 'registro_view.dart';
 import 'inicio_view.dart';
+import 'menu_1_y_2_view.dart';
+import 'menu_3_a_5_view.dart';
 
 class ConfiguracionView extends ConsumerStatefulWidget {
   const ConfiguracionView({super.key});
@@ -120,6 +122,84 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     final actualizado = estudiante.copyWith(nombre: nuevoNombre);
     await ref.read(estudianteRepositoryProvider).actualizar(actualizado);
     ref.read(estudianteActivoProvider.notifier).state = actualizado;
+  }
+
+  // ── Cambiar grado ─────────────────────────────────────────────
+  Future<void> _mostrarDialogoGrado() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    if (estudiante == null) return;
+
+    int gradoSeleccionado = estudiante.grado;
+
+    final nuevoGrado = await showDialog<int>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20)),
+          title: const Text('Cambiar grado',
+              style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(5, (i) {
+              final g = i + 1;
+              return RadioListTile<int>(
+                value: g,
+                groupValue: gradoSeleccionado,
+                onChanged: (v) {
+                  if (v != null) setDialogState(() => gradoSeleccionado = v);
+                },
+                title: Text('Grado $g',
+                    style: const TextStyle(fontFamily: 'Poppins')),
+                activeColor: _royalBlue,
+              );
+            }),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar',
+                  style: TextStyle(fontFamily: 'Poppins')),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: _royalBlue,
+                  foregroundColor: Colors.white),
+              onPressed: () => Navigator.pop(context, gradoSeleccionado),
+              child: const Text('Guardar',
+                  style: TextStyle(fontFamily: 'Poppins')),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (nuevoGrado == null || nuevoGrado == estudiante.grado) return;
+    if (!mounted) return;
+
+    final actualizado = estudiante.copyWith(grado: nuevoGrado);
+    await ref.read(estudianteRepositoryProvider).actualizar(actualizado);
+    ref.read(estudianteActivoProvider.notifier).state = actualizado;
+
+    if (!mounted) return;
+
+    final Widget destino = nuevoGrado <= 2
+        ? Menu1Y2Screen(
+            nombre: actualizado.nombre,
+            avatar: actualizado.personaje,
+            nivel: actualizado.grado,
+          )
+        : const Menu3A5Screen();
+
+    Navigator.of(context).pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (ctx, a, _) => destino,
+        transitionsBuilder: (ctx, anim, _, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+      (_) => false,
+    );
   }
 
   // ── Reiniciar base de datos ───────────────────────────────────
@@ -241,13 +321,23 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                                 ],
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                '$grado° Grado',
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    '$grado° Grado',
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: _mostrarDialogoGrado,
+                                    child: const Icon(Icons.edit_rounded,
+                                        color: Colors.white54, size: 16),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

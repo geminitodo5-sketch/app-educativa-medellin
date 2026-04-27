@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import '../terminado.dart';
 
@@ -135,7 +135,7 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       fontSize: 24,

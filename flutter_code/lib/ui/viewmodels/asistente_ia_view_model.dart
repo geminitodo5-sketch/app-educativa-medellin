@@ -149,14 +149,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     for (int i = 0; i < display.length; i++) {
       buf.writeln('${i + 1}. ${display[i]}');
     }
-    final actividades = _actividadesPorMateria(materia);
-    if (actividades.isNotEmpty) {
-      buf.writeln();
-      buf.writeln('Actividades disponibles (en el menú):');
-      for (final a in actividades) {
-        buf.writeln('  • $a');
-      }
-    }
     buf.write('\nO escribe tu propia pregunta directamente.');
 
     final msg2 = MensajeChat(

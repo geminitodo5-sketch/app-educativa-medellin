@@ -1,4 +1,4 @@
-// lib/ui/views/ingles_tarjetas_view.dart
+﻿// lib/ui/views/ingles_tarjetas_view.dart
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -253,7 +253,7 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       fontSize: 24,

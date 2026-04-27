@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -323,7 +323,7 @@ void _showFeedbackSheet(
                 ),
                 const SizedBox(width: 15),
                 Text(
-                  esCorrecto ? '¡Excelente trabajo!' : '¡Casi lo tienes!',
+                  esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                   style: TextStyle(
                     fontFamily: 'Hiruko',
                     fontSize: 24,
