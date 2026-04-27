@@ -112,8 +112,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
       );
       if (sugeridas.isNotEmpty) {
         final bienvenida = MensajeChat(
-          texto: '¡Hola! Soy tu asistente de ${_nombreMateria(materia)}. '
-                 'Puedes preguntarme cosas como:\n• ${sugeridas.take(3).join('\n• ')}',
+          texto: _mensajeBienvenida(materia, grado, sugeridas),
           rol: RolMensaje.asistente,
         );
         state = state.copyWith(mensajes: [bienvenida]);
@@ -238,6 +237,72 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
   }
 
   // ── Helpers ────────────────────────────────────────────────
+
+  static String _mensajeBienvenida(String materia, int grado, List<String> sugeridas) {
+    final nombre = _nombreMateria(materia);
+    final temas = _temasPorMateria(materia, grado);
+    final actividades = _actividadesPorMateria(materia);
+
+    final buf = StringBuffer();
+    buf.writeln('¡Bienvenido! Soy tu asistente de $nombre para grado $grado.');
+    buf.writeln();
+    buf.writeln('Puedo enseñarte temas como:');
+    for (final t in temas) {
+      buf.writeln('  • $t');
+    }
+    buf.writeln();
+    buf.writeln('Por ejemplo, puedes preguntarme:');
+    for (final s in sugeridas.take(3)) {
+      buf.writeln('  • $s');
+    }
+    if (actividades.isNotEmpty) {
+      buf.writeln();
+      buf.write('Tambien tienes actividades interactivas disponibles: ${actividades.join(', ')}. ¡Explorelas en el menu de la materia!');
+    }
+    return buf.toString().trim();
+  }
+
+  static List<String> _temasPorMateria(String materia, int grado) {
+    const mapa = <String, Map<int, List<String>>>{
+      'matematicas': {
+        3: ['Multiplicación y tablas', 'Fracciones', 'Figuras geométricas', 'Medidas y perímetro', 'Problemas de dos pasos'],
+        4: ['División de varias cifras', 'Fracciones equivalentes', 'Ángulos y polígonos', 'Porcentajes', 'Ecuaciones simples'],
+        5: ['Números enteros y negativos', 'Potencias y raíces', 'Fracciones y decimales', 'Álgebra básica', 'Estadística y probabilidad'],
+      },
+      'ciencias': {
+        3: ['Ecosistemas y cadenas alimenticias', 'Los animales: vertebrados e invertebrados', 'Las plantas y la fotosíntesis', 'El agua y su ciclo', 'Mezclas y materiales'],
+        4: ['El cuerpo humano y sus sistemas', 'Energía: tipos y transformaciones', 'El sistema solar', 'Cambios físicos y químicos', 'Biodiversidad de Colombia'],
+        5: ['La célula y el ADN', 'Cambio climático y medio ambiente', 'Energías renovables', 'Microorganismos y biotecnología', 'Circuitos eléctricos'],
+      },
+      'espanol': {
+        3: ['El cuento y sus partes', 'Sustantivos, adjetivos y verbos', 'Ortografía y acentuación', 'Textos descriptivos', 'Signos de puntuación'],
+        4: ['Texto argumentativo', 'La noticia y el periódico', 'Conectores textuales', 'Sujeto y predicado', 'Resumen y mapa conceptual'],
+        5: ['Figuras literarias', 'El ensayo', 'El debate', 'Coherencia y cohesión', 'Comunicación digital'],
+      },
+      'ingles': {
+        3: ['Saludos y presentaciones', 'Animales y hábitats', 'Familia y emociones', 'Colores, formas y objetos', 'Verbos del presente simple'],
+        4: ['Present y past continuous', 'Países y nacionalidades', 'Verbos modales (can, must, should)', 'Medio ambiente en inglés', 'Conectores del discurso'],
+        5: ['Present perfect', 'Voz pasiva', 'Condicionales', 'Estilo indirecto', 'Escritura formal e informal'],
+      },
+      'sociales': {
+        3: ['Regiones naturales de Colombia', 'Municipios y departamentos', 'Culturas afrocolombianas e indígenas', 'Gastronomía colombiana', 'Medio ambiente urbano'],
+        4: ['Independencia de Colombia', 'El Congreso y la democracia', 'Pisos térmicos y geografía', 'Economía colombiana', 'Historia del siglo XX'],
+        5: ['Historia de Colombia siglo XIX', 'Culturas precolombinas', 'Globalización y TLC', 'ODS y desarrollo sostenible', 'La Segunda Guerra Mundial'],
+      },
+    };
+    return mapa[materia]?[grado] ?? mapa[materia]?[3] ?? [];
+  }
+
+  static List<String> _actividadesPorMateria(String materia) {
+    const mapa = <String, List<String>>{
+      'matematicas': ['Los números', 'Quien tiene más', 'Sumar'],
+      'ciencias': ['Animales', 'Cuerpo humano', 'Las plantas', 'Vivo o no vivo'],
+      'espanol': ['Arma la palabra', 'Oraciones', 'Palabra loca'],
+      'ingles': ['Escucha y responde', 'Encuentra la pareja', 'Tarjetas de vocabulario'],
+      'sociales': ['Detective de objetos', 'Heroes de la ciudad', 'Pasado y presente'],
+    };
+    return mapa[materia] ?? [];
+  }
 
   static String _nombreMateria(String m) {
     const nombres = {

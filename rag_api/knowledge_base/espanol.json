@@ -4,586 +4,3143 @@
   "descripcion": "Base de conocimiento ampliada de Español (Lengua Castellana) grados 1-5 — currículo colombiano MEN",
   "contenido": [
     {
-      "id": "esp_g1_001", "grado": 1, "tema": "vocales",
+      "id": "esp_g1_001",
+      "grado": 1,
+      "tema": "vocales",
       "pregunta": "¿Cuáles son las vocales del español?",
       "respuesta": "Las vocales del español son cinco: A, E, I, O, U. Se llaman vocales porque cuando las pronunciamos el aire sale libremente por la boca sin ningún obstáculo. Las vocales son la base del idioma español y todas las palabras tienen al menos una vocal. Ejemplo: árbol, elefante, iglú, oso, uva.",
-      "palabras_clave": ["vocales", "vocal", "a", "e", "i", "o", "u", "pronunciar", "letras", "alfabeto"]
+      "palabras_clave": [
+        "vocales",
+        "vocal",
+        "a",
+        "e",
+        "i",
+        "o",
+        "u",
+        "pronunciar",
+        "letras",
+        "alfabeto"
+      ]
     },
     {
-      "id": "esp_g1_002", "grado": 1, "tema": "consonantes",
+      "id": "esp_g1_002",
+      "grado": 1,
+      "tema": "consonantes",
       "pregunta": "¿Qué son las consonantes?",
       "respuesta": "Las consonantes son las demás letras del alfabeto (además de las vocales). Son 22 consonantes en español: B, C, D, F, G, H, J, K, L, M, N, Ñ, P, Q, R, S, T, V, W, X, Y, Z. Para pronunciarlas necesitamos las vocales. Las consonantes y las vocales juntas forman las sílabas y las palabras.",
-      "palabras_clave": ["consonantes", "consonante", "letras", "alfabeto", "sílaba", "pronunciar", "b", "m", "n", "p", "s", "t"]
+      "palabras_clave": [
+        "consonantes",
+        "consonante",
+        "letras",
+        "alfabeto",
+        "sílaba",
+        "pronunciar",
+        "b",
+        "m",
+        "n",
+        "p",
+        "s",
+        "t"
+      ]
     },
     {
-      "id": "esp_g1_003", "grado": 1, "tema": "sílabas",
+      "id": "esp_g1_003",
+      "grado": 1,
+      "tema": "sílabas",
       "pregunta": "¿Qué es una sílaba?",
       "respuesta": "Una sílaba es cada golpe de voz al pronunciar una palabra. Para identificar las sílabas puedes palmear mientras dices la palabra. Ejemplo: 'ma-ri-po-sa' tiene 4 sílabas. 'ca-sa' tiene 2 sílabas. 'sol' tiene 1 sílaba. Las palabras de una sílaba se llaman monosílabas, de dos: bisílabas, de tres: trisílabas.",
-      "palabras_clave": ["sílaba", "sílabas", "palmear", "golpe", "monosílaba", "bisílaba", "trisílaba", "dividir", "separar"]
+      "palabras_clave": [
+        "sílaba",
+        "sílabas",
+        "palmear",
+        "golpe",
+        "monosílaba",
+        "bisílaba",
+        "trisílaba",
+        "dividir",
+        "separar"
+      ]
     },
     {
-      "id": "esp_g1_004", "grado": 1, "tema": "lectura",
+      "id": "esp_g1_004",
+      "grado": 1,
+      "tema": "lectura",
       "pregunta": "¿Para qué sirve leer?",
       "respuesta": "Leer sirve para aprender, imaginar, entretenerse y comunicarse. Cuando leemos desarrollamos el vocabulario, la imaginación y la capacidad de pensar. Leer cuentos, libros y textos nos ayuda a conocer el mundo, a entender otras ideas y a escribir mejor. La lectura es una de las habilidades más importantes en la vida.",
-      "palabras_clave": ["leer", "lectura", "libro", "cuento", "aprender", "imaginar", "vocabulario", "comprender", "texto"]
+      "palabras_clave": [
+        "leer",
+        "lectura",
+        "libro",
+        "cuento",
+        "aprender",
+        "imaginar",
+        "vocabulario",
+        "comprender",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g2_001", "grado": 2, "tema": "oraciones",
+      "id": "esp_g2_001",
+      "grado": 2,
+      "tema": "oraciones",
       "pregunta": "¿Qué es una oración?",
       "respuesta": "Una oración es un conjunto de palabras que tiene sentido completo. Toda oración tiene dos partes: el sujeto (de quién se habla) y el predicado (lo que se dice del sujeto). Ejemplo: 'El niño juega en el parque'. El sujeto es 'El niño' y el predicado es 'juega en el parque'. Siempre empieza con mayúscula y termina con punto.",
-      "palabras_clave": ["oración", "oraciones", "sujeto", "predicado", "sentido", "mayúscula", "punto", "palabras", "significado"]
+      "palabras_clave": [
+        "oración",
+        "oraciones",
+        "sujeto",
+        "predicado",
+        "sentido",
+        "mayúscula",
+        "punto",
+        "palabras",
+        "significado"
+      ]
     },
     {
-      "id": "esp_g2_002", "grado": 2, "tema": "signos de puntuación",
+      "id": "esp_g2_002",
+      "grado": 2,
+      "tema": "signos de puntuación",
       "pregunta": "¿Para qué sirven el punto y la coma?",
       "respuesta": "El punto (.) indica el final de una oración. Después del punto se escribe con mayúscula. La coma (,) indica una pausa breve dentro de la oración para separar ideas o hacer listas. Ejemplo: 'Compré manzanas, peras, uvas y bananos.' Estos signos nos ayudan a entender mejor lo que leemos.",
-      "palabras_clave": ["punto", "coma", "signos de puntuación", "pausa", "final", "oración", "lista", "enumeración", "mayúscula"]
+      "palabras_clave": [
+        "punto",
+        "coma",
+        "signos de puntuación",
+        "pausa",
+        "final",
+        "oración",
+        "lista",
+        "enumeración",
+        "mayúscula"
+      ]
     },
     {
-      "id": "esp_g2_003", "grado": 2, "tema": "tipos de texto",
+      "id": "esp_g2_003",
+      "grado": 2,
+      "tema": "tipos de texto",
       "pregunta": "¿Qué es un cuento?",
       "respuesta": "Un cuento es un texto narrativo corto que cuenta una historia con personajes, un lugar y una situación. Los cuentos tienen tres partes: inicio (se presentan los personajes y el problema), nudo (el problema se complica) y desenlace (el problema se resuelve). Los cuentos pueden ser reales o fantásticos.",
-      "palabras_clave": ["cuento", "cuentos", "narrativo", "personajes", "historia", "inicio", "nudo", "desenlace", "fantástico", "real"]
+      "palabras_clave": [
+        "cuento",
+        "cuentos",
+        "narrativo",
+        "personajes",
+        "historia",
+        "inicio",
+        "nudo",
+        "desenlace",
+        "fantástico",
+        "real"
+      ]
     },
     {
-      "id": "esp_g3_001", "grado": 3, "tema": "sinónimos y antónimos",
+      "id": "esp_g3_001",
+      "grado": 3,
+      "tema": "sinónimos y antónimos",
       "pregunta": "¿Qué son los sinónimos?",
       "respuesta": "Los sinónimos son palabras que tienen el mismo significado o un significado muy parecido. Por ejemplo: feliz y alegre son sinónimos, rápido y veloz son sinónimos, grande y enorme son sinónimos. Usar sinónimos nos ayuda a no repetir siempre la misma palabra y hace que los textos sean más variados y ricos.",
-      "palabras_clave": ["sinónimos", "sinónimo", "significado", "igual", "parecido", "feliz", "alegre", "rápido", "veloz", "vocabulario"]
+      "palabras_clave": [
+        "sinónimos",
+        "sinónimo",
+        "significado",
+        "igual",
+        "parecido",
+        "feliz",
+        "alegre",
+        "rápido",
+        "veloz",
+        "vocabulario"
+      ]
     },
     {
-      "id": "esp_g3_002", "grado": 3, "tema": "sinónimos y antónimos",
+      "id": "esp_g3_002",
+      "grado": 3,
+      "tema": "sinónimos y antónimos",
       "pregunta": "¿Qué son los antónimos?",
       "respuesta": "Los antónimos son palabras que tienen significados opuestos o contrarios. Por ejemplo: frío y caliente, grande y pequeño, rápido y lento, subir y bajar, claro y oscuro. Los antónimos nos ayudan a comparar y contrastar ideas. Son muy útiles en la escritura para crear contraste.",
-      "palabras_clave": ["antónimos", "antónimo", "contrario", "opuesto", "frío", "caliente", "grande", "pequeño", "significado", "contraste"]
+      "palabras_clave": [
+        "antónimos",
+        "antónimo",
+        "contrario",
+        "opuesto",
+        "frío",
+        "caliente",
+        "grande",
+        "pequeño",
+        "significado",
+        "contraste"
+      ]
     },
     {
-      "id": "esp_g3_003", "grado": 3, "tema": "párrafo",
+      "id": "esp_g3_003",
+      "grado": 3,
+      "tema": "párrafo",
       "pregunta": "¿Qué es un párrafo?",
       "respuesta": "Un párrafo es un conjunto de oraciones que tratan sobre una misma idea o tema. Empieza con sangría (pequeño espacio) o con una línea en blanco y termina con punto aparte. Todo párrafo tiene: oración principal (la idea más importante) y oraciones secundarias (que explican o amplían la idea principal).",
-      "palabras_clave": ["párrafo", "párrafos", "oración", "idea", "sangría", "texto", "escribir", "organizar", "principal", "secundaria"]
+      "palabras_clave": [
+        "párrafo",
+        "párrafos",
+        "oración",
+        "idea",
+        "sangría",
+        "texto",
+        "escribir",
+        "organizar",
+        "principal",
+        "secundaria"
+      ]
     },
     {
-      "id": "esp_g3_004", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_004",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Cuándo se usa la letra mayúscula?",
       "respuesta": "Se escribe con mayúscula: 1) Al inicio de cada oración (después del punto). 2) Los nombres propios (personas: María, Juan; ciudades: Medellín, Bogotá; países: Colombia). 3) El pronombre 'Yo' (en algunos estilos formales). 4) Siglas y acrónimos (ONU, NASA). 5) Los títulos de libros, películas y obras de arte. Nunca se usan tildes en mayúsculas aunque la palabra las lleve.",
-      "palabras_clave": ["mayúscula", "minúscula", "nombre propio", "oración", "Medellín", "Colombia", "punto", "título", "sigla"]
+      "palabras_clave": [
+        "mayúscula",
+        "minúscula",
+        "nombre propio",
+        "oración",
+        "Medellín",
+        "Colombia",
+        "punto",
+        "título",
+        "sigla"
+      ]
     },
     {
-      "id": "esp_g3_005", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_005",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Cuál es la diferencia entre 'b' y 'v'?",
       "respuesta": "En español moderno, la 'b' (be) y la 'v' (ve) suenan igual. Reglas para la 'b': palabras con 'mb' y 'bl' (cambio, blusa), verbos terminados en -bir (escribir, recibir), formas del verbo 'haber' (había, hubo). Reglas para la 'v': después de 'd' (advertir), adjetivos terminados en -ava, -eve, -ivo (nuevo, activo). Lo mejor: aprender las palabras de memoria y consultar el diccionario.",
-      "palabras_clave": ["b", "v", "ortografía", "regla", "mb", "bl", "escribir", "haber", "nuevo", "activo", "confundir"]
+      "palabras_clave": [
+        "b",
+        "v",
+        "ortografía",
+        "regla",
+        "mb",
+        "bl",
+        "escribir",
+        "haber",
+        "nuevo",
+        "activo",
+        "confundir"
+      ]
     },
     {
-      "id": "esp_g3_006", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_006",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Cómo uso el punto, la coma y el punto y coma?",
       "respuesta": "Punto (.): termina una oración. Coma (,): pausa breve, separa elementos de una lista, aísla elementos aclaratorios. Punto y coma (;): pausa mayor que la coma pero menor que el punto, separa proposiciones relacionadas. Dos puntos (:): introduce una enumeración o cita. Puntos suspensivos (...): dejan la idea incompleta o crean suspenso.",
-      "palabras_clave": ["punto", "coma", "punto y coma", "dos puntos", "puntos suspensivos", "signos", "puntuación", "pausa", "oración"]
+      "palabras_clave": [
+        "punto",
+        "coma",
+        "punto y coma",
+        "dos puntos",
+        "puntos suspensivos",
+        "signos",
+        "puntuación",
+        "pausa",
+        "oración"
+      ]
     },
     {
-      "id": "esp_g3_007", "grado": 3, "tema": "comprensión lectora",
+      "id": "esp_g3_007",
+      "grado": 3,
+      "tema": "comprensión lectora",
       "pregunta": "¿Cómo identifico la idea principal de un texto?",
       "respuesta": "La idea principal es el mensaje más importante del texto. Para encontrarla: 1) Lee el texto completo. 2) Pregúntate: ¿de qué trata principalmente? 3) Busca la oración que resume mejor el tema. 4) Generalmente está al inicio del párrafo (oración temática). Las ideas secundarias dan detalles, ejemplos o explicaciones que apoyan la idea principal.",
-      "palabras_clave": ["idea principal", "texto", "mensaje", "identificar", "párrafo", "secundaria", "resumen", "tema", "oración temática"]
+      "palabras_clave": [
+        "idea principal",
+        "texto",
+        "mensaje",
+        "identificar",
+        "párrafo",
+        "secundaria",
+        "resumen",
+        "tema",
+        "oración temática"
+      ]
     },
     {
-      "id": "esp_g3_008", "grado": 3, "tema": "vocabulario",
+      "id": "esp_g3_008",
+      "grado": 3,
+      "tema": "vocabulario",
       "pregunta": "¿Cómo puedo aumentar mi vocabulario en español?",
       "respuesta": "Para aumentar el vocabulario: 1) Lee mucho (libros, cuentos, revistas). 2) Cuando encuentres una palabra desconocida, búscala en el diccionario. 3) Aprende familias de palabras (correr → corredor, corrida, recorrido). 4) Usa palabras nuevas en oraciones propias. 5) Aprende sinónimos de palabras que ya conoces. 6) Juega con las palabras: crucigramas, sopas de letras.",
-      "palabras_clave": ["vocabulario", "palabras", "diccionario", "leer", "familia", "sinónimos", "aprender", "crucigramas", "aumentar"]
+      "palabras_clave": [
+        "vocabulario",
+        "palabras",
+        "diccionario",
+        "leer",
+        "familia",
+        "sinónimos",
+        "aprender",
+        "crucigramas",
+        "aumentar"
+      ]
     },
     {
-      "id": "esp_g3_009", "grado": 3, "tema": "tipos de texto",
+      "id": "esp_g3_009",
+      "grado": 3,
+      "tema": "tipos de texto",
       "pregunta": "¿Qué es una descripción?",
       "respuesta": "Una descripción es un texto que explica cómo es algo (un objeto, persona, lugar o animal) usando detalles precisos. Una buena descripción usa: adjetivos (grande, rojo, suave), comparaciones (es como..., parece...) y orden (de arriba hacia abajo, del exterior al interior). Para describir una persona: primero el aspecto físico, luego el carácter.",
-      "palabras_clave": ["descripción", "describir", "adjetivos", "detalles", "persona", "lugar", "objeto", "comparación", "características", "texto"]
+      "palabras_clave": [
+        "descripción",
+        "describir",
+        "adjetivos",
+        "detalles",
+        "persona",
+        "lugar",
+        "objeto",
+        "comparación",
+        "características",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g3_010", "grado": 3, "tema": "lectura",
+      "id": "esp_g3_010",
+      "grado": 3,
+      "tema": "lectura",
       "pregunta": "¿Qué estrategias me ayudan a leer mejor?",
       "respuesta": "Estrategias de lectura: 1) Prelectura: mira el título, las imágenes y los subtítulos antes de leer. 2) Mientras lees: subraya las ideas importantes y las palabras desconocidas. 3) Tras la lectura: resume con tus palabras lo que leíste. 4) Hazte preguntas: ¿qué?, ¿quién?, ¿cuándo?, ¿dónde?, ¿por qué? 5) Conecta lo que leíste con tus experiencias. Esto se llama lectura activa.",
-      "palabras_clave": ["estrategia", "leer", "lectura activa", "subrayar", "resumir", "preguntas", "título", "imágenes", "comprensión"]
+      "palabras_clave": [
+        "estrategia",
+        "leer",
+        "lectura activa",
+        "subrayar",
+        "resumir",
+        "preguntas",
+        "título",
+        "imágenes",
+        "comprensión"
+      ]
     },
     {
-      "id": "esp_g3_011", "grado": 3, "tema": "escritura",
+      "id": "esp_g3_011",
+      "grado": 3,
+      "tema": "escritura",
       "pregunta": "¿Qué es la coherencia en un texto?",
       "respuesta": "La coherencia es la propiedad que hace que las ideas de un texto tengan sentido y estén bien organizadas. Un texto coherente: trata solo un tema, las ideas se conectan lógicamente, no se contradice, las oraciones se relacionan entre sí. Para lograrla: organiza tus ideas antes de escribir, usa conectores (entonces, porque, sin embargo) y revisa que todo tenga sentido.",
-      "palabras_clave": ["coherencia", "texto", "ideas", "organizadas", "sentido", "conectores", "entonces", "porque", "relacionar", "escribir"]
+      "palabras_clave": [
+        "coherencia",
+        "texto",
+        "ideas",
+        "organizadas",
+        "sentido",
+        "conectores",
+        "entonces",
+        "porque",
+        "relacionar",
+        "escribir"
+      ]
     },
     {
-      "id": "esp_g3_012", "grado": 3, "tema": "escritura",
+      "id": "esp_g3_012",
+      "grado": 3,
+      "tema": "escritura",
       "pregunta": "¿Cómo escribo un cuento corto?",
       "respuesta": "Para escribir un cuento: 1) Inventa los personajes (protagonista, antagonista). 2) Define el lugar y el tiempo. 3) Crea un problema (nudo). 4) Escribe el inicio: presenta los personajes. 5) Desarrolla el problema. 6) Resuelve el problema (desenlace). 7) Revisa la ortografía. Un buen cuento tiene: un título atractivo, diálogos, descripciones y un final sorpresivo.",
-      "palabras_clave": ["cuento", "escribir", "personajes", "protagonista", "nudo", "inicio", "desenlace", "problema", "resolver", "título"]
+      "palabras_clave": [
+        "cuento",
+        "escribir",
+        "personajes",
+        "protagonista",
+        "nudo",
+        "inicio",
+        "desenlace",
+        "problema",
+        "resolver",
+        "título"
+      ]
     },
     {
-      "id": "esp_g3_013", "grado": 3, "tema": "gramática",
+      "id": "esp_g3_013",
+      "grado": 3,
+      "tema": "gramática",
       "pregunta": "¿Qué son los sustantivos?",
       "respuesta": "Los sustantivos son palabras que nombran personas, animales, cosas, lugares o ideas. Pueden ser: comunes (mesa, perro, ciudad) o propios (María, Medellín, Colombia). Concretos (se pueden tocar: libro, silla) o abstractos (no se tocan: amor, libertad, felicidad). Individuales (árbol) o colectivos (bosque = conjunto de árboles). Los sustantivos tienen género (masculino/femenino) y número (singular/plural).",
-      "palabras_clave": ["sustantivo", "sustantivos", "nombre", "persona", "animal", "cosa", "común", "propio", "concreto", "abstracto", "género", "número"]
+      "palabras_clave": [
+        "sustantivo",
+        "sustantivos",
+        "nombre",
+        "persona",
+        "animal",
+        "cosa",
+        "común",
+        "propio",
+        "concreto",
+        "abstracto",
+        "género",
+        "número"
+      ]
     },
     {
-      "id": "esp_g3_014", "grado": 3, "tema": "gramática",
+      "id": "esp_g3_014",
+      "grado": 3,
+      "tema": "gramática",
       "pregunta": "¿Qué son los adjetivos?",
       "respuesta": "Los adjetivos son palabras que describen o califican a los sustantivos. Responden a las preguntas: ¿cómo es?, ¿qué clase?, ¿cuántos? Ejemplos: el cielo azul (calificativo), tres libros (numeral), este lápiz (demostrativo), mucho dinero (indefinido). Los adjetivos concuerdan en género y número con el sustantivo al que acompañan.",
-      "palabras_clave": ["adjetivo", "adjetivos", "calificar", "describir", "cómo es", "azul", "tres", "numeral", "demostrativo", "género", "número"]
+      "palabras_clave": [
+        "adjetivo",
+        "adjetivos",
+        "calificar",
+        "describir",
+        "cómo es",
+        "azul",
+        "tres",
+        "numeral",
+        "demostrativo",
+        "género",
+        "número"
+      ]
     },
     {
-      "id": "esp_g3_015", "grado": 3, "tema": "gramática",
+      "id": "esp_g3_015",
+      "grado": 3,
+      "tema": "gramática",
       "pregunta": "¿Qué son los verbos?",
       "respuesta": "Los verbos son palabras que expresan acciones, estados o procesos. Son el núcleo del predicado. Ejemplo: 'La niña corre en el parque'. 'Corre' es el verbo. Los verbos cambian según: la persona (yo corro, tú corres, él corre), el número (yo corro, nosotros corremos) y el tiempo (corrí/corro/correré). El infinitivo es la forma básica: correr, comer, vivir.",
-      "palabras_clave": ["verbo", "verbos", "acción", "estado", "proceso", "corre", "persona", "número", "tiempo", "infinitivo", "predicado"]
+      "palabras_clave": [
+        "verbo",
+        "verbos",
+        "acción",
+        "estado",
+        "proceso",
+        "corre",
+        "persona",
+        "número",
+        "tiempo",
+        "infinitivo",
+        "predicado"
+      ]
     },
     {
-      "id": "esp_g3_016", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_016",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Qué es el acento o tilde y cuándo se usa?",
       "respuesta": "El acento escrito o tilde (´) indica qué sílaba se pronuncia con más fuerza. Reglas básicas: Palabras agudas (énfasis en la última sílaba): tilde si terminan en vocal, n o s (café, jamón, compás). Graves (énfasis en penúltima): tilde si NO terminan en vocal, n o s (árbol, azúcar). Esdrújulas (énfasis en antepenúltima): siempre llevan tilde (música, pájaro, cómodo).",
-      "palabras_clave": ["tilde", "acento", "aguda", "grave", "esdrújula", "sílaba", "café", "árbol", "música", "pájaro", "énfasis", "ortografía"]
+      "palabras_clave": [
+        "tilde",
+        "acento",
+        "aguda",
+        "grave",
+        "esdrújula",
+        "sílaba",
+        "café",
+        "árbol",
+        "música",
+        "pájaro",
+        "énfasis",
+        "ortografía"
+      ]
     },
     {
-      "id": "esp_g3_017", "grado": 3, "tema": "literatura",
+      "id": "esp_g3_017",
+      "grado": 3,
+      "tema": "literatura",
       "pregunta": "¿Qué es una fábula?",
       "respuesta": "Una fábula es un cuento corto en el que los personajes son animales que se comportan como personas y al final hay una enseñanza o moraleja. El autor más famoso de fábulas en el mundo occidental es Esopo (griego). En Colombia, Rafael Pombo escribió fábulas y cuentos famosos como 'Simón el Bobito' y 'Rin Rin Renacuajo'. La moraleja es la lección que nos deja la fábula.",
-      "palabras_clave": ["fábula", "moraleja", "animales", "enseñanza", "Esopo", "Rafael Pombo", "Colombia", "Simón el Bobito", "cuento", "personajes"]
+      "palabras_clave": [
+        "fábula",
+        "moraleja",
+        "animales",
+        "enseñanza",
+        "Esopo",
+        "Rafael Pombo",
+        "Colombia",
+        "Simón el Bobito",
+        "cuento",
+        "personajes"
+      ]
     },
     {
-      "id": "esp_g3_018", "grado": 3, "tema": "comunicación",
+      "id": "esp_g3_018",
+      "grado": 3,
+      "tema": "comunicación",
       "pregunta": "¿Cuáles son los elementos de la comunicación?",
       "respuesta": "La comunicación tiene 6 elementos: 1) Emisor: quien envía el mensaje. 2) Receptor: quien recibe el mensaje. 3) Mensaje: lo que se comunica. 4) Canal: el medio (voz, papel, teléfono). 5) Código: el sistema de signos (idioma, señas). 6) Contexto: la situación en que se da la comunicación. Ejemplo: cuando el profesor (emisor) explica (mensaje) al estudiante (receptor) en clase (contexto).",
-      "palabras_clave": ["comunicación", "emisor", "receptor", "mensaje", "canal", "código", "contexto", "medio", "signos", "idioma"]
+      "palabras_clave": [
+        "comunicación",
+        "emisor",
+        "receptor",
+        "mensaje",
+        "canal",
+        "código",
+        "contexto",
+        "medio",
+        "signos",
+        "idioma"
+      ]
     },
     {
-      "id": "esp_g3_019", "grado": 3, "tema": "lectura de poesía",
+      "id": "esp_g3_019",
+      "grado": 3,
+      "tema": "lectura de poesía",
       "pregunta": "¿Qué es un poema?",
       "respuesta": "Un poema es un texto literario escrito en versos que expresa sentimientos, emociones o describe el mundo con un lenguaje artístico y musical. Los poemas pueden tener rima (los versos terminan con sonidos iguales o parecidos) o no (verso libre). Elementos: versos (cada línea), estrofas (grupos de versos), rima y ritmo. La poesía usa mucho las metáforas y comparaciones.",
-      "palabras_clave": ["poema", "poesía", "verso", "estrofa", "rima", "ritmo", "métáfora", "comparación", "sentimientos", "artístico"]
+      "palabras_clave": [
+        "poema",
+        "poesía",
+        "verso",
+        "estrofa",
+        "rima",
+        "ritmo",
+        "métáfora",
+        "comparación",
+        "sentimientos",
+        "artístico"
+      ]
     },
     {
-      "id": "esp_g3_020", "grado": 3, "tema": "escritura creativa",
+      "id": "esp_g3_020",
+      "grado": 3,
+      "tema": "escritura creativa",
       "pregunta": "¿Cómo escribo una descripción de un lugar?",
       "respuesta": "Para describir un lugar: 1) Observa con todos los sentidos: ¿qué ves, oyes, hueles, sientes? 2) Usa adjetivos detallados. 3) Organiza la descripción (de lo general a lo específico, de lejos a cerca). 4) Usa comparaciones ('el río brillaba como un espejo'). 5) Incluye la atmósfera (tranquilo, bullicioso, mágico). Ejemplo: 'El parque Arví en Medellín es un bosque misterioso lleno de colores y sonidos de aves...'",
-      "palabras_clave": ["descripción", "lugar", "sentidos", "adjetivos", "comparación", "atmósfera", "parque", "Medellín", "bosque", "escribir"]
+      "palabras_clave": [
+        "descripción",
+        "lugar",
+        "sentidos",
+        "adjetivos",
+        "comparación",
+        "atmósfera",
+        "parque",
+        "Medellín",
+        "bosque",
+        "escribir"
+      ]
     },
     {
-      "id": "esp_g3_021", "grado": 3, "tema": "gramática",
+      "id": "esp_g3_021",
+      "grado": 3,
+      "tema": "gramática",
       "pregunta": "¿Qué son los artículos?",
       "respuesta": "Los artículos son palabras que acompañan a los sustantivos e indican si son conocidos o no. Artículos definidos (determinados): el, la, los, las (se usa cuando ya se conoce el sustantivo: 'el perro'). Artículos indefinidos (indeterminados): un, una, unos, unas (cuando es desconocido: 'un perro'). Los artículos concuerdan en género y número con el sustantivo.",
-      "palabras_clave": ["artículos", "el", "la", "los", "las", "un", "una", "definido", "indefinido", "género", "número", "sustantivo"]
+      "palabras_clave": [
+        "artículos",
+        "el",
+        "la",
+        "los",
+        "las",
+        "un",
+        "una",
+        "definido",
+        "indefinido",
+        "género",
+        "número",
+        "sustantivo"
+      ]
     },
     {
-      "id": "esp_g3_022", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_022",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Cuándo se usan las comillas y los signos de exclamación?",
       "respuesta": "Comillas (\" \"): para citar lo que dijo alguien textualmente ('Ella dijo: \"vengo mañana\"'), para títulos de canciones y artículos, y para marcar términos especiales. Signos de exclamación (¡!): abren y cierran las expresiones de emoción fuerte (¡Qué hermoso! ¡Ayuda!). En español el signo de apertura (¡) es obligatorio. Signos de interrogación (¿?): para preguntas (¿Cómo te llamas?).",
-      "palabras_clave": ["comillas", "exclamación", "¡!", "interrogación", "¿?", "cita", "emoción", "pregunta", "apertura", "cierre", "signos"]
+      "palabras_clave": [
+        "comillas",
+        "exclamación",
+        "¡!",
+        "interrogación",
+        "¿?",
+        "cita",
+        "emoción",
+        "pregunta",
+        "apertura",
+        "cierre",
+        "signos"
+      ]
     },
     {
-      "id": "esp_g3_023", "grado": 3, "tema": "gramática",
+      "id": "esp_g3_023",
+      "grado": 3,
+      "tema": "gramática",
       "pregunta": "¿Qué son los pronombres?",
       "respuesta": "Los pronombres reemplazan al sustantivo para evitar repeticiones. Personales: yo, tú, él, ella, nosotros, vosotros, ellos, ellas. Posesivos: mío, tuyo, suyo, nuestro. Demostrativos: este, ese, aquel. Relativos: que, quien, cual. Ejemplo sin pronombre: 'María tiene un perro. El perro de María es grande'. Con pronombre: 'María tiene un perro. Él es grande' (él reemplaza a 'el perro').",
-      "palabras_clave": ["pronombres", "pronombre", "yo", "tú", "él", "ella", "nosotros", "posesivo", "demostrativo", "reemplazar", "evitar repetición"]
+      "palabras_clave": [
+        "pronombres",
+        "pronombre",
+        "yo",
+        "tú",
+        "él",
+        "ella",
+        "nosotros",
+        "posesivo",
+        "demostrativo",
+        "reemplazar",
+        "evitar repetición"
+      ]
     },
     {
-      "id": "esp_g3_024", "grado": 3, "tema": "comprensión lectora",
+      "id": "esp_g3_024",
+      "grado": 3,
+      "tema": "comprensión lectora",
       "pregunta": "¿Qué es un texto informativo?",
       "respuesta": "Un texto informativo transmite información real y objetiva sobre un tema. No cuenta una historia (eso es narrativo). Ejemplos: artículos de enciclopedia, noticias, manuales de instrucciones, afiches informativos. Sus características: lenguaje claro y preciso, uso de datos y hechos verificables, organización lógica (título, desarrollo, conclusión). En el colegio los textos de ciencias y sociales son informativos.",
-      "palabras_clave": ["texto informativo", "información", "real", "objetivo", "noticia", "enciclopedia", "manual", "datos", "hechos", "claro"]
+      "palabras_clave": [
+        "texto informativo",
+        "información",
+        "real",
+        "objetivo",
+        "noticia",
+        "enciclopedia",
+        "manual",
+        "datos",
+        "hechos",
+        "claro"
+      ]
     },
     {
-      "id": "esp_g3_025", "grado": 3, "tema": "escritura",
+      "id": "esp_g3_025",
+      "grado": 3,
+      "tema": "escritura",
       "pregunta": "¿Cómo organizo mis ideas antes de escribir?",
       "respuesta": "Para organizar ideas antes de escribir usa el mapa mental o la lluvia de ideas: 1) Escribe el tema en el centro. 2) Anota todas las ideas relacionadas alrededor. 3) Conecta las ideas con flechas. 4) Decide el orden: ¿qué va primero, segundo y último? También puedes usar un esquema o borrador. La organización previa hace que el texto sea más claro y coherente.",
-      "palabras_clave": ["organizar ideas", "mapa mental", "lluvia de ideas", "borrador", "esquema", "orden", "escribir", "coherente", "tema", "planear"]
+      "palabras_clave": [
+        "organizar ideas",
+        "mapa mental",
+        "lluvia de ideas",
+        "borrador",
+        "esquema",
+        "orden",
+        "escribir",
+        "coherente",
+        "tema",
+        "planear"
+      ]
     },
     {
-      "id": "esp_g3_026", "grado": 3, "tema": "literatura colombiana",
+      "id": "esp_g3_026",
+      "grado": 3,
+      "tema": "literatura colombiana",
       "pregunta": "¿Quién fue Rafael Pombo y qué escribió?",
       "respuesta": "Rafael Pombo (1833-1912) fue un poeta y escritor colombiano considerado el más grande poeta del siglo XIX en Colombia. Nació en Bogotá. Escribió poemas y fábulas para niños muy famosos: 'Rin Rin Renacuajo', 'Simón el Bobito', 'La pobre viejecita', 'El gato bandido', 'Pastorcita'. También escribió poesía seria para adultos. Recibió el Premio Rafael Pombo sigue siendo uno de los íconos de la literatura infantil colombiana.",
-      "palabras_clave": ["Rafael Pombo", "poeta", "colombiano", "Bogotá", "Rin Rin Renacuajo", "Simón el Bobito", "fábula", "poema", "niños", "literatura"]
+      "palabras_clave": [
+        "Rafael Pombo",
+        "poeta",
+        "colombiano",
+        "Bogotá",
+        "Rin Rin Renacuajo",
+        "Simón el Bobito",
+        "fábula",
+        "poema",
+        "niños",
+        "literatura"
+      ]
     },
     {
-      "id": "esp_g3_027", "grado": 3, "tema": "lectura",
+      "id": "esp_g3_027",
+      "grado": 3,
+      "tema": "lectura",
       "pregunta": "¿Cómo hago un resumen?",
       "respuesta": "Para hacer un resumen: 1) Lee el texto completo. 2) Identifica las ideas principales de cada párrafo. 3) Escribe con tus propias palabras (no copies). 4) El resumen debe ser más corto que el original (aproximadamente 1/3). 5) Incluye solo lo más importante, sin detalles innecesarios. 6) Revisa que el resumen tenga sentido aunque no se haya leído el texto original.",
-      "palabras_clave": ["resumen", "resumir", "ideas principales", "propias palabras", "corto", "párrafo", "texto", "importante", "síntesis"]
+      "palabras_clave": [
+        "resumen",
+        "resumir",
+        "ideas principales",
+        "propias palabras",
+        "corto",
+        "párrafo",
+        "texto",
+        "importante",
+        "síntesis"
+      ]
     },
     {
-      "id": "esp_g3_028", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_028",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Cuándo se escribe 'g' y cuándo 'j'?",
       "respuesta": "La 'g' suena suave (como en gato) antes de a, o, u; y suena fuerte (como j) antes de e, i (genio, gitano). La 'j' suena siempre igual (fuerte): jamón, jitomate, joven. Reglas de 'j': verbos terminados en -jar (trabajar, bajar), palabras terminadas en -aje (viaje, mensaje), después de 'ad' y 'obj'. La 'g' suave antes de e, i se escribe 'ge' 'gi' (general, girar).",
-      "palabras_clave": ["g", "j", "ortografía", "gato", "genio", "jamón", "viaje", "trabajar", "regla", "suave", "fuerte"]
+      "palabras_clave": [
+        "g",
+        "j",
+        "ortografía",
+        "gato",
+        "genio",
+        "jamón",
+        "viaje",
+        "trabajar",
+        "regla",
+        "suave",
+        "fuerte"
+      ]
     },
     {
-      "id": "esp_g3_029", "grado": 3, "tema": "hablar en público",
+      "id": "esp_g3_029",
+      "grado": 3,
+      "tema": "hablar en público",
       "pregunta": "¿Cómo puedo hablar bien en público?",
       "respuesta": "Para hablar bien en público: 1) Conoce bien el tema. 2) Practica antes (frente al espejo o con familia). 3) Habla claro, despacio y fuerte. 4) Mira al público mientras hablas. 5) No leas todo de un papel (solo mira notas). 6) Usa gestos naturales. 7) Si te pones nervioso, respira profundo. 8) Organiza tu exposición: inicio, desarrollo y conclusión. La práctica hace al maestro.",
-      "palabras_clave": ["hablar en público", "exposición", "practicar", "voz", "claro", "nervioso", "gestos", "organización", "inicio", "conclusión"]
+      "palabras_clave": [
+        "hablar en público",
+        "exposición",
+        "practicar",
+        "voz",
+        "claro",
+        "nervioso",
+        "gestos",
+        "organización",
+        "inicio",
+        "conclusión"
+      ]
     },
     {
-      "id": "esp_g3_030", "grado": 3, "tema": "ortografía",
+      "id": "esp_g3_030",
+      "grado": 3,
+      "tema": "ortografía",
       "pregunta": "¿Cuándo se escribe 's', 'c' o 'z'?",
       "respuesta": "Estas tres letras pueden sonar igual en Colombia (seseo). 'Z': antes de a, o, u (zapato, zoológico, azúcar) y al final de sílaba (paz, nariz). 'C': suena como 's' antes de 'e' e 'i' (cebolla, ciudad). 'S': en la mayoría de contextos (sol, silla, cosa). Truco: en Colombia decimos 'sapato' pero se escribe 'zapato'. El diccionario es el mejor árbitro.",
-      "palabras_clave": ["s", "c", "z", "seseo", "zapato", "ciudad", "cebolla", "ortografía", "pronunciar", "Colombia", "diccionario"]
+      "palabras_clave": [
+        "s",
+        "c",
+        "z",
+        "seseo",
+        "zapato",
+        "ciudad",
+        "cebolla",
+        "ortografía",
+        "pronunciar",
+        "Colombia",
+        "diccionario"
+      ]
     },
     {
-      "id": "esp_g3_031", "grado": 3, "tema": "géneros literarios",
+      "id": "esp_g3_031",
+      "grado": 3,
+      "tema": "géneros literarios",
       "pregunta": "¿Qué es una leyenda?",
       "respuesta": "Una leyenda es una narración que mezcla elementos reales e imaginarios y que se transmite de generación en generación. Nace de la tradición oral de un pueblo. En Colombia hay muchas leyendas: La Llorona (mujer que llora por sus hijos), El Mohán (espíritu de los ríos), La Patasola (ser del bosque), El Hojarasquín del Monte, La Madre Monte. Las leyendas reflejan la cultura y el pensamiento de cada región.",
-      "palabras_clave": ["leyenda", "Colombia", "La Llorona", "El Mohán", "Patasola", "tradición oral", "cultura", "región", "imaginario", "real"]
+      "palabras_clave": [
+        "leyenda",
+        "Colombia",
+        "La Llorona",
+        "El Mohán",
+        "Patasola",
+        "tradición oral",
+        "cultura",
+        "región",
+        "imaginario",
+        "real"
+      ]
     },
     {
-      "id": "esp_g3_032", "grado": 3, "tema": "gramática avanzada",
+      "id": "esp_g3_032",
+      "grado": 3,
+      "tema": "gramática avanzada",
       "pregunta": "¿Qué son los adverbios?",
       "respuesta": "Los adverbios son palabras que modifican o complementan al verbo, al adjetivo o a otro adverbio. Tipos: de modo (bien, mal, rápidamente, despacio), de tiempo (hoy, ayer, mañana, siempre, nunca), de lugar (aquí, allí, lejos, cerca), de cantidad (mucho, poco, bastante, demasiado), de afirmación (sí, también) y de negación (no, jamás). Ejemplo: 'Corre rápidamente.' (rápidamente es adverbio de modo).",
-      "palabras_clave": ["adverbios", "adverbio", "modo", "tiempo", "lugar", "cantidad", "bien", "hoy", "aquí", "mucho", "modificar", "verbo"]
+      "palabras_clave": [
+        "adverbios",
+        "adverbio",
+        "modo",
+        "tiempo",
+        "lugar",
+        "cantidad",
+        "bien",
+        "hoy",
+        "aquí",
+        "mucho",
+        "modificar",
+        "verbo"
+      ]
     },
     {
-      "id": "esp_g3_033", "grado": 3, "tema": "comprensión lectora",
+      "id": "esp_g3_033",
+      "grado": 3,
+      "tema": "comprensión lectora",
       "pregunta": "¿Qué tipos de preguntas me ayudan a comprender un texto?",
       "respuesta": "Para comprender un texto usa las preguntas: ¿Qué? (qué sucede, de qué trata). ¿Quién? (personajes). ¿Cuándo? (tiempo). ¿Dónde? (lugar). ¿Por qué? (causa, razón). ¿Para qué? (propósito). ¿Cómo? (modo). Estas preguntas se aplican a cualquier texto: cuento, noticia, artículo. También hazte preguntas inferenciales: ¿Qué crees que pasará después? ¿Por qué actuó así el personaje?",
-      "palabras_clave": ["comprensión lectora", "preguntas", "qué", "quién", "cuándo", "dónde", "por qué", "cómo", "inferencial", "texto"]
+      "palabras_clave": [
+        "comprensión lectora",
+        "preguntas",
+        "qué",
+        "quién",
+        "cuándo",
+        "dónde",
+        "por qué",
+        "cómo",
+        "inferencial",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g3_034", "grado": 3, "tema": "escritura",
+      "id": "esp_g3_034",
+      "grado": 3,
+      "tema": "escritura",
       "pregunta": "¿Cómo escribo una carta?",
       "respuesta": "Una carta tiene estas partes: 1) Encabezado: lugar y fecha (Medellín, 26 de abril de 2026). 2) Saludo: 'Querida mamá:' o 'Estimado profesor:'. 3) Cuerpo: el mensaje principal, organizado en párrafos. 4) Despedida: 'Con cariño', 'Atentamente'. 5) Firma: tu nombre. Las cartas pueden ser formales (para autoridades o empresas) o informales (para amigos y familia).",
-      "palabras_clave": ["carta", "encabezado", "saludo", "cuerpo", "despedida", "firma", "formal", "informal", "escribir", "Medellín", "fecha"]
+      "palabras_clave": [
+        "carta",
+        "encabezado",
+        "saludo",
+        "cuerpo",
+        "despedida",
+        "firma",
+        "formal",
+        "informal",
+        "escribir",
+        "Medellín",
+        "fecha"
+      ]
     },
     {
-      "id": "esp_g4_001", "grado": 4, "tema": "tipos de texto",
+      "id": "esp_g4_001",
+      "grado": 4,
+      "tema": "tipos de texto",
       "pregunta": "¿Cuáles son los principales tipos de texto?",
       "respuesta": "Los principales tipos de texto son: narrativo (cuenta historias: cuentos, novelas), descriptivo (describe cómo son las cosas), expositivo (informa y explica: artículos, enciclopedias), argumentativo (defiende una opinión con razones: ensayos, editoriales) y poético (usa el lenguaje de forma artística: poemas, canciones).",
-      "palabras_clave": ["tipos de texto", "narrativo", "descriptivo", "expositivo", "argumentativo", "poético", "cuento", "poema", "ensayo", "texto"]
+      "palabras_clave": [
+        "tipos de texto",
+        "narrativo",
+        "descriptivo",
+        "expositivo",
+        "argumentativo",
+        "poético",
+        "cuento",
+        "poema",
+        "ensayo",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g4_002", "grado": 4, "tema": "comprensión lectora",
+      "id": "esp_g4_002",
+      "grado": 4,
+      "tema": "comprensión lectora",
       "pregunta": "¿Qué es la comprensión lectora?",
       "respuesta": "La comprensión lectora es la capacidad de entender lo que se lee. Tiene tres niveles: literal (entiendes lo que dice el texto directamente), inferencial (descubres ideas que no están escritas pero se pueden deducir) y crítico (evalúas y opinas sobre el texto). Para mejorarla, lee con atención, identifica la idea principal y hazte preguntas sobre el texto.",
-      "palabras_clave": ["comprensión", "lectora", "leer", "entender", "literal", "inferencial", "crítico", "idea principal", "deducir", "analizar"]
+      "palabras_clave": [
+        "comprensión",
+        "lectora",
+        "leer",
+        "entender",
+        "literal",
+        "inferencial",
+        "crítico",
+        "idea principal",
+        "deducir",
+        "analizar"
+      ]
     },
     {
-      "id": "esp_g4_003", "grado": 4, "tema": "argumentación",
+      "id": "esp_g4_003",
+      "grado": 4,
+      "tema": "argumentación",
       "pregunta": "¿Qué es un argumento y para qué sirve?",
       "respuesta": "Un argumento es una razón que usamos para defender una opinión o posición. Un buen argumento tiene: tesis (la opinión que defiendes), argumentos (razones que apoyan la tesis), contraargumentos (posibles objeciones que rebates) y conclusión. Ejemplo: Tesis: 'Los niños deberían hacer deporte todos los días'. Argumento: 'El deporte mejora la salud física y mental'. Se usa en debates, ensayos y discursos.",
-      "palabras_clave": ["argumento", "tesis", "opinión", "razón", "defender", "debate", "ensayo", "contraargumento", "conclusión", "posición"]
+      "palabras_clave": [
+        "argumento",
+        "tesis",
+        "opinión",
+        "razón",
+        "defender",
+        "debate",
+        "ensayo",
+        "contraargumento",
+        "conclusión",
+        "posición"
+      ]
     },
     {
-      "id": "esp_g4_004", "grado": 4, "tema": "lectura crítica",
+      "id": "esp_g4_004",
+      "grado": 4,
+      "tema": "lectura crítica",
       "pregunta": "¿Cómo evalúo de manera crítica lo que leo?",
       "respuesta": "Para leer críticamente: 1) Identifica quién escribió el texto y por qué. 2) Distingue entre hechos (verificables) y opiniones (puntos de vista). 3) Detecta si el texto busca persuadirte o manipularte. 4) Contrasta con otras fuentes. 5) Pregúntate: ¿Está basado en evidencia? ¿Hay información que falta? 6) Forma tu propia opinión basada en evidencia. La lectura crítica es clave en la era de las noticias falsas.",
-      "palabras_clave": ["lectura crítica", "evaluar", "hechos", "opiniones", "persuadir", "fuentes", "evidencia", "manipular", "noticias falsas", "contrasta"]
+      "palabras_clave": [
+        "lectura crítica",
+        "evaluar",
+        "hechos",
+        "opiniones",
+        "persuadir",
+        "fuentes",
+        "evidencia",
+        "manipular",
+        "noticias falsas",
+        "contrasta"
+      ]
     },
     {
-      "id": "esp_g4_005", "grado": 4, "tema": "gramática",
+      "id": "esp_g4_005",
+      "grado": 4,
+      "tema": "gramática",
       "pregunta": "¿Cuáles son los tiempos verbales en español?",
       "respuesta": "Los tiempos verbales principales son: Presente (lo que ocurre ahora: 'canto'). Pasado/Pretérito (lo que ocurrió antes: 'canté', 'cantaba', 'había cantado'). Futuro (lo que ocurrirá: 'cantaré', 'voy a cantar'). Condicional (lo que ocurriría si...: 'cantaría'). También hay formas progresivas: 'estoy cantando' (presente continuo). Cada tiempo tiene su forma de conjugación.",
-      "palabras_clave": ["tiempos verbales", "presente", "pasado", "pretérito", "futuro", "condicional", "conjugar", "cantó", "cantaré", "cantaba", "canto"]
+      "palabras_clave": [
+        "tiempos verbales",
+        "presente",
+        "pasado",
+        "pretérito",
+        "futuro",
+        "condicional",
+        "conjugar",
+        "cantó",
+        "cantaré",
+        "cantaba",
+        "canto"
+      ]
     },
     {
-      "id": "esp_g4_006", "grado": 4, "tema": "literatura",
+      "id": "esp_g4_006",
+      "grado": 4,
+      "tema": "literatura",
       "pregunta": "¿Qué es el realismo mágico en la literatura colombiana?",
       "respuesta": "El realismo mágico es un estilo literario en el que elementos fantásticos e imaginarios se presentan como si fueran completamente normales dentro de una realidad cotidiana. García Márquez es el maestro de este estilo: en 'Cien años de soledad' una mujer sube al cielo mientras tiende ropa, como si fuera algo común. Nació en Latinoamérica como forma de expresar la cosmovisión indígena y mestiza.",
-      "palabras_clave": ["realismo mágico", "García Márquez", "Cien años de soledad", "fantástico", "cotidiano", "Colombia", "Latinoamérica", "indígena", "mestizo", "estilo"]
+      "palabras_clave": [
+        "realismo mágico",
+        "García Márquez",
+        "Cien años de soledad",
+        "fantástico",
+        "cotidiano",
+        "Colombia",
+        "Latinoamérica",
+        "indígena",
+        "mestizo",
+        "estilo"
+      ]
     },
     {
-      "id": "esp_g4_007", "grado": 4, "tema": "escritura argumentativa",
+      "id": "esp_g4_007",
+      "grado": 4,
+      "tema": "escritura argumentativa",
       "pregunta": "¿Cómo escribo un texto argumentativo?",
       "respuesta": "Para escribir un texto argumentativo: 1) Elige un tema y define tu posición (tesis). 2) Busca al menos 3 argumentos que la apoyen. 3) Anticipa contraargumentos y rebátelos. 4) Usa conectores de argumento: 'por lo tanto', 'en consecuencia', 'sin embargo', 'aunque', 'dado que'. 5) Escribe una conclusión que reafirme tu tesis. 6) Usa datos, ejemplos y citas como evidencia.",
-      "palabras_clave": ["argumentativo", "tesis", "argumento", "contraargumento", "conectores", "por lo tanto", "sin embargo", "conclusión", "evidencia"]
+      "palabras_clave": [
+        "argumentativo",
+        "tesis",
+        "argumento",
+        "contraargumento",
+        "conectores",
+        "por lo tanto",
+        "sin embargo",
+        "conclusión",
+        "evidencia"
+      ]
     },
     {
-      "id": "esp_g4_008", "grado": 4, "tema": "gramática",
+      "id": "esp_g4_008",
+      "grado": 4,
+      "tema": "gramática",
       "pregunta": "¿Qué es la concordancia en español?",
       "respuesta": "La concordancia es el acuerdo gramatical entre las palabras de una oración. El sustantivo y el adjetivo deben concordar en género y número: 'las flores rojas' (plural femenino). El verbo y el sujeto deben concordar en número y persona: 'Los niños juegan' (tercera persona plural). Errores frecuentes: 'habian muchos niños' (debe ser 'había'), 'la sistema' (debe ser 'el sistema').",
-      "palabras_clave": ["concordancia", "sustantivo", "adjetivo", "verbo", "sujeto", "género", "número", "persona", "plural", "femenino", "error"]
+      "palabras_clave": [
+        "concordancia",
+        "sustantivo",
+        "adjetivo",
+        "verbo",
+        "sujeto",
+        "género",
+        "número",
+        "persona",
+        "plural",
+        "femenino",
+        "error"
+      ]
     },
     {
-      "id": "esp_g4_009", "grado": 4, "tema": "comprensión lectora",
+      "id": "esp_g4_009",
+      "grado": 4,
+      "tema": "comprensión lectora",
       "pregunta": "¿Cómo identifico el propósito de un texto?",
       "respuesta": "El propósito es para qué fue escrito el texto. Tipos de propósito: Informar (dar datos y hechos: noticias, enciclopedias). Entretener (causar emoción o placer: cuentos, novelas). Persuadir (convencer de algo: publicidad, ensayos argumentativos). Instruir (enseñar cómo hacer algo: recetas, manuales). Para identificarlo, pregúntate: ¿por qué escribió esto el autor? ¿Qué quiere que yo haga o piense?",
-      "palabras_clave": ["propósito", "informar", "entretener", "persuadir", "instruir", "autor", "texto", "noticia", "publicidad", "receta", "manual"]
+      "palabras_clave": [
+        "propósito",
+        "informar",
+        "entretener",
+        "persuadir",
+        "instruir",
+        "autor",
+        "texto",
+        "noticia",
+        "publicidad",
+        "receta",
+        "manual"
+      ]
     },
     {
-      "id": "esp_g4_010", "grado": 4, "tema": "literatura",
+      "id": "esp_g4_010",
+      "grado": 4,
+      "tema": "literatura",
       "pregunta": "¿Qué son los géneros literarios?",
       "respuesta": "Los géneros literarios son las grandes categorías en que se clasifican las obras literarias: 1) Narrativo: cuenta historias (cuento, novela, mito, leyenda, crónica). 2) Lírico o poético: expresa sentimientos en verso (poema, oda, elegía, soneto). 3) Dramático: para ser representado en teatro (tragedia, comedia, drama). 4) Ensayístico: reflexión y argumentación sobre un tema (ensayo, artículo de opinión).",
-      "palabras_clave": ["géneros literarios", "narrativo", "lírico", "poético", "dramático", "ensayístico", "cuento", "novela", "poema", "teatro", "ensayo"]
+      "palabras_clave": [
+        "géneros literarios",
+        "narrativo",
+        "lírico",
+        "poético",
+        "dramático",
+        "ensayístico",
+        "cuento",
+        "novela",
+        "poema",
+        "teatro",
+        "ensayo"
+      ]
     },
     {
-      "id": "esp_g4_011", "grado": 4, "tema": "semántica",
+      "id": "esp_g4_011",
+      "grado": 4,
+      "tema": "semántica",
       "pregunta": "¿Qué son los campos semánticos?",
       "respuesta": "Un campo semántico es un grupo de palabras relacionadas por su significado o por pertenecer al mismo ámbito. Ejemplos: Campo semántico del deporte: fútbol, cancha, gol, árbitro, portero, pelota. Campo semántico de la cocina: cuchillo, olla, freír, receta, sal, horno. Conocer campos semánticos ayuda a expandir el vocabulario y a organizar el conocimiento por temas.",
-      "palabras_clave": ["campo semántico", "palabras", "relacionadas", "significado", "deporte", "fútbol", "cocina", "vocabulario", "tema", "ámbito"]
+      "palabras_clave": [
+        "campo semántico",
+        "palabras",
+        "relacionadas",
+        "significado",
+        "deporte",
+        "fútbol",
+        "cocina",
+        "vocabulario",
+        "tema",
+        "ámbito"
+      ]
     },
     {
-      "id": "esp_g4_012", "grado": 4, "tema": "escritura",
+      "id": "esp_g4_012",
+      "grado": 4,
+      "tema": "escritura",
       "pregunta": "¿Cómo escribo una noticia?",
       "respuesta": "Una noticia informa sobre un hecho real y actual. Partes: 1) Titular: resume el hecho de forma atractiva. 2) Entradilla o lead: responde ¿qué?, ¿quién?, ¿cuándo?, ¿dónde? en el primer párrafo. 3) Cuerpo: desarrolla los detalles. 4) Fuentes: cita a las personas que informan. El lenguaje debe ser claro, objetivo y en tercera persona. Las noticias siguen la estructura de 'pirámide invertida': lo más importante primero.",
-      "palabras_clave": ["noticia", "titular", "lead", "entradilla", "qué", "quién", "cuándo", "dónde", "pirámide invertida", "fuente", "objetivo"]
+      "palabras_clave": [
+        "noticia",
+        "titular",
+        "lead",
+        "entradilla",
+        "qué",
+        "quién",
+        "cuándo",
+        "dónde",
+        "pirámide invertida",
+        "fuente",
+        "objetivo"
+      ]
     },
     {
-      "id": "esp_g4_013", "grado": 4, "tema": "poesía",
+      "id": "esp_g4_013",
+      "grado": 4,
+      "tema": "poesía",
       "pregunta": "¿Qué es la rima y cuáles son sus tipos?",
       "respuesta": "La rima es la igualdad o semejanza de sonidos entre el final de dos o más versos, generalmente a partir de la última vocal acentuada. Tipos: Rima consonante (perfecta): coinciden todos los sonidos desde la vocal acentuada. Ejemplo: 'corazón' / 'canción'. Rima asonante (imperfecta): solo coinciden las vocales. Ejemplo: 'peine' / 'reyes'. Los poemas de verso libre no tienen rima obligatoria.",
-      "palabras_clave": ["rima", "consonante", "asonante", "verso", "sonidos", "vocales", "corazón", "canción", "peine", "reyes", "poema"]
+      "palabras_clave": [
+        "rima",
+        "consonante",
+        "asonante",
+        "verso",
+        "sonidos",
+        "vocales",
+        "corazón",
+        "canción",
+        "peine",
+        "reyes",
+        "poema"
+      ]
     },
     {
-      "id": "esp_g4_014", "grado": 4, "tema": "medios de comunicación",
+      "id": "esp_g4_014",
+      "grado": 4,
+      "tema": "medios de comunicación",
       "pregunta": "¿Cuáles son los medios de comunicación masiva?",
       "respuesta": "Los medios de comunicación masiva transmiten mensajes a grandes audiencias: Televisión (imágenes y sonido). Radio (solo sonido, muy importante en zonas rurales de Colombia). Prensa escrita (periódicos, revistas). Internet y redes sociales (texto, imagen, video). Cine. En Colombia los principales canales son Canal Uno y RCN/Caracol en TV. La radio es fundamental en las zonas alejadas. Los medios pueden informar, entretener o persuadir.",
-      "palabras_clave": ["medios de comunicación", "televisión", "radio", "prensa", "internet", "redes sociales", "Colombia", "Canal Uno", "RCN", "Caracol", "rural"]
+      "palabras_clave": [
+        "medios de comunicación",
+        "televisión",
+        "radio",
+        "prensa",
+        "internet",
+        "redes sociales",
+        "Colombia",
+        "Canal Uno",
+        "RCN",
+        "Caracol",
+        "rural"
+      ]
     },
     {
-      "id": "esp_g4_015", "grado": 4, "tema": "escritura",
+      "id": "esp_g4_015",
+      "grado": 4,
+      "tema": "escritura",
       "pregunta": "¿Cómo hago una reseña de un libro?",
       "respuesta": "Una reseña es un texto que describe y evalúa una obra. Para hacer una reseña de un libro: 1) Datos del libro: autor, título, editorial, año. 2) Breve resumen del contenido (sin revelar el final). 3) Análisis de los personajes y el estilo del autor. 4) Opinión personal: ¿te gustó?, ¿lo recomendarías?, ¿qué aprendiste? 5) Conclusión: evaluación general. La reseña es una opinión informada.",
-      "palabras_clave": ["reseña", "libro", "autor", "título", "resumen", "personajes", "estilo", "opinión", "evaluación", "recomendar"]
+      "palabras_clave": [
+        "reseña",
+        "libro",
+        "autor",
+        "título",
+        "resumen",
+        "personajes",
+        "estilo",
+        "opinión",
+        "evaluación",
+        "recomendar"
+      ]
     },
     {
-      "id": "esp_g4_016", "grado": 4, "tema": "gramática",
+      "id": "esp_g4_016",
+      "grado": 4,
+      "tema": "gramática",
       "pregunta": "¿Qué son las preposiciones y las conjunciones?",
       "respuesta": "Preposiciones: palabras invariables que unen un nombre con otra parte de la oración e indican relación (lugar, tiempo, causa). Las más comunes: a, ante, bajo, con, contra, de, desde, en, entre, hacia, hasta, para, por, según, sin, sobre, tras. Ejemplo: 'Voy hacia Medellín'. Conjunciones: unen palabras u oraciones. Coordinantes: y, o, pero, sino. Subordinantes: que, porque, aunque, si, cuando.",
-      "palabras_clave": ["preposiciones", "conjunciones", "a", "en", "de", "por", "para", "y", "pero", "aunque", "porque", "si", "cuando"]
+      "palabras_clave": [
+        "preposiciones",
+        "conjunciones",
+        "a",
+        "en",
+        "de",
+        "por",
+        "para",
+        "y",
+        "pero",
+        "aunque",
+        "porque",
+        "si",
+        "cuando"
+      ]
     },
     {
-      "id": "esp_g4_017", "grado": 4, "tema": "lectura",
+      "id": "esp_g4_017",
+      "grado": 4,
+      "tema": "lectura",
       "pregunta": "¿Qué es la intertextualidad?",
       "respuesta": "La intertextualidad es la relación que existe entre un texto y otros textos. Un autor puede citar, aludir o inspirarse en otras obras. Ejemplo: muchos cuentos modernos son versiones de cuentos clásicos (una película de 'La Sirenita' se basa en el cuento de Andersen). Al leer un texto que alude a otro, el lector que conoce ambos textos entiende mejor el mensaje. Enriquece la lectura.",
-      "palabras_clave": ["intertextualidad", "textos", "relación", "citar", "aludir", "inspirar", "La Sirenita", "Andersen", "autor", "versión"]
+      "palabras_clave": [
+        "intertextualidad",
+        "textos",
+        "relación",
+        "citar",
+        "aludir",
+        "inspirar",
+        "La Sirenita",
+        "Andersen",
+        "autor",
+        "versión"
+      ]
     },
     {
-      "id": "esp_g4_018", "grado": 4, "tema": "ortografía avanzada",
+      "id": "esp_g4_018",
+      "grado": 4,
+      "tema": "ortografía avanzada",
       "pregunta": "¿Cuándo se usa el tilde diacrítico?",
       "respuesta": "El tilde diacrítico distingue palabras que se escriben igual pero tienen diferente significado. Ejemplos: tú (pronombre personal: 'Tú eres inteligente') vs tu (posesivo: 'Tu libro está aquí'). él (pronombre: 'Él trabaja') vs el (artículo: 'el libro'). sí (afirmación: '¡Sí, claro!') vs si (condicional: 'Si llueve...'). más (cantidad: 'quiero más') vs mas (pero: 'lo intenté, mas no pude').",
-      "palabras_clave": ["tilde diacrítico", "tú", "tu", "él", "el", "sí", "si", "más", "mas", "homófonos", "significado diferente"]
+      "palabras_clave": [
+        "tilde diacrítico",
+        "tú",
+        "tu",
+        "él",
+        "el",
+        "sí",
+        "si",
+        "más",
+        "mas",
+        "homófonos",
+        "significado diferente"
+      ]
     },
     {
-      "id": "esp_g4_019", "grado": 4, "tema": "escritura creativa",
+      "id": "esp_g4_019",
+      "grado": 4,
+      "tema": "escritura creativa",
       "pregunta": "¿Qué es una metáfora?",
       "respuesta": "Una metáfora es una figura retórica que describe algo diciendo que es otra cosa (sin usar 'como' ni 'parece'). Ejemplos: 'Tus ojos son estrellas' (no dice que son como estrellas, dice que son estrellas). 'La vida es un viaje'. 'El tiempo es oro'. 'El amor es fuego'. Las metáforas hacen el lenguaje más expresivo y poético. Son muy usadas en poesía, canciones y publicidad.",
-      "palabras_clave": ["metáfora", "figura retórica", "comparación", "ojos", "estrellas", "vida", "viaje", "poesía", "expresivo", "lenguaje"]
+      "palabras_clave": [
+        "metáfora",
+        "figura retórica",
+        "comparación",
+        "ojos",
+        "estrellas",
+        "vida",
+        "viaje",
+        "poesía",
+        "expresivo",
+        "lenguaje"
+      ]
     },
     {
-      "id": "esp_g4_020", "grado": 4, "tema": "escritura creativa",
+      "id": "esp_g4_020",
+      "grado": 4,
+      "tema": "escritura creativa",
       "pregunta": "¿Cuál es la diferencia entre metáfora y símil?",
       "respuesta": "El símil (o comparación) usa 'como', 'parece' o 'cual' para comparar: 'Sus ojos son como estrellas', 'Corre como el viento'. La metáfora no usa ese conector y dice directamente que algo es otra cosa: 'Sus ojos son estrellas', 'Él es un toro'. El símil es más explícito; la metáfora es más poética y directa. Ambas son figuras retóricas muy usadas en literatura.",
-      "palabras_clave": ["símil", "metáfora", "comparación", "como", "parece", "cual", "figura retórica", "ojos", "estrellas", "diferencia"]
+      "palabras_clave": [
+        "símil",
+        "metáfora",
+        "comparación",
+        "como",
+        "parece",
+        "cual",
+        "figura retórica",
+        "ojos",
+        "estrellas",
+        "diferencia"
+      ]
     },
     {
-      "id": "esp_g4_021", "grado": 4, "tema": "literatura colombiana",
+      "id": "esp_g4_021",
+      "grado": 4,
+      "tema": "literatura colombiana",
       "pregunta": "¿Qué es la tradición oral y por qué es importante en Colombia?",
       "respuesta": "La tradición oral es la transmisión de historias, mitos, leyendas, canciones y conocimientos de generación en generación mediante la palabra hablada (sin escritura). En Colombia es fundamental porque muchas comunidades indígenas y afrocolombianas conservan su cultura por este medio: los Zenú, Wayúu, Embera, etc. La tradición oral incluye: leyendas, mitos, refranes, trabalenguas, arrullos y cantos. La UNESCO la protege como patrimonio inmaterial.",
-      "palabras_clave": ["tradición oral", "Colombia", "indígenas", "afrocolombianos", "leyenda", "mito", "refrán", "trabalengua", "cultura", "UNESCO", "Wayúu"]
+      "palabras_clave": [
+        "tradición oral",
+        "Colombia",
+        "indígenas",
+        "afrocolombianos",
+        "leyenda",
+        "mito",
+        "refrán",
+        "trabalengua",
+        "cultura",
+        "UNESCO",
+        "Wayúu"
+      ]
     },
     {
-      "id": "esp_g5_001", "grado": 5, "tema": "literatura colombiana",
+      "id": "esp_g5_001",
+      "grado": 5,
+      "tema": "literatura colombiana",
       "pregunta": "¿Quién fue Gabriel García Márquez?",
       "respuesta": "Gabriel García Márquez fue un escritor colombiano nacido en Aracataca (1927-2014), ganador del Premio Nobel de Literatura en 1982. Es conocido como 'Gabo'. Su obra más famosa es 'Cien años de soledad', novela que cuenta la historia de la familia Buendía en el pueblo imaginario de Macondo. Es el representante más importante del realismo mágico.",
-      "palabras_clave": ["García Márquez", "Gabo", "Colombia", "Nobel", "Cien años de soledad", "Macondo", "realismo mágico", "escritor", "literatura", "novela"]
+      "palabras_clave": [
+        "García Márquez",
+        "Gabo",
+        "Colombia",
+        "Nobel",
+        "Cien años de soledad",
+        "Macondo",
+        "realismo mágico",
+        "escritor",
+        "literatura",
+        "novela"
+      ]
     },
     {
-      "id": "esp_g5_002", "grado": 5, "tema": "elementos narrativos",
+      "id": "esp_g5_002",
+      "grado": 5,
+      "tema": "elementos narrativos",
       "pregunta": "¿Qué son los elementos de la narración?",
       "respuesta": "Los elementos de la narración son: el narrador (quien cuenta la historia: en primera o tercera persona), los personajes (protagonista, antagonista, secundarios), el tiempo (cuándo ocurre), el espacio (dónde ocurre), la trama o argumento (qué pasa: inicio, nudo y desenlace) y el tema (la idea central de la historia).",
-      "palabras_clave": ["narración", "narrador", "personajes", "protagonista", "antagonista", "tiempo", "espacio", "trama", "argumento", "tema", "historia"]
+      "palabras_clave": [
+        "narración",
+        "narrador",
+        "personajes",
+        "protagonista",
+        "antagonista",
+        "tiempo",
+        "espacio",
+        "trama",
+        "argumento",
+        "tema",
+        "historia"
+      ]
     },
     {
-      "id": "esp_g5_003", "grado": 5, "tema": "escritura",
+      "id": "esp_g5_003",
+      "grado": 5,
+      "tema": "escritura",
       "pregunta": "¿Cómo se escribe un buen texto?",
       "respuesta": "Para escribir un buen texto: 1) Planear: define el tema, a quién va dirigido y qué tipo de texto es. 2) Escribir: desarrolla las ideas en párrafos organizados. 3) Revisar: verifica la ortografía, la puntuación y que las ideas estén claras. 4) Corregir: mejora lo que sea necesario. Un buen texto tiene coherencia (ideas en orden) y cohesión (bien conectadas).",
-      "palabras_clave": ["escribir", "escritura", "texto", "planear", "revisar", "corregir", "coherencia", "cohesión", "párrafo", "ortografía"]
+      "palabras_clave": [
+        "escribir",
+        "escritura",
+        "texto",
+        "planear",
+        "revisar",
+        "corregir",
+        "coherencia",
+        "cohesión",
+        "párrafo",
+        "ortografía"
+      ]
     },
     {
-      "id": "esp_g5_004", "grado": 5, "tema": "análisis literario",
+      "id": "esp_g5_004",
+      "grado": 5,
+      "tema": "análisis literario",
       "pregunta": "¿Cómo analizo un cuento o novela?",
       "respuesta": "Para analizar un cuento o novela: 1) Identifica el género literario y el subgénero. 2) Describe la estructura: inicio, nudo, desenlace. 3) Analiza los personajes: protagonista, antagonista, secundarios; sus características físicas y psicológicas. 4) Identifica el narrador: ¿quién cuenta la historia? ¿En primera o tercera persona? 5) Señala los temas y subtemas. 6) Comenta el estilo del autor: lenguaje, metáforas, recursos. 7) Emite tu opinión crítica.",
-      "palabras_clave": ["análisis literario", "cuento", "novela", "género", "estructura", "personajes", "narrador", "temas", "estilo", "crítica"]
+      "palabras_clave": [
+        "análisis literario",
+        "cuento",
+        "novela",
+        "género",
+        "estructura",
+        "personajes",
+        "narrador",
+        "temas",
+        "estilo",
+        "crítica"
+      ]
     },
     {
-      "id": "esp_g5_005", "grado": 5, "tema": "literatura latinoamericana",
+      "id": "esp_g5_005",
+      "grado": 5,
+      "tema": "literatura latinoamericana",
       "pregunta": "¿Qué es el Boom latinoamericano?",
       "respuesta": "El Boom latinoamericano fue un movimiento literario de los años 60 y 70 en el que un grupo de escritores latinoamericanos revolucionó la literatura mundial. Sus representantes más famosos: Gabriel García Márquez (Colombia, 'Cien años de soledad'), Mario Vargas Llosa (Perú), Julio Cortázar (Argentina), Carlos Fuentes (México). Caracterizado por: experimentación narrativa, realismo mágico, crítica social y gran calidad literaria.",
-      "palabras_clave": ["Boom latinoamericano", "García Márquez", "Vargas Llosa", "Cortázar", "Fuentes", "Colombia", "literatura", "realismo mágico", "años 60", "novela"]
+      "palabras_clave": [
+        "Boom latinoamericano",
+        "García Márquez",
+        "Vargas Llosa",
+        "Cortázar",
+        "Fuentes",
+        "Colombia",
+        "literatura",
+        "realismo mágico",
+        "años 60",
+        "novela"
+      ]
     },
     {
-      "id": "esp_g5_006", "grado": 5, "tema": "escritura ensayo",
+      "id": "esp_g5_006",
+      "grado": 5,
+      "tema": "escritura ensayo",
       "pregunta": "¿Qué es un ensayo y cómo se escribe?",
       "respuesta": "Un ensayo es un texto en prosa donde el autor reflexiona sobre un tema con su punto de vista personal y argumentado. Partes: 1) Introducción: presenta el tema y la tesis. 2) Desarrollo: argumentos que sustentan la tesis, con ejemplos y evidencia. 3) Conclusión: reafirma la tesis y cierra la reflexión. Un buen ensayo tiene: posición clara, argumentos sólidos, lenguaje preciso y estilo propio.",
-      "palabras_clave": ["ensayo", "prosa", "tesis", "argumentos", "introducción", "desarrollo", "conclusión", "opinión", "reflexión", "evidencia"]
+      "palabras_clave": [
+        "ensayo",
+        "prosa",
+        "tesis",
+        "argumentos",
+        "introducción",
+        "desarrollo",
+        "conclusión",
+        "opinión",
+        "reflexión",
+        "evidencia"
+      ]
     },
     {
-      "id": "esp_g5_007", "grado": 5, "tema": "narrador",
+      "id": "esp_g5_007",
+      "grado": 5,
+      "tema": "narrador",
       "pregunta": "¿Cuáles son los tipos de narrador en una historia?",
       "respuesta": "Tipos de narrador: 1) Primera persona (narrador protagonista): 'Yo fui al bosque...'. Cuenta desde adentro, solo sabe lo que él vive. 2) Tercera persona omnisciente: sabe todo sobre todos los personajes (sus pensamientos, sentimientos, el pasado, el futuro). 3) Tercera persona testigo: observa y cuenta, pero no sabe los pensamientos de los personajes. La elección del narrador cambia completamente la historia.",
-      "palabras_clave": ["narrador", "primera persona", "tercera persona", "omnisciente", "testigo", "protagonista", "yo", "él", "pensamientos", "historia"]
+      "palabras_clave": [
+        "narrador",
+        "primera persona",
+        "tercera persona",
+        "omnisciente",
+        "testigo",
+        "protagonista",
+        "yo",
+        "él",
+        "pensamientos",
+        "historia"
+      ]
     },
     {
-      "id": "esp_g5_008", "grado": 5, "tema": "recursos literarios",
+      "id": "esp_g5_008",
+      "grado": 5,
+      "tema": "recursos literarios",
       "pregunta": "¿Qué son las figuras retóricas?",
       "respuesta": "Las figuras retóricas son recursos del lenguaje que hacen el texto más expresivo y bello. Principales: Metáfora (describe algo diciendo que es otra cosa: 'tus ojos son soles'). Símil o comparación ('eres como el viento'). Personificación o prosopopeya (da cualidades humanas a cosas: 'el viento susurra'). Hipérbole (exageración: 'te lo he dicho mil veces'). Aliteración (repetición de sonidos: 'el silencio sólo se escucha').",
-      "palabras_clave": ["figuras retóricas", "metáfora", "símil", "personificación", "hipérbole", "aliteración", "lenguaje", "expresivo", "recurso", "literario"]
+      "palabras_clave": [
+        "figuras retóricas",
+        "metáfora",
+        "símil",
+        "personificación",
+        "hipérbole",
+        "aliteración",
+        "lenguaje",
+        "expresivo",
+        "recurso",
+        "literario"
+      ]
     },
     {
-      "id": "esp_g5_009", "grado": 5, "tema": "lectura crítica",
+      "id": "esp_g5_009",
+      "grado": 5,
+      "tema": "lectura crítica",
       "pregunta": "¿Cómo distingo hechos de opiniones en un texto?",
       "respuesta": "Un hecho es algo verificable y objetivo: 'Colombia tiene 32 departamentos' (puedes comprobarlo). Una opinión es una valoración personal: 'Colombia es el país más bello del mundo' (no puede verificarse, depende del punto de vista). En los textos, las opiniones suelen ir con verbos de pensamiento (creo, pienso, opino) o con adjetivos valorativos (hermoso, terrible, excelente). Aprende a distinguirlos para leer críticamente.",
-      "palabras_clave": ["hechos", "opiniones", "verificable", "objetivo", "valoración", "creo", "pienso", "Colombia", "departamentos", "lectura crítica"]
+      "palabras_clave": [
+        "hechos",
+        "opiniones",
+        "verificable",
+        "objetivo",
+        "valoración",
+        "creo",
+        "pienso",
+        "Colombia",
+        "departamentos",
+        "lectura crítica"
+      ]
     },
     {
-      "id": "esp_g5_010", "grado": 5, "tema": "poesía colombiana",
+      "id": "esp_g5_010",
+      "grado": 5,
+      "tema": "poesía colombiana",
       "pregunta": "¿Qué es el soneto y cuáles son sus características?",
       "respuesta": "El soneto es una forma poética de 14 versos (endecasílabos: 11 sílabas) divididos en 4 estrofas: dos cuartetos (4 versos) y dos tercetos (3 versos). El esquema de rima suele ser ABBA-ABBA-CDC-DCD. Es una forma clásica de origen italiano. En Colombia, Guillermo Valencia fue maestro del soneto. El soneto tiene una estructura muy precisa que lo hace desafiante.",
-      "palabras_clave": ["soneto", "14 versos", "cuarteto", "terceto", "rima", "endecasílabo", "11 sílabas", "Guillermo Valencia", "Colombia", "forma poética"]
+      "palabras_clave": [
+        "soneto",
+        "14 versos",
+        "cuarteto",
+        "terceto",
+        "rima",
+        "endecasílabo",
+        "11 sílabas",
+        "Guillermo Valencia",
+        "Colombia",
+        "forma poética"
+      ]
     },
     {
-      "id": "esp_g5_011", "grado": 5, "tema": "comunicación oral",
+      "id": "esp_g5_011",
+      "grado": 5,
+      "tema": "comunicación oral",
       "pregunta": "¿Cómo preparo un debate?",
       "respuesta": "Para participar en un debate: 1) Investiga a fondo el tema. 2) Define tu posición (a favor o en contra). 3) Prepara mínimo 3 argumentos sólidos con evidencia. 4) Anticipa los argumentos del otro bando y prepara contraargumentos. 5) Escucha activamente al oponente. 6) Usa un lenguaje respetuoso aunque no estés de acuerdo. 7) Concluye reafirmando tu posición. El debate es un ejercicio de pensamiento crítico y expresión oral.",
-      "palabras_clave": ["debate", "argumentos", "posición", "a favor", "en contra", "investigar", "contraargumentos", "escuchar", "respeto", "pensamiento crítico"]
+      "palabras_clave": [
+        "debate",
+        "argumentos",
+        "posición",
+        "a favor",
+        "en contra",
+        "investigar",
+        "contraargumentos",
+        "escuchar",
+        "respeto",
+        "pensamiento crítico"
+      ]
     },
     {
-      "id": "esp_g5_012", "grado": 5, "tema": "semántica avanzada",
+      "id": "esp_g5_012",
+      "grado": 5,
+      "tema": "semántica avanzada",
       "pregunta": "¿Qué es la polisemia?",
       "respuesta": "La polisemia es cuando una misma palabra tiene múltiples significados. Ejemplo: 'banco' puede ser: asiento (banco del parque), institución financiera (banco de Colombia), banco de peces (grupo de peces). 'Gato': animal felino, herramienta para levantar carros. 'Cola': fila de personas, parte trasera de un animal, pegamento. El contexto determina cuál significado se usa. Diferente a homonimia (palabras distintas que suenan igual).",
-      "palabras_clave": ["polisemia", "significados", "múltiples", "banco", "gato", "cola", "contexto", "homonimia", "palabra", "ambigüedad"]
+      "palabras_clave": [
+        "polisemia",
+        "significados",
+        "múltiples",
+        "banco",
+        "gato",
+        "cola",
+        "contexto",
+        "homonimia",
+        "palabra",
+        "ambigüedad"
+      ]
     },
     {
-      "id": "esp_g5_013", "grado": 5, "tema": "escritura avanzada",
+      "id": "esp_g5_013",
+      "grado": 5,
+      "tema": "escritura avanzada",
       "pregunta": "¿Cómo uso los conectores textuales?",
       "respuesta": "Los conectores textuales son palabras o frases que unen ideas y dan coherencia al texto. Tipos: Adición: además, también, asimismo, igualmente. Contraste: sin embargo, pero, aunque, no obstante, a pesar de. Causa: porque, ya que, puesto que, dado que. Consecuencia: por lo tanto, en consecuencia, así que. Orden: primero, luego, finalmente, en conclusión. Ejemplo: 'No llueve; sin embargo, el suelo está mojado'.",
-      "palabras_clave": ["conectores", "textuales", "además", "sin embargo", "porque", "por lo tanto", "primero", "finalmente", "coherencia", "cohesión", "texto"]
+      "palabras_clave": [
+        "conectores",
+        "textuales",
+        "además",
+        "sin embargo",
+        "porque",
+        "por lo tanto",
+        "primero",
+        "finalmente",
+        "coherencia",
+        "cohesión",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g5_014", "grado": 5, "tema": "literatura universal",
+      "id": "esp_g5_014",
+      "grado": 5,
+      "tema": "literatura universal",
       "pregunta": "¿Quiénes son algunos de los grandes autores de la literatura universal?",
       "respuesta": "Algunos grandes autores universales: Miguel de Cervantes (España, 'Don Quijote de la Mancha', 1605, primer gran novela moderna). William Shakespeare (Inglaterra, 'Romeo y Julieta', 'Hamlet', obras de teatro). Homero (Grecia antigua, 'La Ilíada' y 'La Odisea'). Franz Kafka (Austria, 'La Metamorfosis'). Fiódor Dostoievski (Rusia, 'Crimen y Castigo'). Antoine de Saint-Exupéry (Francia, 'El Principito').",
-      "palabras_clave": ["literatura universal", "Cervantes", "Don Quijote", "Shakespeare", "Romeo y Julieta", "Homero", "Kafka", "Dostoievski", "El Principito", "autores"]
+      "palabras_clave": [
+        "literatura universal",
+        "Cervantes",
+        "Don Quijote",
+        "Shakespeare",
+        "Romeo y Julieta",
+        "Homero",
+        "Kafka",
+        "Dostoievski",
+        "El Principito",
+        "autores"
+      ]
     },
     {
-      "id": "esp_g5_015", "grado": 5, "tema": "gramática avanzada",
+      "id": "esp_g5_015",
+      "grado": 5,
+      "tema": "gramática avanzada",
       "pregunta": "¿Qué es la subordinación en las oraciones?",
       "respuesta": "Una oración subordinada depende de la oración principal y actúa como uno de sus elementos (sujeto, objeto, adverbio). Tipos: Sustantivas (actúan como sustantivos: 'Quiero que vengas'). Adjetivas o de relativo (describen a un sustantivo: 'El libro que leí es interesante'). Adverbiales (tiempo: 'cuando llegues'; causa: 'porque llueve'; condición: 'si estudias'). Se unen con conjunciones subordinantes: que, cuando, porque, si, aunque.",
-      "palabras_clave": ["subordinación", "oración subordinada", "principal", "sustantiva", "adjetiva", "adverbial", "que", "cuando", "porque", "si", "aunque"]
+      "palabras_clave": [
+        "subordinación",
+        "oración subordinada",
+        "principal",
+        "sustantiva",
+        "adjetiva",
+        "adverbial",
+        "que",
+        "cuando",
+        "porque",
+        "si",
+        "aunque"
+      ]
     },
     {
-      "id": "esp_g5_016", "grado": 5, "tema": "escritura",
+      "id": "esp_g5_016",
+      "grado": 5,
+      "tema": "escritura",
       "pregunta": "¿Cómo escribo un texto expositivo?",
       "respuesta": "Un texto expositivo informa o explica un tema de forma objetiva. Estructura: 1) Título claro. 2) Introducción: presenta el tema. 3) Desarrollo: explica los aspectos del tema con subtítulos, ejemplos, datos y gráficas. 4) Conclusión: resume lo expuesto. Características: lenguaje claro y preciso, tercera persona, información verificable, sin opiniones personales. Los artículos de enciclopedia y los libros de texto son textos expositivos.",
-      "palabras_clave": ["texto expositivo", "informar", "explicar", "objetivo", "título", "introducción", "desarrollo", "conclusión", "enciclopedia", "datos"]
+      "palabras_clave": [
+        "texto expositivo",
+        "informar",
+        "explicar",
+        "objetivo",
+        "título",
+        "introducción",
+        "desarrollo",
+        "conclusión",
+        "enciclopedia",
+        "datos"
+      ]
     },
     {
-      "id": "esp_g5_017", "grado": 5, "tema": "comunicación digital",
+      "id": "esp_g5_017",
+      "grado": 5,
+      "tema": "comunicación digital",
       "pregunta": "¿Cómo usar el lenguaje correctamente en las redes sociales?",
       "respuesta": "En las redes sociales, el lenguaje importa: 1) Usa ortografía correcta aunque el mensaje sea corto. 2) Cuida el tono: lo que escribes queda registrado. 3) Distingue comunicación formal (para profesores, instituciones) de informal (amigos). 4) Evita el acoso y el lenguaje ofensivo. 5) Verifica antes de compartir información: las noticias falsas se propagan fácilmente. 6) Construye una identidad digital positiva. El lenguaje en redes puede abrir o cerrar puertas.",
-      "palabras_clave": ["redes sociales", "lenguaje", "ortografía", "formal", "informal", "acoso", "noticias falsas", "identidad digital", "tono", "internet"]
+      "palabras_clave": [
+        "redes sociales",
+        "lenguaje",
+        "ortografía",
+        "formal",
+        "informal",
+        "acoso",
+        "noticias falsas",
+        "identidad digital",
+        "tono",
+        "internet"
+      ]
     },
     {
-      "id": "esp_g5_018", "grado": 5, "tema": "lenguas de Colombia",
+      "id": "esp_g5_018",
+      "grado": 5,
+      "tema": "lenguas de Colombia",
       "pregunta": "¿Qué idiomas se hablan en Colombia además del español?",
       "respuesta": "Colombia es un país multilingüe. Además del español, se hablan más de 65 lenguas indígenas, entre ellas: wayuunaiki (Guajira), emberá, nasa yuwe (páez), uitoto, tucano, ticuna, y muchas más. Las comunidades afrocolombianas tienen el criollo de San Andrés (créole). Las lenguas indígenas están reconocidas en la Constitución de 1991 como oficiales en sus territorios. Preservarlas es preservar la cultura de los pueblos.",
-      "palabras_clave": ["idiomas", "lenguas indígenas", "Colombia", "wayuunaiki", "emberá", "nasa yuwe", "créole", "San Andrés", "multilingüe", "Constitución", "65 lenguas"]
+      "palabras_clave": [
+        "idiomas",
+        "lenguas indígenas",
+        "Colombia",
+        "wayuunaiki",
+        "emberá",
+        "nasa yuwe",
+        "créole",
+        "San Andrés",
+        "multilingüe",
+        "Constitución",
+        "65 lenguas"
+      ]
     },
     {
-      "id": "esp_g5_019", "grado": 5, "tema": "escritura avanzada",
+      "id": "esp_g5_019",
+      "grado": 5,
+      "tema": "escritura avanzada",
       "pregunta": "¿Cómo cito a un autor en un texto?",
       "respuesta": "Para citar a un autor: Cita directa (textual): reproduce exactamente sus palabras entre comillas y menciona el autor. Ejemplo: García Márquez escribió: 'El mundo era tan reciente...' ('Cien años de soledad'). Cita indirecta (paráfrasis): reformulas la idea con tus palabras y mencionas al autor. 'Según García Márquez, el mundo en Macondo era nuevo y sin nombre'. Citar es respetar la propiedad intelectual y dar crédito a las ideas originales.",
-      "palabras_clave": ["citar", "cita directa", "cita indirecta", "autor", "comillas", "García Márquez", "paráfrasis", "propiedad intelectual", "fuente", "texto"]
+      "palabras_clave": [
+        "citar",
+        "cita directa",
+        "cita indirecta",
+        "autor",
+        "comillas",
+        "García Márquez",
+        "paráfrasis",
+        "propiedad intelectual",
+        "fuente",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g5_020", "grado": 5, "tema": "literatura colombiana",
+      "id": "esp_g5_020",
+      "grado": 5,
+      "tema": "literatura colombiana",
       "pregunta": "¿Qué es el 'boom' de la narrativa colombiana contemporánea?",
       "respuesta": "Después de García Márquez, Colombia sigue produciendo grandes escritores: Tomás González (cuentista y novelista), Piedad Bonnett (poetisa), Jorge Franco ('Rosario Tijeras'), Juan Gabriel Vásquez ('El ruido de las cosas al caer', Premio Alfaguara 2011), Evelio Rosero. También hay muchas mujeres escritoras que están ganando reconocimiento. La narrativa colombiana contemporánea aborda la violencia, el exilio, el amor y la identidad.",
-      "palabras_clave": ["narrativa colombiana", "Juan Gabriel Vásquez", "Jorge Franco", "Piedad Bonnett", "Rosario Tijeras", "literatura", "contemporánea", "violencia", "identidad"]
+      "palabras_clave": [
+        "narrativa colombiana",
+        "Juan Gabriel Vásquez",
+        "Jorge Franco",
+        "Piedad Bonnett",
+        "Rosario Tijeras",
+        "literatura",
+        "contemporánea",
+        "violencia",
+        "identidad"
+      ]
     },
     {
-      "id": "esp_g5_021", "grado": 5, "tema": "comunicación asertiva",
+      "id": "esp_g5_021",
+      "grado": 5,
+      "tema": "comunicación asertiva",
       "pregunta": "¿Qué es la comunicación asertiva?",
       "respuesta": "La comunicación asertiva es expresar lo que pensamos, sentimos y necesitamos de forma clara, directa y respetuosa, sin agredir ni someternos. Diferencias: Pasiva (no dices lo que piensas por miedo). Agresiva (impones tu opinión sin respetar al otro). Asertiva (expresas tu opinión con respeto, escuchas al otro, llegas a acuerdos). Claves: hablar en primera persona ('Yo siento que...'), escuchar activamente, pedir clarificación.",
-      "palabras_clave": ["asertiva", "comunicación", "respetuosa", "directa", "pasiva", "agresiva", "yo siento", "escuchar", "acuerdo", "opinión"]
+      "palabras_clave": [
+        "asertiva",
+        "comunicación",
+        "respetuosa",
+        "directa",
+        "pasiva",
+        "agresiva",
+        "yo siento",
+        "escuchar",
+        "acuerdo",
+        "opinión"
+      ]
     },
     {
-      "id": "esp_g3_035", "grado": 3, "tema": "comprension textos narrativos descriptivos",
+      "id": "esp_g3_035",
+      "grado": 3,
+      "tema": "comprension textos narrativos descriptivos",
       "pregunta": "¿Cómo comprendo un texto narrativo o descriptivo?",
       "respuesta": "Un texto narrativo cuenta una historia con personajes, lugar y tiempo (cuentos, fábulas, leyendas). Para comprenderlo: identifica los personajes (¿quién?), el lugar (¿dónde?), el tiempo (¿cuándo?) y los eventos principales (¿qué pasa?). Busca el inicio, el nudo y el desenlace. Un texto descriptivo explica cómo es algo o alguien usando detalles precisos: colores, formas, tamaños, sensaciones. Para comprenderlo: identifica qué se describe, qué adjetivos usa el autor y qué imagen mental te forma. En ambos tipos, ubica la idea principal de cada párrafo y las ideas secundarias que la apoyan.",
-      "palabras_clave": ["texto narrativo", "texto descriptivo", "comprensión", "personajes", "cuento", "fábula", "leyenda", "descripción", "idea principal", "adjetivos", "inicio", "nudo", "desenlace", "comprender"]
+      "palabras_clave": [
+        "texto narrativo",
+        "texto descriptivo",
+        "comprensión",
+        "personajes",
+        "cuento",
+        "fábula",
+        "leyenda",
+        "descripción",
+        "idea principal",
+        "adjetivos",
+        "inicio",
+        "nudo",
+        "desenlace",
+        "comprender"
+      ]
     },
     {
-      "id": "esp_g3_036", "grado": 3, "tema": "expresion oral narracion experiencias",
+      "id": "esp_g3_036",
+      "grado": 3,
+      "tema": "expresion oral narracion experiencias",
       "pregunta": "¿Cómo cuento una experiencia de forma oral?",
       "respuesta": "Narrar una experiencia de forma oral significa contar algo que te pasó usando la voz. Pasos: 1) Organiza en orden: ¿qué ocurrió primero, después y al final? 2) Menciona cuándo y dónde sucedió. 3) Describe cómo te sentiste. 4) Habla claro, ni muy rápido ni muy lento, con buena voz. 5) Usa conectores de tiempo: primero, luego, después, al final. 6) Mira a las personas mientras hablas. Ejemplo de inicio: 'El sábado fui al zoológico con mi familia. Primero vimos los leones... luego... finalmente regresamos a casa muy felices'. Narrar experiencias te ayuda a expresarte mejor y a organizar tus ideas.",
-      "palabras_clave": ["expresión oral", "narración", "experiencias", "hablar", "contar", "orden", "primero", "luego", "después", "sentimientos", "organizar", "voz", "narrar"]
+      "palabras_clave": [
+        "expresión oral",
+        "narración",
+        "experiencias",
+        "hablar",
+        "contar",
+        "orden",
+        "primero",
+        "luego",
+        "después",
+        "sentimientos",
+        "organizar",
+        "voz",
+        "narrar"
+      ]
     },
     {
-      "id": "esp_g4_022", "grado": 4, "tema": "comprension interpretacion textos informativos",
+      "id": "esp_g4_022",
+      "grado": 4,
+      "tema": "comprension interpretacion textos informativos",
       "pregunta": "¿Cómo comprendo e interpreto un texto informativo?",
       "respuesta": "Un texto informativo transmite datos reales y verificables (artículos de enciclopedia, noticias, informes, textos de ciencias). Para comprenderlo: 1) Lee el título y subtítulos (revelan la estructura). 2) Identifica la idea principal de cada párrafo. 3) Observa los datos, cifras y fechas mencionados. Para interpretarlo (ir más allá): 4) Relaciona la información con lo que ya sabes. 5) Pregúntate: ¿para qué fue escrito?, ¿qué quiere que yo aprenda? 6) Distingue hechos (datos comprobables) de opiniones. 7) Resume con tus propias palabras. La interpretación es el nivel más profundo de la comprensión.",
-      "palabras_clave": ["texto informativo", "comprensión", "interpretación", "artículo", "enciclopedia", "noticia", "idea principal", "hechos", "datos", "subtítulos", "resumen", "interpretar", "verificable"]
+      "palabras_clave": [
+        "texto informativo",
+        "comprensión",
+        "interpretación",
+        "artículo",
+        "enciclopedia",
+        "noticia",
+        "idea principal",
+        "hechos",
+        "datos",
+        "subtítulos",
+        "resumen",
+        "interpretar",
+        "verificable"
+      ]
     },
     {
-      "id": "esp_g4_023", "grado": 4, "tema": "produccion textos expositivos narrativos grado cuarto",
+      "id": "esp_g4_023",
+      "grado": 4,
+      "tema": "produccion textos expositivos narrativos grado cuarto",
       "pregunta": "¿Cómo escribo textos expositivos y narrativos en grado cuarto?",
       "respuesta": "Texto expositivo: informa sobre un tema de forma clara y objetiva. Partes: introducción (presenta el tema), desarrollo (explica con datos, ejemplos y subtítulos) y conclusión (resume lo aprendido). Usa tercera persona y lenguaje preciso. Texto narrativo: cuenta una historia. Partes: inicio (presenta personajes y situación), nudo (conflicto o problema) y desenlace (solución). Usa descripciones, diálogos y conectores narrativos (de repente, mientras tanto, al día siguiente). En ambos tipos: planea antes de escribir con un borrador, revisa la ortografía, la coherencia y los signos de puntuación.",
-      "palabras_clave": ["texto expositivo", "texto narrativo", "producción", "escribir", "introducción", "desarrollo", "conclusión", "inicio", "nudo", "desenlace", "diálogo", "coherencia", "grado cuarto"]
+      "palabras_clave": [
+        "texto expositivo",
+        "texto narrativo",
+        "producción",
+        "escribir",
+        "introducción",
+        "desarrollo",
+        "conclusión",
+        "inicio",
+        "nudo",
+        "desenlace",
+        "diálogo",
+        "coherencia",
+        "grado cuarto"
+      ]
     },
     {
-      "id": "esp_g4_024", "grado": 4, "tema": "uso conectores textuales grado cuarto",
+      "id": "esp_g4_024",
+      "grado": 4,
+      "tema": "uso conectores textuales grado cuarto",
       "pregunta": "¿Qué son los conectores y cómo se usan correctamente en un texto?",
       "respuesta": "Los conectores son palabras o expresiones que unen ideas y dan coherencia y fluidez al texto. Tipos con ejemplos: Para añadir información: además, también, igualmente, asimismo. Para contrastar ideas: pero, sin embargo, aunque, a pesar de. Para indicar causa: porque, ya que, puesto que. Para indicar consecuencia: por eso, por lo tanto, en consecuencia. Para ordenar: primero, luego, después, finalmente. Para concluir: en conclusión, en resumen, para finalizar. Ejemplo: 'Me gustan las ciencias; sin embargo, también disfruto leer. Además, me ayudan a entender el mundo'. Usar conectores correctamente hace que el texto fluya y sea fácil de leer.",
-      "palabras_clave": ["conectores", "textuales", "además", "sin embargo", "pero", "porque", "por lo tanto", "primero", "finalmente", "en conclusión", "coherencia", "fluido", "unen ideas"]
+      "palabras_clave": [
+        "conectores",
+        "textuales",
+        "además",
+        "sin embargo",
+        "pero",
+        "porque",
+        "por lo tanto",
+        "primero",
+        "finalmente",
+        "en conclusión",
+        "coherencia",
+        "fluido",
+        "unen ideas"
+      ]
     },
     {
-      "id": "esp_g4_025", "grado": 4, "tema": "reglas ortograficas grado cuarto",
+      "id": "esp_g4_025",
+      "grado": 4,
+      "tema": "reglas ortograficas grado cuarto",
       "pregunta": "¿Cuáles son las reglas ortográficas más importantes para grado cuarto?",
       "respuesta": "Reglas ortográficas clave en grado 4: 1) Tilde en agudas (terminan en vocal, n, s: café, camión), graves (tilde si NO terminan en vocal, n, s: árbol) y esdrújulas (siempre: música). 2) Tilde diacrítico: tú/tu, él/el, sí/si, más/mas, té/te. 3) Uso de h: siempre en haber, hacer, hablar, humano, hospital, historia, hijo. 4) r/rr: 'rr' entre vocales (carro, perro); 'r' fuerte al inicio de palabra (rosa, rojo) o tras n/l/s (enredo, alrededor). 5) c/qu: 'ca, co, cu' y 'que, qui' (queso, quitar). 6) ll/y: suenan igual en Colombia; cada palabra se aprende. La práctica con dictados es la mejor estrategia.",
-      "palabras_clave": ["ortografía", "reglas ortográficas", "tilde", "h", "rr", "c", "qu", "ll", "y", "diacrítico", "aguda", "grave", "esdrújula", "grado cuarto", "haber", "hacer"]
+      "palabras_clave": [
+        "ortografía",
+        "reglas ortográficas",
+        "tilde",
+        "h",
+        "rr",
+        "c",
+        "qu",
+        "ll",
+        "y",
+        "diacrítico",
+        "aguda",
+        "grave",
+        "esdrújula",
+        "grado cuarto",
+        "haber",
+        "hacer"
+      ]
     },
     {
-      "id": "esp_g4_026", "grado": 4, "tema": "resumenes mapas conceptuales",
+      "id": "esp_g4_026",
+      "grado": 4,
+      "tema": "resumenes mapas conceptuales",
       "pregunta": "¿Cómo hago un resumen y un mapa conceptual?",
       "respuesta": "Resumen: síntesis breve de las ideas más importantes de un texto, escrita con tus propias palabras. Pasos: 1) Lee el texto completo. 2) Identifica las ideas clave de cada párrafo. 3) Escríbelas con tus palabras (sin copiar). 4) El resumen debe ser más corto que el original (aprox. un tercio). Mapa conceptual: herramienta visual que organiza un tema. Pasos: 1) Escribe el concepto central en la parte superior o en el centro. 2) Agrega conceptos secundarios conectados con líneas. 3) Escribe palabras de enlace en las líneas (tiene, es un tipo de, produce, permite). 4) Añade ejemplos si es necesario. Ambas herramientas ayudan a estudiar y comprender mejor.",
-      "palabras_clave": ["resumen", "resumir", "mapa conceptual", "síntesis", "ideas principales", "visual", "conceptos", "palabras de enlace", "estudiar", "organizar", "propias palabras", "texto"]
+      "palabras_clave": [
+        "resumen",
+        "resumir",
+        "mapa conceptual",
+        "síntesis",
+        "ideas principales",
+        "visual",
+        "conceptos",
+        "palabras de enlace",
+        "estudiar",
+        "organizar",
+        "propias palabras",
+        "texto"
+      ]
     },
     {
-      "id": "esp_g4_027", "grado": 4, "tema": "exposicion oral temas",
+      "id": "esp_g4_027",
+      "grado": 4,
+      "tema": "exposicion oral temas",
       "pregunta": "¿Cómo preparo y presento una exposición oral sobre un tema?",
       "respuesta": "Para hacer una exposición oral: 1) Investiga el tema con fuentes confiables (libros, enciclopedias, internet). 2) Organiza la información: introducción (presenta el tema y llama la atención), desarrollo (los puntos más importantes, con datos y ejemplos) y conclusión (lo más relevante). 3) Prepara apoyos visuales: carteleras, láminas, diagramas o diapositivas. 4) Ensaya en voz alta antes del día. 5) Durante la exposición: habla claro y despacio, mira a tu audiencia, no leas todo de un papel, demuestra que conoces el tema. 6) Al finalizar: agradece la atención e invita preguntas. Una buena exposición combina conocimiento y comunicación.",
-      "palabras_clave": ["exposición oral", "presentación oral", "exponer", "tema", "introducción", "desarrollo", "conclusión", "investigar", "apoyos visuales", "audiencia", "ensayar", "hablar en público"]
+      "palabras_clave": [
+        "exposición oral",
+        "presentación oral",
+        "exponer",
+        "tema",
+        "introducción",
+        "desarrollo",
+        "conclusión",
+        "investigar",
+        "apoyos visuales",
+        "audiencia",
+        "ensayar",
+        "hablar en público"
+      ]
     },
     {
-      "id": "esp_g5_022", "grado": 5, "tema": "analisis textos narrativos informativos argumentativos",
+      "id": "esp_g5_022",
+      "grado": 5,
+      "tema": "analisis textos narrativos informativos argumentativos",
       "pregunta": "¿Cómo analizo textos narrativos, informativos y argumentativos?",
       "respuesta": "Texto narrativo: identifica narrador (¿quién cuenta?), personajes, trama (inicio-nudo-desenlace), tiempo, espacio y recursos literarios (metáforas, diálogos). Texto informativo: identifica el tema, la estructura (título, introducción, desarrollo, conclusión), los datos y sus fuentes, y el propósito del autor. Texto argumentativo: identifica la tesis (posición del autor), los argumentos (razones con evidencia: datos, ejemplos, citas), posibles contraargumentos y la conclusión. En los tres tipos, aplica lectura crítica: ¿quién lo escribió?, ¿por qué?, ¿qué evidencia usa?, ¿es confiable?, ¿distingues hechos de opiniones?",
-      "palabras_clave": ["análisis", "texto narrativo", "texto informativo", "texto argumentativo", "tesis", "argumentos", "narrador", "trama", "estructura", "lectura crítica", "propósito", "fuentes", "analizar textos"]
+      "palabras_clave": [
+        "análisis",
+        "texto narrativo",
+        "texto informativo",
+        "texto argumentativo",
+        "tesis",
+        "argumentos",
+        "narrador",
+        "trama",
+        "estructura",
+        "lectura crítica",
+        "propósito",
+        "fuentes",
+        "analizar textos"
+      ]
     },
     {
-      "id": "esp_g5_023", "grado": 5, "tema": "produccion textos estructurados grado quinto",
+      "id": "esp_g5_023",
+      "grado": 5,
+      "tema": "produccion textos estructurados grado quinto",
       "pregunta": "¿Cómo produzco textos bien estructurados en grado quinto?",
       "respuesta": "En grado 5, los textos deben tener mayor estructura y profundidad: 1) Propósito claro antes de escribir (¿para qué? ¿a quién?). 2) Estructura completa: introducción que presenta el tema y capta la atención, desarrollo organizado en párrafos coherentes con ideas conectadas, conclusión que cierra con reflexión. 3) Vocabulario variado y preciso (usa sinónimos, no repitas las mismas palabras). 4) Ortografía y puntuación impecables. 5) Cohesión: conectores, pronombres y sinónimos que eviten repeticiones. 6) Proceso: planea (lluvia de ideas, esquema) → escribe borrador → revisa (¿tiene sentido?) → corrige → pasa en limpio. Tipos: cuentos, ensayos, textos expositivos y argumentativos.",
-      "palabras_clave": ["producción textual", "textos estructurados", "introducción", "desarrollo", "conclusión", "cohesión", "coherencia", "proceso escritura", "borrador", "revisar", "corregir", "vocabulario", "grado quinto"]
+      "palabras_clave": [
+        "producción textual",
+        "textos estructurados",
+        "introducción",
+        "desarrollo",
+        "conclusión",
+        "cohesión",
+        "coherencia",
+        "proceso escritura",
+        "borrador",
+        "revisar",
+        "corregir",
+        "vocabulario",
+        "grado quinto"
+      ]
     },
     {
-      "id": "esp_g5_024", "grado": 5, "tema": "inferencias conclusiones lectura",
+      "id": "esp_g5_024",
+      "grado": 5,
+      "tema": "inferencias conclusiones lectura",
       "pregunta": "¿Qué es una inferencia y cómo saco conclusiones de un texto?",
       "respuesta": "Una inferencia es una deducción que haces a partir de lo que el texto sugiere pero no dice directamente. Para inferir: combina las pistas del texto + tu conocimiento previo. Ejemplo: si el texto dice 'salió de casa con paraguas y botas de caucho', puedes inferir que llovía, aunque no lo mencione. Tipos de inferencias: de causa-efecto (¿qué causó ese evento?), sobre las intenciones del autor (¿por qué escribió esto?), sobre el significado de palabras desconocidas por el contexto. Sacar conclusiones: al terminar la lectura, formula la idea global que resume el mensaje completo. Pregúntate: ¿qué quería decir el autor?, ¿cuál es la lección o mensaje principal?",
-      "palabras_clave": ["inferencia", "inferir", "conclusión", "deducción", "contexto", "pistas", "conocimiento previo", "causa-efecto", "autor", "implícito", "explícito", "leer entre líneas", "mensaje"]
+      "palabras_clave": [
+        "inferencia",
+        "inferir",
+        "conclusión",
+        "deducción",
+        "contexto",
+        "pistas",
+        "conocimiento previo",
+        "causa-efecto",
+        "autor",
+        "implícito",
+        "explícito",
+        "leer entre líneas",
+        "mensaje"
+      ]
     },
     {
-      "id": "esp_g5_025", "grado": 5, "tema": "gramatica verbos sustantivos adjetivos conectores grado quinto",
+      "id": "esp_g5_025",
+      "grado": 5,
+      "tema": "gramatica verbos sustantivos adjetivos conectores grado quinto",
       "pregunta": "¿Cómo funcionan juntos los verbos, sustantivos, adjetivos y conectores en grado quinto?",
       "respuesta": "Sustantivos: nombran personas, animales, cosas, lugares e ideas. Pueden ser comunes (ciudad), propios (Medellín), concretos (mesa) o abstractos (libertad). Adjetivos: describen al sustantivo y concuerdan en género y número: 'la ciudad hermosa / las ciudades hermosas'. Verbos: expresan acciones o estados; se conjugan en persona, número y tiempo: yo corro / ellos corrieron / nosotros correremos. Conectores: unen oraciones e ideas: además, sin embargo, porque, por lo tanto, finalmente. Todos juntos forman textos correctos: 'Las flores rojas (sust. + adj.) florecen (verbo) en primavera; por lo tanto (conector), el jardín se ve hermoso'. Dominar la gramática mejora tu escritura y comprensión.",
-      "palabras_clave": ["gramática", "verbos", "sustantivos", "adjetivos", "conectores", "conjugar", "concordancia", "género", "número", "tiempo verbal", "oración", "propios", "comunes", "abstractos"]
+      "palabras_clave": [
+        "gramática",
+        "verbos",
+        "sustantivos",
+        "adjetivos",
+        "conectores",
+        "conjugar",
+        "concordancia",
+        "género",
+        "número",
+        "tiempo verbal",
+        "oración",
+        "propios",
+        "comunes",
+        "abstractos"
+      ]
     },
     {
-      "id": "esp_g5_026", "grado": 5, "tema": "argumentacion oral escrita grado quinto",
+      "id": "esp_g5_026",
+      "grado": 5,
+      "tema": "argumentacion oral escrita grado quinto",
       "pregunta": "¿Cómo argumento de forma oral y escrita en grado quinto?",
       "respuesta": "Argumentar es defender una posición con razones y evidencia de forma respetuosa. Argumentación oral (debates, discusiones): presenta tu tesis con claridad, apoya cada argumento con ejemplos concretos, escucha activamente al oponente, usa lenguaje respetuoso aunque no estés de acuerdo, cierra reafirmando tu posición. Argumentación escrita: 1) Tesis (posición del autor). 2) Argumentos (razones + evidencia: datos, citas, ejemplos). 3) Contraargumentos (objeciones que rebates). 4) Conclusión (cierra y reafirma). Conectores clave: 'dado que', 'en consecuencia', 'aunque', 'sin embargo', 'por lo tanto'. Evita falacias (atacar a la persona en vez de la idea). La argumentación entrena el pensamiento crítico.",
-      "palabras_clave": ["argumentación", "argumentar", "oral", "escrita", "tesis", "argumentos", "evidencia", "debate", "contraargumento", "conclusión", "pensamiento crítico", "falacias", "razones", "grado quinto"]
+      "palabras_clave": [
+        "argumentación",
+        "argumentar",
+        "oral",
+        "escrita",
+        "tesis",
+        "argumentos",
+        "evidencia",
+        "debate",
+        "contraargumento",
+        "conclusión",
+        "pensamiento crítico",
+        "falacias",
+        "razones",
+        "grado quinto"
+      ]
     },
     {
-      "id": "esp_g5_027", "grado": 5, "tema": "lectura critica avanzada grado quinto",
+      "id": "esp_g5_027",
+      "grado": 5,
+      "tema": "lectura critica avanzada grado quinto",
       "pregunta": "¿Cómo aplico la lectura crítica a diferentes tipos de texto?",
       "respuesta": "La lectura crítica evalúa, cuestiona y forma una opinión propia sobre lo que se lee. Pasos: 1) Identifica el propósito del texto: ¿para qué fue escrito (informar, persuadir, entretener)? 2) Analiza el autor: ¿quién es?, ¿tiene algún interés particular? 3) Distingue hechos (verificables: 'Colombia tiene 48 millones de habitantes') de opiniones ('Colombia es el mejor país del mundo'). 4) Evalúa la evidencia: ¿son datos confiables?, ¿tienen fuente clara? 5) Detecta el punto de vista o sesgo del autor. 6) Contrasta la información con otras fuentes. 7) Formula tu propia posición informada. Aplicalo a noticias, ensayos, redes sociales y cualquier texto que leas.",
-      "palabras_clave": ["lectura crítica", "analizar", "evaluar", "hechos", "opiniones", "propósito", "autor", "sesgo", "fuentes", "evidencia", "contrastar", "posición", "cuestionar", "grado quinto"]
+      "palabras_clave": [
+        "lectura crítica",
+        "analizar",
+        "evaluar",
+        "hechos",
+        "opiniones",
+        "propósito",
+        "autor",
+        "sesgo",
+        "fuentes",
+        "evidencia",
+        "contrastar",
+        "posición",
+        "cuestionar",
+        "grado quinto"
+      ]
+    },
+    [
+      {
+        "id": "esp_g3_037",
+        "grado": 3,
+        "tema": "signos de puntuación avanzados",
+        "pregunta": "¿Cómo se usan los signos de interrogación y exclamación en español?",
+        "respuesta": "En español, a diferencia de otros idiomas, usamos doble signo: uno de apertura y uno de cierre. Interrogación: ¿...? Ejemplo: '¿Cómo te llamas?' El signo de apertura (¿) es obligatorio en español. Exclamación: ¡...! Ejemplo: '¡Qué día tan bonito!' También se pueden combinar para expresar sorpresa o incredulidad: '¿¡No lo puedo creer!?' Errores comunes: escribir solo el signo de cierre (como en inglés). Siempre abre y cierra correctamente.",
+        "palabras_clave": [
+          "signos de interrogación",
+          "signos de exclamación",
+          "¿?",
+          "¡!",
+          "apertura",
+          "cierre",
+          "español",
+          "pregunta",
+          "emoción",
+          "ortografía"
+        ]
+      },
+      {
+        "id": "esp_g3_038",
+        "grado": 3,
+        "tema": "familia de palabras",
+        "pregunta": "¿Qué es la familia de palabras?",
+        "respuesta": "Una familia de palabras es un grupo de palabras que comparten la misma raíz y están relacionadas por su significado. Ejemplo: la raíz 'mar' da: mar, marino, marinero, maremoto, submarino, marítimo. La raíz 'libro' da: libro, librería, librero, libreto, librito. Conocer familias de palabras nos ayuda a entender palabras nuevas y a aumentar el vocabulario. La parte común que comparten se llama raíz o lexema.",
+        "palabras_clave": [
+          "familia de palabras",
+          "raíz",
+          "lexema",
+          "mar",
+          "marino",
+          "libro",
+          "librería",
+          "vocabulario",
+          "relacionadas",
+          "derivar"
+        ]
+      },
+      {
+        "id": "esp_g3_039",
+        "grado": 3,
+        "tema": "prefijos y sufijos",
+        "pregunta": "¿Qué son los prefijos y los sufijos?",
+        "respuesta": "Los prefijos son partículas que se añaden al inicio de una palabra para modificar su significado. Ejemplos: des- (deshacer, desorden), in- (incompleto, incapaz), re- (rehacer, releer), pre- (prehistoria, prevenir). Los sufijos van al final: -ero (panadero, cartero), -ción (nación, acción), -ito/-ita (gatito, casita = diminutivo), -ísimo (grandísimo = aumentativo). Reconocer prefijos y sufijos ayuda a entender palabras desconocidas.",
+        "palabras_clave": [
+          "prefijo",
+          "sufijo",
+          "des-",
+          "in-",
+          "re-",
+          "-ción",
+          "-ero",
+          "diminutivo",
+          "aumentativo",
+          "modificar",
+          "palabra",
+          "raíz"
+        ]
+      },
+      {
+        "id": "esp_g3_040",
+        "grado": 3,
+        "tema": "tipos de oraciones",
+        "pregunta": "¿Cuáles son los tipos de oraciones según su propósito?",
+        "respuesta": "Las oraciones se clasifican según lo que queremos comunicar: Declarativas o enunciativas: afirman o niegan algo. 'El sol brilla.' / 'No llueve hoy.' Interrogativas: hacen una pregunta. '¿Qué hora es?' Exclamativas: expresan emoción fuerte. '¡Qué frío hace!' Imperativas o exhortativas: dan una orden o una petición. 'Cierra la puerta.' / 'Por favor, habla más despacio.' Desiderativas: expresan un deseo. 'Ojalá llegue pronto.' Dubitativas: expresan duda. 'Quizás venga mañana.'",
+        "palabras_clave": [
+          "tipos de oraciones",
+          "declarativa",
+          "interrogativa",
+          "exclamativa",
+          "imperativa",
+          "desiderativa",
+          "dubitativa",
+          "comunicar",
+          "propósito",
+          "enunciativa"
+        ]
+      },
+      {
+        "id": "esp_g3_041",
+        "grado": 3,
+        "tema": "mitos colombianos",
+        "pregunta": "¿Qué es un mito y cuáles son los mitos más famosos de Colombia?",
+        "respuesta": "Un mito es una narración tradicional que explica el origen del mundo, de la naturaleza o de fenómenos que los seres humanos no podían comprender. A diferencia de la leyenda, el mito tiene personajes sagrados o divinos. Mitos colombianos importantes: El mito de Bachué (diosa muisca del agua que salió de la laguna de Iguaque con un niño y pobló la tierra). El mito de Bochica (dios muisca del sol que enseñó a tejer). El Dorado (ciudad de oro buscada por los conquistadores). Los mitos indígenas de Colombia son patrimonio cultural.",
+        "palabras_clave": [
+          "mito",
+          "Colombia",
+          "Bachué",
+          "Bochica",
+          "muisca",
+          "El Dorado",
+          "origen",
+          "dioses",
+          "sagrado",
+          "tradición",
+          "Iguaque",
+          "narración"
+        ]
+      },
+      {
+        "id": "esp_g3_042",
+        "grado": 3,
+        "tema": "trabalenguas y adivinanzas",
+        "pregunta": "¿Qué son los trabalenguas y las adivinanzas?",
+        "respuesta": "Los trabalenguas son frases con sonidos difíciles de pronunciar que se repiten rápidamente. Su objetivo es practicar la pronunciación y divertirse. Ejemplo: 'Tres tristes tigres tragaban trigo en un trigal'. Las adivinanzas son preguntas o acertijos en los que hay que descubrir de qué objeto o ser vivo se habla a partir de pistas. Ejemplo: 'Soy redonda como el sol, amarilla y sin rincones, con mi jugo se hacen miles de ricos limonadas. ¿Qué soy?' (el limón). Ambos son parte de la tradición oral y del folclor.",
+        "palabras_clave": [
+          "trabalenguas",
+          "adivinanzas",
+          "pronunciación",
+          "acertijo",
+          "folclor",
+          "tradición oral",
+          "tigres",
+          "limón",
+          "juego",
+          "oral"
+        ]
+      },
+      {
+        "id": "esp_g3_043",
+        "grado": 3,
+        "tema": "ortografía uso h",
+        "pregunta": "¿Cuándo se usa la letra 'h' en español?",
+        "respuesta": "La 'h' en español es muda (no suena) pero su escritura es obligatoria. Reglas principales: 1) Palabras que empiezan con los diptongos 'hie-' y 'hue-': hierba, hierro, huevo, hueso. 2) Palabras con las sílabas 'ha', 'he', 'hi', 'ho', 'hu' al inicio: hablar, hacer, hijo, hombre, humano. 3) El verbo 'haber' y sus formas: ha, has, han, había, hubiera. 4) Palabras compuestas que empiezan con 'hidro-' (agua), 'hiper-', 'hipo-', 'homo-', 'hetero-'. Truco: si suena igual con o sin 'h', busca en el diccionario.",
+        "palabras_clave": [
+          "h",
+          "muda",
+          "haber",
+          "hacer",
+          "hablar",
+          "hijo",
+          "huevo",
+          "hueso",
+          "hierba",
+          "ortografía",
+          "regla",
+          "hie",
+          "hue"
+        ]
+      },
+      {
+        "id": "esp_g3_044",
+        "grado": 3,
+        "tema": "diálogo y guion",
+        "pregunta": "¿Cómo se escribe un diálogo correctamente?",
+        "respuesta": "Un diálogo es la conversación entre dos o más personajes en un texto. Se escribe usando el guion largo (—) al inicio de cada intervención. Reglas: 1) El guion largo (—) indica que un personaje habla. 2) Después del guion va el texto del personaje con minúscula. 3) Se puede incluir el narrador entre guiones. Ejemplo: '—Hola, ¿cómo estás? —dijo María. —Muy bien, gracias —respondió Juan.' Las comillas se usan para citar palabras dentro de un texto, no para diálogos en narrativa española. El diálogo hace los cuentos más vivos y dinámicos.",
+        "palabras_clave": [
+          "diálogo",
+          "guion largo",
+          "—",
+          "personajes",
+          "conversación",
+          "habla",
+          "narrador",
+          "comillas",
+          "cuento",
+          "escritura",
+          "ortografía"
+        ]
+      },
+      {
+        "id": "esp_g3_045",
+        "grado": 3,
+        "tema": "refranes colombianos",
+        "pregunta": "¿Qué son los refranes y cuáles son los más conocidos en Colombia?",
+        "respuesta": "Los refranes son dichos populares cortos que contienen una enseñanza o sabiduría popular. Son parte de la tradición oral. Refranes colombianos y en español: 'Camarón que se duerme, se lo lleva la corriente' (hay que estar atento y aprovechar las oportunidades). 'No hay mal que por bien no venga' (de las situaciones difíciles pueden salir cosas buenas). 'Al mal tiempo, buena cara' (mantener el ánimo en momentos difíciles). 'Más vale tarde que nunca' (es mejor hacer algo con retraso que no hacerlo). 'A caballo regalado no se le mira el colmillo' (no se critica lo que se recibe como regalo).",
+        "palabras_clave": [
+          "refranes",
+          "Colombia",
+          "camarón",
+          "tradición oral",
+          "sabiduría",
+          "popular",
+          "enseñanza",
+          "dicho",
+          "folclor",
+          "mal tiempo",
+          "buena cara"
+        ]
+      },
+      {
+        "id": "esp_g3_046",
+        "grado": 3,
+        "tema": "escritura proceso",
+        "pregunta": "¿Cuáles son los pasos del proceso de escritura?",
+        "respuesta": "Escribir bien tiene un proceso con etapas: 1) Planeación: define el tema, a quién va dirigido, qué tipo de texto escribirás. Organiza ideas con mapa mental o lluvia de ideas. 2) Escritura del borrador: escribe libremente sin preocuparte demasiado por errores. 3) Revisión: lee tu texto y pregúntate: ¿tiene sentido?, ¿las ideas están en orden?, ¿se entiende? 4) Corrección: corrige ortografía, signos de puntuación y mejora las palabras. 5) Publicación o versión final: escribe el texto corregido en limpio. Este proceso aplica a todos los textos: cuentos, descripciones, cartas, informes.",
+        "palabras_clave": [
+          "proceso de escritura",
+          "planeación",
+          "borrador",
+          "revisión",
+          "corrección",
+          "publicación",
+          "mapa mental",
+          "lluvia de ideas",
+          "etapas",
+          "texto",
+          "escribir"
+        ]
+      },
+      {
+        "id": "esp_g4_028",
+        "grado": 4,
+        "tema": "análisis personajes literarios",
+        "pregunta": "¿Cómo analizo a un personaje literario?",
+        "respuesta": "Para analizar un personaje en un texto literario examina: 1) Descripción física: ¿cómo es su aspecto? 2) Descripción psicológica: ¿cómo es su personalidad, sus miedos, sus deseos? 3) Rol en la historia: protagonista (héroe), antagonista (villano), personaje secundario (apoya la trama). 4) Evolución: ¿cambia a lo largo de la historia? Los personajes planos no cambian; los redondos (complejos) sí evolucionan. 5) Relaciones con otros personajes. 6) Lo que dice y lo que hace (sus acciones revelan su carácter). Ejemplo: en 'Rin Rin Renacuajo' de Rafael Pombo, Rin Rin es curioso y desobediente, lo que lo lleva a su fin.",
+        "palabras_clave": [
+          "personaje",
+          "protagonista",
+          "antagonista",
+          "análisis",
+          "físico",
+          "psicológico",
+          "evolución",
+          "plano",
+          "redondo",
+          "Rin Rin Renacuajo",
+          "Rafael Pombo",
+          "secundario"
+        ]
+      },
+      {
+        "id": "esp_g4_029",
+        "grado": 4,
+        "tema": "texto instructivo",
+        "pregunta": "¿Qué es un texto instructivo y cómo se escribe?",
+        "respuesta": "Un texto instructivo explica cómo realizar una acción o proceso paso a paso. Su propósito es guiar al lector. Características: usa verbos en modo imperativo (corta, añade, mezcla) o infinitivo (cortar, añadir, mezclar), numeración o viñetas para los pasos, lenguaje claro y preciso. Ejemplos: recetas de cocina, manuales de uso, instrucciones de juegos de mesa, guías para armar algo. Estructura: título, materiales o ingredientes necesarios, pasos en orden, resultado esperado. En Colombia, las recetas de cocina son un buen ejemplo: 'Para preparar arepas: 1) Mezcla la harina de maíz con agua y sal...'",
+        "palabras_clave": [
+          "texto instructivo",
+          "instrucciones",
+          "receta",
+          "manual",
+          "pasos",
+          "imperativo",
+          "infinitivo",
+          "numeración",
+          "proceso",
+          "guiar",
+          "arepas",
+          "Colombia"
+        ]
+      },
+      {
+        "id": "esp_g4_030",
+        "grado": 4,
+        "tema": "debate escolar",
+        "pregunta": "¿Cómo participo en un debate escolar?",
+        "respuesta": "Un debate es una discusión organizada donde dos o más personas defienden posiciones diferentes sobre un tema. Para participar bien: 1) Prepárate: conoce el tema a fondo, define si estás a favor o en contra. 2) Construye al menos 3 argumentos con evidencia (datos, ejemplos). 3) Anticipa los argumentos del otro lado para rebatirlos. 4) Escucha con atención antes de responder. 5) Habla con respeto, sin atacar a la persona. 6) Usa conectores de argumento: 'sin embargo', 'en cambio', 'aunque', 'por lo tanto'. 7) Cierra con una conclusión clara. El debate desarrolla el pensamiento crítico y la expresión oral.",
+        "palabras_clave": [
+          "debate",
+          "argumento",
+          "a favor",
+          "en contra",
+          "escuchar",
+          "respeto",
+          "evidencia",
+          "contraargumento",
+          "conclusión",
+          "expresión oral",
+          "pensamiento crítico"
+        ]
+      },
+      {
+        "id": "esp_g4_031",
+        "grado": 4,
+        "tema": "literatura infantil colombiana",
+        "pregunta": "¿Qué otros autores de literatura infantil colombiana debo conocer además de Rafael Pombo?",
+        "respuesta": "Además de Rafael Pombo, Colombia tiene otros grandes autores para niños: Triunfo Arciniegas (cuentos y teatro infantil, ganador de premios internacionales). Irene Vasco (autora de 'Paso a paso' y muchos álbumes ilustrados). Celso Román (cuentos de ciencia ficción y fantasía para jóvenes, 'Los amigos del hombre'). Ivar Da Coll (ilustrador y autor de los entrañables 'Chigüiro'). Gloria Cecilia Díaz (Premio Hans Christian Andersen para América Latina). Estos autores reflejan la diversidad cultural, los paisajes y la vida cotidiana de Colombia.",
+        "palabras_clave": [
+          "literatura infantil colombiana",
+          "Triunfo Arciniegas",
+          "Irene Vasco",
+          "Celso Román",
+          "Ivar Da Coll",
+          "Chigüiro",
+          "Gloria Cecilia Díaz",
+          "Rafael Pombo",
+          "autores",
+          "Colombia"
+        ]
+      },
+      {
+        "id": "esp_g4_032",
+        "grado": 4,
+        "tema": "textos periodísticos",
+        "pregunta": "¿Cuáles son los tipos de textos periodísticos?",
+        "respuesta": "Los textos periodísticos informan sobre la actualidad. Tipos principales: Noticia: informa sobre un hecho reciente con objetividad (qué, quién, cuándo, dónde, cómo, por qué). Reportaje: profundiza en un tema con más detalle y contexto que la noticia. Entrevista: preguntas y respuestas a una persona importante o experta. Editorial: opinión del periódico sobre un tema de interés público. Crónica: relato de un hecho con estilo más literario, en orden temporal. Caricatura: crítica visual con humor. En Colombia, medios como El Colombiano, El Tiempo y El Espectador publican estos géneros.",
+        "palabras_clave": [
+          "textos periodísticos",
+          "noticia",
+          "reportaje",
+          "entrevista",
+          "editorial",
+          "crónica",
+          "caricatura",
+          "Colombia",
+          "El Tiempo",
+          "El Colombiano",
+          "periodismo",
+          "actualidad"
+        ]
+      },
+      {
+        "id": "esp_g4_033",
+        "grado": 4,
+        "tema": "lectura de imágenes",
+        "pregunta": "¿Cómo leo e interpreto una imagen o afiche?",
+        "respuesta": "Leer una imagen o afiche es interpretar su mensaje visual. Pasos: 1) Observa el conjunto: ¿qué ves en general? 2) Identifica los elementos: personas, objetos, colores, texto. 3) Analiza los colores: el rojo puede significar peligro o amor; el verde, naturaleza; el amarillo, alegría o advertencia. 4) Lee el texto: título, slogan, información. 5) Pregúntate: ¿qué quiere comunicar?, ¿a quién va dirigido?, ¿qué emoción busca despertar? 6) Identifica el propósito: ¿informa, publicita, concientiza? Los afiches de salud pública, publicidad y campañas sociales son ejemplos comunes en Colombia.",
+        "palabras_clave": [
+          "imagen",
+          "afiche",
+          "leer imágenes",
+          "interpretar",
+          "colores",
+          "visual",
+          "mensaje",
+          "propósito",
+          "publicidad",
+          "texto",
+          "campaña",
+          "Colombia"
+        ]
+      },
+      {
+        "id": "esp_g4_034",
+        "grado": 4,
+        "tema": "diccionario y uso",
+        "pregunta": "¿Cómo uso el diccionario correctamente?",
+        "respuesta": "El diccionario es la herramienta más importante para ampliar el vocabulario. Cómo usarlo: 1) Las palabras están en orden alfabético. 2) Busca la forma base: para verbos busca el infinitivo (correr, no corrió); para sustantivos, el singular (árbol, no árboles). 3) La entrada muestra: palabra, categoría gramatical (s. = sustantivo, v. = verbo, adj. = adjetivo), definición(es) numeradas y ejemplos. 4) Algunas palabras tienen varias acepciones (significados): el número indica cuál es cuál. 5) El diccionario de la Real Academia Española (RAE) es la autoridad oficial del español. También puedes usar dle.rae.es en internet.",
+        "palabras_clave": [
+          "diccionario",
+          "RAE",
+          "alfabético",
+          "infinitivo",
+          "singular",
+          "acepción",
+          "definición",
+          "vocabulario",
+          "búsqueda",
+          "gramática",
+          "dle.rae.es",
+          "significado"
+        ]
+      },
+      {
+        "id": "esp_g4_035",
+        "grado": 4,
+        "tema": "texto publicitario",
+        "pregunta": "¿Qué es un texto publicitario y cómo funciona?",
+        "respuesta": "Un texto publicitario tiene como objetivo persuadir al receptor para que compre un producto, adopte una conducta o apoye una causa. Características: slogan (frase corta y memorable), imagen llamativa, lenguaje positivo y seductor, datos selectivos (muestra lo bueno y oculta lo malo). Recursos que usa: repetición del nombre de la marca, rima o juegos de palabras, uso de personajes famosos (testimonios), cifras que impresionan. Es importante leer la publicidad de forma crítica: ¿qué te están vendiendo realmente? ¿Qué información ocultan? Los niños son un público objetivo frecuente.",
+        "palabras_clave": [
+          "texto publicitario",
+          "publicidad",
+          "slogan",
+          "persuadir",
+          "marca",
+          "receptor",
+          "lectura crítica",
+          "imagen",
+          "testimonio",
+          "niños",
+          "mercadeo",
+          "Colombia"
+        ]
+      },
+      {
+        "id": "esp_g4_036",
+        "grado": 4,
+        "tema": "género poético canciones",
+        "pregunta": "¿Cuál es la relación entre poesía y música en la cultura colombiana?",
+        "respuesta": "La poesía y la música están profundamente unidas en Colombia. Las letras de los géneros musicales tradicionales colombianos son poesía oral: la cumbia, el vallenato, el bambuco, el porro y la mapalé. Los vallenatos de Carlos Vives, Diomedes Díaz o el legendario Carlos Garufa son verdaderos poemas cantados. El bambuco es el ritmo nacional y sus letras suelen describir el paisaje y los sentimientos del campo colombiano. Las canciones tienen rima, ritmo, metáforas y otros recursos poéticos. Aprender poesía a través de la música es una estrategia muy efectiva en el aula.",
+        "palabras_clave": [
+          "poesía",
+          "música",
+          "Colombia",
+          "vallenato",
+          "cumbia",
+          "bambuco",
+          "Carlos Vives",
+          "Diomedes Díaz",
+          "rima",
+          "ritmo",
+          "folclor",
+          "cultura colombiana",
+          "letra canción"
+        ]
+      },
+      {
+        "id": "esp_g5_028",
+        "grado": 5,
+        "tema": "ensayo argumentativo avanzado",
+        "pregunta": "¿Cómo escribo un ensayo argumentativo de calidad en grado quinto?",
+        "respuesta": "Un ensayo argumentativo de calidad en grado 5 debe tener: 1) Introducción impactante: empieza con una pregunta retórica, dato sorprendente o cita que atrape al lector; luego presenta el tema y tu tesis con claridad. 2) Desarrollo: mínimo 2-3 párrafos con argumentos diferentes; cada párrafo empieza con la idea principal, luego la evidencia (dato, ejemplo, cita) y finalmente un conector de conclusión parcial. 3) Contraargumento reconocido y rebatido: 'Aunque algunos piensan que... sin embargo...'. 4) Conclusión: no solo repite la tesis sino que la amplía con reflexión. 5) Lenguaje preciso: evita 'yo creo que', 'pienso que' (debilitan la tesis); usa 'se puede afirmar', 'la evidencia demuestra'. 6) Fuentes citadas si usas datos.",
+        "palabras_clave": [
+          "ensayo argumentativo",
+          "introducción",
+          "tesis",
+          "evidencia",
+          "contraargumento",
+          "conclusión",
+          "calidad",
+          "grado quinto",
+          "lenguaje preciso",
+          "fuentes",
+          "párrafo",
+          "dato",
+          "ejemplo"
+        ]
+      },
+      {
+        "id": "esp_g5_029",
+        "grado": 5,
+        "tema": "ortografía avanzada grado quinto",
+        "pregunta": "¿Cuáles son los errores ortográficos más frecuentes en grado quinto y cómo evitarlos?",
+        "respuesta": "Errores ortográficos frecuentes en grado 5 y cómo evitarlos: 1) Omisión de tilde: 'el' (artículo) vs 'él' (pronombre); 'tu' vs 'tú'; 'si' vs 'sí'. Estrategia: aprende los tildes diacríticos de memoria. 2) Confusión haber/a ver: 'Debe haber un error' vs 'Voy a ver qué pasó'. 3) Confusión hay/ahí/ay: 'Hay mucha gente' (haber), 'Está ahí' (lugar), '¡Ay, qué dolor!' (exclamación). 4) Porque/por qué/porqué/por que: en preguntas '¿Por qué?' con tilde; como explicación 'porque'; como sustantivo 'el porqué'; en algunos contextos 'por que'. 5) Confusión a/ha: 'ha comido' (verbo haber), 'a comer' (preposición). 6) Mayúsculas en nombres propios: siempre en nombres de personas, ciudades y países.",
+        "palabras_clave": [
+          "ortografía",
+          "errores frecuentes",
+          "tilde",
+          "haber",
+          "hay",
+          "ahí",
+          "porque",
+          "por qué",
+          "mayúsculas",
+          "diacrítico",
+          "grado quinto",
+          "a ver",
+          "ha"
+        ]
+      },
+      {
+        "id": "esp_g5_030",
+        "grado": 5,
+        "tema": "comprensión lectora niveles avanzados",
+        "pregunta": "¿Cuáles son los tres niveles de comprensión lectora y cómo los aplico?",
+        "respuesta": "Los tres niveles de comprensión lectora son: 1) Nivel literal: comprendes lo que el texto dice explícitamente. Preguntas: ¿qué pasó?, ¿quién lo hizo?, ¿cuándo?, ¿dónde? Respuestas que se encuentran directamente en el texto. 2) Nivel inferencial: deduces lo que el texto sugiere sin decirlo directamente. Combinas información del texto con tu conocimiento previo. Preguntas: ¿por qué crees que...?, ¿qué crees que pasará después?, ¿qué quiso decir el autor con...? 3) Nivel crítico-valorativo: evalúas y opinas sobre el texto. Distingues hechos de opiniones, identificas el propósito del autor, valoras si la información es confiable. Preguntas: ¿estás de acuerdo?, ¿qué mensaje transmite?, ¿cómo se relaciona con tu vida? Los tres niveles se aplican en el orden indicado.",
+        "palabras_clave": [
+          "comprensión lectora",
+          "nivel literal",
+          "nivel inferencial",
+          "nivel crítico",
+          "deducir",
+          "evaluar",
+          "hechos",
+          "opiniones",
+          "explícito",
+          "implícito",
+          "propósito",
+          "valorar"
+        ]
+      },
+      {
+        "id": "esp_g5_031",
+        "grado": 5,
+        "tema": "crónica literaria",
+        "pregunta": "¿Qué es una crónica y cómo se diferencia de una noticia?",
+        "respuesta": "Una crónica es un texto que narra hechos reales en orden temporal, pero con un estilo más literario y personal que la noticia. Características: narra en orden cronológico (de lo primero a lo último), puede incluir descripciones detalladas, reflexiones del autor y lenguaje más expresivo. En Colombia hay grandes cronistas: Tomás González, Alfredo Molano (crónicas sobre el campo y la violencia), Daniel Samper Pizano (crónicas humorísticas). Diferencias con la noticia: la noticia es objetiva y sigue la pirámide invertida; la crónica tiene más libertad estilística y voz personal del autor. Ambas hablan de hechos reales.",
+        "palabras_clave": [
+          "crónica",
+          "noticia",
+          "narrativa",
+          "orden cronológico",
+          "literario",
+          "Colombia",
+          "Alfredo Molano",
+          "Daniel Samper",
+          "Tomás González",
+          "real",
+          "periodismo",
+          "voz personal"
+        ]
+      },
+      {
+        "id": "esp_g5_032",
+        "grado": 5,
+        "tema": "variedad lingüística en Colombia",
+        "pregunta": "¿Por qué el español se habla diferente en distintas regiones de Colombia?",
+        "respuesta": "El español tiene variedades regionales llamadas dialectos o hablas regionales. En Colombia existen diferencias notables: el costeño (Caribe colombiano: Barranquilla, Cartagena) es más rápido, aspira la 's' final (loh niñoh) y tiene influencia africana. El rolo o bogotano es más formal y cuidado. El paisa (Antioquia, Eje Cafetero) usa el 'vos' en lugar de 'tú' ('¿Cómo estás vos?'). El caleño (Valle del Cauca) tiene su propio ritmo. El llanero y el amazónico tienen influencia indígena. Estas variantes son igualmente válidas; ninguna es más correcta que otra. La diversidad lingüística refleja la riqueza cultural de Colombia.",
+        "palabras_clave": [
+          "variedades lingüísticas",
+          "dialectos",
+          "costeño",
+          "paisa",
+          "rolo",
+          "bogotano",
+          "caleño",
+          "vos",
+          "Colombia",
+          "Antioquia",
+          "Caribe",
+          "diversidad",
+          "español colombiano",
+          "regional"
+        ]
+      },
+      {
+        "id": "esp_g5_033",
+        "grado": 5,
+        "tema": "texto dramático teatro",
+        "pregunta": "¿Qué es un texto dramático y cómo se escribe una obra de teatro?",
+        "respuesta": "Un texto dramático está escrito para ser representado en un escenario. Elementos: acotaciones (indicaciones del autor sobre movimientos, gestos, escenografía, escritas entre paréntesis o en cursiva), diálogos (el texto que dicen los personajes, precedido por el nombre del personaje), actos (divisiones grandes de la obra) y escenas (subdivisiones dentro del acto). Para escribir una obra corta: 1) Define los personajes y su conflicto. 2) Organiza la trama en inicio, nudo y desenlace. 3) Escribe los diálogos con el nombre del personaje antes. 4) Añade acotaciones para indicar gestos y movimientos. El teatro en Colombia tiene importantes representantes como Enrique Buenaventura.",
+        "palabras_clave": [
+          "texto dramático",
+          "teatro",
+          "obra de teatro",
+          "acotaciones",
+          "diálogos",
+          "actos",
+          "escenas",
+          "personajes",
+          "conflicto",
+          "Enrique Buenaventura",
+          "Colombia",
+          "representar"
+        ]
+      },
+      {
+        "id": "esp_g5_034",
+        "grado": 5,
+        "tema": "lenguaje no verbal",
+        "pregunta": "¿Qué es el lenguaje no verbal y por qué es importante en la comunicación?",
+        "respuesta": "El lenguaje no verbal es toda la comunicación que se hace sin palabras: gestos, expresiones faciales, postura corporal, contacto visual, distancia entre personas, tono de voz y silencio. Estudios demuestran que más del 60% de la comunicación humana es no verbal. Ejemplos: cruzar los brazos puede indicar defensividad; sonreír transmite apertura; el tono de voz cambia el significado de las palabras (decir 'qué bien' en tono irónico significa lo contrario). En la expresión oral escolar es importante: mantener contacto visual, postura segura, gestos naturales y voz clara. El lenguaje no verbal complementa y a veces contradice el lenguaje verbal.",
+        "palabras_clave": [
+          "lenguaje no verbal",
+          "gestos",
+          "expresión facial",
+          "postura",
+          "contacto visual",
+          "tono de voz",
+          "silencio",
+          "comunicación",
+          "ironia",
+          "corporal",
+          "expresión oral"
+        ]
+      },
+      {
+        "id": "esp_g5_035",
+        "grado": 5,
+        "tema": "literatura de terror y suspenso",
+        "pregunta": "¿Cómo se crean el suspenso y el terror en un texto literario?",
+        "respuesta": "El suspenso y el terror son recursos narrativos que mantienen al lector en tensión. Técnicas para crear suspenso: 1) Dejar información incompleta (el lector quiere saber qué pasa). 2) Usar puntos suspensivos (...) para crear pausa dramática. 3) Describir el ambiente con detalles sombríos (noche oscura, sonidos extraños, silencio pesado). 4) Mostrar el miedo del personaje a través de sus reacciones (corazón acelerado, manos frías). 5) Usar frases cortas en los momentos de mayor tensión. 6) Retrasar la resolución del misterio. Edgar Allan Poe es el maestro universal del terror. En Colombia, algunos cuentos de García Márquez también usan elementos de suspenso.",
+        "palabras_clave": [
+          "suspenso",
+          "terror",
+          "narrativa",
+          "técnicas",
+          "ambiente",
+          "misterio",
+          "Poe",
+          "puntos suspensivos",
+          "tensión",
+          "miedo",
+          "personaje",
+          "García Márquez",
+          "descripción"
+        ]
+      },
+      {
+        "id": "esp_g5_036",
+        "grado": 5,
+        "tema": "medios digitales y veracidad",
+        "pregunta": "¿Cómo identifico una noticia falsa (fake news)?",
+        "respuesta": "Las noticias falsas o fake news son informaciones incorrectas, inventadas o manipuladas que se difunden como si fueran reales. Cómo identificarlas: 1) Verifica la fuente: ¿es un medio reconocido y confiable? 2) Busca la fecha: noticias viejas a veces se hacen pasar por actuales. 3) Contrasta con otras fuentes: si solo un medio lo dice, desconfía. 4) Revisa las fotos: pueden estar sacadas de contexto (puedes buscar la imagen en Google). 5) Lee más allá del titular: muchas veces el título exagera o distorsiona el contenido. 6) Usa verificadores de noticias: ColombiaCheck y AFP Factual verifican noticias en Colombia. 7) Desconfía de lo que genera emociones muy fuertes: el miedo y la rabia se explotan para compartir sin pensar.",
+        "palabras_clave": [
+          "noticias falsas",
+          "fake news",
+          "verificar",
+          "fuente",
+          "ColombiaCheck",
+          "AFP Factual",
+          "internet",
+          "redes sociales",
+          "titular",
+          "foto",
+          "contrastar",
+          "desinformación",
+          "Colombia"
+        ]
+      },
+      {
+        "id": "esp_g5_037",
+        "grado": 5,
+        "tema": "sinonimia antonimia avanzada",
+        "pregunta": "¿Cómo uso los sinónimos y antónimos para mejorar mis textos en grado quinto?",
+        "respuesta": "En grado 5, el uso avanzado de sinónimos y antónimos mejora la calidad de los textos: Sinónimos para evitar repetición: en lugar de 'dijo' puedes usar expresó, afirmó, declaró, comentó, murmuró, exclamó (cada uno con matiz diferente). En lugar de 'bonito': hermoso, bello, precioso, encantador. Sinónimos con matiz: no todos los sinónimos son exactamente iguales; 'delgado' y 'flaco' son sinónimos pero 'flaco' puede tener connotación negativa. Antónimos para crear contraste literario: 'la luz brillaba donde antes reinaba la oscuridad'. En poesía, los antónimos crean oxímoron: 'silencio ensordecedor', 'oscura claridad'. Diccionario de sinónimos (tesauro) es la herramienta ideal para buscarlos.",
+        "palabras_clave": [
+          "sinónimos",
+          "antónimos",
+          "tesauro",
+          "matiz",
+          "evitar repetición",
+          "contraste",
+          "oxímoron",
+          "dijo",
+          "bonito",
+          "flaco",
+          "delgado",
+          "vocabulario",
+          "escritura avanzada"
+        ]
+      },
+      {
+        "id": "esp_g5_038",
+        "grado": 5,
+        "tema": "biografía y autobiografía",
+        "pregunta": "¿Qué es una biografía y cómo se diferencia de una autobiografía?",
+        "respuesta": "Una biografía es el relato de la vida de una persona escrito por otra persona. Ejemplos: una biografía de García Márquez escrita por un periodista. Una autobiografía es cuando la persona cuenta su propia vida. García Márquez escribió 'Vivir para contarla', sus memorias autobiográficas. Características de ambas: orden cronológico (nacimiento, infancia, vida adulta, logros), datos verificables (fechas, lugares, hechos), lenguaje informativo con toques narrativos. La diferencia principal es el narrador: tercera persona en la biografía ('García Márquez nació en Aracataca...') y primera persona en la autobiografía ('Nací en Aracataca...'). Ambas son géneros de no ficción.",
+        "palabras_clave": [
+          "biografía",
+          "autobiografía",
+          "García Márquez",
+          "Vivir para contarla",
+          "narrador",
+          "primera persona",
+          "tercera persona",
+          "no ficción",
+          "cronológico",
+          "memorias",
+          "Colombia",
+          "vida"
+        ]
+      },
+      {
+        "id": "esp_g3_047",
+        "grado": 3,
+        "tema": "rima y ritmo poético",
+        "pregunta": "¿Cómo identifico la rima y el ritmo en un poema?",
+        "respuesta": "La rima es la repetición de sonidos al final de los versos. Para identificarla: lee los últimos versos en voz alta y escucha qué sonidos se repiten. Ejemplo en Rafael Pombo: 'Rin Rin Renacuajo salió de paseo / sin pedir permiso a la mamá Ranea'. Los finales 'paseo' y 'Ranea' no riman perfectamente (asonante). El ritmo es el patrón musical del poema, creado por la distribución de sílabas acentuadas y no acentuadas. Para sentirlo: lee el poema en voz alta y nota dónde recae el golpe de voz. Los poemas infantiles suelen tener ritmo muy marcado, lo que los hace fáciles de memorizar. La rima consonante es perfecta (canción/corazón); la asonante es parcial (peine/reyes).",
+        "palabras_clave": [
+          "rima",
+          "ritmo",
+          "poema",
+          "verso",
+          "consonante",
+          "asonante",
+          "Rafael Pombo",
+          "Rin Rin Renacuajo",
+          "acentuada",
+          "musical",
+          "voz alta",
+          "memorizar"
+        ]
+      },
+      {
+        "id": "esp_g4_037",
+        "grado": 4,
+        "tema": "escritura creativa avanzada grado cuarto",
+        "pregunta": "¿Cómo desarrollo la creatividad en la escritura en grado cuarto?",
+        "respuesta": "Para desarrollar la creatividad en la escritura: 1) Usa el 'Y si...' para generar ideas: '¿Y si los animales hablaran en el colegio?' 2) Combina elementos inesperados: un robot en la época de los dinosaurios. 3) Escribe desde perspectivas inusuales: narra un día escolar desde la perspectiva de un borrador. 4) Usa los cinco sentidos en tus descripciones. 5) Inspírate en tu entorno colombiano: describe una plaza de mercado, una tarde lluviosa en Medellín, las flores de la Feria de las Flores. 6) Lee mucho para tener más recursos. 7) No tengas miedo de cometer errores en el borrador: primero crea, luego corrige. La creatividad se ejercita como un músculo.",
+        "palabras_clave": [
+          "creatividad",
+          "escritura creativa",
+          "y si",
+          "perspectiva",
+          "cinco sentidos",
+          "Colombia",
+          "Medellín",
+          "Feria de las Flores",
+          "borrador",
+          "inspiración",
+          "grado cuarto"
+        ]
+      },
+      {
+        "id": "esp_g3_048",
+        "grado": 3,
+        "tema": "lectura en voz alta",
+        "pregunta": "¿Por qué es importante leer en voz alta y cómo se hace bien?",
+        "respuesta": "Leer en voz alta tiene muchos beneficios: mejora la pronunciación, la fluidez lectora, la comprensión y la expresión oral. Para leer bien en voz alta: 1) Lee con voz clara y audible, sin murmurar. 2) Respeta los signos de puntuación: pausa en la coma, pausa más larga en el punto, inflexión en las preguntas. 3) Varía el tono: más alto en los momentos emocionantes, más lento en las partes importantes. 4) No silabees (no leas sílaba por sílaba). 5) Lee en grupos de palabras con sentido. 6) Practica previamente el texto. La lectura en voz alta expresiva se llama declamación cuando es poesía y narración oral cuando es prosa.",
+        "palabras_clave": [
+          "lectura en voz alta",
+          "fluidez",
+          "pronunciación",
+          "puntuación",
+          "tono",
+          "expresivo",
+          "declamación",
+          "narración oral",
+          "pausa",
+          "comprensión",
+          "practicar"
+        ]
+      },
+      {
+        "id": "esp_g5_039",
+        "grado": 5,
+        "tema": "literatura precolombina colombiana",
+        "pregunta": "¿Qué es la literatura precolombina en Colombia y cuáles son sus expresiones?",
+        "respuesta": "La literatura precolombina es el conjunto de expresiones orales y escritas de los pueblos indígenas antes de la llegada de los españoles en 1492. En Colombia, esta literatura era principalmente oral. Expresiones principales: Los mitos de origen muisca: la historia de Bachué, el dios Bochica, el mito del diluvio muisca. La tradición oral wayúu: narrativas del pueblo Wayúu de La Guajira, incluyendo sus sueños como fuente de conocimiento. Cantos y ceremonias: los cantos chamánicos de los pueblos amazónicos como los Uitoto y los Tikuna. Petroglifos: grabados en roca que son formas de comunicación gráfica. Esta literatura es fundamental para entender la identidad cultural de Colombia.",
+        "palabras_clave": [
+          "literatura precolombina",
+          "Colombia",
+          "muisca",
+          "Bachué",
+          "Bochica",
+          "wayúu",
+          "Guajira",
+          "Uitoto",
+          "Tikuna",
+          "oral",
+          "mito",
+          "petroglifos",
+          "indígena",
+          "identidad"
+        ]
+      },
+      {
+        "id": "esp_g5_040",
+        "grado": 5,
+        "tema": "coherencia cohesion textual avanzada",
+        "pregunta": "¿Cuál es la diferencia entre coherencia y cohesión en un texto?",
+        "respuesta": "Coherencia y cohesión son dos propiedades esenciales de un texto bien escrito. Coherencia: tiene que ver con el sentido global del texto. Un texto es coherente cuando sus ideas se relacionan lógicamente, no se contradicen y giran alrededor de un tema central. Es la 'columna vertebral' del texto. Cohesión: se refiere a los mecanismos lingüísticos que conectan las palabras y oraciones entre sí. Se logra mediante: pronombres (que evitan repetir el sustantivo), sinónimos (variedad léxica), conectores ('además', 'sin embargo', 'porque'), elipsis (omitir algo que ya se mencionó). Ejemplo de texto incoherente: 'Me gustan los perros. Colombia tiene 32 departamentos. El azul es un color bonito.' (no hay tema central). Ejemplo cohesionado: 'Me gustan los perros. Ellos son leales. Además, son excelentes compañeros.'",
+        "palabras_clave": [
+          "coherencia",
+          "cohesión",
+          "texto",
+          "conectores",
+          "pronombres",
+          "sinónimos",
+          "elipsis",
+          "tema central",
+          "lógico",
+          "propiedad textual",
+          "grado quinto",
+          "escribir"
+        ]
+      }
+    ],
+    {
+      "id": "esp_g3_037",
+      "grado": 3,
+      "tema": "uso del acento",
+      "pregunta": "¿Qué es el acento ortográfico (tilde) y cuándo se usa?",
+      "respuesta": "El acento ortográfico o tilde es una rayita (´) que se coloca sobre una vocal para indicar que esa sílaba se pronuncia más fuerte. Palabras agudas llevan tilde si terminan en n, s o vocal (corazón, café). Graves llevan tilde si NO terminan en n, s o vocal (árbol, lápiz). Esdrújulas siempre llevan tilde (pájaro, médico).",
+      "palabras_clave": [
+        "acento",
+        "tilde",
+        "ortografía",
+        "aguda",
+        "grave",
+        "esdrújula",
+        "sílaba",
+        "vocal",
+        "pronunciar"
+      ]
+    },
+    {
+      "id": "esp_g3_038",
+      "grado": 3,
+      "tema": "sustantivos tipos",
+      "pregunta": "¿Cuáles son los tipos de sustantivos?",
+      "respuesta": "Los sustantivos son palabras que nombran personas, animales, lugares o cosas. Tipos: PROPIOS nombran algo específico y se escriben con mayúscula (Colombia, Juan, Medellín). COMUNES nombran en general (ciudad, niño, perro). CONCRETOS se pueden tocar (mesa, pelota). ABSTRACTOS no se tocan (amor, libertad, miedo).",
+      "palabras_clave": [
+        "sustantivo",
+        "propio",
+        "común",
+        "concreto",
+        "abstracto",
+        "mayúscula",
+        "nombrar",
+        "persona",
+        "lugar"
+      ]
+    },
+    {
+      "id": "esp_g3_039",
+      "grado": 3,
+      "tema": "adjetivos",
+      "pregunta": "¿Qué es un adjetivo calificativo y cómo lo uso?",
+      "respuesta": "El adjetivo calificativo es la palabra que describe o da características al sustantivo. Ejemplos: pelota ROJA, niño INTELIGENTE, casa GRANDE. El adjetivo concuerda en género y número con el sustantivo: un perro NEGRO / una perra NEGRA / unos perros NEGROS. Siempre acompaña al sustantivo.",
+      "palabras_clave": [
+        "adjetivo",
+        "calificativo",
+        "describir",
+        "característica",
+        "género",
+        "número",
+        "concordancia",
+        "sustantivo"
+      ]
+    },
+    {
+      "id": "esp_g3_040",
+      "grado": 3,
+      "tema": "verbos tiempos",
+      "pregunta": "¿Cómo identifico si un verbo está en pasado, presente o futuro?",
+      "respuesta": "Los verbos cambian según el tiempo. PASADO: la acción ya ocurrió (comí, jugué, estudié). PRESENTE: la acción ocurre ahora (como, juego, estudio). FUTURO: la acción va a ocurrir (comeré, jugaré, estudiaré). Truco: pregúntate cuándo pasa la acción: ¿antes, ahora o después?",
+      "palabras_clave": [
+        "verbo",
+        "pasado",
+        "presente",
+        "futuro",
+        "tiempo",
+        "acción",
+        "conjugar",
+        "antes",
+        "ahora",
+        "después"
+      ]
+    },
+    {
+      "id": "esp_g3_041",
+      "grado": 3,
+      "tema": "el cuento",
+      "pregunta": "¿Cuáles son las partes de un cuento?",
+      "respuesta": "Un cuento tiene tres partes: INICIO (presentación de los personajes y el lugar donde ocurre la historia), NUDO (el problema o conflicto que viven los personajes, la parte más emocionante) y DESENLACE (la solución del problema y el final de la historia). Todo cuento tiene personajes principales y secundarios.",
+      "palabras_clave": [
+        "cuento",
+        "inicio",
+        "nudo",
+        "desenlace",
+        "personaje",
+        "problema",
+        "solución",
+        "historia",
+        "narrativo"
+      ]
+    },
+    {
+      "id": "esp_g3_042",
+      "grado": 3,
+      "tema": "texto descriptivo",
+      "pregunta": "¿Qué es un texto descriptivo y cómo se escribe?",
+      "respuesta": "Un texto descriptivo explica cómo es algo: su forma, color, tamaño, textura, olor. Se usa para describir personas, animales, lugares u objetos. Usa muchos adjetivos. Ejemplo: \"El gato es pequeño, de pelo negro y brillante, con ojos verdes y una cola larga y esponjosa.\" Responde a la pregunta: ¿Cómo es?",
+      "palabras_clave": [
+        "descriptivo",
+        "describir",
+        "adjetivo",
+        "forma",
+        "color",
+        "tamaño",
+        "textura",
+        "características",
+        "texto"
+      ]
+    },
+    {
+      "id": "esp_g3_043",
+      "grado": 3,
+      "tema": "signos de puntuación",
+      "pregunta": "¿Para qué sirven el punto, la coma y los signos de interrogación?",
+      "respuesta": "El PUNTO (.) indica el final de una oración. La COMA (,) separa elementos de una lista o hace una pausa corta. Los signos de INTERROGACIÓN (¿?) van al inicio y al final de una pregunta. Los de EXCLAMACIÓN (¡!) expresan emoción o sorpresa. Usarlos bien hace el texto más claro.",
+      "palabras_clave": [
+        "punto",
+        "coma",
+        "interrogación",
+        "exclamación",
+        "signo de puntuación",
+        "oración",
+        "pausa",
+        "pregunta"
+      ]
+    },
+    {
+      "id": "esp_g3_044",
+      "grado": 3,
+      "tema": "sinónimos grado 3",
+      "pregunta": "¿Qué son los sinónimos y para qué los uso?",
+      "respuesta": "Los sinónimos son palabras que tienen un significado igual o muy parecido. Ejemplos: bonito/hermoso/lindo, rápido/veloz/ágil, triste/melancólico/afligido. Se usan para no repetir la misma palabra en un texto y hacer la escritura más variada e interesante. Es buena práctica buscarlos en el diccionario.",
+      "palabras_clave": [
+        "sinónimo",
+        "significado",
+        "igual",
+        "parecido",
+        "vocabulario",
+        "diccionario",
+        "variedad",
+        "repetir"
+      ]
+    },
+    {
+      "id": "esp_g3_045",
+      "grado": 3,
+      "tema": "párrafo",
+      "pregunta": "¿Qué es un párrafo y cómo lo escribo bien?",
+      "respuesta": "Un párrafo es un conjunto de oraciones relacionadas que desarrollan una misma idea. Comienza con sangría (espacio al inicio) o línea en blanco. Tiene: oración principal (la idea más importante) y oraciones de apoyo (explican o dan ejemplos). Un párrafo tiene mínimo 3 oraciones y habla de un solo tema.",
+      "palabras_clave": [
+        "párrafo",
+        "oración",
+        "idea",
+        "sangría",
+        "principal",
+        "apoyo",
+        "tema",
+        "escribir"
+      ]
+    },
+    {
+      "id": "esp_g3_046",
+      "grado": 3,
+      "tema": "diálogo",
+      "pregunta": "¿Cómo se escribe un diálogo en un cuento?",
+      "respuesta": "El diálogo es la conversación entre personajes. Se escribe con guion largo (—) al inicio de cada intervención. Ejemplo: — ¿A dónde vas? — preguntó Juan. — Voy al parque — respondió María. Las palabras del narrador (dijo, preguntó, respondió) van separadas del diálogo. Los signos de puntuación van dentro.",
+      "palabras_clave": [
+        "diálogo",
+        "guion",
+        "conversación",
+        "personaje",
+        "narrador",
+        "dijo",
+        "preguntó",
+        "respondió"
+      ]
+    },
+    {
+      "id": "esp_g4_028",
+      "grado": 4,
+      "tema": "conectores textuales",
+      "pregunta": "¿Qué son los conectores textuales y cuáles son los más usados?",
+      "respuesta": "Los conectores son palabras o frases que unen oraciones y párrafos para que el texto fluya con sentido. De adición: además, también, igualmente. De contraste: pero, sin embargo, aunque. De causa: porque, ya que, debido a. De consecuencia: por lo tanto, entonces, así que. De secuencia: primero, luego, finalmente.",
+      "palabras_clave": [
+        "conector",
+        "textual",
+        "además",
+        "pero",
+        "porque",
+        "sin embargo",
+        "por lo tanto",
+        "primero",
+        "luego",
+        "finalmente"
+      ]
+    },
+    {
+      "id": "esp_g4_029",
+      "grado": 4,
+      "tema": "la noticia",
+      "pregunta": "¿Qué es una noticia y qué partes tiene?",
+      "respuesta": "La noticia informa sobre un hecho real y reciente. Sus partes son: TITULAR (título llamativo que resume el evento), SUBTÍTULO (complementa el titular), ENTRADILLA (primer párrafo con lo más importante: qué, quién, cuándo, dónde, por qué y cómo) y CUERPO (detalles y contexto del hecho). Debe ser objetiva y veraz.",
+      "palabras_clave": [
+        "noticia",
+        "titular",
+        "subtítulo",
+        "entradilla",
+        "cuerpo",
+        "hecho",
+        "real",
+        "informar",
+        "periodismo"
+      ]
+    },
+    {
+      "id": "esp_g4_030",
+      "grado": 4,
+      "tema": "carta formal e informal",
+      "pregunta": "¿Qué diferencia hay entre una carta formal y una informal?",
+      "respuesta": "La carta FORMAL se escribe a una institución, empresa o persona desconocida. Usa lenguaje respetuoso y estructura fija: encabezado, saludo formal (Estimado señor/a), cuerpo, despedida (Atentamente) y firma. La INFORMAL es para amigos o familia: lenguaje cercano, saludo afectuoso (Querido amigo) y despedida cariñosa.",
+      "palabras_clave": [
+        "carta",
+        "formal",
+        "informal",
+        "encabezado",
+        "saludo",
+        "despedida",
+        "lenguaje",
+        "respetuoso",
+        "amigo"
+      ]
+    },
+    {
+      "id": "esp_g4_031",
+      "grado": 4,
+      "tema": "discurso directo e indirecto",
+      "pregunta": "¿Cuál es la diferencia entre el discurso directo e indirecto?",
+      "respuesta": "El DISCURSO DIRECTO reproduce exactamente las palabras del hablante con comillas o guion: Juan dijo: \"Tengo hambre.\" El DISCURSO INDIRECTO las reporta sin comillas, cambiando pronombres y tiempos verbales: Juan dijo que tenía hambre. El indirecto integra las palabras al relato del narrador.",
+      "palabras_clave": [
+        "discurso directo",
+        "discurso indirecto",
+        "comillas",
+        "guion",
+        "narrador",
+        "verbos",
+        "reportar",
+        "citar"
+      ]
+    },
+    {
+      "id": "esp_g4_032",
+      "grado": 4,
+      "tema": "texto argumentativo",
+      "pregunta": "¿Qué es un texto argumentativo y cómo se estructura?",
+      "respuesta": "El texto argumentativo busca convencer al lector de una postura. Estructura: TESIS (idea principal que se defiende), ARGUMENTOS (razones, datos y ejemplos que apoyan la tesis) y CONCLUSIÓN (reafirma la tesis). Ejemplo: Tesis: el deporte es esencial. Argumento: mejora la salud y la concentración.",
+      "palabras_clave": [
+        "argumentativo",
+        "tesis",
+        "argumento",
+        "conclusión",
+        "convencer",
+        "opinar",
+        "razón",
+        "evidencia",
+        "postura"
+      ]
+    },
+    {
+      "id": "esp_g4_033",
+      "grado": 4,
+      "tema": "prefijos y sufijos",
+      "pregunta": "¿Qué son los prefijos y sufijos en español?",
+      "respuesta": "Los PREFIJOS van al inicio de una palabra y cambian su significado: in- (imposible), des- (desorden), re- (rehacer), pre- (prehistoria). Los SUFIJOS van al final y cambian el significado o la categoría: -ción (canción), -mente (rápidamente), -ito (gatito, diminutivo), -ísimo (grandísimo, superlativo).",
+      "palabras_clave": [
+        "prefijo",
+        "sufijo",
+        "morfema",
+        "in",
+        "des",
+        "re",
+        "ción",
+        "mente",
+        "ito",
+        "significado",
+        "familia de palabras"
+      ]
+    },
+    {
+      "id": "esp_g4_034",
+      "grado": 4,
+      "tema": "oración sujeto predicado",
+      "pregunta": "¿Cómo identifico el sujeto y el predicado de una oración?",
+      "respuesta": "El SUJETO es quien realiza la acción o de quien se habla. El PREDICADO es lo que se dice del sujeto (incluye el verbo). Ejemplo: \"Los estudiantes de grado 4 estudian mucho.\" Sujeto: Los estudiantes de grado 4. Predicado: estudian mucho. Truco: pregunta ¿quién? o ¿qué? hace la acción para encontrar el sujeto.",
+      "palabras_clave": [
+        "oración",
+        "sujeto",
+        "predicado",
+        "verbo",
+        "acción",
+        "quién",
+        "identificar",
+        "análisis"
+      ]
+    },
+    {
+      "id": "esp_g4_035",
+      "grado": 4,
+      "tema": "resumen",
+      "pregunta": "¿Cómo hago un buen resumen de un texto?",
+      "respuesta": "Para resumir: 1) Lee el texto completo. 2) Identifica las ideas principales (una por párrafo). 3) Elimina ejemplos, repeticiones y detalles secundarios. 4) Escribe las ideas principales con tus propias palabras. 5) Organiza en párrafos coherentes. Un resumen debe ser más corto que el texto original pero mantener su significado.",
+      "palabras_clave": [
+        "resumen",
+        "ideas principales",
+        "párrafo",
+        "texto",
+        "síntesis",
+        "releer",
+        "organizar",
+        "comprensión"
+      ]
+    },
+    {
+      "id": "esp_g4_036",
+      "grado": 4,
+      "tema": "mapa conceptual",
+      "pregunta": "¿Cómo elaboro un mapa conceptual?",
+      "respuesta": "Un mapa conceptual organiza ideas visualmente. Pasos: 1) Escribe el tema central en un óvalo. 2) Anota las ideas principales relacionadas y únelas con líneas. 3) Agrega ideas secundarias a cada principal. 4) Usa palabras de enlace en las líneas (es, tiene, produce, incluye). Ayuda a estudiar y comprender mejor los textos.",
+      "palabras_clave": [
+        "mapa conceptual",
+        "organizar",
+        "ideas",
+        "óvalo",
+        "enlace",
+        "visual",
+        "esquema",
+        "jerarquía"
+      ]
+    },
+    {
+      "id": "esp_g4_037",
+      "grado": 4,
+      "tema": "lectura inferencial",
+      "pregunta": "¿Qué es una inferencia en la lectura?",
+      "respuesta": "Una inferencia es una conclusión que sacas de lo que el texto dice sin decirlo directamente. Ejemplo: si un texto dice \"María entró empapada y dejando charcos\", puedes inferir que llovía aunque no lo diga. Para inferir: lee entre líneas, relaciona datos y usa tu conocimiento previo. Es la lectura más profunda.",
+      "palabras_clave": [
+        "inferencia",
+        "concluir",
+        "leer entre líneas",
+        "implícito",
+        "texto",
+        "comprender",
+        "significado",
+        "deducir"
+      ]
+    },
+    {
+      "id": "esp_g5_028",
+      "grado": 5,
+      "tema": "figuras literarias",
+      "pregunta": "¿Qué son las figuras literarias y cuáles son las principales?",
+      "respuesta": "Las figuras literarias son recursos del lenguaje que dan belleza y expresividad al texto. Principales: METÁFORA: comparar sin usar \"como\" (tus ojos son estrellas). SÍMIL: comparar usando \"como\" (rápido como el viento). PERSONIFICACIÓN: dar cualidades humanas a cosas (el mar llora). HIPÉRBOLE: exageración (te lo he dicho un millón de veces).",
+      "palabras_clave": [
+        "figura literaria",
+        "metáfora",
+        "símil",
+        "personificación",
+        "hipérbole",
+        "lenguaje",
+        "poético",
+        "expresividad"
+      ]
+    },
+    {
+      "id": "esp_g5_029",
+      "grado": 5,
+      "tema": "el ensayo",
+      "pregunta": "¿Qué es un ensayo y cómo se diferencia del texto argumentativo?",
+      "respuesta": "El ensayo es un texto donde el autor expresa sus ideas y reflexiones sobre un tema de forma personal y fundamentada. A diferencia del texto argumentativo puro, el ensayo tiene mayor libertad estilística y puede mezclar argumentación, análisis y opinión. Partes: introducción, desarrollo argumentado y conclusión reflexiva.",
+      "palabras_clave": [
+        "ensayo",
+        "opinión",
+        "reflexión",
+        "argumentar",
+        "personal",
+        "introducción",
+        "desarrollo",
+        "conclusión"
+      ]
+    },
+    {
+      "id": "esp_g5_030",
+      "grado": 5,
+      "tema": "el debate",
+      "pregunta": "¿Cómo participo en un debate escolar?",
+      "respuesta": "En un debate defienden posturas distintas sobre un tema. Para participar bien: 1) Prepara argumentos con datos y ejemplos. 2) Escucha con respeto al otro. 3) Responde con contraargumentos lógicos, no con insultos. 4) Usa conectores de contraste (sin embargo, aunque, por el contrario). 5) Concluye con una síntesis de tu postura.",
+      "palabras_clave": [
+        "debate",
+        "argumento",
+        "contraargumento",
+        "postura",
+        "respeto",
+        "escuchar",
+        "defender",
+        "opinar",
+        "lógica"
+      ]
+    },
+    {
+      "id": "esp_g5_031",
+      "grado": 5,
+      "tema": "la entrevista",
+      "pregunta": "¿Qué es una entrevista y cómo se estructura?",
+      "respuesta": "La entrevista es un diálogo con el propósito de obtener información de una persona experta o reconocida. Partes: PRESENTACIÓN del entrevistado, PREGUNTAS del entrevistador (abiertas para respuestas amplias) y RESPUESTAS del entrevistado. Las preguntas buenas comienzan con ¿Por qué?, ¿Cómo?, ¿Qué piensa sobre...?",
+      "palabras_clave": [
+        "entrevista",
+        "entrevistado",
+        "entrevistador",
+        "pregunta",
+        "respuesta",
+        "diálogo",
+        "información",
+        "periodismo"
+      ]
+    },
+    {
+      "id": "esp_g5_032",
+      "grado": 5,
+      "tema": "reseña literaria",
+      "pregunta": "¿Cómo escribo una reseña de un libro?",
+      "respuesta": "Una reseña evalúa y recomienda (o no) un libro. Partes: 1) Datos del libro (título, autor, año). 2) Breve resumen del argumento SIN revelar el final. 3) Análisis de personajes, tema y estilo del autor. 4) Opinión personal fundamentada: ¿Qué te gustó? ¿Qué no? 5) Recomendación. No es solo un resumen, es una evaluación.",
+      "palabras_clave": [
+        "reseña",
+        "libro",
+        "autor",
+        "argumento",
+        "personaje",
+        "tema",
+        "opinión",
+        "recomendar",
+        "evaluar"
+      ]
+    },
+    {
+      "id": "esp_g5_033",
+      "grado": 5,
+      "tema": "coherencia y cohesión",
+      "pregunta": "¿Qué es la coherencia y la cohesión en un texto?",
+      "respuesta": "La COHERENCIA hace que el texto tenga sentido y las ideas se relacionen lógicamente (no mezcla temas sin conexión). La COHESIÓN es cómo las oraciones están bien conectadas gramaticalmente (uso de conectores, pronombres y sinónimos para no repetir palabras). Un texto bueno tiene ambas. Coherencia = ideas. Cohesión = forma.",
+      "palabras_clave": [
+        "coherencia",
+        "cohesión",
+        "texto",
+        "lógica",
+        "conector",
+        "pronombre",
+        "sinónimo",
+        "sentido",
+        "organización"
+      ]
+    },
+    {
+      "id": "esp_g5_034",
+      "grado": 5,
+      "tema": "textos multimodales",
+      "pregunta": "¿Qué son los textos multimodales?",
+      "respuesta": "Los textos multimodales combinan diferentes modos de comunicación: palabras escritas, imágenes, gráficas, videos, audio o íconos. Ejemplos: una infografía, un afiche publicitario, una página web, un cómic. Para leerlos hay que interpretar tanto el texto escrito como las imágenes y cómo se relacionan entre sí.",
+      "palabras_clave": [
+        "multimodal",
+        "imagen",
+        "texto",
+        "infografía",
+        "afiche",
+        "cómic",
+        "video",
+        "icono",
+        "leer",
+        "interpretar"
+      ]
+    },
+    {
+      "id": "esp_g5_035",
+      "grado": 5,
+      "tema": "comunicación digital",
+      "pregunta": "¿Cómo debo comunicarme de forma responsable en medios digitales?",
+      "respuesta": "La comunicación digital responsable implica: 1) Verificar la información antes de compartirla (evitar fake news). 2) Usar lenguaje respetuoso en chats y redes. 3) Cuidar la privacidad (no compartir datos personales). 4) Reconocer el ciberacoso y reportarlo. 5) Diferenciar entre fuentes confiables y no confiables.",
+      "palabras_clave": [
+        "digital",
+        "comunicación",
+        "responsable",
+        "fake news",
+        "privacidad",
+        "ciberacoso",
+        "redes",
+        "verificar",
+        "fuente"
+      ]
     }
   ]
 }
