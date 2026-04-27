@@ -27,17 +27,19 @@ try:
 except Exception:
     _ML_AVAILABLE = False
 
-# ── LLM opcional (Google Gemini) ─────────────────────────────────────────────
+# ── LLM opcional (Google Gemini — nuevo SDK google-genai) ────────────────────
 try:
-    import google.generativeai as genai
+    from google import genai as _genai
+    from google.genai import types as _genai_types
     _GENAI_INSTALLED = True
 except ImportError:
-    genai = None  # type: ignore
+    _genai       = None  # type: ignore
+    _genai_types = None  # type: ignore
     _GENAI_INSTALLED = False
 
 _GEMINI_KEY        = os.environ.get("GEMINI_API_KEY", "").strip()
 _GEMINI_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
-_gemini_model      = None  # inicializado en lifespan si hay API key
+_gemini_client     = None  # inicializado en lifespan si hay API key
 
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
@@ -270,20 +272,19 @@ async def _init_faiss_background() -> None:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    global _gemini_model
+    global _gemini_client
 
     # ── Gemini: inicializar si hay API key ──────────────────────────────────
     if _GENAI_INSTALLED and _GEMINI_KEY:
         try:
-            genai.configure(api_key=_GEMINI_KEY)
-            _gemini_model = genai.GenerativeModel(_GEMINI_MODEL_NAME)
+            _gemini_client = _genai.Client(api_key=_GEMINI_KEY)
             print(f"[Gemini] Listo con modelo '{_GEMINI_MODEL_NAME}'.")
         except Exception as exc:
             print(f"[Gemini] No se pudo inicializar: {exc}")
-            _gemini_model = None
+            _gemini_client = None
     else:
         if not _GENAI_INSTALLED:
-            print("[Gemini] google-generativeai no instalado — LLM desactivado.")
+            print("[Gemini] google-genai no instalado — LLM desactivado.")
         else:
             print(
                 "[Gemini] GEMINI_API_KEY no configurada — LLM desactivado. "
@@ -296,8 +297,8 @@ async def lifespan(_app: FastAPI):
 
     # ── Cleanup ─────────────────────────────────────────────────────────────
     _indexes.clear()
-    _model        = None
-    _gemini_model = None
+    _model         = None
+    _gemini_client = None
 
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -346,8 +347,8 @@ def root():
         "version":              "3.0.0",
         "motor_semantico":      "FAISS + fastembed (ONNX)",
         "semantica_disponible": _ML_AVAILABLE and bool(_indexes),
-        "llm_disponible":       _gemini_model is not None,
-        "llm_modelo":           _GEMINI_MODEL_NAME if _gemini_model is not None else None,
+        "llm_disponible":       _gemini_client is not None,
+        "llm_modelo":           _GEMINI_MODEL_NAME if _gemini_client is not None else None,
         "materias_disponibles": sorted(MATERIAS),
         "endpoints": {
             "listar_paquetes":  "/api/paquetes",
@@ -519,18 +520,15 @@ async def preguntar(req: PreguntaLLMRequest):
     llm_usado = False
     texto     = ""
 
-    if _gemini_model is not None and contexto:
+    if _gemini_client is not None and contexto:
         try:
-            prompt = _construir_prompt(req.pregunta, materia, grado, contexto)
-            loop   = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: _gemini_model.generate_content(
-                    prompt,
-                    generation_config={
-                        "max_output_tokens": 350,
-                        "temperature":       0.4,
-                    },
+            prompt   = _construir_prompt(req.pregunta, materia, grado, contexto)
+            response = await _gemini_client.aio.models.generate_content(
+                model=_GEMINI_MODEL_NAME,
+                contents=prompt,
+                config=_genai_types.GenerateContentConfig(
+                    max_output_tokens=350,
+                    temperature=0.4,
                 ),
             )
             # response.text puede lanzar ValueError si el contenido fue bloqueado
