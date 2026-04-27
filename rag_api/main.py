@@ -41,6 +41,10 @@ _GEMINI_KEY        = os.environ.get("GEMINI_API_KEY", "").strip()
 _GEMINI_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
 _gemini_client     = None  # inicializado en lifespan si hay API key
 
+# FAISS desactivado por defecto para reducir RAM en Railway free tier (~120 MB menos).
+# Actívalo con FAISS_ENABLED=true si tienes suficiente memoria (≥ 512 MB disponibles).
+_FAISS_ENABLED = os.environ.get("FAISS_ENABLED", "false").lower() == "true"
+
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
 KNOWLEDGE_DIR = os.path.join(BASE_DIR, "knowledge_base")
@@ -158,6 +162,64 @@ def _buscar_contexto_faiss(
 
     resultados.sort(key=lambda x: x["similitud"], reverse=True)
     return resultados
+
+
+# ── Búsqueda JSON directa (fallback sin ML) ──────────────────────────────────
+
+def _buscar_contexto_json(
+    pregunta: str, materia: str, grado: int, top_k: int = 5
+) -> list:
+    """
+    Búsqueda por palabras clave directamente en el JSON.
+    No requiere fastembed ni FAISS — consume muy poca RAM.
+    Usada cuando FAISS no está habilitado o no está listo.
+    """
+    try:
+        data    = _load_json(materia)
+        entries = data.get("contenido", [])
+    except Exception:
+        return []
+
+    _stop = {
+        'que','como','cual','para','por','los','las','del','una','con',
+        'son','hay','sus','mis','nos','les','ser','fue','era','este',
+        'esta','estos','estas','ese','esa','esos','esas','muy','bien',
+        'puedo','puede','quiero','dime','favor','hacer',
+    }
+
+    def _n(t: str) -> str:
+        return (t.lower()
+                .replace('á','a').replace('é','e').replace('í','i')
+                .replace('ó','o').replace('ú','u').replace('ñ','n'))
+
+    tokens = {w for w in _n(pregunta).split() if len(w) >= 3 and w not in _stop}
+
+    # Sin tokens útiles → devuelve entradas del grado como contexto base
+    if not tokens:
+        base = [e for e in entries if e.get("grado") == grado][:top_k]
+        return [{**e, "similitud": 0.05} for e in base]
+
+    scored = []
+    for entry in entries:
+        text = _n(
+            f"{entry.get('pregunta','')} {entry.get('respuesta','')} "
+            f"{' '.join(entry.get('palabras_clave', []))}"
+        )
+        hits = sum(1 for t in tokens if t in text)
+        if hits == 0:
+            continue
+        sim = hits / len(tokens)
+        if entry.get("grado") != grado:
+            sim *= 0.80
+        scored.append({**entry, "similitud": round(sim, 4)})
+
+    scored.sort(key=lambda x: x["similitud"], reverse=True)
+
+    if not scored:
+        base = [e for e in entries if e.get("grado") == grado][:top_k]
+        return [{**e, "similitud": 0.05} for e in base]
+
+    return scored[:top_k]
 
 
 # ── Prompt para Gemini ────────────────────────────────────────────────────────
@@ -291,8 +353,13 @@ async def lifespan(_app: FastAPI):
                 "Configura la variable de entorno GEMINI_API_KEY para activarlo."
             )
 
-    # ── FAISS: lanza en background → health check de Railway responde de inmediato
-    asyncio.create_task(_init_faiss_background())
+    # ── FAISS: solo si FAISS_ENABLED=true (desactivado por defecto para ahorrar RAM)
+    if _FAISS_ENABLED:
+        asyncio.create_task(_init_faiss_background())
+    else:
+        print("[FAISS] Desactivado (FAISS_ENABLED=false). "
+              "Usa FAISS_ENABLED=true para activar búsqueda semántica.")
+        print("[FAISS] /api/preguntar usará búsqueda JSON directa (bajo consumo de RAM).")
     yield
 
     # ── Cleanup ─────────────────────────────────────────────────────────────
@@ -346,6 +413,7 @@ def root():
         "api":                  "RAG API — Numi Educativa",
         "version":              "3.0.0",
         "motor_semantico":      "FAISS + fastembed (ONNX)",
+        "faiss_habilitado":      _FAISS_ENABLED,
         "semantica_disponible": _ML_AVAILABLE and bool(_indexes),
         "llm_disponible":       _gemini_client is not None,
         "llm_modelo":           _GEMINI_MODEL_NAME if _gemini_client is not None else None,
@@ -512,9 +580,12 @@ async def preguntar(req: PreguntaLLMRequest):
     # Normalizar grado a 3, 4 o 5 (este endpoint es para primaria media-alta)
     grado = req.grado if req.grado in (3, 4, 5) else 3
 
-    # ── 1. Recuperar contexto FAISS ───────────────────────────────────────────
+    # ── 1. Recuperar contexto ─────────────────────────────────────────────────
+    # FAISS semántico si está disponible; JSON keyword search como fallback ligero.
     contexto = _buscar_contexto_faiss(req.pregunta, materia, grado, top_k=5)
-    tema      = contexto[0].get("tema", "") if contexto else ""
+    if not contexto:
+        contexto = _buscar_contexto_json(req.pregunta, materia, grado, top_k=5)
+    tema = contexto[0].get("tema", "") if contexto else ""
 
     # ── 2. Generar respuesta con Gemini ───────────────────────────────────────
     llm_usado = False
