@@ -75,6 +75,9 @@ dependencies:
   # Reranking semántico offline (modelo TFLite en assets/models/)
   tflite_flutter: ^0.10.4
 
+  # LLM local offline — Gemma 2B via MediaPipe LLM Inference
+  flutter_gemma: ^0.13.6
+
 
 dev_dependencies:
   flutter_test:
@@ -101,8 +104,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/Audio/Matematicas/
-    - assets/Audio/Espanol/
-    - assets/Audio/Sociales/
+    - assets/Audio/espanol/
+    - assets/Audio/sociales/
     - assets/images/actividades/ciencias_naturales/audios/
     - assets/videos/
     - assets/animations/

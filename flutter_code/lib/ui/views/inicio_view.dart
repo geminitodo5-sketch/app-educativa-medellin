@@ -5,6 +5,7 @@
 //  Si no existe → va a Bienvenida (registro).
 // ─────────────────────────────────────────────────────────────
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
@@ -28,6 +29,7 @@ class _InicioViewState extends ConsumerState<InicioView> {
   late final VideoController _controller;
   bool _navegando = false;
   bool _inicializado = false;
+  StreamSubscription<bool>? _completedSub;
 
   @override
   void initState() {
@@ -40,7 +42,7 @@ class _InicioViewState extends ConsumerState<InicioView> {
   Future<void> _inicializarVideo() async {
     try {
       await _player.open(Media('asset:///assets/videos/intro.mp4'));
-      _player.stream.completed.listen((completado) {
+      _completedSub = _player.stream.completed.listen((completado) {
         if (completado) _navegarSiguiente();
       });
       if (mounted) setState(() => _inicializado = true);
@@ -102,6 +104,7 @@ class _InicioViewState extends ConsumerState<InicioView> {
 
   @override
   void dispose() {
+    _completedSub?.cancel();
     _player.dispose();
     super.dispose();
   }

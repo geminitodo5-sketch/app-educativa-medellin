@@ -58,6 +58,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
       await _player.open(
         Media('asset:///assets/Audio/espanol/audio_espanol2_mezcla.mp3'),
       );
+      await _player.play();
     } catch (e) {
       debugPrint("Error de audio: $e");
     }

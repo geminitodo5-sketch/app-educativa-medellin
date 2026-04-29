@@ -20,15 +20,18 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'sqlite_service.dart';
 import 'embedding_service.dart';
+import 'local_llm_service.dart';
 
 class RagService {
   final SqliteService _db;
   final EmbeddingService? _embeddings;
+  final LocalLlmService? _localLlm;
 
-  // El parámetro embeddings es opcional: si se pasa un EmbeddingService con
-  // el modelo TFLite cargado, se activa el reranking semántico automáticamente.
-  RagService(this._db, {EmbeddingService? embeddings})
-      : _embeddings = embeddings;
+  // [embeddings] activa el reranking semántico TFLite (opcional).
+  // [localLlm]  activa la generación local con Gemma (opcional).
+  RagService(this._db, {EmbeddingService? embeddings, LocalLlmService? localLlm})
+      : _embeddings = embeddings,
+        _localLlm = localLlm;
 
   // ─── BM25 hiperparámetros ─────────────────────────────────
   static const double _k1      = 1.5;
@@ -343,7 +346,7 @@ class RagService {
 
     // 7. Decisión por umbral
     if (top.puntaje >= _minScore) {
-      return _construirRespuesta(top, top5, materia, grado);
+      return await _construirRespuesta(top, top5, pregunta, materia, grado);
     }
     if (top.puntaje >= _softMin) {
       return _respuestaAproximada(top, materia, grado);
@@ -495,13 +498,33 @@ class RagService {
   // ═══════════════════════════════════════════════════════════
 
   // Respuesta directa (puntaje ≥ minScore)
-  RagRespuesta _construirRespuesta(
-    _EP top, List<_EP> candidatos, String materia, int grado,
-  ) {
+  // Usa Gemma local si está listo; si no, cae al formateador por grado.
+  Future<RagRespuesta> _construirRespuesta(
+    _EP top, List<_EP> candidatos, String pregunta, String materia, int grado,
+  ) async {
     final tema    = (top.entrada['tema'] as String?)?.trim() ?? '';
     final respRaw = (top.entrada['respuesta'] as String?)?.trim() ?? '';
 
-    final texto = _interpretarParaNino(respRaw, tema, grado);
+    String texto;
+    final llm = _localLlm;
+    if (llm != null && llm.isReady) {
+      final buf = StringBuffer();
+      try {
+        await for (final token in llm.generarRespuesta(
+          contexto: respRaw,
+          pregunta: pregunta,
+          grado: grado,
+        )) {
+          buf.write(token);
+        }
+        texto = buf.toString().trim();
+        if (texto.isEmpty) texto = _interpretarParaNino(respRaw, tema, grado);
+      } catch (_) {
+        texto = _interpretarParaNino(respRaw, tema, grado);
+      }
+    } else {
+      texto = _interpretarParaNino(respRaw, tema, grado);
+    }
 
     final buffer = StringBuffer(texto);
 

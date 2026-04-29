@@ -342,10 +342,8 @@ class _Instruccion extends StatelessWidget {
   Future<void> _reproducir() async {
     if (player == null || audioAsset == null) return;
     try {
-      // ✅ Mismo patrón que el código de referencia: open(Media('asset:///...'))
-      await player!.open(
-        Media('asset:///$audioAsset'),
-      );
+      await player!.open(Media('asset:///$audioAsset'));
+      await player!.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }
@@ -442,10 +440,8 @@ class _Actividad1State extends State<_Actividad1>
 
   Future<void> playAudio() async {
     try {
-      // ✅ Mismo patrón: open(Media('asset:///...'))
-      await _player?.open(
-        Media('asset:///$_audioAsset'),
-      );
+      await _player?.open(Media('asset:///$_audioAsset'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error playAudio actividad1: $e');
     }
@@ -611,7 +607,7 @@ class _BtnClasifica extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.5),
+              color: color.withValues(alpha: 0.5),
               blurRadius: 0,
               offset: const Offset(0, 6),
             ),
@@ -680,9 +676,8 @@ class _Actividad2State extends State<_Actividad2> {
 
   Future<void> playAudio() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audioAsset'),
-      );
+      await _player?.open(Media('asset:///$_audioAsset'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error playAudio actividad2: $e');
     }
@@ -752,7 +747,7 @@ class _Actividad2State extends State<_Actividad2> {
                           border: Border.all(color: borderColor, width: 2.5),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.06),
+                              color: Colors.black.withValues(alpha: 0.06),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -831,9 +826,8 @@ class _Actividad3State extends State<_Actividad3> {
 
   Future<void> playAudio() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audioAsset'),
-      );
+      await _player?.open(Media('asset:///$_audioAsset'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error playAudio actividad3: $e');
     }

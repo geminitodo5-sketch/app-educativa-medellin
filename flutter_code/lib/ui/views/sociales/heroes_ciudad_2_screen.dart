@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'heroes_ciudad_3_screen.dart';
 
@@ -20,6 +21,7 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   // ── Audio ─────────────────────────────────────────────────────────────────
   late final Player _player;
   bool _isPlayingAudio = false;
+  StreamSubscription<bool>? _playingSub;
 
   // Policía (índice 3) es la respuesta correcta
   static const int _correctIndex = 3;
@@ -77,11 +79,11 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _player.stream.playing.listen((playing) {
+      _playingSub = _player.stream.playing.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
       await _player.open(
-          Media('asset:///assets/Audio/Sociales/audio_sociales2_mezcla.mp3'));
+          Media('asset:///assets/Audio/sociales/audio_sociales2_mezcla.mp3'));
       await _player.play();
     } catch (e) {
       debugPrint('Error cargando audio: $e');
@@ -102,6 +104,7 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
 
   @override
   void dispose() {
+    _playingSub?.cancel();
     _shakeCtrl.dispose();
     _player.dispose();
     super.dispose();

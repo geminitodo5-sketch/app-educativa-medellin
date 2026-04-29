@@ -8,6 +8,7 @@ import '../../data/providers/database_provider.dart';
 import '../../data/services/rag_service.dart';
 import '../../data/services/embedding_service.dart';
 import '../../data/services/descarga_paquete_service.dart';
+import '../../data/services/local_llm_service.dart';
 
 // ── Modelo de mensaje del chat ────────────────────────────────
 
@@ -43,6 +44,12 @@ class AsistenteIaEstado {
   final List<String> opcionesDisplay; // texto visible de cada opción numerada
   final List<String> opcionesQuery;   // query enviado al RAG para cada opción
 
+  // ── Estado del modelo Gemma local ─────────────────────────
+  final bool isModelReady;
+  final bool isModelDownloading;
+  final double modelDownloadProgress; // 0.0–1.0
+  final String? modelError;           // mensaje de error de descarga
+
   const AsistenteIaEstado({
     this.mensajes = const [],
     this.respondiendo = false,
@@ -52,6 +59,10 @@ class AsistenteIaEstado {
     this.gradoActual = 1,
     this.opcionesDisplay = const [],
     this.opcionesQuery = const [],
+    this.isModelReady = false,
+    this.isModelDownloading = false,
+    this.modelDownloadProgress = 0.0,
+    this.modelError,
   });
 
   AsistenteIaEstado copyWith({
@@ -63,6 +74,10 @@ class AsistenteIaEstado {
     int? gradoActual,
     List<String>? opcionesDisplay,
     List<String>? opcionesQuery,
+    bool? isModelReady,
+    bool? isModelDownloading,
+    double? modelDownloadProgress,
+    Object? modelError = _sentinel,
   }) =>
       AsistenteIaEstado(
         mensajes: mensajes ?? this.mensajes,
@@ -73,6 +88,13 @@ class AsistenteIaEstado {
         gradoActual: gradoActual ?? this.gradoActual,
         opcionesDisplay: opcionesDisplay ?? this.opcionesDisplay,
         opcionesQuery: opcionesQuery ?? this.opcionesQuery,
+        isModelReady: isModelReady ?? this.isModelReady,
+        isModelDownloading: isModelDownloading ?? this.isModelDownloading,
+        modelDownloadProgress:
+            modelDownloadProgress ?? this.modelDownloadProgress,
+        modelError: modelError == _sentinel
+            ? this.modelError
+            : modelError as String?,
       );
 
   bool get materiaDescargada => descargado[materiaActual] ?? false;
@@ -80,19 +102,80 @@ class AsistenteIaEstado {
       progresosDescarga[materiaActual] ?? 0.0;
 }
 
+// Centinela para distinguir null explícito de "sin cambio" en copyWith.
+const Object _sentinel = Object();
+
 // ── ViewModel ─────────────────────────────────────────────────
 
 class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
   final RagService _rag;
   final DescargaPaqueteService _descarga;
+  final LocalLlmService _localLlm;
 
   static const _materias = [
     'matematicas', 'ciencias', 'espanol', 'ingles', 'sociales',
   ];
 
-  AsistenteIaViewModel(this._rag, this._descarga)
+  AsistenteIaViewModel(this._rag, this._descarga, this._localLlm)
       : super(const AsistenteIaEstado()) {
     _verificarDescargados();
+    _inicializarModelo();
+  }
+
+  // ── Estado del modelo local ────────────────────────────────
+
+  /// Verifica si el modelo ya fue descargado y, si no, inicia la
+  /// descarga automáticamente en background desde Firebase Storage.
+  Future<void> _inicializarModelo() async {
+    // 1. Activar el modelo si ya existe en el dispositivo.
+    await _localLlm.inicializarSiExiste();
+
+    if (_localLlm.isReady) {
+      if (mounted) state = state.copyWith(isModelReady: true);
+      return;
+    }
+
+    // 2. Si no existe → descarga automática en background.
+    //    El asistente usa Gemini cloud como fallback mientras tanto.
+    iniciarDescargaModelo();
+  }
+
+  /// Descarga e inicializa el modelo Gemma local desde Firebase Storage.
+  /// Se llama automáticamente al abrir el asistente por primera vez.
+  Future<void> iniciarDescargaModelo() async {
+    if (state.isModelDownloading || state.isModelReady) return;
+
+    state = state.copyWith(
+      isModelDownloading: true,
+      modelDownloadProgress: 0.0,
+      modelError: null,
+    );
+
+    try {
+      await _localLlm.descargarModelo(
+        onProgress: (p) {
+          if (mounted) {
+            state = state.copyWith(modelDownloadProgress: p);
+          }
+        },
+      );
+
+      if (mounted) {
+        state = state.copyWith(
+          isModelReady: true,
+          isModelDownloading: false,
+          modelDownloadProgress: 1.0,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        state = state.copyWith(
+          isModelDownloading: false,
+          modelDownloadProgress: 0.0,
+          modelError: 'Error al descargar el modelo: $e',
+        );
+      }
+    }
   }
 
   // ── Inicialización ─────────────────────────────────────────
@@ -325,17 +408,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     return mapa[materia]?[grado] ?? mapa[materia]?[3] ?? [];
   }
 
-  static List<String> _actividadesPorMateria(String materia) {
-    const mapa = <String, List<String>>{
-      'matematicas': ['Los números', 'Quien tiene más', 'Sumar'],
-      'ciencias': ['Animales', 'Cuerpo humano', 'Las plantas', 'Vivo o no vivo'],
-      'espanol': ['Arma la palabra', 'Oraciones', 'Palabra loca'],
-      'ingles': ['Escucha y responde', 'Encuentra la pareja', 'Tarjetas de vocabulario'],
-      'sociales': ['Detective de objetos', 'Heroes de la ciudad', 'Pasado y presente'],
-    };
-    return mapa[materia] ?? [];
-  }
-
   static String _nombreMateria(String m) {
     const nombres = {
       'matematicas': 'Matemáticas',
@@ -352,18 +424,24 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
 
 // ── Providers ─────────────────────────────────────────────────
 
-// EmbeddingService se inicializa una vez; si el modelo TFLite no está en assets
-// falla silenciosamente y RagService usa solo BM25 + expansión conceptual.
+// EmbeddingService: TFLite reranking. Falla silenciosamente si no hay modelo.
 final embeddingServiceProvider = Provider<EmbeddingService>((ref) {
   final svc = EmbeddingService();
-  svc.initialize(); // fire-and-forget; RagService lo usa solo cuando modelAvailable == true
+  svc.initialize(); // fire-and-forget
   return svc;
+});
+
+// LocalLlmService: Gemma 2B local. La inicialización se hace solo cuando el
+// usuario activa el modelo desde configuración (no en arranque, para evitar crash).
+final localLlmServiceProvider = Provider<LocalLlmService>((ref) {
+  return LocalLlmService();
 });
 
 final ragServiceProvider = Provider<RagService>((ref) {
   return RagService(
     ref.read(sqliteServiceProvider),
     embeddings: ref.read(embeddingServiceProvider),
+    localLlm: ref.read(localLlmServiceProvider),
   );
 });
 
@@ -376,5 +454,6 @@ final asistenteIaViewModelProvider =
   return AsistenteIaViewModel(
     ref.read(ragServiceProvider),
     ref.read(descargaPaqueteServiceProvider),
+    ref.read(localLlmServiceProvider),
   );
 });

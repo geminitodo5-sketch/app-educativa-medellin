@@ -218,7 +218,9 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
       await _player.play();
 
       // Espera a que el primer audio termine antes de reproducir el de la frase
-      await _player.stream.completed.firstWhere((done) => done);
+      await _player.stream.completed
+          .firstWhere((done) => done)
+          .timeout(const Duration(seconds: 15), onTimeout: () => true);
 
       if (mounted) await _reproducirAudioFrase(0);
     } catch (e) {

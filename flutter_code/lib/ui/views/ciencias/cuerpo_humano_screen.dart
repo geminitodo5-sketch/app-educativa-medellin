@@ -352,7 +352,9 @@ class _Actividad1State extends State<_Actividad1>
     Future.microtask(() async {
       if (!mounted) return;
       await _playAsset(_playerInstruccion, _audio4);
-      await _playerInstruccion.stream.completed.firstWhere((done) => done);
+      await _playerInstruccion.stream.completed
+          .firstWhere((done) => done)
+          .timeout(const Duration(seconds: 15), onTimeout: () => true);
       if (mounted) await _playAudioParte(_preguntas[0]);
     });
   }
@@ -363,17 +365,23 @@ class _Actividad1State extends State<_Actividad1>
       '${_p4}niño.png',
     ).resolve(const ImageConfiguration());
     late ImageStreamListener listener;
-    listener = ImageStreamListener((info, _) {
-      if (!completer.isCompleted) completer.complete(info.image);
-      stream.removeListener(listener);
-    });
+    listener = ImageStreamListener(
+      (info, _) {
+        if (!completer.isCompleted) completer.complete(info.image);
+        stream.removeListener(listener);
+      },
+      onError: (error, stack) {
+        if (!completer.isCompleted) completer.completeError(error, stack);
+        stream.removeListener(listener);
+      },
+    );
     stream.addListener(listener);
-    final img = await completer.future;
-    if (mounted) {
-      setState(
-        () => _imageSize = Size(img.width.toDouble(), img.height.toDouble()),
-      );
-    }
+    try {
+      final img = await completer.future;
+      if (mounted) {
+        setState(() => _imageSize = Size(img.width.toDouble(), img.height.toDouble()));
+      }
+    } catch (_) {}
   }
 
   Offset _normalizarEnImagen(Offset local) {
@@ -616,7 +624,9 @@ class _InstruccionState extends State<_Instruccion> {
     if (mounted) setState(() => _reproduciendo = true);
     try {
       await widget.player!.open(Media('asset:///${widget.audioPath!}'));
-      await widget.player!.stream.completed.firstWhere((done) => done);
+      await widget.player!.stream.completed
+          .firstWhere((done) => done)
+          .timeout(const Duration(seconds: 30), onTimeout: () => true);
     } catch (e) {
       debugPrint('Error reproduciendo audio: $e');
     } finally {
@@ -792,10 +802,16 @@ class _Actividad2State extends State<_Actividad2> {
         final completer = Completer<ui.Image>();
         final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
         late ImageStreamListener listener;
-        listener = ImageStreamListener((info, _) {
-          if (!completer.isCompleted) completer.complete(info.image);
-          stream.removeListener(listener);
-        });
+        listener = ImageStreamListener(
+          (info, _) {
+            if (!completer.isCompleted) completer.complete(info.image);
+            stream.removeListener(listener);
+          },
+          onError: (error, stack) {
+            if (!completer.isCompleted) completer.completeError(error, stack);
+            stream.removeListener(listener);
+          },
+        );
         stream.addListener(listener);
         final img = await completer.future;
         sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());

@@ -38,8 +38,9 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   Future<void> _reproducirAudio() async {
     try {
       await _player?.open(
-        Media('asset:///assets/audio/sociales/audio generalsi_mezcla.mp3'),
+        Media('asset:///assets/Audio/sociales/audio_generalsi_mezcla.mp3'),
       );
+      await _player?.play();
     } catch (e) {
       debugPrint('Error reproduciendo audio: $e');
     }

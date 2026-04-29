@@ -1,4 +1,5 @@
-﻿import 'dart:math';
+﻿import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import '../terminado.dart';
@@ -72,6 +73,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   late final Player _player;
   bool _isPlayingAudio = false;
+  StreamSubscription<bool>? _playingSub;
 
   String _popKey(int row, int col) => '${row}_$col';
 
@@ -119,11 +121,11 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _player.stream.playing.listen((playing) {
+      _playingSub = _player.stream.playing.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
       await _player.open(
-          Media('asset:///assets/Audio/Sociales/audio_sociales6_mezcla.mp3'));
+          Media('asset:///assets/Audio/sociales/audio_sociales6_mezcla.mp3'));
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -144,6 +146,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   @override
   void dispose() {
+    _playingSub?.cancel();
     _completeCtrl.dispose();
     _shakeCtrl.dispose();
     _pulseCtrl.dispose();

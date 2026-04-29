@@ -302,6 +302,7 @@ class _Instruccion extends StatelessWidget {
     if (player == null || audioAsset == null) return;
     try {
       await player!.open(Media('asset:///$audioAsset'));
+      await player!.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }
@@ -369,6 +370,7 @@ class _Actividad1State extends State<_Actividad1> {
   Future<void> _playAudio() async {
     try {
       await _player?.open(Media('asset:///$_audio10'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error playAudio actividad1: $e');
     }
@@ -746,6 +748,7 @@ class _Actividad2State extends State<_Actividad2> {
   Future<void> _playAudio() async {
     try {
       await _player?.open(Media('asset:///$_audio11'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error playAudio actividad2: $e');
     }
@@ -754,16 +757,26 @@ class _Actividad2State extends State<_Actividad2> {
   Future<void> _calcularFracciones() async {
     final Map<String, Size> sizes = {};
     for (final p in _piezasBase) {
-      final completer = Completer<ui.Image>();
-      final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
-      late ImageStreamListener listener;
-      listener = ImageStreamListener((info, _) {
-        if (!completer.isCompleted) completer.complete(info.image);
-        stream.removeListener(listener);
-      });
-      stream.addListener(listener);
-      final img = await completer.future;
-      sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
+      try {
+        final completer = Completer<ui.Image>();
+        final stream = AssetImage(p.ruta).resolve(const ImageConfiguration());
+        late ImageStreamListener listener;
+        listener = ImageStreamListener(
+          (info, _) {
+            if (!completer.isCompleted) completer.complete(info.image);
+            stream.removeListener(listener);
+          },
+          onError: (error, stack) {
+            if (!completer.isCompleted) completer.completeError(error, stack);
+            stream.removeListener(listener);
+          },
+        );
+        stream.addListener(listener);
+        final img = await completer.future;
+        sizes[p.nombre] = Size(img.width.toDouble(), img.height.toDouble());
+      } catch (_) {
+        sizes[p.nombre] = const Size(100, 100);
+      }
     }
 
     if (!mounted) return;
@@ -1199,6 +1212,7 @@ class _Actividad3State extends State<_Actividad3> {
   Future<void> _playAudio() async {
     try {
       await _player?.open(Media('asset:///$_audio12'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error playAudio actividad3: $e');
     }
@@ -1217,8 +1231,11 @@ class _Actividad3State extends State<_Actividad3> {
 
   void _iniciarVideo() {
     _player?.stop();
+    _videoSub?.cancel();
     _videoSub = _videoPlayer!.stream.completed.listen((done) {
       if (done && mounted) {
+        _videoSub?.cancel();
+        _videoSub = null;
         _mostrarFeedback(context, true, onAction: () => widget.onFinish());
       }
     });

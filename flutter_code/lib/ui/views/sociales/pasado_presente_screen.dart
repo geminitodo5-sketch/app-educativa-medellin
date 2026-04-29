@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:media_kit/media_kit.dart';
 import 'pasado_presente_2_screen.dart';
@@ -36,6 +37,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
 
   late final Player _player;
   bool _isPlayingAudio = false;
+  StreamSubscription<bool>? _playingSub;
 
   @override
   void initState() {
@@ -66,11 +68,11 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _player.stream.playing.listen((playing) {
+      _playingSub = _player.stream.playing.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
       await _player.open(
-          Media('asset:///assets/Audio/Sociales/audio_sociales7_mezcla.mp3'));
+          Media('asset:///assets/Audio/sociales/audio_sociales7_mezcla.mp3'));
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -91,6 +93,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
 
   @override
   void dispose() {
+    _playingSub?.cancel();
     _shakeCtrl.dispose();
     _player.dispose();
     super.dispose();

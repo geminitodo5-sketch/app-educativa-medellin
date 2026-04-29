@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import '../terminado.dart';
 
@@ -19,14 +20,16 @@ class EscuchaYEligePage extends StatefulWidget {
 
 class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
   final List<Map<String, dynamic>> animals = [
-    {'image': 'assets/images/actividades/sociales/gato.png',      'color': const Color(0xFFA1E296), 'isCorrect': false, 'audio': 'asset:///assets/Audio/Sociales/gato.mp3'},
-    {'image': 'assets/images/actividades/sociales/Cocodrilo.png', 'color': const Color(0xFFFFE082), 'isCorrect': true,  'audio': 'asset:///assets/Audio/Sociales/cocodrilo.mp3'},
-    {'image': 'assets/images/actividades/sociales/pato.png',      'color': const Color(0xFFEF9A9A), 'isCorrect': false, 'audio': 'asset:///assets/Audio/Sociales/pato.mp3'},
-    {'image': 'assets/images/actividades/sociales/pollo.png',     'color': const Color(0xFFCE93D8), 'isCorrect': false, 'audio': 'asset:///assets/Audio/Sociales/pollo.mp3'},
+    {'image': 'assets/images/actividades/sociales/gato.png',      'color': const Color(0xFFA1E296), 'isCorrect': false, 'audio': 'asset:///assets/Audio/sociales/gato.mp3'},
+    {'image': 'assets/images/actividades/sociales/Cocodrilo.png', 'color': const Color(0xFFFFE082), 'isCorrect': true,  'audio': 'asset:///assets/Audio/sociales/cocodrilo.mp3'},
+    {'image': 'assets/images/actividades/sociales/pato.png',      'color': const Color(0xFFEF9A9A), 'isCorrect': false, 'audio': 'asset:///assets/Audio/sociales/pato.mp3'},
+    {'image': 'assets/images/actividades/sociales/pollo.png',     'color': const Color(0xFFCE93D8), 'isCorrect': false, 'audio': 'asset:///assets/Audio/sociales/pollo.mp3'},
   ];
 
   late final Player _player;
   bool _isPlayingAudio = false;
+  StreamSubscription<bool>? _playingSub;
+  StreamSubscription<bool>? _completedSub;
   late final Player _animalPlayer;
   bool _isProcessing = false;
 
@@ -40,14 +43,14 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _player.stream.playing.listen((playing) {
+      _playingSub = _player.stream.playing.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
-      _player.stream.completed.listen((completed) {
+      _completedSub = _player.stream.completed.listen((completed) {
         if (completed && mounted) _playCocodrilo();
       });
       await _player.open(
-          Media('asset:///assets/Audio/Sociales/audio_sociales9l_mezcla.mp3'));
+          Media('asset:///assets/Audio/sociales/audio_sociales9l_mezcla.mp3'));
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -57,7 +60,7 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
   Future<void> _playCocodrilo() async {
     try {
       await _animalPlayer.open(
-          Media('asset:///assets/Audio/Sociales/cocodrilo.mp3'));
+          Media('asset:///assets/Audio/sociales/cocodrilo.mp3'));
       await _animalPlayer.play();
     } catch (e) {
       debugPrint('Error cocodrilo audio: $e');
@@ -78,6 +81,8 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
 
   @override
   void dispose() {
+    _playingSub?.cancel();
+    _completedSub?.cancel();
     _player.dispose();
     _animalPlayer.dispose();
     super.dispose();

@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'detective_objetos_2_screen.dart';
 
@@ -18,6 +19,7 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
   late final Player _player;
   bool _isPlayingAudio = false;
+  StreamSubscription<bool>? _playingSub;
 
   @override
   void initState() {
@@ -28,11 +30,11 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _player.stream.playing.listen((playing) {
+      _playingSub = _player.stream.playing.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
       await _player.open(
-        Media('asset:///assets/Audio/Sociales/audio_sociales4_mezcla.mp3'),
+        Media('asset:///assets/Audio/sociales/audio_sociales4_mezcla.mp3'),
       );
       await _player.play();
     } catch (e) {
@@ -54,6 +56,7 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
   @override
   void dispose() {
+    _playingSub?.cancel();
     _player.dispose();
     super.dispose();
   }

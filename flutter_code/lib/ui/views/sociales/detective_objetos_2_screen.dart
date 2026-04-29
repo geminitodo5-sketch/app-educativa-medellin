@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'detective_objetos_3_screen.dart';
@@ -22,10 +23,12 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
 
   late final Player _player;
   bool _isPlayingAudio = false;
+  StreamSubscription<bool>? _playingSub;
 
   late final Player _animPlayer;
   late final VideoController _animController;
   bool _showAnimation = false;
+  StreamSubscription<bool>? _completedSub;
 
   // Índice 2 = balón es la respuesta correcta
   static const int _correctIndex = 2;
@@ -56,7 +59,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     _player = Player();
     _animPlayer = Player();
     _animController = VideoController(_animPlayer);
-    _animPlayer.stream.completed.listen((done) {
+    _completedSub = _animPlayer.stream.completed.listen((done) {
       if (done && mounted) {
         setState(() => _showAnimation = false);
         _showSuccess();
@@ -86,11 +89,11 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _player.stream.playing.listen((playing) {
+      _playingSub = _player.stream.playing.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
       await _player.open(
-          Media('asset:///assets/Audio/Sociales/audio_sociales5_mezcla.mp3'));
+          Media('asset:///assets/Audio/sociales/audio_sociales5_mezcla.mp3'));
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -111,6 +114,8 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
 
   @override
   void dispose() {
+    _playingSub?.cancel();
+    _completedSub?.cancel();
     _shakeCtrl.dispose();
     _player.dispose();
     _animPlayer.dispose();

@@ -38,6 +38,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
       await _player.open(
         Media('asset:///assets/Audio/espanol/audio_espanol4_mezcla.mp3'),
       );
+      await _player.play();
     } catch (e) {
       debugPrint("Error de audio: $e");
     }
@@ -152,7 +153,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
                               child: Image.asset(
                                 ejercicio.imagenAsset,
                                 fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Container(
+                                errorBuilder: (_, _, _) => Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: Colors.grey[200],
@@ -257,8 +258,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: palabra != null
-              ? (colorFeedback?.withOpacity(0.15) ??
-                  const Color(0xFF1EB9D8).withOpacity(0.12))
+              ? (colorFeedback?.withValues(alpha: 0.15) ??
+                  const Color(0xFF1EB9D8).withValues(alpha: 0.12))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border(
@@ -314,7 +315,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
             border: Border.all(color: Colors.grey[300]!),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.07),
+                color: Colors.black.withValues(alpha: 0.07),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),

@@ -71,9 +71,8 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audio9'),
-      );
+      await _player?.open(Media('asset:///$_audio9'));
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio animales3: $e');
     }
@@ -363,8 +362,8 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
           boxShadow: [
             BoxShadow(
               color: seleccionado
-                  ? const Color(0xFF3DCC52).withOpacity(0.35)
-                  : borderColor.withOpacity(0.15),
+                  ? const Color(0xFF3DCC52).withValues(alpha: 0.35)
+                  : borderColor.withValues(alpha: 0.15),
               blurRadius: seleccionado ? 12 : 8,
               spreadRadius: seleccionado ? 3 : 2,
             ),

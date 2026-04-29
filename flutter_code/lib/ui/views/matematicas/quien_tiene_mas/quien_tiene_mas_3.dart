@@ -94,7 +94,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
   Future<void> _reproducirInstruccion() async {
     try {
       await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio_matemaaticasnaranjas_mezcla.mp3'),
+        Media('asset:///assets/Audio/Matematicas/audio mate6_mezcla.mp3'),
       );
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
