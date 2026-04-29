@@ -1,6 +1,6 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'detective_objetos_2_screen.dart';
 
 enum _Item { balon, libro, manzana, pizarra }
@@ -17,46 +17,28 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
   final Map<_Zone, _Item> _placed = {};
   final Set<_Item> _used = {};
 
-  late final Player _player;
-  bool _isPlayingAudio = false;
-  StreamSubscription<bool>? _playingSub;
+  late final AudioPlayer _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
-    _initAndPlayAudio();
+    _player = AudioPlayer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reproducirInstruccion();
+    });
   }
 
-  Future<void> _initAndPlayAudio() async {
+  Future<void> _reproducirInstruccion() async {
     try {
-      _playingSub = _player.stream.playing.listen((playing) {
-        if (mounted) setState(() => _isPlayingAudio = playing);
-      });
-      await _player.open(
-        Media('asset:///assets/Audio/sociales/audio_sociales4_mezcla.mp3'),
-      );
+      await _player.setAsset('assets/Audio/sociales/audio_sociales4_mezcla_fix.mp3');
       await _player.play();
     } catch (e) {
-      debugPrint('Error audio: $e');
-    }
-  }
-
-  Future<void> _toggleAudio() async {
-    try {
-      if (_player.state.playing) {
-        await _player.pause();
-      } else {
-        await _player.play();
-      }
-    } catch (e) {
-      debugPrint('Error audio: $e');
+      debugPrint('Error reproduciendo audio: $e');
     }
   }
 
   @override
   void dispose() {
-    _playingSub?.cancel();
     _player.dispose();
     super.dispose();
   }
@@ -79,21 +61,9 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
 
   static const List<_ItemData> _items = [
     _ItemData(_Item.balon, 'assets/images/actividades/sociales/balon.png', '⚽'),
-    _ItemData(
-      _Item.libro,
-      'assets/images/actividades/sociales/libro.png',
-      '📕',
-    ),
-    _ItemData(
-      _Item.manzana,
-      'assets/images/actividades/sociales/Manzana.png',
-      '🍎',
-    ),
-    _ItemData(
-      _Item.pizarra,
-      'assets/images/actividades/sociales/Pizarra.png',
-      '🖼️',
-    ),
+    _ItemData(_Item.libro, 'assets/images/actividades/sociales/libro.png', '📕'),
+    _ItemData(_Item.manzana, 'assets/images/actividades/sociales/Manzana.png', '🍎'),
+    _ItemData(_Item.pizarra, 'assets/images/actividades/sociales/Pizarra.png', '🖼️'),
   ];
 
   void _onDrop(_Zone zone, _Item item) {
@@ -226,17 +196,10 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
     );
   }
 
-  // ✅ Botón X simple blanco sin círculo ni borde
-  // 👇 Mueve el recuadro blanco cambiando el valor de "vertical":
-  //    Subir recuadro → número menor (ej: 10, 12)
-  //    Bajar recuadro → número mayor (ej: 28, 36)
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ), // ← ajusta "vertical"
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
@@ -261,7 +224,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
               ),
             ),
           ),
-          // ✅ X simple sin fondo circular
           Positioned(
             right: 0,
             child: GestureDetector(
@@ -300,28 +262,21 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: _toggleAudio,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 36,
-                  height: 36,
+                onTap: _reproducirInstruccion,
+                child: Container(
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: _isPlayingAudio
-                        ? const Color(0xFFF5A623).withValues(alpha: 0.25)
-                        : const Color(0xFFF5A623).withValues(alpha: 0.14),
+                    color: const Color(0xFFF5A623).withValues(alpha: 0.14),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: _isPlayingAudio
-                          ? const Color(0xFFF5A623)
-                          : const Color(0xFFF5A623).withValues(alpha: 0.40),
+                      color: const Color(0xFFF5A623).withValues(alpha: 0.40),
                       width: 1.5,
                     ),
                   ),
-                  child: Icon(
-                    _isPlayingAudio
-                        ? Icons.pause_rounded
-                        : Icons.volume_up_rounded,
-                    color: const Color(0xFFF5A623),
+                  child: const Icon(
+                    Icons.volume_up_rounded,
+                    color: Color(0xFFF5A623),
                     size: 20,
                   ),
                 ),
@@ -373,10 +328,7 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
                               errorBuilder: (ctx, e, _) => Container(
                                 color: const Color(0xFFF5E6C8),
                                 child: const Center(
-                                  child: Text(
-                                    '🏫',
-                                    style: TextStyle(fontSize: 80),
-                                  ),
+                                  child: Text('🏫', style: TextStyle(fontSize: 80)),
                                 ),
                               ),
                             ),
@@ -450,12 +402,7 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
     );
   }
 
-  Widget _buildDropZone(
-    _Zone zone,
-    double width,
-    double height,
-    bool circular,
-  ) {
+  Widget _buildDropZone(_Zone zone, double width, double height, bool circular) {
     final placed = _placed[zone];
 
     return DragTarget<_Item>(
@@ -479,8 +426,8 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
             border: placed != null
                 ? Border.all(color: Colors.green.shade400, width: 2.5)
                 : hovering
-                ? Border.all(color: const Color(0xFFF5A623), width: 2.5)
-                : null,
+                    ? Border.all(color: const Color(0xFFF5A623), width: 2.5)
+                    : null,
           ),
           child: placed != null
               ? Padding(

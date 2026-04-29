@@ -405,7 +405,7 @@ class _Actividad1State extends State<_Actividad1>
     _ItemClasifica('${_p1}elefante.png', true),
     _ItemClasifica('${_p1}gato.png',     true),
     _ItemClasifica('${_p1}mono.png',     true),
-    _ItemClasifica('${_p1}roca.png',     false, escala: 0.55),
+    _ItemClasifica('${_p1}Roca.png',     false, escala: 0.55),
     _ItemClasifica('${_p1}arbol.png',    true,  escala: 0.72),
   ];
 

@@ -1,6 +1,6 @@
 ﻿import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../viewmodels/animales_clasificacion_view_model.dart';
 
@@ -43,7 +43,7 @@ class PantallaClasificacionAnimales extends ConsumerStatefulWidget {
 class _PantallaClasificacionAnimalesState
     extends ConsumerState<PantallaClasificacionAnimales> {
 
-  Player? _player;
+  AudioPlayer? _player;
   int _indiceActual = 0;
   late final List<Map<String, String>> _animalesAleatorios;
 
@@ -51,7 +51,7 @@ class _PantallaClasificacionAnimalesState
   void initState() {
     super.initState();
     _animalesAleatorios = List.from(_listaAnimales)..shuffle(Random());
-    _player = Player();
+    _player = AudioPlayer();
     Future.microtask(() => _reproducirInstruccion());
   }
 
@@ -63,9 +63,8 @@ class _PantallaClasificacionAnimalesState
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audio8'),
-      );
+      await _player?.setAsset(_audio8);
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio clasificacion: $e');
     }

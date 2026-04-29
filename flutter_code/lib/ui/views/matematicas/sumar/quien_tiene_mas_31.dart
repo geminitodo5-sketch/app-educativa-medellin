@@ -1,7 +1,7 @@
 ﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../terminado.dart';
 import '../../../viewmodels/matematicas_view_model.dart';
 
@@ -15,7 +15,7 @@ class QuienTieneMasview3 extends ConsumerStatefulWidget {
 }
 
 class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
-  Player? _player;
+  AudioPlayer? _player;
   int? selectedAnswer;
 
   late final int num1;
@@ -92,7 +92,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     greenPositions = _withJitter(_baseLayouts[num1]!, rng);
     purplePositions = _withJitter(_baseLayouts[num2]!, rng);
 
-    _player = Player();
+    _player = AudioPlayer();
     Future.microtask(_reproducirInstruccion);
   }
 
@@ -104,9 +104,8 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio_matemaaticasnaranjas_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/Matematicas/audio_matemaaticasnaranjas_mezcla.mp3');
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }

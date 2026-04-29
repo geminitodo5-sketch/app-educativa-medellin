@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../data/providers/app_state_provider.dart';
 import '../../../viewmodels/descubre_bananos_view_model.dart';
 import 'descubre_numeros_view_3.dart';
@@ -21,12 +21,12 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
   static const Color rojoNumi = Color(0xFFF65757);
   static const Color fondoGris = Color(0xFFF5F7FF);
 
-  late final Player _player;
+  late final AudioPlayer _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _reproducirInstruccion();
     });
@@ -40,9 +40,7 @@ class _DescubreNumerosView2State extends ConsumerState<DescubreNumerosView2> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate2_mezcla.mp3'),
-      );
+      await _player.setAsset('assets/Audio/Matematicas/audio mate2_mezcla.mp3');
       await _player.play();
     } catch (e) {
       debugPrint('Error reproduciendo audio: $e');

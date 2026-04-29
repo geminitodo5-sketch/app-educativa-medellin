@@ -36,8 +36,8 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
-    _animalPlayer = Player();
+    _player = Player();       // ✅ correctamente inicializado
+    _animalPlayer = Player(); // ✅ correctamente inicializado
     _initAndPlayAudio();
   }
 
@@ -300,14 +300,10 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
     );
   }
 
-  // ✅ Botón X simple blanco sin círculo
-  // 👇 Mueve el recuadro blanco cambiando el último valor del padding:
-  //    Subir recuadro → número menor (ej: 8, 10)
-  //    Bajar recuadro → número mayor (ej: 24, 36)
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 80), // ← ajusta el 14
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 14), // ✅ corregido de 80 a 14
       color: const Color(0xFFF39C12),
       child: Stack(
         alignment: Alignment.center,
@@ -322,7 +318,6 @@ class _EscuchaYEligePageState extends State<EscuchaYEligePage> {
               letterSpacing: 0.5,
             ),
           ),
-          // ✅ X simple sin fondo circular
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(

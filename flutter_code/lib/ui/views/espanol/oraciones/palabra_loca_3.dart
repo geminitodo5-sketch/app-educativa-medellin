@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../viewmodels/palabra_loca_3_view_model.dart';
 import '../../terminado.dart';
 
@@ -15,14 +15,14 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
     with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   late Animation<double> _scaleAnim;
-  late final Player _player;
+  late final AudioPlayer _player;
 
   bool _navegandoATerminado = false;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _reproducirAudio();
 
     _animController = AnimationController(
@@ -35,9 +35,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
 
   Future<void> _reproducirAudio() async {
     try {
-      await _player.open(
-        Media('asset:///assets/Audio/espanol/audio_espanol4_mezcla.mp3'),
-      );
+      await _player.setAsset('assets/Audio/espanol/audio_espanol4_mezcla.mp3');
       await _player.play();
     } catch (e) {
       debugPrint("Error de audio: $e");

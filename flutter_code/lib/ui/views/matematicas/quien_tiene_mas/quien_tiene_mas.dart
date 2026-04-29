@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../viewmodels/comparacion_cantidades_view_model.dart';
 import 'quien_tiene_mas_2.dart';
 
@@ -16,12 +16,12 @@ class ComparacionCantidadesView extends ConsumerStatefulWidget {
 class _ComparacionCantidadesViewState
     extends ConsumerState<ComparacionCantidadesView> {
   
-  Player? _player;
+  AudioPlayer? _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
 
     Future.microtask(() {
       if (mounted) {
@@ -36,9 +36,8 @@ class _ComparacionCantidadesViewState
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate4_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/Matematicas/audio mate4_mezcla.mp3');
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }

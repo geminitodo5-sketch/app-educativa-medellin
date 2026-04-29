@@ -1,6 +1,6 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'pasado_presente_3_screen.dart';
 
 void main() {
@@ -21,7 +21,7 @@ class TelefonoGameScreen extends StatefulWidget {
 }
 
 class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
-  late final Player _player;
+  late final AudioPlayer _player;
   bool _isPlayingAudio = false;
   StreamSubscription<bool>? _playingSub;
 
@@ -33,17 +33,16 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer(); // ✅ CORRECCIÓN: inicializar antes de usar
     _initAndPlayAudio();
   }
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _playingSub = _player.stream.playing.listen((playing) {
+      _playingSub = _player.playingStream.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
-      await _player.open(
-          Media('asset:///assets/Audio/sociales/audio_sociales8_mezcla.mp3'));
+      await _player.setAsset('assets/Audio/sociales/audio_sociales8_mezcla.mp3');
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -52,7 +51,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
 
   Future<void> _toggleAudio() async {
     try {
-      if (_player.state.playing) {
+      if (_player.playing) {
         await _player.pause();
       } else {
         await _player.play();
@@ -334,11 +333,9 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     );
   }
 
-  // ✅ Header ajustado: botón X simple blanco + padding reducido para bajar recuadro
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      // 👇 Sube recuadro → reduce el último valor | Baja recuadro → auméntalo
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
       color: const Color(0xFFF39C12),
       child: Stack(
@@ -354,7 +351,6 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
               letterSpacing: 0.5,
             ),
           ),
-          // ✅ Botón X simple sin círculo blanco
           Align(
             alignment: Alignment.centerRight,
             child: GestureDetector(

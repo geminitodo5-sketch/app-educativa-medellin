@@ -1,6 +1,6 @@
 ﻿import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../terminado.dart';
 
 enum _Tool { casco, placa, zapatillas, cuchara }
@@ -18,7 +18,7 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   final Set<_Tool> _usedTools = {};
 
   // ── Audio ─────────────────────────────────────────────────────────────────
-  late final Player _player;
+  late final AudioPlayer _player;
   bool _isPlayingAudio = false;
   StreamSubscription<bool>? _playingSub;
 
@@ -75,17 +75,16 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _initAndPlayAudio();
   }
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _playingSub = _player.stream.playing.listen((playing) {
+      _playingSub = _player.playingStream.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
-      await _player.open(
-          Media('asset:///assets/Audio/sociales/audio_sociales3_mezcla.mp3'));
+      await _player.setAsset('assets/Audio/sociales/audio_sociales3_mezcla.mp3');
       await _player.play();
     } catch (e) {
       debugPrint('Error cargando audio: $e');
@@ -94,7 +93,7 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
 
   Future<void> _toggleAudio() async {
     try {
-      if (_player.state.playing) {
+      if (_player.playing) {
         await _player.pause();
       } else {
         await _player.play();

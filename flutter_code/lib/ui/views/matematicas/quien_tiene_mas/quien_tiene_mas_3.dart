@@ -1,7 +1,7 @@
 ﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../terminado.dart';
 import '../../../viewmodels/comparacion_cantidades_view_model.dart';
 
@@ -64,7 +64,7 @@ class QuienTieneMasview3 extends ConsumerStatefulWidget {
 }
 
 class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
-  Player? _player;
+  AudioPlayer? _player;
   late _RoundData _round;
 
   static const Color verdeNumi = Color(0xFF59E347);
@@ -73,7 +73,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _round  = _RoundData.generate();
     Future.microtask(() => _reproducirInstruccion());
   }
@@ -93,9 +93,8 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate6_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/Matematicas/audio mate6_mezcla.mp3');
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }

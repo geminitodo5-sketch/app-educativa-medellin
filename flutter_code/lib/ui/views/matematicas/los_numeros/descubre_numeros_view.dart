@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../data/providers/app_state_provider.dart';
 import '../../../viewmodels/descubre_numeros_view_model.dart';
 import 'descubre_numeros_view_2.dart';
@@ -18,7 +18,7 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
   static const Color rojoNumi      = Color(0xFFF65757);
   static const Color fondoGris     = Color(0xFFF5F7FF);
 
-  late final Player _player;
+  late final AudioPlayer _player;
 
   static const Map<int, String> _audioMap = {
     1:  'audio_mate_fresa1_mezcla.mp3',
@@ -36,7 +36,7 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final vm = ref.read(descubreNumerosViewModelProvider);
       _reproducirAudioNumero(vm.numeroObjetivo);
@@ -56,9 +56,7 @@ class _DescubreNumerosViewState extends ConsumerState<DescubreNumerosView> {
       return;
     }
     try {
-      await _player.open(
-        Media('asset:///assets/Audio/Matematicas/$archivo'),
-      );
+      await _player.setAsset('assets/Audio/Matematicas/$archivo');
       await _player.play();
     } catch (e) {
       debugPrint('Error reproduciendo audio fresa $numero: $e');

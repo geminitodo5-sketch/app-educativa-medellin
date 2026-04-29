@@ -1,7 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../terminado.dart';
 
 void main() => runApp(const _DetectiveApp());
@@ -16,7 +16,7 @@ class _DetectiveApp extends StatelessWidget {
 }
 
 const _kBase = 'assets/images/actividades/sociales';
-const _kBoardImage = '$_kBase/Rompecabezas sin fondo.png';
+const _kBoardImage = '$_kBase/rompecabezas_sin_fondo.png';
 
 const _kOrange = Color(0xFFF5A623);
 const _kOrangeDark = Color(0xFFD4881A);
@@ -34,7 +34,7 @@ class PuzzlePiece {
   final int correctRow;
   final int correctCol;
   const PuzzlePiece(this.id, this.correctRow, this.correctCol);
-  String get asset => '$_kBase/pieza$id.png';
+  String get asset => '$_kBase/Pieza$id.png';
 }
 
 const List<PuzzlePiece> kPieces = [
@@ -71,7 +71,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   late final Animation<double> _pulseAnim;
   final Map<String, AnimationController> _popCtrl = {};
 
-  late final Player _player;
+  late final AudioPlayer _player;
   bool _isPlayingAudio = false;
   StreamSubscription<bool>? _playingSub;
 
@@ -115,17 +115,16 @@ class _PuzzleScreenState extends State<PuzzleScreen>
       );
     }
 
-    _player = Player();
+    _player = AudioPlayer();
     _initAndPlayAudio();
   }
 
   Future<void> _initAndPlayAudio() async {
     try {
-      _playingSub = _player.stream.playing.listen((playing) {
+      _playingSub = _player.playingStream.listen((playing) {
         if (mounted) setState(() => _isPlayingAudio = playing);
       });
-      await _player.open(
-          Media('asset:///assets/Audio/sociales/audio_sociales6_mezcla.mp3'));
+      await _player.setAsset('assets/Audio/sociales/audio_sociales6_mezcla.mp3');
       await _player.play();
     } catch (e) {
       debugPrint('Error audio: $e');
@@ -134,7 +133,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
 
   Future<void> _toggleAudio() async {
     try {
-      if (_player.state.playing) {
+      if (_player.playing) {
         await _player.pause();
       } else {
         await _player.play();

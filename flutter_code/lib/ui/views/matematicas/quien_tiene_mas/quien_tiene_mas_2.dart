@@ -1,6 +1,6 @@
 ﻿import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'quien_tiene_mas_3.dart';
 
 class MenosFrutasview extends StatefulWidget {
@@ -11,7 +11,7 @@ class MenosFrutasview extends StatefulWidget {
 }
 
 class _MenosFrutasviewState extends State<MenosFrutasview> {
-  Player? _player;
+  AudioPlayer? _player;
 
   late int _cantidadManzanas;
   late int _cantidadNaranjas;
@@ -73,7 +73,7 @@ class _MenosFrutasviewState extends State<MenosFrutasview> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _generarFrutasAleatorias();
     Future.microtask(() => _reproducirInstruccion());
   }
@@ -113,9 +113,8 @@ class _MenosFrutasviewState extends State<MenosFrutasview> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate5_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/Matematicas/audio mate5_mezcla.mp3');
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }

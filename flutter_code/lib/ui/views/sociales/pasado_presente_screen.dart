@@ -1,7 +1,6 @@
-﻿import 'dart:async';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'pasado_presente_2_screen.dart';
 
 class PasadoPresenteScreen extends StatefulWidget {
@@ -35,14 +34,13 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
 
-  late final Player _player;
-  bool _isPlayingAudio = false;
-  StreamSubscription<bool>? _playingSub;
+  late final AudioPlayer _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
+
     _rightOrder = List.generate(4, (i) => i)..shuffle(Random());
     _shakeCtrl = AnimationController(
       vsync: this,
@@ -63,37 +61,23 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
         weight: 1,
       ),
     ]).animate(_shakeCtrl);
-    _initAndPlayAudio();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reproducirInstruccion();
+    });
   }
 
-  Future<void> _initAndPlayAudio() async {
+  Future<void> _reproducirInstruccion() async {
     try {
-      _playingSub = _player.stream.playing.listen((playing) {
-        if (mounted) setState(() => _isPlayingAudio = playing);
-      });
-      await _player.open(
-          Media('asset:///assets/Audio/sociales/audio_sociales7_mezcla.mp3'));
+      await _player.setAsset('assets/Audio/sociales/audio_sociales7_mezcla.mp3');
       await _player.play();
     } catch (e) {
-      debugPrint('Error audio: $e');
-    }
-  }
-
-  Future<void> _toggleAudio() async {
-    try {
-      if (_player.state.playing) {
-        await _player.pause();
-      } else {
-        await _player.play();
-      }
-    } catch (e) {
-      debugPrint('Error audio: $e');
+      debugPrint('Error reproduciendo audio: $e');
     }
   }
 
   @override
   void dispose() {
-    _playingSub?.cancel();
     _shakeCtrl.dispose();
     _player.dispose();
     super.dispose();
@@ -113,7 +97,9 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
+            color: esCorrecto
+                ? const Color(0xFFD7FFD3)
+                : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -126,7 +112,9 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    color: esCorrecto
+                        ? const Color(0xFF59E347)
+                        : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -241,7 +229,6 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      // ✅ Aumentado de 20 a 36 para bajar el recuadro blanco
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
       color: const Color(0xFFF5A623),
       child: Stack(
@@ -294,11 +281,23 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: _toggleAudio,
-                child: Icon(
-                  _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up,
-                  color: const Color(0xFF333333),
-                  size: 26,
+                onTap: _reproducirInstruccion,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5A623).withValues(alpha: 0.14),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFF5A623).withValues(alpha: 0.40),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.volume_up_rounded,
+                    color: Color(0xFFF5A623),
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),

@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../viewmodels/palabra_loca_view_model.dart';
 import '../../terminado.dart';
 
@@ -14,7 +14,7 @@ class ArmaLaPalabraScreen extends ConsumerStatefulWidget {
 class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
     with TickerProviderStateMixin {
 
-  late final Player _player;
+  late final AudioPlayer _player;
   late AnimationController _successController;
   late Animation<double> _successScale;
   late AnimationController _errorController;
@@ -25,7 +25,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _reproducirAudio();
 
     _successController = AnimationController(
@@ -55,9 +55,7 @@ class _ArmaLaPalabraScreenState extends ConsumerState<ArmaLaPalabraScreen>
 
   Future<void> _reproducirAudio() async {
     try {
-      await _player.open(
-        Media('asset:///assets/Audio/espanol/audio_espanol2_mezcla.mp3'),
-      );
+      await _player.setAsset('assets/Audio/espanol/audio_espanol2_mezcla.mp3');
       await _player.play();
     } catch (e) {
       debugPrint("Error de audio: $e");

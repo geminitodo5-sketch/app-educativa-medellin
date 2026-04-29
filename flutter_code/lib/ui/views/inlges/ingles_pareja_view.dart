@@ -1,6 +1,6 @@
 ﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'ingles_congratulations_view.dart';
 
 const _j2 = 'assets/images/areas/ingles/juego_2/';
@@ -54,7 +54,7 @@ class InglesParejaView extends StatefulWidget {
 }
 
 class _InglesParejaViewState extends State<InglesParejaView> {
-  late final Player _player;
+  late final AudioPlayer _player;
 
   int _nivel = 0;
   int _imgSeleccionada = -1;
@@ -82,7 +82,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _resetKeys();
     _imgsOrden = _generarOrdenAleatorio(); // ← NUEVO
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -103,7 +103,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player.open(Media('asset:///$_audioInstruccion'));
+      await _player.setAsset(_audioInstruccion);
       await _player.play();
     } catch (e) {
       debugPrint('Error audio instrucción: $e');
@@ -112,7 +112,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
 
   Future<void> _play(String assetPath) async {
     try {
-      await _player.open(Media('asset:///$assetPath'));
+      await _player.setAsset(assetPath);
       await _player.play();
     } catch (e) {
       debugPrint('Audio: $e');

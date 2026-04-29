@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../data/providers/app_state_provider.dart';
 import '../../../viewmodels/descubre_globos_view_model.dart';
 import '../../terminado.dart';
@@ -14,7 +14,7 @@ class DescubreGlobosView extends ConsumerStatefulWidget {
 
 class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     with TickerProviderStateMixin {
-  late final Player _player;
+  late final AudioPlayer _player;
   late final AnimationController _moveController;
   late final List<AnimationController> _floatControllers;
   late final List<Animation<double>> _floatAnimations;
@@ -41,7 +41,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
   void initState() {
     super.initState();
 
-    _player = Player();
+    _player = AudioPlayer();
 
     _moveController = AnimationController(
       duration: const Duration(seconds: 7),
@@ -87,7 +87,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     }
 
     try {
-      await _player.open(Media('asset:///assets/Audio/Matematicas/$archivo'));
+      await _player.setAsset('assets/Audio/Matematicas/$archivo');
       await _player.play();
     } catch (e) {
       debugPrint('Error reproduciendo audio del globo $numero: $e');

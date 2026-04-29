@@ -1,6 +1,6 @@
 ﻿import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 
 const _audio9 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales9_mezcla.mp3';
 
@@ -21,10 +21,10 @@ class JuegoAnimalesScreen extends StatefulWidget {
 class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   final String path = 'assets/images/actividades/ciencias_naturales';
 
-  Player? _player;
+  AudioPlayer? _player;
 
   final Map<String, String> parejas = {
-    'mono': 'banano',
+    'mono': 'Banano',
     'perro': 'comida_para_perro',
     'elefante': 'pasto',
   };
@@ -44,7 +44,7 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
     'mono': GlobalKey(),
     'perro': GlobalKey(),
     'elefante': GlobalKey(),
-    'banano': GlobalKey(),
+    'Banano': GlobalKey(),
     'comida_para_perro': GlobalKey(),
     'pasto': GlobalKey(),
   };
@@ -58,8 +58,8 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
     super.initState();
     final rng = Random();
     _animalesOrden = ['mono', 'perro', 'elefante']..shuffle(rng);
-    _comidasOrden = ['comida_para_perro', 'banano', 'pasto']..shuffle(rng);
-    _player = Player();
+    _comidasOrden = ['comida_para_perro', 'Banano', 'pasto']..shuffle(rng);
+    _player = AudioPlayer();
     Future.microtask(() => _reproducirInstruccion());
   }
 
@@ -71,7 +71,7 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(Media('asset:///$_audio9'));
+      await _player?.setAsset(_audio9);
       await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio animales3: $e');

@@ -6,7 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ Reemplaza just_audio
+import 'package:just_audio/just_audio.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
 import 'menu_1_y_2_view.dart';
@@ -23,12 +23,12 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   bool _cargando = false;
 
   // ✅ Mismo patrón que el código de referencia
-  Player? _player;
+  AudioPlayer? _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
 
     // ✅ Reproducción automática igual que en SumarPatronview
     Future.microtask(() => _reproducirAudio());
@@ -37,9 +37,7 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   // ✅ Mismo método de reproducción que el código de referencia
   Future<void> _reproducirAudio() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/sociales/audio_generalsi_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/sociales/audio_generalsi_mezcla_fix.mp3');
       await _player?.play();
     } catch (e) {
       debugPrint('Error reproduciendo audio: $e');

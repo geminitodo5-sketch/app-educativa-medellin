@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'ingles_congratulations_view.dart';
 import 'dart:math';
 
@@ -120,7 +120,7 @@ class InglesEscuchaView extends StatefulWidget {
 }
 
 class _InglesEscuchaViewState extends State<InglesEscuchaView> {
-  late final Player _player;
+  late final AudioPlayer _player;
   late List<Map<String, dynamic>> _niveles;
 
   int _nivel = 0;
@@ -135,7 +135,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _generarRonda();
 
     // 1) Reproduce instrucción al entrar
@@ -163,7 +163,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player.open(Media('asset:///$_audioInstruccion'));
+      await _player.setAsset(_audioInstruccion);
       await _player.play();
     } catch (e) {
       debugPrint('Error audio instrucción: $e');
@@ -172,7 +172,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
 
   Future<void> _play(String assetPath) async {
     try {
-      await _player.open(Media('asset:///$assetPath'));
+      await _player.setAsset(assetPath);
       await _player.play();
     } catch (e) {
       debugPrint('Audio error: $e');

@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'ingles_congratulations_view.dart';
 
 const _j3 = 'assets/images/areas/ingles/juego_3/';
@@ -180,7 +180,7 @@ class InglesTarjetasView extends StatefulWidget {
 }
 
 class _InglesTarjetasViewState extends State<InglesTarjetasView> {
-  late final Player _player;
+  late final AudioPlayer _player;
 
   int _nivel = 0;
   String _fase = 'preview';
@@ -197,7 +197,7 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     _iniciarNivel();
   }
 
@@ -300,7 +300,7 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
 
   Future<void> _play(String path) async {
     try {
-      await _player.open(Media('asset:///$path'));
+      await _player.setAsset(path);
       await _player.play();
     } catch (e) {
       debugPrint('Audio error: $e');

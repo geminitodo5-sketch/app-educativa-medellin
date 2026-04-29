@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'dart:math';
 import 'sumar_2.dart';
 
@@ -99,7 +99,7 @@ class SumarPatronview extends ConsumerStatefulWidget {
 }
 
 class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
-  Player? _player;
+  AudioPlayer? _player;
   late _DatosActividad _datos;
 
   static const Color azulPrincipal   = Color(0xFF3475F7);
@@ -112,7 +112,7 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
   void initState() {
     super.initState();
     _datos = _DatosActividad.generar();
-    _player = Player();
+    _player = AudioPlayer();
     Future.microtask(() => _reproducirInstruccion());
   }
 
@@ -124,9 +124,8 @@ class _SumarPatronviewState extends ConsumerState<SumarPatronview> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate7_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/Matematicas/audio mate7_mezcla.mp3');
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }

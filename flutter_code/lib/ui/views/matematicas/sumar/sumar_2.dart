@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'dart:math';
 import 'quien_tiene_mas_31.dart';
 
@@ -63,14 +63,14 @@ class PantallaSumaUvas extends ConsumerStatefulWidget {
 }
 
 class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
-  Player? _player;
+  AudioPlayer? _player;
   late _DatosActividad _datos;
 
   @override
   void initState() {
     super.initState();
     _datos = _DatosActividad.generar();
-    _player = Player();
+    _player = AudioPlayer();
     Future.microtask(() => _reproducirInstruccion());
   }
 
@@ -82,9 +82,8 @@ class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///assets/Audio/Matematicas/audio mate8_mezcla.mp3'),
-      );
+      await _player?.setAsset('assets/Audio/Matematicas/audio mate8_mezcla.mp3');
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
     }

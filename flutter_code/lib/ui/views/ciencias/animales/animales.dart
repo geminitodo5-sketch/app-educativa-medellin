@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../viewmodels/animales_view_model.dart';
 
@@ -23,12 +23,12 @@ class PantallaActividadAnimales extends ConsumerStatefulWidget {
 class _PantallaActividadAnimalesState
     extends ConsumerState<PantallaActividadAnimales> {
 
-  Player? _player;
+  AudioPlayer? _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player();
+    _player = AudioPlayer();
     Future.microtask(() => _reproducirInstruccion());
   }
 
@@ -40,9 +40,8 @@ class _PantallaActividadAnimalesState
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.open(
-        Media('asset:///$_audio7'),
-      );
+      await _player?.setAsset(_audio7);
+      await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio animales: $e');
     }
