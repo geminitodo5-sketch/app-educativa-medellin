@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
+import '../../data/providers/musica_provider.dart';
 import 'registro_view.dart';
 import 'inicio_view.dart';
 import 'menu_1_y_2_view.dart';
@@ -25,6 +26,12 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
   bool _musicaActiva = true;
   bool _modoOffline = true;
   String _idiomaSeleccionado = 'Español';
+
+  @override
+  void initState() {
+    super.initState();
+    _musicaActiva = ref.read(musicaServiceProvider).musicaActiva;
+  }
 
   static const Color _cyanTeal = Color(0xFF65CEE3);
   static const Color _royalBlue = Color(0xFF3475F7);
@@ -409,8 +416,10 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                 _buildToggleRow('Sonido', _sonidoActivo,
                     (v) => setState(() => _sonidoActivo = v)),
                 const SizedBox(height: 8),
-                _buildToggleRow('Música', _musicaActiva,
-                    (v) => setState(() => _musicaActiva = v)),
+                _buildToggleRow('Música', _musicaActiva, (v) {
+                  setState(() => _musicaActiva = v);
+                  ref.read(musicaServiceProvider).setMusicaActiva(v);
+                }),
               ],
             ),
           ),

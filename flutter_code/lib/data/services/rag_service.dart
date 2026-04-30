@@ -514,6 +514,7 @@ class RagService {
           contexto: respRaw,
           pregunta: pregunta,
           grado: grado,
+          materia: materia,
         )) {
           buf.write(token);
         }

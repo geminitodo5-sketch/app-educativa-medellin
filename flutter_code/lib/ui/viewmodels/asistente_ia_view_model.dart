@@ -3,6 +3,7 @@
 //  ViewModel para la pantalla del asistente RAG offline.
 // ─────────────────────────────────────────────────────────────
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/services/rag_service.dart';
@@ -431,10 +432,27 @@ final embeddingServiceProvider = Provider<EmbeddingService>((ref) {
   return svc;
 });
 
-// LocalLlmService: Gemma 2B local. La inicialización se hace solo cuando el
-// usuario activa el modelo desde configuración (no en arranque, para evitar crash).
+// LocalLlmService: Gemma 3n E2B local.
 final localLlmServiceProvider = Provider<LocalLlmService>((ref) {
   return LocalLlmService();
+});
+
+// Se ejecuta una sola vez al arrancar la app (vía ProviderScope).
+// Comprueba si Gemma 3n ya está instalado; si no, inicia la descarga
+// automáticamente en background para que esté listo cuando el niño lo necesite.
+final gemmaStartupProvider = FutureProvider<void>((ref) async {
+  final llm = ref.read(localLlmServiceProvider);
+  await llm.inicializarSiExiste();
+  if (llm.isReady) {
+    debugPrint('🟢 Gemma: modelo ya instalado, listo para usar.');
+    return;
+  }
+  if (!llm.isDownloading) {
+    debugPrint('⬇️ Gemma: iniciando descarga del modelo...');
+    llm.descargarModelo(onProgress: (p) {
+      debugPrint('⬇️ Gemma descargando: ${(p * 100).toInt()}%');
+    }).ignore();
+  }
 });
 
 final ragServiceProvider = Provider<RagService>((ref) {

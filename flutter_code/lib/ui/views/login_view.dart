@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
+import '../../data/providers/musica_provider.dart';
 import 'menu_1_y_2_view.dart';
 import 'bienvenida.dart';
 import 'registro_view.dart';
@@ -25,7 +26,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
   bool _cargando = false;
 
   @override
+  void initState() {
+    super.initState();
+    ref.read(musicaServiceProvider).entrar();
+  }
+
+  @override
   void dispose() {
+    ref.read(musicaServiceProvider).salir();
     _emailController.dispose();
     _contrasenaController.dispose();
     super.dispose();

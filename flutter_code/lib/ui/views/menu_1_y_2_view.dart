@@ -7,6 +7,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
+import '../../data/providers/musica_provider.dart';
+import '../../main.dart' show routeObserver;
 import 'matematicas_view.dart';
 import 'ciencias_view.dart';
 import 'ingles_view.dart';
@@ -30,7 +32,40 @@ class Menu1Y2Screen extends ConsumerStatefulWidget {
   ConsumerState<Menu1Y2Screen> createState() => _Menu1Y2ScreenState();
 }
 
-class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> {
+class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
+  bool _salidoPorPush = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(musicaServiceProvider).entrar();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPushNext() {
+    _salidoPorPush = true;
+    ref.read(musicaServiceProvider).salir();
+  }
+
+  @override
+  void didPopNext() {
+    _salidoPorPush = false;
+    ref.read(musicaServiceProvider).entrar();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    if (!_salidoPorPush) ref.read(musicaServiceProvider).salir();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Lee el progreso de todas las materias desde la BD

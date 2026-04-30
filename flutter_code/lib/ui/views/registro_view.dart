@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
+import '../../data/providers/musica_provider.dart';
 import 'bienvenida.dart';
 import 'login_view.dart';
 
@@ -34,7 +35,14 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
   String? _errorContrasena;
 
   @override
+  void initState() {
+    super.initState();
+    ref.read(musicaServiceProvider).entrar();
+  }
+
+  @override
   void dispose() {
+    ref.read(musicaServiceProvider).salir();
     _edadController.dispose();
     _emailController.dispose();
     _contrasenaController.dispose();

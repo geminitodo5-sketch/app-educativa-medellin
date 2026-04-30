@@ -5,7 +5,13 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
 import 'data/providers/database_provider.dart';
 import 'data/providers/app_state_provider.dart';
+import 'ui/viewmodels/asistente_ia_view_model.dart' show gemmaStartupProvider;
 import 'ui/views/inicio_view.dart';
+
+/// Observer global que permite a Menu3A5Screen detectar cuándo se
+/// pushea una pantalla encima y pausar la música de fondo.
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,9 +43,13 @@ class AppEducativa extends ConsumerWidget {
     // cuando el dispositivo recupera internet.
     ref.watch(syncListenerProvider);
 
+    // Inicia verificación/descarga de Gemma 3n E2B en background al abrir la app.
+    ref.watch(gemmaStartupProvider);
+
     return MaterialApp(
       title: 'Numi - App Educativa',
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [routeObserver],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3475F7)),
         useMaterial3: true,

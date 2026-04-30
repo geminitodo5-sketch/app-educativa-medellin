@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
+import '../../data/providers/musica_provider.dart';
 import '../../data/services/descarga_paquete_service.dart';
+import '../../main.dart' show routeObserver;
 import 'configuracion_view.dart';
 import 'asistente_ia/asistente_ia_view.dart';
 
@@ -149,7 +151,7 @@ class Menu3A5Screen extends ConsumerStatefulWidget {
   ConsumerState<Menu3A5Screen> createState() => _Menu3A5ScreenState();
 }
 
-class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
+class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
   int _tabIndex = 0;
   int _currentPage = 0;
   final Map<String, bool> _descargado = {};
@@ -162,6 +164,9 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
   Timer? _carruselTimer;
   bool _pausarCarrusel = false;
 
+  // Evita doble-salir cuando dispose corre después de didPushNext.
+  bool _salidoPorPush = false;
+
   @override
   void initState() {
     super.initState();
@@ -169,6 +174,25 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
     _verificarDescargas();
     _pageController = PageController(viewportFraction: 0.82);
     _iniciarCarrusel();
+    ref.read(musicaServiceProvider).entrar();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPushNext() {
+    _salidoPorPush = true;
+    ref.read(musicaServiceProvider).salir();
+  }
+
+  @override
+  void didPopNext() {
+    _salidoPorPush = false;
+    ref.read(musicaServiceProvider).entrar();
   }
 
   void _iniciarCarrusel() {
@@ -195,6 +219,8 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> {
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
+    if (!_salidoPorPush) ref.read(musicaServiceProvider).salir();
     _carruselTimer?.cancel();
     _pageController.dispose();
     super.dispose();

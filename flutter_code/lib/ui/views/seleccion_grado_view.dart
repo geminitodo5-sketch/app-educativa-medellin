@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
+import '../../data/providers/musica_provider.dart';
 import 'menu_1_y_2_view.dart';
 import 'menu_3_a_5_view.dart';
 
@@ -29,9 +30,8 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   void initState() {
     super.initState();
     _player = AudioPlayer();
-
-    // ✅ Reproducción automática igual que en SumarPatronview
     Future.microtask(() => _reproducirAudio());
+    ref.read(musicaServiceProvider).entrar();
   }
 
   // ✅ Mismo método de reproducción que el código de referencia
@@ -46,7 +46,8 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    ref.read(musicaServiceProvider).salir();
+    _player?.dispose();
     super.dispose();
   }
 
