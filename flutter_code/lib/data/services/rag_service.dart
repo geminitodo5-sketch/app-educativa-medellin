@@ -425,6 +425,22 @@ class RagService {
     });
   }
 
+  Future<List<Map<String, dynamic>>> obtenerHistorial({
+    required int estudianteId,
+    required String materia,
+    int limite = 60,
+  }) async {
+    const mapaMateria = {'espanol': 'español'};
+    final materiaDB = mapaMateria[materia] ?? materia;
+    return _db.consultar(
+      'historial_rag',
+      where: 'estudiante_id = ? AND materia = ?',
+      whereArgs: [estudianteId, materiaDB],
+      orderBy: 'fecha DESC',
+      limit: limite,
+    );
+  }
+
   // ═══════════════════════════════════════════════════════════
   //  EXPANSIÓN CONCEPTUAL
   //  Transforma los tokens del usuario en un conjunto expandido

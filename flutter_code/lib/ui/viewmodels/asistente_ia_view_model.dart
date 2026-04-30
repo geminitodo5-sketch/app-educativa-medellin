@@ -475,3 +475,13 @@ final asistenteIaViewModelProvider =
     ref.read(localLlmServiceProvider),
   );
 });
+
+final historialPorMateriaProvider = FutureProvider.family<
+    List<Map<String, dynamic>>,
+    ({int estudianteId, String materia})>((ref, params) async {
+  final rag = ref.read(ragServiceProvider);
+  return rag.obtenerHistorial(
+    estudianteId: params.estudianteId,
+    materia: params.materia,
+  );
+});

@@ -107,6 +107,32 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
           ],
         ),
         actions: [
+          // Historial de conversaciones
+          IconButton(
+            icon: const Icon(Icons.history_rounded, color: Colors.white),
+            tooltip: 'Historial',
+            onPressed: () {
+              final est = ref.read(estudianteActivoProvider);
+              if (est == null || est.id == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Inicia sesión para ver tu historial.'),
+                  ),
+                );
+                return;
+              }
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) => _HistorialSheet(
+                  materia: estado.materiaActual,
+                  estudianteId: est.id!,
+                  color: color,
+                ),
+              );
+            },
+          ),
           // Selector de grado
           PopupMenuButton<int>(
             icon: Container(
@@ -533,6 +559,243 @@ class _IndicadorEscribiendoState extends State<_IndicadorEscribiendo>
           }),
         );
       },
+    );
+  }
+}
+
+// ── Historial de conversaciones ───────────────────────────
+
+class _HistorialSheet extends ConsumerWidget {
+  final String materia;
+  final int estudianteId;
+  final Color color;
+
+  const _HistorialSheet({
+    required this.materia,
+    required this.estudianteId,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final histAsync = ref.watch(historialPorMateriaProvider(
+      (estudianteId: estudianteId, materia: materia),
+    ));
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.72,
+      maxChildSize: 0.95,
+      minChildSize: 0.4,
+      builder: (_, scrollCtrl) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 4),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Título
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: Row(
+                children: [
+                  Icon(Icons.history_rounded, color: color, size: 22),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Historial — ${AsistenteIaViewModel.nombreMateria(materia)}',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: Colors.grey.shade100),
+            // Contenido
+            Expanded(
+              child: histAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(
+                  child: Text(
+                    'No se pudo cargar el historial.',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ),
+                data: (items) {
+                  if (items.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.chat_bubble_outline_rounded,
+                              size: 64, color: Colors.grey.shade200),
+                          const SizedBox(height: 14),
+                          Text(
+                            'Aún no hay conversaciones\nguardadas en ${AsistenteIaViewModel.nombreMateria(materia)}.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return ListView.separated(
+                    controller: scrollCtrl,
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+                    itemCount: items.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (_, i) =>
+                        _HistorialItem(item: items[i], color: color),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Ítem de historial ─────────────────────────────────────
+
+class _HistorialItem extends StatelessWidget {
+  final Map<String, dynamic> item;
+  final Color color;
+
+  const _HistorialItem({required this.item, required this.color});
+
+  String _formatFecha(String? raw) {
+    if (raw == null) return '';
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      final h = dt.hour.toString().padLeft(2, '0');
+      final m = dt.minute.toString().padLeft(2, '0');
+      return '${dt.day}/${dt.month}/${dt.year}  $h:$m';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pregunta = item['pregunta'] as String? ?? '';
+    final respuesta = item['respuesta'] as String? ?? '';
+    final fecha = _formatFecha(item['fecha'] as String?);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (fecha.isNotEmpty) ...[
+            Text(
+              fecha,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 11,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          // Pregunta del usuario
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Tú',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  pregunta,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // Respuesta del asistente
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'Sabi',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  respuesta,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 13,
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
