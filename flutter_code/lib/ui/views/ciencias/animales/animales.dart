@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:math' show min;
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../viewmodels/animales_view_model.dart';
@@ -13,7 +14,8 @@ const Color kColorBlanco = Colors.white;
 
 class PantallaActividadAnimales extends ConsumerStatefulWidget {
   final VoidCallback onCompletado;
-  const PantallaActividadAnimales({super.key, required this.onCompletado});
+  final double progress;
+  const PantallaActividadAnimales({super.key, required this.onCompletado, this.progress = 1 / 3});
 
   @override
   ConsumerState<PantallaActividadAnimales> createState() =>
@@ -52,12 +54,25 @@ class _PantallaActividadAnimalesState
     final viewModel = ref.watch(animalesViewModelProvider);
     final aciertos = viewModel.aciertos;
 
+    final sw = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFF3DCC52),
       body: SafeArea(
         child: Column(
           children: [
             const _HeaderActividad(titulo: "Animales"),
+            Padding(
+              padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 14),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: widget.progress,
+                  minHeight: 8,
+                  backgroundColor: Colors.white30,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                ),
+              ),
+            ),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -76,64 +91,73 @@ class _PantallaActividadAnimalesState
                         texto: "Devuelve a estos animales a su hogar, empareja sus hábitats",
                         onReproducir: _reproducirInstruccion,
                       ),
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _HabitatTarget(
-                            tipo: 'pinguino',
-                            imagen: 'assets/images/actividades/ciencias_naturales/polar.png',
-                            onAccept: (val) {
-                              bool esCorrecto =
-                                  viewModel.commandValidarHabitat(val, 'pinguino');
-                              if (!esCorrecto) {
-                                _mostrarFeedback(context, false, () {});
-                              } else if (viewModel.completado) {
-                                _mostrarFeedback(context, true, () {
-                                  widget.onCompletado();
-                                });
-                              }
-                            },
-                          ),
-                          _HabitatTarget(
-                            tipo: 'cocodrilo',
-                            imagen: 'assets/images/actividades/ciencias_naturales/selva.png',
-                            onAccept: (val) {
-                              bool esCorrecto =
-                                  viewModel.commandValidarHabitat(val, 'cocodrilo');
-                              if (!esCorrecto) {
-                                _mostrarFeedback(context, false, () {});
-                              } else if (viewModel.completado) {
-                                _mostrarFeedback(context, true, () {
-                                  widget.onCompletado();
-                                });
-                              }
-                            },
-                          ),
-                        ],
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (ctx, constraints) {
+                            final byW = (constraints.maxWidth - 48) / 2;
+                            final byH = (constraints.maxHeight - 56) / 2;
+                            final side = min(byW, byH).clamp(80.0, 320.0);
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    _HabitatTarget(
+                                      tipo: 'pinguino',
+                                      imagen: 'assets/images/actividades/ciencias_naturales/polar.png',
+                                      size: side,
+                                      onAccept: (val) {
+                                        bool esCorrecto = viewModel.commandValidarHabitat(val, 'pinguino');
+                                        if (!esCorrecto) {
+                                          _mostrarFeedback(context, false, () {});
+                                        } else if (viewModel.completado) {
+                                          _mostrarFeedback(context, true, () { widget.onCompletado(); });
+                                        }
+                                      },
+                                    ),
+                                    _HabitatTarget(
+                                      tipo: 'cocodrilo',
+                                      imagen: 'assets/images/actividades/ciencias_naturales/selva.png',
+                                      size: side,
+                                      onAccept: (val) {
+                                        bool esCorrecto = viewModel.commandValidarHabitat(val, 'cocodrilo');
+                                        if (!esCorrecto) {
+                                          _mostrarFeedback(context, false, () {});
+                                        } else if (viewModel.completado) {
+                                          _mostrarFeedback(context, true, () { widget.onCompletado(); });
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    if (!aciertos['cocodrilo']!)
+                                      _AnimalDraggable(
+                                        id: 'cocodrilo',
+                                        imagen: 'assets/images/actividades/ciencias_naturales/cocodrilo.png',
+                                        size: side,
+                                      )
+                                    else
+                                      SizedBox(width: side, height: side),
+                                    if (!aciertos['pinguino']!)
+                                      _AnimalDraggable(
+                                        id: 'pinguino',
+                                        imagen: 'assets/images/actividades/ciencias_naturales/pinguino.png',
+                                        size: side,
+                                      )
+                                    else
+                                      SizedBox(width: side, height: side),
+                                  ],
+                                ),
+                                const _IndicadorProgreso(),
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          if (!aciertos['cocodrilo']!)
-                            const _AnimalDraggable(
-                              id: 'cocodrilo',
-                              imagen: 'assets/images/actividades/ciencias_naturales/cocodrilo.png',
-                            )
-                          else
-                            const SizedBox(width: 140, height: 140),
-                          if (!aciertos['pinguino']!)
-                            const _AnimalDraggable(
-                              id: 'pinguino',
-                              imagen: 'assets/images/actividades/ciencias_naturales/pinguino.png',
-                            )
-                          else
-                            const SizedBox(width: 140, height: 140),
-                        ],
-                      ),
-                      const Spacer(),
-                      const _IndicadorProgreso(),
                     ],
                   ),
                 ),
@@ -196,36 +220,37 @@ class _InstruccionAudio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
           GestureDetector(
             onTap: onReproducir,
             child: Container(
-              width: 36,
-              height: 36,
+              width: (sw * 0.13).clamp(44.0, 60.0),
+              height: (sw * 0.13).clamp(44.0, 60.0),
               decoration: BoxDecoration(
                 color: const Color(0xFFE8F5E9),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.volume_up_rounded,
-                color: Color(0xFF3DCC52),
-                size: 22,
+                color: const Color(0xFF3DCC52),
+                size: (sw * 0.07).clamp(24.0, 34.0),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: sw * 0.03),
           Expanded(
             child: Text(
               texto,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: Color(0xFF424242),
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: (sw * 0.065).clamp(20.0, 46.0),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF424242),
                 height: 1.3,
               ),
             ),
@@ -263,11 +288,13 @@ class _HabitatTarget extends StatelessWidget {
   final String tipo;
   final String imagen;
   final Function(String) onAccept;
+  final double size;
 
   const _HabitatTarget({
     required this.tipo,
     required this.imagen,
     required this.onAccept,
+    required this.size,
   });
 
   @override
@@ -276,8 +303,8 @@ class _HabitatTarget extends StatelessWidget {
       onAcceptWithDetails: (details) => onAccept(details.data),
       builder: (context, candidateData, rejectedData) {
         return Container(
-          width: 150,
-          height: 150,
+          width: size,
+          height: size,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -300,15 +327,16 @@ class _HabitatTarget extends StatelessWidget {
 class _AnimalDraggable extends StatelessWidget {
   final String id;
   final String imagen;
-  const _AnimalDraggable({required this.id, required this.imagen});
+  final double size;
+  const _AnimalDraggable({required this.id, required this.imagen, required this.size});
 
   @override
   Widget build(BuildContext context) {
     return Draggable<String>(
       data: id,
       feedback: SizedBox(
-        width: 140,
-        height: 140,
+        width: size,
+        height: size,
         child: Image.asset(
           imagen,
           fit: BoxFit.contain,
@@ -318,14 +346,14 @@ class _AnimalDraggable extends StatelessWidget {
       childWhenDragging: Opacity(
         opacity: 0.3,
         child: SizedBox(
-          width: 140,
-          height: 140,
+          width: size,
+          height: size,
           child: Image.asset(imagen, fit: BoxFit.contain),
         ),
       ),
       child: SizedBox(
-        width: 140,
-        height: 140,
+        width: size,
+        height: size,
         child: Image.asset(imagen, fit: BoxFit.contain),
       ),
     );

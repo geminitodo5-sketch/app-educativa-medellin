@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'heroes_ciudad_2_screen.dart';
@@ -18,7 +18,6 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
 
-  // ── Audio ─────────────────────────────────────────────────────────────────
   late final AudioPlayer _player;
   bool _isPlayingAudio = false;
   StreamSubscription<bool>? _playingSub;
@@ -52,13 +51,10 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     ),
   ];
 
-  // ── Init / Dispose ────────────────────────────────────────────────────────
-
   @override
   void initState() {
     super.initState();
 
-    // Shake animation
     _shakeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
@@ -78,7 +74,6 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
       ),
     ]).animate(_shakeCtrl);
 
-    // Audio setup + reproducción automática
     _player = AudioPlayer();
     _initAndPlayAudio();
   }
@@ -114,8 +109,6 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     _player.dispose();
     super.dispose();
   }
-
-  // ── Lógica de juego ───────────────────────────────────────────────────────
 
   void _onCardTapped(int index) {
     if (_isCorrect == true) return;
@@ -153,9 +146,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto
-                ? const Color(0xFFD7FFD3)
-                : const Color(0xFFFFD3D3),
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -168,9 +159,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto
-                        ? const Color(0xFF59E347)
-                        : const Color(0xFFF65757),
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -191,12 +180,8 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto
-                        ? const Color(0xFF59E347)
-                        : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -230,13 +215,12 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
     });
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
@@ -260,129 +244,100 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Héroes de la Ciudad',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  wordSpacing: 7,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ],
+          ),
         ),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Center(
-            child: Text(
-              'Héroes de  la Ciudad',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 0.5,
-                shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
-              ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 1 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-          Positioned(
-            right: 0,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: const Icon(
-                Icons.close_rounded,
-                size: 22,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildBody() {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
-            child: Text(
-              'Héroes de la Ciudad',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // ── Enunciado con botón de audio interactivo ──────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: _toggleAudio,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: _isPlayingAudio
-                        ? const Color(0xFFF5A623).withValues(alpha: 0.25)
-                        : const Color(0xFFF5A623).withValues(alpha: 0.14),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _isPlayingAudio
-                          ? const Color(0xFFF5A623)
-                          : const Color(0xFFF5A623).withValues(alpha: 0.40),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Icon(
-                    _isPlayingAudio
-                        ? Icons
-                              .pause_rounded // pausa mientras suena
-                        : Icons.volume_up_rounded, // play cuando está pausado
-                    color: const Color(0xFFF5A623),
-                    size: 20,
-                  ),
-                ),
+                child: _AudioBtn(sw: sw, isPlaying: _isPlayingAudio),
               ),
-              const SizedBox(width: 10),
-              const Expanded(
+              SizedBox(width: sw * 0.03),
+              Expanded(
                 child: Text(
-                  'Ayúdame a encontrar a la persona que apaga incendios y usa una manguera.',
+                  'Ayúdame a encontrar a  la persona que apaga incendios y usa una manguera.',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF555555),
-                    height: 1.4,
+                    fontFamily: 'Hiruko',
+                    fontSize: (sw * 0.055).clamp(18.0, 38.0),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    height: 1.3,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: (sw * 0.05).clamp(16.0, 32.0)),
 
-          // Grid de personajes
           Expanded(
             child: SlideTransition(
               position: _selectedIndex != null && _isCorrect == false
                   ? _shakeAnim
                   : const AlwaysStoppedAnimation(Offset.zero),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
-                physics: const NeverScrollableScrollPhysics(),
-                children: List.generate(_chars.length, (i) => _buildCard(i)),
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  const spacing = 14.0;
+                  final cardW = (constraints.maxWidth - spacing) / 2;
+                  final cardH = (constraints.maxHeight - spacing) / 2;
+                  final ratio = cardW / cardH.clamp(1.0, double.infinity);
+                  return GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: spacing,
+                    mainAxisSpacing: spacing,
+                    childAspectRatio: ratio,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: List.generate(_chars.length, (i) => _buildCard(i)),
+                  );
+                },
               ),
             ),
           ),
@@ -421,20 +376,22 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
         ),
         child: Stack(
           children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset(
-                  char.imagePath,
-                  fit: BoxFit.contain,
-                  errorBuilder: (ctx, e, _) => Center(
-                    child: Text(
-                      char.fallbackEmoji,
-                      style: const TextStyle(fontSize: 64),
+            LayoutBuilder(
+              builder: (ctx, constraints) {
+                final pad = constraints.maxWidth * 0.08;
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(pad),
+                    child: Image.asset(
+                      char.imagePath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (ctx, e, _) => Center(
+                        child: Text(char.fallbackEmoji, style: const TextStyle(fontSize: 64)),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             if (correct != null)
               Positioned.fill(
@@ -450,9 +407,7 @@ class _HeroesCiudadScreenState extends State<HeroesCiudadScreen>
                     ),
                     child: Center(
                       child: Icon(
-                        correct
-                            ? Icons.check_circle_rounded
-                            : Icons.cancel_rounded,
+                        correct ? Icons.check_circle_rounded : Icons.cancel_rounded,
                         color: Colors.white,
                         size: 56,
                       ),
@@ -479,4 +434,35 @@ class _CharData {
     required this.fallbackEmoji,
     required this.bgColor,
   });
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
+      ),
+    );
+  }
 }

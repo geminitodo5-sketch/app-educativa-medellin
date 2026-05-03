@@ -308,6 +308,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
@@ -323,16 +324,15 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final availableWidth = constraints.maxWidth;
-                    final availableHeight = constraints.maxHeight;
-                    // Título (~80) + feedback (~44) + bandeja (~130) + gaps (~24) = ~278
-                    // Usar fracción del alto disponible para pantallas pequeñas
-                    final reservedHeight = availableHeight * 0.38;
-                    final maxBoardH = availableHeight - reservedHeight;
-                    final boardSide = min(
-                      min(availableWidth - 24, maxBoardH),
-                      400.0,
-                    );
+                    final aw = constraints.maxWidth;
+                    final ah = constraints.maxHeight;
+                    // 4 piezas por fila, tamaño basado en ancho
+                    final pieceSize = ((aw - 48 - 30) / 4).clamp(50.0, 88.0);
+                    // Tray: 2 filas fijas
+                    final trayH = 2 * pieceSize + 10 + 20;
+                    // Tablero: 90% del espacio restante para no llenarlo todo
+                    final boardSide = min(aw - 24, (ah - trayH - 108) * 0.90)
+                        .clamp(80.0, double.infinity);
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       child: Column(
@@ -340,21 +340,22 @@ class _PuzzleScreenState extends State<PuzzleScreen>
                         children: [
                           _buildTitle(),
                           const SizedBox(height: 8),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: boardSide,
-                              maxHeight: boardSide,
-                            ),
-                            child: _buildBoard(boardSide),
-                          ),
-                          const SizedBox(height: 8),
                           Expanded(
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 350),
-                              transitionBuilder: (child, anim) =>
-                                  FadeTransition(opacity: anim, child: child),
-                              child: _buildTray(boardSide),
+                            child: Center(
+                              child: SizedBox(
+                                width: boardSide,
+                                height: boardSide,
+                                child: _buildBoard(boardSide),
+                              ),
                             ),
+                          ),
+                          const SizedBox(height: 10),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 350),
+                            transitionBuilder: (child, anim) =>
+                                FadeTransition(opacity: anim, child: child),
+                            child: _buildTray(boardSide,
+                                trayH: trayH, pieceSize: pieceSize),
                           ),
                           const SizedBox(height: 8),
                         ],
@@ -371,121 +372,74 @@ class _PuzzleScreenState extends State<PuzzleScreen>
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 36, 20, 36),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        // Sin esquinas redondeadas — el bloque naranja va de borde a borde
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Center(
-            child: Text(
-              'Detective de Objetos',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.2,
-                shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Detective de Objetos',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.maybePop(context),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 3 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-          Positioned(
-            right: 0,
-            child: GestureDetector(
-              onTap: () => Navigator.maybePop(context),
-              child: const Icon(
-                Icons.close_rounded,
-                size: 22,
-                color: Colors.white,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTitle() {
+    final sw = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: _toggleAudio,
+            child: _AudioBtn(sw: sw, isPlaying: _isPlayingAudio),
+          ),
+          SizedBox(width: sw * 0.03),
+          Expanded(
+            child: Text(
+              'Arma  la imagen y descubre qué está haciendo Pancho.',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: (sw * 0.055).clamp(18.0, 38.0),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF424242),
+                height: 1.3,
               ),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final w = constraints.maxWidth;
-        final titleSize = (w * 0.058).clamp(16.0, 23.0);
-        final bodySize = (w * 0.038).clamp(12.0, 15.0);
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'Rompecabezas de Pancho',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: titleSize,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
-                    letterSpacing: 0,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: _toggleAudio,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: _isPlayingAudio
-                            ? _kOrange.withValues(alpha: 0.25)
-                            : _kOrange.withValues(alpha: 0.14),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _isPlayingAudio
-                              ? _kOrange
-                              : _kOrange.withValues(alpha: 0.40),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Icon(
-                        _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up_rounded,
-                        color: _kOrange,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Arma la imagen y descubre qué está haciendo Pancho.',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: bodySize,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF555555),
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -698,20 +652,15 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
-  Widget _buildTray(double boardSide) {
-    // Escalar piezas del tray proporcionalmente al tablero
-    // Referencia: boardSide 380 → pieza 68×54
-    final pieceW = (boardSide * 0.179).clamp(48.0, 80.0);
-    final pieceH = (boardSide * 0.142).clamp(38.0, 64.0);
-
-    if (_tray.isEmpty) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildTray(double boardSide,
+      {double trayH = 180, double pieceSize = 70}) {
+    if (_tray.isEmpty) return const SizedBox.shrink();
 
     return Container(
       key: const ValueKey('tray'),
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      height: trayH,
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: _kTrayBg,
         borderRadius: BorderRadius.circular(22),
@@ -724,11 +673,21 @@ class _PuzzleScreenState extends State<PuzzleScreen>
           ),
         ],
       ),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        alignment: WrapAlignment.center,
-        children: _tray.map((p) => _buildTrayPiece(p, pieceW, pieceH)).toList(),
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 1.0,
+        ),
+        itemCount: _tray.length,
+        itemBuilder: (ctx, i) => LayoutBuilder(
+          builder: (ctx2, c) =>
+              _buildTrayPiece(_tray[i], c.maxWidth, c.maxHeight),
+        ),
       ),
     );
   }
@@ -783,4 +742,35 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
+      ),
+    );
+  }
 }

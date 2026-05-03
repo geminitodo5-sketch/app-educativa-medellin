@@ -71,170 +71,200 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
             ),
 
             SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 10),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final screen = MediaQuery.of(context);
+                  final sw = screen.size.width;
+                  final sh = screen.size.height;
+                  final isTablet = sw >= 600;
+                  final headerHPadding = isTablet ? 40.0 : 16.0;
+                  final barraHPadding = isTablet ? 80.0 : 40.0;
 
-                  // Fila Superior: Volver + Sync Status
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            vm.commandVolver();
-                            Navigator.of(context).maybePop();
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_rounded,
-                            size: 36,
-                            color: Colors.black,
+                  // Altura dinámica: adapta a cualquier pantalla
+                  final headerMin = sh * 0.20;
+                  final headerMax = sh * 0.26;
+
+                  return CustomScrollView(
+                    slivers: [
+                      // ── Encabezado sticky ──────────────────────────────
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _HeaderDelegate(
+                          minHeight: headerMin,
+                          maxHeight: headerMax,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 10),
+                                // Fila Superior: Volver + Sync Status
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: headerHPadding),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          vm.commandVolver();
+                                          Navigator.of(context).maybePop();
+                                        },
+                                        child: Icon(
+                                          Icons.arrow_back_rounded,
+                                          size: isTablet ? 44 : 36,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      syncState.when(
+                                        data: (count) => Icon(
+                                          count > 0
+                                              ? Icons.sync_rounded
+                                              : Icons.cloud_done_rounded,
+                                          color: Colors.black45,
+                                          size: isTablet ? 30 : 24,
+                                        ),
+                                        error: (_, __) => const Icon(
+                                          Icons.cloud_off_rounded,
+                                          color: Colors.redAccent,
+                                        ),
+                                        loading: () => const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 6),
+
+                                // Título
+                                Text(
+                                  'Matemáticas',
+                                  style: TextStyle(
+                                    fontFamily: 'Hiruko',
+                                    fontSize: isTablet ? 52 : 38,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                if (estudiante != null)
+                                  Text(
+                                    'Hola, ${estudiante.nombre}',
+                                    style: TextStyle(
+                                      fontFamily: 'Hiruko',
+                                      fontSize: isTablet ? 28 : 22,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+
+                                // Barra de progreso
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: barraHPadding,
+                                    vertical: 4,
+                                  ),
+                                  child: _BarraProgreso(
+                                    porcentaje: vm.progresoTotal,
+                                    color: const Color(0xFF3475F7),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        // Indicador de Sincronización Offline (Base de Datos)
-                        syncState.when(
-                          data: (count) => Icon(
-                            count > 0
-                                ? Icons.sync_rounded
-                                : Icons.cloud_done_rounded,
-                            color: Colors.black45,
-                            size: 24,
-                          ),
-                          error: (_, __) => const Icon(
-                            Icons.cloud_off_rounded,
-                            color: Colors.redAccent,
-                          ),
-                          loading: () => const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Título
-                  const Text(
-                    'Matemáticas',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 38,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black,
-                    ),
-                  ),
-                  if (estudiante != null)
-                    Text(
-                      'Hola, ${estudiante.nombre}',
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w600,
                       ),
-                    ),
 
-                  // Barra de progreso real (actividades completadas / total)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 4,
-                    ),
-                    child: _BarraProgreso(
-                      porcentaje: vm.progresoTotal,
-                      color: const Color(0xFF3475F7),
-                    ),
-                  ),
+                      // ── Contenido scrolleable ──────────────────────────
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: sh * 0.005),
+                      ),
+                      SliverPadding(
+                        padding: EdgeInsets.symmetric(horizontal: isTablet ? 60.0 : 20.0),
+                        sliver: SliverToBoxAdapter(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Pollo detrás
+                              Positioned(
+                                top: -(sh * 0.03),
+                                left: 10,
+                                child: Image.asset(
+                                  'assets/images/avatares/pollo feliz 2 (2).png',
+                                  width: sh * 0.09,
+                                  errorBuilder: (ctx, e, _) => const SizedBox(),
+                                ),
+                              ),
 
-                  const SizedBox(height: 12),
+                              Column(
+                                children: [
+                                  SizedBox(height: sh * 0.06),
+                                  _BotonMateria(
+                                    rutaIcono:
+                                        'assets/images/areas/matematicas/Group 40 (1) (1).png',
+                                    texto: 'Los números',
+                                    completado: _estaCompletado(vm, 'Los números'),
+                                    botonHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const DescubreNumerosView(),
+                                        ),
+                                      );
+                                      ref
+                                          .read(matematicasViewModelProvider)
+                                          .commandCargarProgreso();
+                                    },
+                                  ),
 
-                  // Botones + Pollo
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Pollo detrás
-                        Positioned(
-                          top: -18,
-                          left: 10,
-                          child: Image.asset(
-                            'assets/images/avatares/pollo feliz 2 (2).png',
-                            width: 80,
-                            errorBuilder: (ctx, e, _) => const SizedBox(),
+                                  SizedBox(height: sh * 0.018),
+                                  _BotonMateria(
+                                    rutaIcono:
+                                        'assets/images/areas/matematicas/_ (1) (1).png',
+                                    texto: 'Quien tiene más',
+                                    completado: _estaCompletado(
+                                      vm,
+                                      'Quien tiene más',
+                                    ),
+                                    botonHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const ComparacionCantidadesView(),
+                                        ),
+                                      );
+                                      ref.read(matematicasViewModelProvider).commandCargarProgreso();
+                                    },
+                                  ),
+                                  SizedBox(height: sh * 0.018),
+                                  _BotonMateria(
+                                    rutaIcono:
+                                        'assets/images/areas/matematicas/Group 41 (1) (2).png',
+                                    texto: 'Sumar',
+                                    completado: _estaCompletado(vm, 'Sumar'),
+                                    botonHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const SumarPatronview(),
+                                        ),
+                                      );
+                                      ref.read(matematicasViewModelProvider).commandCargarProgreso();
+                                    },
+                                  ),
+                                  const SizedBox(height: 200),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-
-                        Column(
-                          children: [
-                            const SizedBox(height: 55),
-                            _BotonMateria(
-                              rutaIcono:
-                                  'assets/images/areas/matematicas/Group 40 (1) (1).png',
-                              texto: 'Los números',
-                              completado: _estaCompletado(vm, 'Los números'),
-                              onTap: () async {
-                                // Iniciamos la secuencia de fases
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const DescubreNumerosView(),
-                                  ),
-                                );
-                                // REFRESCAR: Al regresar de 'Terminado', actualizamos la UI con la DB
-                                ref
-                                    .read(matematicasViewModelProvider)
-                                    .commandCargarProgreso();
-                              },
-                            ),
-
-                            const SizedBox(height: 14),
-                            _BotonMateria(
-                              rutaIcono:
-                                  'assets/images/areas/matematicas/_ (1) (1).png',
-                              texto: 'Quien tiene más',
-                              completado: _estaCompletado(
-                                vm,
-                                'Quien tiene más',
-                              ),
-                              onTap: () async {
-                                // Iniciamos la secuencia de "Quién tiene más"
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const ComparacionCantidadesView(),
-                                  ),
-                                );
-                                // Al volver de la pantalla de éxito, refrescamos el progreso
-                                ref.read(matematicasViewModelProvider).commandCargarProgreso();
-                              },
-                            ),
-                            const SizedBox(height: 14),
-                            _BotonMateria(
-                              rutaIcono:
-                                  'assets/images/areas/matematicas/Group 41 (1) (2).png',
-                              texto: 'Sumar',
-                              completado: _estaCompletado(vm, 'Sumar'),
-                              onTap: () async {
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const SumarPatronview(),
-                                  ),
-                                );
-                                ref.read(matematicasViewModelProvider).commandCargarProgreso();
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(),
-                ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -267,17 +297,18 @@ class _BarraProgreso extends StatelessWidget {
             const Text(
               'Progreso',
               style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                color: Colors.black54,
+                fontFamily: 'Hiruko',
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
             ),
             Text(
               '${porcentaje.toInt()}%',
               style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+                fontFamily: 'Hiruko',
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
                 color: Colors.black87,
               ),
             ),
@@ -298,18 +329,53 @@ class _BarraProgreso extends StatelessWidget {
   }
 }
 
-// ─── Botón de lección ──────────────────────────────────────────
+// ─── Delegate para encabezado sticky ──────────────────────────
+class _HeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  const _HeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_HeaderDelegate oldDelegate) =>
+      maxHeight != oldDelegate.maxHeight ||
+      minHeight != oldDelegate.minHeight ||
+      child != oldDelegate.child;
+}
+
 class _BotonMateria extends StatefulWidget {
   final String rutaIcono;
   final String texto;
   final bool completado;
   final VoidCallback onTap;
+  final double botonHeight;
 
   const _BotonMateria({
     required this.rutaIcono,
     required this.texto,
     required this.completado,
     required this.onTap,
+    this.botonHeight = 84,
   });
 
   @override
@@ -345,7 +411,7 @@ class _BotonMateriaState extends State<_BotonMateria>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          height: 84,
+          height: widget.botonHeight,
           decoration: BoxDecoration(
             color: const Color(0xFF3475F7),
             borderRadius: BorderRadius.circular(18),
@@ -362,7 +428,7 @@ class _BotonMateriaState extends State<_BotonMateria>
               // Icono
               Container(
                 margin: const EdgeInsets.all(8),
-                width: 68,
+                width: widget.botonHeight * 0.78,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -372,10 +438,10 @@ class _BotonMateriaState extends State<_BotonMateria>
                 child: Image.asset(
                   widget.rutaIcono,
                   fit: BoxFit.contain,
-                  errorBuilder: (ctx, e, _) => const Icon(
+                  errorBuilder: (ctx, e, _) => Icon(
                     Icons.calculate_rounded,
-                    color: Color(0xFF3475F7),
-                    size: 32,
+                    color: const Color(0xFF3475F7),
+                    size: widget.botonHeight * 0.38,
                   ),
                 ),
               ),
@@ -385,9 +451,9 @@ class _BotonMateriaState extends State<_BotonMateria>
                   child: Text(
                     widget.texto,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Hiruko',
-                      fontSize: 21,
+                      fontSize: (widget.botonHeight * 0.25).clamp(16.0, 26.0),
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
@@ -398,15 +464,15 @@ class _BotonMateriaState extends State<_BotonMateria>
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: widget.completado
-                    ? const Icon(
+                    ? Icon(
                         Icons.check_circle_rounded,
                         color: Colors.white,
-                        size: 28,
+                        size: widget.botonHeight * 0.33,
                       )
-                    : const Icon(
+                    : Icon(
                         Icons.arrow_forward_ios_rounded,
                         color: Colors.white,
-                        size: 22,
+                        size: widget.botonHeight * 0.26,
                       ),
               ),
             ],

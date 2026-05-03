@@ -448,15 +448,24 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
                   const SizedBox(height: 4),
                   const Text(
                     '¡Tarjetas!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildIndicador(),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: (_nivel + 1) / 3,
+                      minHeight: 8,
+                      backgroundColor: Colors.white30,
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -478,26 +487,40 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Instrucción — toca para reproducir el audio
-                      GestureDetector(
-                        onTap: () => _play(_audJ3),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.volume_up,
-                              color: Colors.black87,
-                              size: 22,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () => _play(_audJ3),
+                            child: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEDE7F6),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.volume_up_rounded,
+                                  color: Color(0xFF7B2FBE),
+                                  size: 30,
+                                ),
+                              ),
                             ),
-                            SizedBox(width: 8),
-                            Text(
+                          ),
+                          const SizedBox(width: 14),
+                          const Expanded(
+                            child: Text(
                               'Selecciona  la pareja',
                               style: TextStyle(
                                 fontFamily: 'Hiruko',
-                                fontSize: 16,
-                                color: Colors.black87,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF3E2000),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
 
                       // Mensaje preview
@@ -511,7 +534,8 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
                                   '¡Memoriza  las tarjetas!',
                                   style: TextStyle(
                                     fontFamily: 'Hiruko',
-                                    fontSize: 13,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
                                     color: Colors.purple.shade300,
                                   ),
                                 ),

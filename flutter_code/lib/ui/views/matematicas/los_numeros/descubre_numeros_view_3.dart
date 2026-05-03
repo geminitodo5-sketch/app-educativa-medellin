@@ -95,13 +95,20 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
   }
 
   void _showFeedbackSheet(bool esCorrecto, dynamic notifier) {
+    final mq       = MediaQuery.of(context);
+    final sw       = mq.size.width;
+    final isTablet = sw >= 600;
+
     showModalBottomSheet(
       context: context,
       isDismissible: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         return Container(
-          padding: const EdgeInsets.all(30),
+          padding: EdgeInsets.symmetric(
+            horizontal: isTablet ? sw * 0.08 : 26,
+            vertical: 26,
+          ),
           decoration: BoxDecoration(
             color: esCorrecto
                 ? const Color(0xFFD7FFD3)
@@ -121,24 +128,26 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                     color: esCorrecto
                         ? const Color(0xFF59E347)
                         : const Color(0xFFF65757),
-                    size: 40,
+                    size: isTablet ? 52 : 40,
                   ),
-                  const SizedBox(width: 15),
-                  Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                  SizedBox(width: isTablet ? 20 : 14),
+                  Flexible(
+                    child: Text(
+                      esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
+                      style: TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: isTablet ? 30 : 22,
+                        fontWeight: FontWeight.bold,
+                        color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: isTablet ? 28 : 18),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: isTablet ? 64 : 52,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: esCorrecto
@@ -162,11 +171,11 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                   },
                   child: Text(
                     esCorrecto ? 'Continuar' : 'Reintentar',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: isTablet ? 22 : 18,
                     ),
                   ),
                 ),
@@ -211,29 +220,35 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
       }
     });
 
+    final mq       = MediaQuery.of(context);
+    final sw       = mq.size.width;
+    final sh       = mq.size.height;
+    final isTablet = sw >= 600;
+    final hPad     = isTablet ? sw * 0.06 : sw * 0.05;
+
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: Column(
-          children: [
-            _Header(onClose: () => Navigator.of(context).pop(), progreso: 1.0),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF5F7FF),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
+      body: Column(
+        children: [
+          _Header(onClose: () => Navigator.of(context).pop(), progreso: 1.0),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              clipBehavior: Clip.hardEdge,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF5F7FF),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
                 ),
+              ),
+              child: SafeArea(
+                top: false,
                 child: Column(
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                        padding: EdgeInsets.fromLTRB(hPad, sh * 0.025, hPad, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -242,7 +257,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                               onAudio: () =>
                                   _reproducirAudioNumero(vm.numeroObjetivo),
                             ),
-                            const SizedBox(height: 32),
+                            SizedBox(height: sh * 0.022),
                             Expanded(
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
@@ -290,8 +305,8 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -305,10 +320,15 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     required bool yaRespondioCorrectamente,
     required VoidCallback? onTap,
   }) {
-    // Escalar el globo para que quepa verticalmente con margen, máx tamaño original
-    const double floatMargin = 30.0; // espacio para la animación flotante
+    const double floatMargin = 28.0;
+
+    // Escalar usando tanto el alto como el ancho disponible:
+    // el globo no debe ser más alto que el área, ni más ancho que ~55% de la pantalla
     final double maxH = availableHeight - floatMargin * 2;
-    final double scale = (maxH / _BalloonWidget.kHeight).clamp(0.3, 1.0);
+    final double scaleByH = maxH / _BalloonWidget.kHeight;
+    final double scaleByW = (screenWidth * 0.55) / _BalloonWidget.kWidth;
+    final double scale = scaleByH < scaleByW ? scaleByH : scaleByW;
+
     final double scaledW = _BalloonWidget.kWidth * scale;
     final double scaledH = _BalloonWidget.kHeight * scale;
 
@@ -344,23 +364,31 @@ class _Header extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final syncState = ref.watch(syncListenerProvider);
+    final syncState  = ref.watch(syncListenerProvider);
     final estudiante = ref.watch(estudianteActivoProvider);
+    final mq         = MediaQuery.of(context);
+    final topPad     = mq.padding.top;
+    final sw         = mq.size.width;
+    final sh         = mq.size.height;
+    final isTablet   = sw >= 600;
+
+    final contentH = (sh * 0.13).clamp(80.0, 140.0);
+    final totalH   = topPad + contentH;
 
     return SizedBox(
-      height: 150,
+      height: totalH,
       width: double.infinity,
       child: Stack(
-        alignment: Alignment.center,
         children: [
+          // Icono sync — debajo del status bar
           Positioned(
-            top: 12,
+            top: topPad + 8,
             left: 20,
             child: syncState.when(
               data: (count) => Icon(
                 count > 0 ? Icons.sync_rounded : Icons.cloud_done_rounded,
                 color: Colors.white.withOpacity(0.7),
-                size: 22,
+                size: isTablet ? 26 : 22,
               ),
               error: (_, __) => const Icon(
                 Icons.cloud_off_rounded,
@@ -377,50 +405,59 @@ class _Header extends ConsumerWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 60),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Descubre  los números',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
-                  ),
-                ),
-                if (estudiante != null)
-                  Text(
-                    'Fase final: ¡Globos rápidos!',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      color: Colors.white.withOpacity(0.9),
+          // Título + subtítulo centrados
+          Positioned.fill(
+            top: topPad,
+            child: Align(
+              alignment: const Alignment(0, -0.2),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: isTablet ? 80 : 60),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Descubre  los números',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: isTablet ? 32 : 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.2,
+                      ),
                     ),
-                  ),
-              ],
+                    if (estudiante != null)
+                      Text(
+                        'Fase final: ¡Globos rápidos!',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: isTablet ? 14 : 12,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
+          // Botón cerrar
           Positioned(
-            top: 12,
+            top: topPad + 4,
             right: 8,
             child: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.close_rounded,
                 color: Colors.white,
-                size: 28,
+                size: isTablet ? 34 : 28,
               ),
               onPressed: onClose,
             ),
           ),
+          // Barra de progreso
           Positioned(
-            bottom: 15,
-            left: 45,
-            right: 45,
+            bottom: 14,
+            left: isTablet ? 60 : 40,
+            right: isTablet ? 60 : 40,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
@@ -429,7 +466,7 @@ class _Header extends ConsumerWidget {
                 valueColor: const AlwaysStoppedAnimation<Color>(
                   Color(0xFF59E347),
                 ),
-                minHeight: 10,
+                minHeight: isTablet ? 12 : 10,
               ),
             ),
           ),
@@ -447,8 +484,22 @@ class _InstruccionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mq       = MediaQuery.of(context);
+    final sw       = mq.size.width;
+    final sh       = mq.size.height;
+    final isTablet = sw >= 600;
+
+    final iconSize  = (sh * 0.062).clamp(40.0, 72.0);
+    final fontSize  = (sw * 0.055).clamp(18.0, 40.0);
+    final numSize   = fontSize * 1.18;
+    final globoW    = (sw * 0.16).clamp(52.0, 90.0);
+    final globoH    = globoW * 1.28;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: EdgeInsets.symmetric(
+        horizontal: isTablet ? 18 : 14,
+        vertical: (sh * 0.016).clamp(10.0, 18.0),
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -465,49 +516,50 @@ class _InstruccionCard extends StatelessWidget {
           GestureDetector(
             onTap: onAudio,
             child: Container(
-              width: 48,
-              height: 48,
+              width: iconSize,
+              height: iconSize,
               decoration: BoxDecoration(
                 color: const Color(0xFFEEF2FF),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.volume_up_rounded,
-                color: Color(0xFF3475F7),
-                size: 26,
+                color: const Color(0xFF3475F7),
+                size: iconSize * 0.54,
               ),
             ),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: isTablet ? 16 : 12),
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E293B),
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF1E293B),
                   height: 1.3,
                 ),
                 children: [
                   const TextSpan(text: 'Presiona el globo cuando salga el '),
                   TextSpan(
                     text: '$numeroObjetivo',
-                    style: const TextStyle(
-                      color: Color(0xFF3475F7),
+                    style: TextStyle(
+                      color: const Color(0xFF3475F7),
                       fontWeight: FontWeight.w800,
-                      fontSize: 20,
+                      fontSize: numSize,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: isTablet ? 12 : 8),
           Image.asset(
             'assets/images/actividades/matematicas/globo.png',
-            width: 70,
-            height: 90,
+            width: globoW,
+            height: globoH,
+            fit: BoxFit.contain,
           ),
         ],
       ),
@@ -545,23 +597,30 @@ class _BalloonWidget extends StatelessWidget {
                   fit: BoxFit.contain,
                 ),
               ),
-              Align(
-                alignment: const Alignment(0, -0.15),
-                child: Text(
-                  '$numero',
-                  style: TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1,
-                    shadows: const [
-                      Shadow(
-                        color: Colors.black26,
-                        offset: Offset(1, 2),
-                        blurRadius: 3,
-                      ),
-                    ],
+              // El hilo/cuerda ocupa ~22% inferior de la imagen.
+              // Centramos el número dentro del área del globo (78% superior).
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                height: constraints.maxHeight * 0.93,
+                child: Center(
+                  child: Text(
+                    '$numero',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1,
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black26,
+                          offset: Offset(1, 2),
+                          blurRadius: 3,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

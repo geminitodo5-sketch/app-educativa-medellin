@@ -1,4 +1,5 @@
 ﻿import 'dart:convert';
+import 'dart:math' show min;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -361,6 +362,7 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
     final state    = ref.watch(palabraLocaViewModelProvider);
     final notifier = ref.read(palabraLocaViewModelProvider.notifier);
     final pregunta = notifier.preguntaActual;
+    final sw = MediaQuery.of(context).size.width;
 
     ref.listen(palabraLocaViewModelProvider, (prev, next) {
       if (prev == null) return;
@@ -399,7 +401,10 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
         bottom: false,
         child: Column(
           children: [
-            _Header(onClose: () => Navigator.maybePop(context)),
+            _Header(
+              onClose: () => Navigator.maybePop(context),
+              progress: (state.preguntaIndex + 1) / PalabraLocaViewModel.preguntas.length,
+            ),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -412,47 +417,50 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
                 ),
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                      child: _InstruccionRow(
+                        texto: 'Elige si  la frase está bien escrita o mal escrita.',
+                        onPlay: _reproducirAudio,
+                      ),
+                    ),
                     Expanded(
-                      child: SingleChildScrollView(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 32),
-                            _InstruccionRow(
-                              texto:
-                                  'Elige si la frase está\nbien escrita o mal escrita.',
-                              onPlay: _reproducirAudio,
-                            ),
-                            const SizedBox(height: 36),
-                            AnimatedBuilder(
-                              animation: _shake,
-                              builder: (context, child) =>
-                                  Transform.translate(
-                                offset: Offset(_shake.value, 0),
-                                child: child,
+                      child: LayoutBuilder(
+                        builder: (ctx, constraints) {
+                          final imgSz = min(sw * 0.75, constraints.maxHeight * 0.70).clamp(160.0, 420.0);
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AnimatedBuilder(
+                                animation: _shake,
+                                builder: (context, child) => Transform.translate(
+                                  offset: Offset(_shake.value, 0),
+                                  child: child,
+                                ),
+                                child: _ImagenPregunta(
+                                  asset: pregunta.imagenAsset,
+                                  respuesta: state.respuesta,
+                                  scaleAnimation: _feedbackScale,
+                                  size: imgSz,
+                                ),
                               ),
-                              child: _ImagenPregunta(
-                                asset: pregunta.imagenAsset,
-                                respuesta: state.respuesta,
-                                scaleAnimation: _feedbackScale,
+                              SizedBox(height: (constraints.maxHeight * 0.06).clamp(12.0, 32.0)),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                child: _FraseTexto(
+                                  frase: pregunta.frase,
+                                  respuesta: state.respuesta,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 24),
-                            _FraseTexto(
-                              frase: pregunta.frase,
-                              respuesta: state.respuesta,
-                            ),
-                            const SizedBox(height: 48),
-                          ],
-                        ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                     if (!state.respondida)
                       _BotonesRespuesta(
                         onCorrecto: () => notifier.commandResponder(true),
-                        onIncorrecto: () =>
-                            notifier.commandResponder(false),
+                        onIncorrecto: () => notifier.commandResponder(false),
                       ),
                     const SizedBox(height: 28),
                   ],
@@ -472,37 +480,50 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
 
 class _Header extends StatelessWidget {
   final VoidCallback onClose;
-  const _Header({required this.onClose});
+  final double progress;
+  const _Header({required this.onClose, required this.progress});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180,
-      width: double.infinity,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Palabra   loca',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 0.3,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Palabra  loca',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.07).clamp(26.0, 46.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+                onPressed: onClose,
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-          Positioned(
-            top: 12,
-            right: 8,
-            child: IconButton(
-              icon: const Icon(Icons.close_rounded,
-                  color: Colors.white, size: 28),
-              onPressed: onClose,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -515,34 +536,58 @@ class _InstruccionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
           onTap: onPlay,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F4FF),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.volume_up_rounded,
-                color: Color(0xFF3475F7), size: 22),
-          ),
+          child: _AudioBtn(sw: sw),
         ),
-        const SizedBox(width: 10),
-        Text(
-          texto,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF444444),
-            height: 1.4,
+        SizedBox(width: (sw * 0.03).clamp(8.0, 16.0)),
+        Expanded(
+          child: Text(
+            texto,
+            style: TextStyle(
+              fontFamily: 'Hiruko',
+              fontSize: (sw * 0.065).clamp(20.0, 46.0),
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  const _AudioBtn({required this.sw});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFEEEE),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF65757).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        Icons.volume_up_rounded,
+        color: const Color(0xFFF65757),
+        size: sz * 0.55,
+      ),
     );
   }
 }
@@ -551,15 +596,19 @@ class _ImagenPregunta extends StatelessWidget {
   final String asset;
   final RespuestaEstado respuesta;
   final Animation<double> scaleAnimation;
+  final double size;
 
   const _ImagenPregunta({
     required this.asset,
     required this.respuesta,
     required this.scaleAnimation,
+    required this.size,
   });
 
   @override
   Widget build(BuildContext context) {
+    final sz = size;
+    final circleSz = sz * 1.11;
     return AnimatedBuilder(
       animation: scaleAnimation,
       builder: (context, child) {
@@ -573,8 +622,8 @@ class _ImagenPregunta extends StatelessWidget {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: respuesta != RespuestaEstado.ninguna ? 178 : 0,
-            height: respuesta != RespuestaEstado.ninguna ? 178 : 0,
+            width: respuesta != RespuestaEstado.ninguna ? circleSz : 0,
+            height: respuesta != RespuestaEstado.ninguna ? circleSz : 0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: respuesta == RespuestaEstado.correcta
@@ -594,12 +643,12 @@ class _ImagenPregunta extends StatelessWidget {
           ),
           Image.asset(
             asset,
-            width: 160,
-            height: 160,
+            width: sz,
+            height: sz,
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) => Container(
-              width: 160,
-              height: 160,
+              width: sz,
+              height: sz,
               decoration: BoxDecoration(
                 color: const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(20),
@@ -622,6 +671,7 @@ class _FraseTexto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     final Color color = respuesta == RespuestaEstado.correcta
         ? const Color(0xFF2E7D32)
         : respuesta == RespuestaEstado.incorrecta
@@ -631,11 +681,11 @@ class _FraseTexto extends StatelessWidget {
     return AnimatedDefaultTextStyle(
       duration: const Duration(milliseconds: 300),
       style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 22,
-        fontWeight: FontWeight.w800,
+        fontFamily: 'Hiruko',
+        fontSize: (sw * 0.085).clamp(26.0, 54.0),
+        fontWeight: FontWeight.bold,
         color: color,
-        height: 1.35,
+        height: 1.3,
       ),
       child: Text(frase, textAlign: TextAlign.center),
     );
@@ -695,10 +745,11 @@ class _BotonOpcion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 52,
+        height: (sw * 0.13).clamp(46.0, 72.0),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),
@@ -713,9 +764,9 @@ class _BotonOpcion extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 16,
+            fontSize: (sw * 0.04).clamp(14.0, 22.0),
             fontWeight: FontWeight.w800,
             color: Colors.white,
           ),

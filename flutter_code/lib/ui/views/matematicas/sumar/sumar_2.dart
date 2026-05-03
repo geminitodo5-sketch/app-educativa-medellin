@@ -1,15 +1,14 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:math';
 import 'quien_tiene_mas_31.dart';
 
-const Color kColorAzulNumi = Color(0xFF3475F7);
-const Color kColorRojoNumi = Color(0xFFF65757);
+const Color kColorAzulNumi    = Color(0xFF3475F7);
+const Color kColorRojoNumi    = Color(0xFFF65757);
 const Color kColorNaranjaNumi = Color(0xFFEF9325);
-const Color kColorVerdeNumi = Color(0xFF59E347);
+const Color kColorVerdeNumi   = Color(0xFF59E347);
 
-// ─── Modelo de actividad aleatoria ─────────────────────────────────────────
 class _DatosActividad {
   final int cantidadA;
   final int cantidadB;
@@ -27,11 +26,9 @@ class _DatosActividad {
 
   factory _DatosActividad.generar() {
     final rng = Random();
-
-    final a = rng.nextInt(6) + 1; // 1..6
-    final b = rng.nextInt(6) + 1; // 1..6
+    final a = rng.nextInt(6) + 1;
+    final b = rng.nextInt(6) + 1;
     final correcto = a + b;
-
     final Set<int> distSet = {};
     while (distSet.length < 2) {
       final delta = rng.nextInt(2) + 1;
@@ -40,11 +37,9 @@ class _DatosActividad {
         distSet.add(candidato);
       }
     }
-
     final List<int> opciones = distSet.toList();
     final posCorrecta = rng.nextInt(3);
     opciones.insert(posCorrecta, correcto);
-
     return _DatosActividad(
       cantidadA: a,
       cantidadB: b,
@@ -54,7 +49,6 @@ class _DatosActividad {
   }
 }
 
-// ─── Pantalla principal ─────────────────────────────────────────────────────
 class PantallaSumaUvas extends ConsumerStatefulWidget {
   const PantallaSumaUvas({super.key});
 
@@ -97,88 +91,54 @@ class _PantallaSumaUvasState extends ConsumerState<PantallaSumaUvas> {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final sh = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: kColorAzulNumi,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const _HeaderSuma(),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(40)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      _InstruccionAudio(onPlay: _reproducirInstruccion),
-                      const Spacer(),
-                      _SeccionCajas(
-                        cantidadA: _datos.cantidadA,
-                        cantidadB: _datos.cantidadB,
-                      ),
-                      const Spacer(),
-                      Text(
-                        '${_datos.cantidadA}+${_datos.cantidadB}=?',
-                        style: const TextStyle(
-                          fontFamily: 'Hiruko',
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Spacer(),
-                      _OpcionesRespuesta(
-                        datos: _datos,
-                        onRegenerar: _regenerar,
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Header ──────────────────────────────────────────────────────────────────
-class _HeaderSuma extends StatelessWidget {
-  const _HeaderSuma();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100,
-      width: double.infinity,
-      child: Stack(
+      body: Column(
         children: [
-          const Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Sumar',
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
+          _HeaderSuma(onClose: () => Navigator.pop(context)),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
                 color: Colors.white,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(40)),
               ),
-            ),
-          ),
-          Positioned(
-            top: 10,
-            right: 15,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 30),
-              onPressed: () => Navigator.pop(context),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: (sw * 0.06).clamp(16.0, 30.0),
+                  vertical: (sh * 0.035).clamp(16.0, 40.0),
+                ),
+                child: Column(
+                  children: [
+                    _InstruccionAudio(onPlay: _reproducirInstruccion),
+                    const Spacer(),
+                    _SeccionCajas(
+                      cantidadA: _datos.cantidadA,
+                      cantidadB: _datos.cantidadB,
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${_datos.cantidadA}+${_datos.cantidadB}=?',
+                      style: TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: (sw * 0.12).clamp(36.0, 85.0),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const Spacer(),
+                    _OpcionesRespuesta(
+                      datos: _datos,
+                      onRegenerar: _regenerar,
+                    ),
+                    SizedBox(height: sh * 0.025),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -187,27 +147,102 @@ class _HeaderSuma extends StatelessWidget {
   }
 }
 
-// ─── Instrucción con audio ────────────────────────────────────────────────────
+class _HeaderSuma extends StatelessWidget {
+  final VoidCallback onClose;
+  const _HeaderSuma({required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final sh = MediaQuery.of(context).size.height;
+    final statusBar = MediaQuery.of(context).padding.top;
+    final headerH = (sh * 0.12).clamp(70.0, 110.0);
+
+    return SizedBox(
+      height: statusBar + headerH,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: 28,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Sumar',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.085).clamp(28.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: statusBar + 4,
+            right: 8,
+            child: IconButton(
+              icon: Icon(
+                Icons.close,
+                color: Colors.white,
+                size: (sw * 0.075).clamp(24.0, 36.0),
+              ),
+              onPressed: onClose,
+            ),
+          ),
+          Positioned(
+            bottom: 12,
+            left: sw * 0.08,
+            right: sw * 0.08,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: const LinearProgressIndicator(
+                value: 2 / 3,
+                minHeight: 8,
+                backgroundColor: Colors.white30,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _InstruccionAudio extends StatelessWidget {
   final VoidCallback onPlay;
   const _InstruccionAudio({required this.onPlay});
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Row(
       children: [
-        IconButton(
-          icon: const Icon(Icons.volume_up_outlined, size: 50),
-          color: Colors.black87,
-          onPressed: onPlay,
+        GestureDetector(
+          onTap: onPlay,
+          child: Container(
+            width: (sw * 0.13).clamp(44.0, 60.0),
+            height: (sw * 0.13).clamp(44.0, 60.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEEF2FF),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              Icons.volume_up_rounded,
+              color: const Color(0xFF3475F7),
+              size: (sw * 0.07).clamp(24.0, 34.0),
+            ),
+          ),
         ),
-        const SizedBox(width: 15),
-        const Expanded(
+        SizedBox(width: sw * 0.03),
+        Expanded(
           child: Text(
             'Suma  las uvas de  las dos cajas',
             style: TextStyle(
               fontFamily: 'Hiruko',
-              fontSize: 22,
+              fontSize: (sw * 0.055).clamp(18.0, 40.0),
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
@@ -218,7 +253,6 @@ class _InstruccionAudio extends StatelessWidget {
   }
 }
 
-// ─── Sección de cajas ─────────────────────────────────────────────────────────
 class _SeccionCajas extends StatelessWidget {
   final int cantidadA;
   final int cantidadB;
@@ -226,37 +260,40 @@ class _SeccionCajas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _CajaFruta(color: kColorRojoNumi, cantidad: cantidadA),
-        const SizedBox(width: 20),
+        SizedBox(width: sw * 0.05),
         _CajaFruta(color: kColorNaranjaNumi, cantidad: cantidadB),
       ],
     );
   }
 }
 
-// ─── Caja individual con uvas adaptativas ────────────────────────────────────
 class _CajaFruta extends StatelessWidget {
   final Color color;
   final int cantidad;
   const _CajaFruta({required this.color, required this.cantidad});
 
-  // ✅ Tamaño de uva se adapta según cuántas hay
-  double get _tamanoUva {
-    if (cantidad <= 2) return 55;
-    if (cantidad <= 4) return 48;
-    if (cantidad <= 6) return 38;
-    if (cantidad <= 9) return 30;
-    return 24; // 10..12
+  double _tamanoUva(double boxSize) {
+    if (cantidad <= 2) return boxSize * 0.38;
+    if (cantidad <= 4) return boxSize * 0.33;
+    if (cantidad <= 6) return boxSize * 0.26;
+    if (cantidad <= 9) return boxSize * 0.21;
+    return boxSize * 0.17;
   }
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final boxSize = (sw * 0.38).clamp(100.0, 320.0);
+    final uvaSize = _tamanoUva(boxSize);
+
     return Container(
-      width: 145,
-      height: 145,
+      width: boxSize,
+      height: boxSize,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(20),
@@ -270,14 +307,22 @@ class _CajaFruta extends StatelessWidget {
                 spacing: 4,
                 runSpacing: 4,
                 alignment: WrapAlignment.center,
-                runAlignment: WrapAlignment.center, // ✅ centra filas verticalmente
+                runAlignment: WrapAlignment.center,
                 children: List.generate(
                   cantidad,
-                  (index) => Image.asset(
-                    'assets/images/actividades/matematicas/mora.png',
-                    width: _tamanoUva,
-                    height: _tamanoUva,
-                    fit: BoxFit.contain,
+                  (index) => ColorFiltered(
+                    colorFilter: const ColorFilter.matrix([
+                      1.5, 0, 0, 0, -64,
+                      0, 1.5, 0, 0, -64,
+                      0, 0, 1.5, 0, -64,
+                      0, 0, 0, 1, 0,
+                    ]),
+                    child: Image.asset(
+                      'assets/images/actividades/matematicas/mora.png',
+                      width: uvaSize,
+                      height: uvaSize,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -288,9 +333,9 @@ class _CajaFruta extends StatelessWidget {
             right: 12,
             child: Text(
               '$cantidad',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 26,
+                fontSize: (sw * 0.065).clamp(20.0, 44.0),
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -302,11 +347,11 @@ class _CajaFruta extends StatelessWidget {
   }
 }
 
-// ─── Opciones de respuesta ────────────────────────────────────────────────────
 class _OpcionesRespuesta extends StatelessWidget {
   final _DatosActividad datos;
   final VoidCallback onRegenerar;
-  const _OpcionesRespuesta({required this.datos, required this.onRegenerar});
+  const _OpcionesRespuesta(
+      {required this.datos, required this.onRegenerar});
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +368,6 @@ class _OpcionesRespuesta extends StatelessWidget {
   }
 }
 
-// ─── Botón de opción ──────────────────────────────────────────────────────────
 class _BotonOpcion extends StatelessWidget {
   final String numero;
   final VoidCallback onTap;
@@ -331,11 +375,16 @@ class _BotonOpcion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final sh = MediaQuery.of(context).size.height;
+    final btnW = (sw * 0.22).clamp(65.0, 150.0);
+    final btnH = (sh * 0.09).clamp(58.0, 110.0);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 80,
-        height: 70,
+        width: btnW,
+        height: btnH,
         decoration: BoxDecoration(
           color: kColorAzulNumi,
           borderRadius: BorderRadius.circular(15),
@@ -343,9 +392,9 @@ class _BotonOpcion extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           numero,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 24,
+            fontSize: (sw * 0.06).clamp(20.0, 44.0),
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -355,7 +404,6 @@ class _BotonOpcion extends StatelessWidget {
   }
 }
 
-// ─── Bottom sheet de feedback ─────────────────────────────────────────────────
 void _showFeedbackSheet(
     BuildContext context, bool esCorrecto, VoidCallback onRegenerar) {
   showModalBottomSheet(
@@ -363,8 +411,9 @@ void _showFeedbackSheet(
     isDismissible: false,
     backgroundColor: Colors.transparent,
     builder: (context) {
+      final sw = MediaQuery.of(context).size.width;
       return Container(
-        padding: const EdgeInsets.all(30),
+        padding: EdgeInsets.all((sw * 0.07).clamp(20.0, 35.0)),
         decoration: BoxDecoration(
           color: esCorrecto
               ? const Color(0xFFD7FFD3)
@@ -382,24 +431,24 @@ void _showFeedbackSheet(
                 Icon(
                   esCorrecto ? Icons.check_circle : Icons.cancel,
                   color: esCorrecto ? kColorVerdeNumi : kColorRojoNumi,
-                  size: 40,
+                  size: (sw * 0.1).clamp(32.0, 48.0),
                 ),
-                const SizedBox(width: 15),
+                SizedBox(width: sw * 0.04),
                 Text(
                   esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
                   style: TextStyle(
                     fontFamily: 'Hiruko',
-                    fontSize: 24,
+                    fontSize: (sw * 0.06).clamp(20.0, 28.0),
                     fontWeight: FontWeight.bold,
                     color: esCorrecto ? Colors.green[900] : Colors.red[900],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: sw * 0.05),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: (sw * 0.13).clamp(48.0, 60.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
@@ -420,11 +469,11 @@ void _showFeedbackSheet(
                 },
                 child: Text(
                   esCorrecto ? 'Continuar' : 'Reintentar',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: (sw * 0.045).clamp(16.0, 22.0),
                   ),
                 ),
               ),

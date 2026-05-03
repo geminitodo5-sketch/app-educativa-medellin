@@ -33,7 +33,8 @@ const _listaAnimales = [
 
 class PantallaClasificacionAnimales extends ConsumerStatefulWidget {
   final VoidCallback onCompletado;
-  const PantallaClasificacionAnimales({super.key, required this.onCompletado});
+  final double progress;
+  const PantallaClasificacionAnimales({super.key, required this.onCompletado, this.progress = 2 / 3});
 
   @override
   ConsumerState<PantallaClasificacionAnimales> createState() =>
@@ -95,12 +96,25 @@ class _PantallaClasificacionAnimalesState
     ref.watch(animalesClasificacionViewModelProvider);
     final animal = _animalesAleatorios[_indiceActual];
 
+    final sw = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFF3DCC52),
       body: SafeArea(
         child: Column(
           children: [
             const _HeaderActividad(titulo: "Animales"),
+            Padding(
+              padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 14),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: widget.progress,
+                  minHeight: 8,
+                  backgroundColor: Colors.white30,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                ),
+              ),
+            ),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -113,38 +127,50 @@ class _PantallaClasificacionAnimalesState
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      _InstruccionAudio(
-                        texto: "Decide si estos animales son domésticos o salvajes",
-                        onReproducir: _reproducirInstruccion,
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                        animal['imagen']!,
-                        height: 220,
-                        fit: BoxFit.contain,
-                      ),
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: LayoutBuilder(
+                    builder: (ctx, constraints) {
+                      final btnW = (constraints.maxWidth * 0.44).clamp(100.0, 360.0);
+                      return Column(
                         children: [
-                          _BotonOpcion(
-                            imagenPath: 'assets/images/actividades/ciencias_naturales/boton_domestico.png',
-                            onPressed: () => _responder('domestico'),
+                          _InstruccionAudio(
+                            texto: "Decide si estos animales son domésticos o salvajes",
+                            onReproducir: _reproducirInstruccion,
                           ),
-                          _BotonOpcion(
-                            imagenPath: 'assets/images/actividades/ciencias_naturales/boton_salvaje.png',
-                            onPressed: () => _responder('salvaje'),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Image.asset(
+                                animal['imagen']!,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _BotonOpcion(
+                                label: 'Doméstico',
+                                color: kColorAzulNumi,
+                                width: btnW,
+                                onPressed: () => _responder('domestico'),
+                              ),
+                              _BotonOpcion(
+                                label: 'Salvaje',
+                                color: kColorVerdeNumi,
+                                width: btnW,
+                                onPressed: () => _responder('salvaje'),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _IndicadorProgreso(
+                            indiceActual: _indiceActual,
+                            total: _animalesAleatorios.length,
+                          ),
+                          const SizedBox(height: 8),
                         ],
-                      ),
-                      const Spacer(),
-                      _IndicadorProgreso(
-                        indiceActual: _indiceActual,
-                        total: _animalesAleatorios.length,
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -205,36 +231,37 @@ class _InstruccionAudio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
           GestureDetector(
             onTap: onReproducir,
             child: Container(
-              width: 36,
-              height: 36,
+              width: (sw * 0.13).clamp(44.0, 60.0),
+              height: (sw * 0.13).clamp(44.0, 60.0),
               decoration: BoxDecoration(
                 color: const Color(0xFFE8F5E9),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.volume_up_rounded,
-                color: Color(0xFF3DCC52),
-                size: 22,
+                color: const Color(0xFF3DCC52),
+                size: (sw * 0.07).clamp(24.0, 34.0),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: sw * 0.03),
           Expanded(
             child: Text(
               texto,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: Color(0xFF424242),
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: (sw * 0.065).clamp(20.0, 46.0),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF424242),
                 height: 1.3,
               ),
             ),
@@ -246,18 +273,45 @@ class _InstruccionAudio extends StatelessWidget {
 }
 
 class _BotonOpcion extends StatelessWidget {
-  final String imagenPath;
+  final String label;
+  final Color color;
   final VoidCallback onPressed;
-  const _BotonOpcion({required this.imagenPath, required this.onPressed});
+  final double width;
+  const _BotonOpcion({
+    required this.label,
+    required this.color,
+    required this.onPressed,
+    required this.width,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(20),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        child: Image.asset(imagenPath, width: 155, fit: BoxFit.contain),
+      child: Container(
+        width: width,
+        padding: EdgeInsets.symmetric(vertical: (width * 0.1).clamp(10.0, 32.0)),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular((width * 0.12).clamp(14.0, 30.0)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.4),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Hiruko',
+            fontSize: (width * 0.13).clamp(14.0, 36.0),
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
       ),
     );
   }

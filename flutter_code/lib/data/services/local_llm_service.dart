@@ -70,6 +70,8 @@ class LocalLlmService {
   // ──────────────────────────────────────────────────────────────
   //  Descarga el modelo Gemma 3n E2B desde Firebase y lo activa.
   //  Se llama automáticamente al abrir la app por primera vez.
+  //  SmartDownloader (interno de flutter_gemma) activa foreground
+  //  service para archivos >500 MB, evitando el límite de WorkManager.
   // ──────────────────────────────────────────────────────────────
   Future<void> descargarModelo({
     required void Function(double) onProgress,

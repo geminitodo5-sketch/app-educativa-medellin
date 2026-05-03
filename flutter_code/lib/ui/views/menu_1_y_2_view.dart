@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/musica_provider.dart';
 import '../../main.dart' show routeObserver;
@@ -76,6 +77,12 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
     final avatar = estudiante?.personaje ?? widget.avatar;
     final nivel = estudiante?.grado ?? widget.nivel;
 
+    // ── Escala responsiva ────────────────────────────────────
+    final screen = MediaQuery.of(context).size;
+    // Factor de escala dinámico: referencia 800px de alto (celular típico)
+    // Se adapta automáticamente a cualquier pantalla — celular pequeño, grande o tablet
+    final double s = (screen.height / 800.0).clamp(0.85, 1.8);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -96,18 +103,18 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // ── Saludo ──────────────────────────────────────
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(
-                    left: 24,
-                    right: 24,
-                    top: 14,
-                    bottom: 4,
+                    left: 24 * s,
+                    right: 24 * s,
+                    top: 14 * s,
+                    bottom: 4 * s,
                   ),
                   child: Text(
                     '¡Hola!',
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 20,
+                      fontSize: 20 * s,
                       fontWeight: FontWeight.w500,
                       color: Colors.black87,
                     ),
@@ -116,15 +123,15 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
 
                 // ── Barra de perfil ─────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: 24 * s),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8 * s,
+                      vertical: 6 * s,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF3B74FF),
-                      borderRadius: BorderRadius.circular(40),
+                      borderRadius: BorderRadius.circular(40 * s),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.1),
@@ -137,13 +144,13 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
                       children: [
                         // Avatar
                         Container(
-                          width: 50,
-                          height: 50,
+                          width: 50 * s,
+                          height: 50 * s,
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.white,
                           ),
-                          padding: const EdgeInsets.all(4),
+                          padding: EdgeInsets.all(4 * s),
                           child: ClipOval(
                             child: Image.asset(
                               avatar == 'pollito'
@@ -157,14 +164,14 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12 * s),
                         // Nombre
                         Expanded(
                           child: Text(
                             nombre,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Hiruko',
-                              fontSize: 22,
+                              fontSize: 22 * s,
                               fontWeight: FontWeight.w800,
                               color: Colors.black,
                             ),
@@ -172,84 +179,106 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
                         ),
                         // Grado
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 6,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14 * s,
+                            vertical: 6 * s,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(20 * s),
                           ),
                           child: Text(
                             '$nivel° Grado',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Hiruko',
-                              fontSize: 16,
+                              fontSize: 16 * s,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8 * s),
                       ],
                     ),
                   ),
                 ),
 
-                // Espacio fijo para que el pollo nunca toque la barra de perfil
-                const SizedBox(height: 72),
-
-                // ── Tarjeta de materias (scrollable) ───────────
+                // ── Tarjeta de materias (centrada automáticamente) ─
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: 100),
-                    child: Stack(
-                      alignment: Alignment.topCenter,
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Pollito asomándose
-                        Positioned(
-                          top: -62,
-                          left: 32,
-                          child: Image.asset(
-                            'assets/images/bienvenida/pollo feliz 2 (2).png',
-                            width: 80,
-                            height: 80,
-                            errorBuilder: (ctx, e, _) => const SizedBox(),
-                          ),
-                        ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final navBarHeight = 70 * s + 20 * s;
+                      final availableHeight =
+                          constraints.maxHeight - navBarHeight;
 
-                        // Tarjeta blanca
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF6F6F6),
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.07),
-                                blurRadius: 20,
-                                offset: const Offset(0, 6),
+                      return SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: availableHeight,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 62 * s),
+                              Stack(
+                                alignment: Alignment.topCenter,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  // Pollito asomándose
+                                  Positioned(
+                                    top: -62 * s,
+                                    left: 32 * s,
+                                    child: Image.asset(
+                                      'assets/images/bienvenida/pollo feliz 2 (2).png',
+                                      width: 80 * s,
+                                      height: 80 * s,
+                                      errorBuilder: (ctx, e, _) =>
+                                          const SizedBox(),
+                                    ),
+                                  ),
+
+                                  // Tarjeta blanca
+                                  Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 20 * s),
+                                    padding: EdgeInsets.fromLTRB(
+                                        16 * s, 20 * s, 16 * s, 16 * s),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF6F6F6),
+                                      borderRadius:
+                                          BorderRadius.circular(28 * s),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black
+                                              .withValues(alpha: 0.07),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: progresoAsync.when(
+                                      loading: () => Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 40 * s),
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Color(0xFF3475F7),
+                                          ),
+                                        ),
+                                      ),
+                                      error: (e, _) =>
+                                          _buildMaterias(context, {}, s),
+                                      data: (progreso) =>
+                                          _buildMaterias(context, progreso, s),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          child: progresoAsync.when(
-                            loading: () => const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 40),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFF3475F7),
-                                ),
-                              ),
-                            ),
-                            error: (e, _) => _buildMaterias(context, {}),
-                            data: (progreso) =>
-                                _buildMaterias(context, progreso),
-                          ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -260,11 +289,12 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-              height: 70,
+              margin: EdgeInsets.only(
+                  left: 20 * s, right: 20 * s, bottom: 20 * s),
+              height: 70 * s,
               decoration: BoxDecoration(
                 color: const Color(0xFF6ED0E8),
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(40 * s),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
@@ -279,22 +309,21 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
                   // Inicio (ya estamos aquí — no hace nada)
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.home_rounded,
                       color: Colors.white,
-                      size: 34,
+                      size: 34 * s,
                     ),
                     tooltip: 'Inicio',
                   ),
-                  // Progreso (recarga las barras)
-                  IconButton(
-                    onPressed: () => ref.invalidate(menuProgresoProvider),
-                    icon: const Icon(
-                      Icons.bar_chart_rounded,
+                  // Numi decorativo
+                  Text(
+                    'numi',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 26 * s,
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
-                      size: 34,
                     ),
-                    tooltip: 'Actualizar progreso',
                   ),
                   // Configuración
                   IconButton(
@@ -303,10 +332,10 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
                         builder: (_) => const ConfiguracionView(),
                       ),
                     ),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.settings_rounded,
                       color: Colors.white,
-                      size: 34,
+                      size: 34 * s,
                     ),
                     tooltip: 'Configuración',
                   ),
@@ -319,7 +348,8 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
     );
   }
 
-  Widget _buildMaterias(BuildContext context, Map<String, double> progreso) {
+  Widget _buildMaterias(
+      BuildContext context, Map<String, double> progreso, double s) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -329,42 +359,47 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
           icono: 'assets/images/menu_materias/123_1.png',
           nombre: 'Matemáticas',
           porcentaje: progreso['matematicas'] ?? 0.0,
+          scale: s,
           onTap: () => _irA(context, const MatematicasView()),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12 * s),
         _MateriaRow(
           color: const Color(0xFF3DCC52),
           shadowColor: const Color(0xFF22A45D),
           icono: 'assets/images/menu_materias/planta_1.png',
           nombre: 'Ciencias',
           porcentaje: progreso['ciencias'] ?? 0.0,
+          scale: s,
           onTap: () => _irA(context, const CienciasView()),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12 * s),
         _MateriaRow(
           color: const Color(0xFFB83232),
           shadowColor: const Color(0xFF8B1A1A),
           icono: 'assets/images/menu_materias/alfabeto_1.png',
           nombre: 'Español',
           porcentaje: progreso['español'] ?? 0.0,
+          scale: s,
           onTap: () => _irA(context, const EspanolView()),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12 * s),
         _MateriaRow(
           color: const Color(0xFFF5A623),
           shadowColor: const Color(0xFFB8710A),
           icono: 'assets/images/menu_materias/globo_1.png',
           nombre: 'Sociales',
           porcentaje: progreso['sociales'] ?? 0.0,
+          scale: s,
           onTap: () => _irA(context, const CienciasSocialesView()),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12 * s),
         _MateriaRow(
           color: const Color(0xFF8B5CF6),
           shadowColor: const Color(0xFF6A3592),
           icono: 'assets/images/menu_materias/libros_1.png',
           nombre: 'Inglés',
           porcentaje: progreso['ingles'] ?? 0.0,
+          scale: s,
           onTap: () => _irA(context, const InglesView()),
         ),
       ],
@@ -388,6 +423,7 @@ class _MateriaRow extends StatefulWidget {
   final String icono;
   final String nombre;
   final double porcentaje; // 0..100
+  final double scale;
   final VoidCallback onTap;
 
   const _MateriaRow({
@@ -396,6 +432,7 @@ class _MateriaRow extends StatefulWidget {
     required this.icono,
     required this.nombre,
     required this.porcentaje,
+    required this.scale,
     required this.onTap,
   });
 
@@ -423,6 +460,7 @@ class _MateriaRowState extends State<_MateriaRow>
   @override
   Widget build(BuildContext context) {
     final pct = widget.porcentaje.clamp(0.0, 100.0);
+    final s = widget.scale;
 
     return GestureDetector(
       onTapDown: (_) => _ctrl.forward(),
@@ -436,40 +474,40 @@ class _MateriaRowState extends State<_MateriaRow>
         child: Container(
           decoration: BoxDecoration(
             color: widget.color,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(18 * s),
             boxShadow: [
               BoxShadow(
                 color: widget.shadowColor,
                 blurRadius: 0,
-                offset: const Offset(0, 5),
+                offset: Offset(0, 5 * s),
               ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10 * s),
             child: Row(
               children: [
                 // Icono en cuadro blanco
                 Container(
-                  width: 56,
-                  height: 56,
+                  width: 56 * s,
+                  height: 56 * s,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14 * s),
                   ),
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8 * s),
                   child: Image.asset(
                     widget.icono,
                     fit: BoxFit.contain,
                     errorBuilder: (ctx, e, _) => Icon(
                       Icons.school_rounded,
                       color: widget.color,
-                      size: 28,
+                      size: 28 * s,
                     ),
                   ),
                 ),
 
-                const SizedBox(width: 12),
+                SizedBox(width: 12 * s),
 
                 // Nombre + barra de progreso
                 Expanded(
@@ -481,9 +519,9 @@ class _MateriaRowState extends State<_MateriaRow>
                         children: [
                           Text(
                             widget.nombre,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Hiruko',
-                              fontSize: 18,
+                              fontSize: 18 * s,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
@@ -492,20 +530,21 @@ class _MateriaRowState extends State<_MateriaRow>
                             '${pct.toInt()}%',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 13,
+                              fontSize: 13 * s,
                               fontWeight: FontWeight.w600,
                               color: Colors.white.withValues(alpha: 0.9),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6 * s),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(6 * s),
                         child: LinearProgressIndicator(
                           value: pct / 100.0,
-                          minHeight: 8,
-                          backgroundColor: Colors.white.withValues(alpha: 0.3),
+                          minHeight: 8 * s,
+                          backgroundColor:
+                              Colors.white.withValues(alpha: 0.3),
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             Colors.white,
                           ),
@@ -515,13 +554,13 @@ class _MateriaRowState extends State<_MateriaRow>
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                SizedBox(width: 10 * s),
 
                 // Flecha
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: Colors.white,
-                  size: 18,
+                  size: 18 * s,
                 ),
               ],
             ),

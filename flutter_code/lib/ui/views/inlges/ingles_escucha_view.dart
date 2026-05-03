@@ -346,7 +346,7 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
                     alignment: Alignment.topRight,
@@ -362,15 +362,24 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                   const SizedBox(height: 4),
                   const Text(
                     '¡Aprende escuchando!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  _buildIndicador(),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: (_nivel + 1) / 3,
+                      minHeight: 8,
+                      backgroundColor: Colors.white30,
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -385,63 +394,86 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
                   child: Column(
                     children: [
                       // Instrucción con ícono tappable
-                      GestureDetector(
-                        onTap: _reproducirInstruccion,
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF0F4FF),
-                                borderRadius: BorderRadius.circular(12),
+                      LayoutBuilder(
+                        builder: (ctx, constraints) {
+                          final sw = MediaQuery.of(ctx).size.width;
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: _reproducirInstruccion,
+                                child: _AudioBtn(sw: sw),
                               ),
-                              child: const Icon(
-                                Icons.volume_up_rounded,
-                                color: Color(0xFF3475F7),
-                                size: 22,
+                              SizedBox(width: sw * 0.03),
+                              Expanded(
+                                child: Text(
+                                  'Escucha y elige el correcto',
+                                  style: TextStyle(
+                                    fontFamily: 'Hiruko',
+                                    fontSize: (sw * 0.055).clamp(18.0, 38.0),
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF3D2B1F),
+                                    height: 1.3,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'Escucha y elige el correcto',
-                              style: TextStyle(
-                                fontFamily: 'Hiruko',
-                                fontSize: 15,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Botón de audio de la pregunta
-                      GestureDetector(
-                        onTap: () => _play(_data['pregunta'] as String),
-                        child: Image.asset(
-                          '${_img}altavoz 1.png',
-                          width: 56,
-                          height: 56,
-                          color: Colors.black87,
-                        ),
+                      LayoutBuilder(
+                        builder: (ctx, box) {
+                          final sw = MediaQuery.of(ctx).size.width;
+                          final sz = (sw * 0.14).clamp(52.0, 80.0);
+                          return GestureDetector(
+                            onTap: () => _play(_data['pregunta'] as String),
+                            child: Container(
+                              width: sz,
+                              height: sz,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3E8FF),
+                                borderRadius: BorderRadius.circular(sz * 0.27),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF8B2FC9).withValues(alpha: 0.20),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.volume_up_rounded,
+                                color: const Color(0xFF8B2FC9),
+                                size: sz * 0.52,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 16),
 
                       // Grid de opciones
                       Expanded(
-                        child: GridView.builder(
+                        child: LayoutBuilder(
+                          builder: (ctx, constraints) {
+                            final btnW = (constraints.maxWidth - 14) / 2;
+                            final btnH = (constraints.maxHeight - 14) / 2;
+                            return GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: 4,
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                              SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 14,
                                 mainAxisSpacing: 14,
-                                childAspectRatio: 1.0,
+                                childAspectRatio: btnW / btnH,
                               ),
                           itemBuilder: (context, i) {
                             final op = _opciones[i];
@@ -480,9 +512,10 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
                               ),
                             );
                           },
+                        );
+                          },
                         ),
                       ),
-                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
@@ -490,6 +523,36 @@ class _InglesEscuchaViewState extends State<InglesEscuchaView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  const _AudioBtn({required this.sw});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3E8FF),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF8B2FC9).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        Icons.volume_up_rounded,
+        color: const Color(0xFF8B2FC9),
+        size: sz * 0.55,
       ),
     );
   }

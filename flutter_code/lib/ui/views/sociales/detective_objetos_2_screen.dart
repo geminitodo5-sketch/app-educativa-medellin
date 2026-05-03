@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -28,9 +28,13 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   late final Player _animPlayer;
   late final VideoController _animController;
   bool _showAnimation = false;
+  bool _animHandled = false;
   StreamSubscription<bool>? _completedSub;
+  StreamSubscription<Duration>? _durationSub;
+  StreamSubscription<Duration>? _positionSub;
+  Duration _animDuration = Duration.zero;
+  bool _videoHasStarted = false;
 
-  // Índice 2 = balón es la respuesta correcta
   static const int _correctIndex = 2;
 
   static const List<_OptionData> _options = [
@@ -51,22 +55,24 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     ),
   ];
 
-  // ── Lógica intacta ────────────────────────────────────────────────────────
-
   @override
   void initState() {
     super.initState();
     _player = Player();
     _animPlayer = Player();
     _animController = VideoController(_animPlayer);
-    _completedSub = _animPlayer.stream.completed.listen((done) {
-      if (done && mounted) {
-        setState(() => _showAnimation = false);
-        _showSuccess();
+
+    _durationSub = _animPlayer.stream.duration.listen((d) {
+      if (d > Duration.zero) _animDuration = d;
+    });
+    // stream.playing: detecta cuando el video termina (true→false) con PlaylistMode.none
+    _completedSub = _animPlayer.stream.playing.listen((isPlaying) {
+      if (!isPlaying && _showAnimation && !_animHandled) {
+        _finishAnimation();
       }
     });
-    _animPlayer.open(
-        Media('asset:///assets/animations/balon_en_caja.mp4'), play: false);
+
+    _initAnimPlayer();
     _shakeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
@@ -85,6 +91,12 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     ]).animate(_shakeCtrl);
 
     _initAndPlayAudio();
+  }
+
+  Future<void> _initAnimPlayer() async {
+    await _animPlayer.setPlaylistMode(PlaylistMode.none);
+    await _animPlayer.open(
+        Media('asset:///assets/animations/balon_en_caja.mp4'), play: false);
   }
 
   Future<void> _initAndPlayAudio() async {
@@ -116,6 +128,8 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   void dispose() {
     _playingSub?.cancel();
     _completedSub?.cancel();
+    _durationSub?.cancel();
+    _positionSub?.cancel();
     _shakeCtrl.dispose();
     _player.dispose();
     _animPlayer.dispose();
@@ -147,9 +161,44 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     }
   }
 
+  void _finishAnimation() {
+    if (!mounted || _animHandled) return;
+    _animHandled = true;
+    _completedSub?.cancel();
+    _positionSub?.cancel();
+    _completedSub = null;
+    _positionSub = null;
+    // pause() en vez de stop(): congela el último frame sin resetear el player en Android
+    _animPlayer.pause();
+    setState(() => _showAnimation = false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _showSuccess();
+    });
+  }
+
   Future<void> _playAnimation() async {
+    _animHandled = false;
+    _videoHasStarted = false;
+    await _animPlayer.seek(Duration.zero);
     setState(() => _showAnimation = true);
+
+    // Detecta via posición: cuando el video reinicia (loop) → detener de inmediato
+    _positionSub = _animPlayer.stream.position.listen((pos) {
+      if (!_videoHasStarted && pos.inMilliseconds > 300) {
+        _videoHasStarted = true;
+      }
+      if (_videoHasStarted && pos.inMilliseconds < 80 && !_animHandled) {
+        _finishAnimation();
+      }
+    });
+
     await _animPlayer.play();
+
+    // Timer como respaldo absoluto
+    final duration = _animDuration > Duration.zero
+        ? _animDuration
+        : const Duration(seconds: 3);
+    Future.delayed(duration + const Duration(milliseconds: 600), _finishAnimation);
   }
 
   void _mostrarFeedback(bool esCorrecto, VoidCallback onAction) {
@@ -228,14 +277,12 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
     });
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fondo naranja para que las esquinas redondeadas del blanco se vean sobre él
       backgroundColor: const Color(0xFFFFBF47),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
@@ -244,7 +291,6 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  // Solo esquinas superiores redondeadas
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -260,106 +306,71 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFEE9A10), Color(0xFFFFBF47)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Detective de Objetos',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ],
+          ),
         ),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Center(
-            child: Text(
-              'Detective de Objetos',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 0.5,
-                shadows: [Shadow(color: Color(0x44000000), blurRadius: 4)],
-              ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 2 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-          Positioned(
-            right: 0,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: const Icon(
-                Icons.close_rounded,
-                size: 22,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildBody() {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: Column(
         children: [
-          // Título con Poppins
-          const Text(
-            'La Caja Secreta',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Instrucción — ícono de audio estilo pantalla 3
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: _toggleAudio,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: _isPlayingAudio
-                        ? const Color(0xFFF5A623).withValues(alpha: 0.25)
-                        : const Color(0xFFF5A623).withValues(alpha: 0.14),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _isPlayingAudio
-                          ? const Color(0xFFF5A623)
-                          : const Color(0xFFF5A623).withValues(alpha: 0.40),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Icon(
-                    _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up_rounded,
-                    color: const Color(0xFFF5A623),
-                    size: 20,
-                  ),
-                ),
+                child: _AudioBtn(sw: sw, isPlaying: _isPlayingAudio),
               ),
-              const SizedBox(width: 10),
-              const Expanded(
+              SizedBox(width: sw * 0.03),
+              Expanded(
                 child: Text(
-                  'Metí la mano en una caja...\nse siente raro, ¿qué será?\nEs redondo, es suave, y rebota.',
+                  'Metí  la mano en una caja... se siente raro, ¿qué será? Es redondo, es suave, y rebota.',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF555555),
-                    height: 1.5,
+                    fontFamily: 'Hiruko',
+                    fontSize: (sw * 0.055).clamp(18.0, 38.0),
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF424242),
+                    height: 1.3,
                   ),
                 ),
               ),
@@ -367,7 +378,6 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
           ),
           const SizedBox(height: 16),
 
-          // Caja imagen grande / animación del balón
           Expanded(
             child: Center(
               child: AnimatedSwitcher(
@@ -384,7 +394,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
                       )
                     : Image.asset(
                         key: const ValueKey('caja'),
-                        'assets/images/actividades/sociales/Caja.png',
+                        'assets/images/actividades/sociales/caja.png',
                         fit: BoxFit.contain,
                         errorBuilder: (ctx, e, _) => const Text(
                           '📦',
@@ -397,55 +407,35 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
 
           const SizedBox(height: 16),
 
-          // Opciones
           SlideTransition(
             position: _selected != null && _isCorrect == false
                 ? _shakeAnim
                 : const AlwaysStoppedAnimation(Offset.zero),
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(
-                  _options.length,
-                  (i) => _buildOption(i),
-                ),
-              ),
+            child: LayoutBuilder(
+              builder: (ctx, constraints) {
+                final optSz = (constraints.maxWidth / 4).clamp(70.0, 120.0);
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(_options.length, (i) => _buildOption(i, optSz)),
+                  ),
+                );
+              },
             ),
           ),
 
           const SizedBox(height: 14),
-
-          // Indicador de páginas
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: i == 1 ? 10 : 8,
-                height: i == 1 ? 10 : 8,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: i == 1
-                      ? const Color(0xFFF5A623)
-                      : const Color(0xFFDDDDDD),
-                ),
-              );
-            }),
-          ),
         ],
       ),
     );
   }
 
-  // ── Widgets de lógica — sin cambios ───────────────────────────────────────
-
-  Widget _buildOption(int index) {
+  Widget _buildOption(int index, double sz) {
     final opt = _options[index];
     final isSelected = _selected == index;
     final correct = isSelected ? _isCorrect : null;
@@ -454,8 +444,8 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
       onTap: () => _onOptionTapped(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 80,
-        height: 80,
+        width: sz,
+        height: sz,
         decoration: BoxDecoration(
           color: correct == true
               ? Colors.green.shade100
@@ -484,8 +474,7 @@ class _DetectiveObjetos2ScreenState extends State<DetectiveObjetos2Screen>
           opt.imagePath,
           fit: BoxFit.contain,
           errorBuilder: (ctx, e, _) => Center(
-            child: Text(opt.fallbackEmoji,
-                style: const TextStyle(fontSize: 40)),
+            child: Text(opt.fallbackEmoji, style: TextStyle(fontSize: sz * 0.45)),
           ),
         ),
       ),
@@ -503,4 +492,35 @@ class _OptionData {
     required this.fallbackEmoji,
     required this.label,
   });
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
+      ),
+    );
+  }
 }

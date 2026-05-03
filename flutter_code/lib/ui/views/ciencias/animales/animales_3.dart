@@ -12,7 +12,8 @@ const List<Color> _coloresParejas = [
 
 class JuegoAnimalesScreen extends StatefulWidget {
   final VoidCallback onCompletado;
-  const JuegoAnimalesScreen({super.key, required this.onCompletado});
+  final double progress;
+  const JuegoAnimalesScreen({super.key, required this.onCompletado, this.progress = 1.0});
 
   @override
   State<JuegoAnimalesScreen> createState() => _JuegoAnimalesScreenState();
@@ -241,24 +242,35 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 35, vertical: 30),
-                      child: Column(
-                        children: [
-                          _buildInstruction(),
-                          const SizedBox(height: 30),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildColumn(_animalesOrden),
-                                _buildColumn(_comidasOrden),
-                              ],
-                            ),
+                    LayoutBuilder(
+                      builder: (outerCtx, outerConstraints) {
+                        final hPad = outerConstraints.maxWidth * 0.05;
+                        return Padding(
+                          padding: EdgeInsets.fromLTRB(hPad, 12, hPad, 12),
+                          child: Column(
+                            children: [
+                              _buildInstruction(),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: LayoutBuilder(
+                                  builder: (ctx, constraints) {
+                                    final byW = constraints.maxWidth * 0.30;
+                                    final byH = constraints.maxHeight / 3 - 12;
+                                    final circleSz = min(byW, byH).clamp(70.0, 220.0);
+                                    return Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        _buildColumn(_animalesOrden, circleSz),
+                                        _buildColumn(_comidasOrden, circleSz),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -271,59 +283,78 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(25, 5, 20, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(width: 40),
-          const Text(
-            'Animales',
-            style: TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.w900,
-              fontFamily: 'Hiruko',
-              color: Colors.white,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(25, 5, 20, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 40),
+              const Text(
+                'Animales',
+                style: TextStyle(
+                  fontSize: 34,
+                  fontWeight: FontWeight.w900,
+                  fontFamily: 'Hiruko',
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 38),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 14),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: widget.progress,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.white, size: 38),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildInstruction() {
+    final sw = MediaQuery.of(context).size.width;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
         GestureDetector(
           onTap: _reproducirInstruccion,
           child: Container(
-            width: 36,
-            height: 36,
+            width: (sw * 0.13).clamp(44.0, 60.0),
+            height: (sw * 0.13).clamp(44.0, 60.0),
             decoration: BoxDecoration(
               color: const Color(0xFFE8F5E9),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.volume_up_rounded,
-              color: Color(0xFF3DCC52),
-              size: 22,
+              color: const Color(0xFF3DCC52),
+              size: (sw * 0.07).clamp(24.0, 34.0),
             ),
           ),
         ),
-        const SizedBox(width: 10),
-        const Expanded(
+        SizedBox(width: sw * 0.03),
+        Expanded(
           child: Text(
             'Une el animal con su comida',
             style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              color: Color(0xFF424242),
+              fontFamily: 'Hiruko',
+              fontSize: (sw * 0.065).clamp(20.0, 46.0),
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF424242),
               height: 1.3,
             ),
           ),
@@ -332,14 +363,14 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
     );
   }
 
-  Widget _buildColumn(List<String> items) {
+  Widget _buildColumn(List<String> items, double circleSz) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: items.map((id) => _buildItemCircle(id)).toList(),
+      children: items.map((id) => _buildItemCircle(id, circleSz)).toList(),
     );
   }
 
-  Widget _buildItemCircle(String id) {
+  Widget _buildItemCircle(String id, double circleSz) {
     final bool seleccionado = _seleccionado == id;
     final bool conectado = _yaConectados.contains(id);
     final Color borderColor = conectado
@@ -353,8 +384,8 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         key: keys[id],
-        width: 100,
-        height: 100,
+        width: circleSz,
+        height: circleSz,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
@@ -370,7 +401,7 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(circleSz * 0.12),
           child: Image.asset('$path/$id.png', fit: BoxFit.contain),
         ),
       ),

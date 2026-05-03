@@ -72,11 +72,11 @@ class _AnimalesFlowScreenState extends ConsumerState<AnimalesFlowScreen> {
   Widget build(BuildContext context) {
     switch (_paso) {
       case 0:
-        return PantallaActividadAnimales(onCompletado: _avanzar);
+        return PantallaActividadAnimales(onCompletado: _avanzar, progress: 1 / 3);
       case 1:
-        return PantallaClasificacionAnimales(onCompletado: _avanzar);
+        return PantallaClasificacionAnimales(onCompletado: _avanzar, progress: 2 / 3);
       default:
-        return JuegoAnimalesScreen(onCompletado: _completar);
+        return JuegoAnimalesScreen(onCompletado: _completar, progress: 1.0);
     }
   }
 }

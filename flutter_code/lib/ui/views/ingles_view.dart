@@ -5,6 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
+import '../../data/models/estudiante_model.dart';
+import '../../data/models/progreso_model.dart';
 import '../viewmodels/ingles_view_model.dart';
 import 'inlges/ingles_escucha_view.dart';
 import 'inlges/ingles_pareja_view.dart';
@@ -31,207 +33,284 @@ class _InglesViewState extends ConsumerState<InglesView> {
   Widget build(BuildContext context) {
     final vm = ref.watch(inglesViewModelProvider);
     final syncState = ref.watch(syncListenerProvider);
+    final EstudianteModel? estudiante = ref.watch(estudianteActivoProvider);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Fondo
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/bienvenida/fondos (1).png',
-              fit: BoxFit.cover,
-              errorBuilder: (ctx, e, _) =>
-                  Container(color: const Color(0xFF7BD0E8)),
-            ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1EB9D8), Color(0xFF59E347)],
           ),
-
-          // Pollito esquina superior izquierda
-          Positioned(
-            bottom: 530,
-            left: 40,
-            child: Image.asset(
-              'assets/images/bienvenida/pollo feliz 2 (2).png',
-              width: 60,
-              fit: BoxFit.contain,
-              errorBuilder: (ctx, e, _) => const SizedBox(),
+        ),
+        child: Stack(
+          children: [
+            // Fondo paisaje
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Image.asset(
+                'assets/images/interfaz/fondos/fondo.jpg',
+                fit: BoxFit.cover,
+                errorBuilder: (ctx, e, _) => const SizedBox(),
+              ),
             ),
-          ),
 
-          // Mono esquina inferior derecha
-          Positioned(
-            bottom: -20,
-            right: 0,
-            child: Image.asset(
-              'assets/images/bienvenida/mono.png',
-              width: 150,
-              fit: BoxFit.contain,
-              errorBuilder: (ctx, e, _) => const SizedBox(),
+            // Mono abajo derecha
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Image.asset(
+                'assets/images/avatares/avatar_mono1.jpg',
+                width: 160,
+                errorBuilder: (ctx, e, _) => const SizedBox(),
+              ),
             ),
-          ),
 
-          // Contenido principal
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 10),
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final screen = MediaQuery.of(context);
+                  final sw = screen.size.width;
+                  final sh = screen.size.height;
+                  final isTablet = sw >= 600;
+                  final headerHPadding = isTablet ? 40.0 : 16.0;
+                  final barraHPadding = isTablet ? 80.0 : 40.0;
 
-                // Fila superior: volver + sync
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          vm.commandVolver();
-                          Navigator.of(context).maybePop();
-                        },
-                        child: const Icon(Icons.arrow_back_rounded,
-                            size: 35, color: Colors.black87),
+                  // Altura dinámica: adapta a cualquier pantalla
+                  final headerMin = sh * 0.20;
+                  final headerMax = sh * 0.26;
+
+                  return CustomScrollView(
+                    slivers: [
+                      // ── Encabezado sticky ──────────────────────────────
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _HeaderDelegate(
+                          minHeight: headerMin,
+                          maxHeight: headerMax,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 10),
+                                // Fila Superior: Volver + Sync Status
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: headerHPadding),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          vm.commandVolver();
+                                          Navigator.of(context).maybePop();
+                                        },
+                                        child: Icon(
+                                          Icons.arrow_back_rounded,
+                                          size: isTablet ? 44 : 36,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      syncState.when(
+                                        data: (count) => Icon(
+                                          count > 0
+                                              ? Icons.sync_rounded
+                                              : Icons.cloud_done_rounded,
+                                          color: Colors.black45,
+                                          size: isTablet ? 30 : 24,
+                                        ),
+                                        error: (_, __) => const Icon(
+                                          Icons.cloud_off_rounded,
+                                          color: Colors.redAccent,
+                                        ),
+                                        loading: () => const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 6),
+
+                                // Título
+                                Text(
+                                  'Inglés',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Hiruko',
+                                    fontSize: isTablet ? 52 : 38,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                if (estudiante != null)
+                                  Text(
+                                    'Hola, ${estudiante.nombre}',
+                                    style: TextStyle(
+                                      fontFamily: 'Hiruko',
+                                      fontSize: isTablet ? 28 : 22,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+
+                                // Barra de progreso
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: barraHPadding,
+                                    vertical: 4,
+                                  ),
+                                  child: _BarraProgreso(
+                                    porcentaje: vm.progresoTotal,
+                                    color: const Color(0xFF8B5CF6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                      syncState.when(
-                        data: (count) => Icon(
-                          count > 0
-                              ? Icons.sync_rounded
-                              : Icons.cloud_done_rounded,
-                          color: Colors.black45,
-                          size: 24,
-                        ),
-                        error: (_, __) => const Icon(
-                          Icons.cloud_off_rounded,
-                          color: Colors.redAccent,
-                        ),
-                        loading: () => const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+
+                      // ── Contenido scrolleable ──────────────────────────
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: sh * 0.005),
+                      ),
+                      SliverPadding(
+                        padding: EdgeInsets.symmetric(horizontal: isTablet ? 60.0 : 20.0),
+                        sliver: SliverToBoxAdapter(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Pollito detrás
+                              Positioned(
+                                top: -(sh * 0.03),
+                                left: 10,
+                                child: Image.asset(
+                                  'assets/images/avatares/pollo feliz 2 (2).png',
+                                  width: sh * 0.09,
+                                  errorBuilder: (ctx, e, _) => const SizedBox(),
+                                ),
+                              ),
+
+                              Column(
+                                children: [
+                                  SizedBox(height: sh * 0.06),
+
+                                  _ActividadCard(
+                                    texto: 'Escucha',
+                                    imagenLeft: 'assets/images/areas/ingles/ingles1.png',
+                                    completado: _completado(vm, 'Module 1'),
+                                    cardHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => InglesEscuchaView(
+                                            onCompleted: () => vm.commandSeleccionarLeccion(
+                                                'Module 1',
+                                                porcentajeCompletado: 100.0),
+                                          ),
+                                        ),
+                                      );
+                                      if (mounted) {
+                                        ref.read(inglesViewModelProvider).commandCargarProgreso();
+                                      }
+                                    },
+                                  ),
+
+                                  SizedBox(height: sh * 0.018),
+                                  _ActividadCard(
+                                    texto: 'Une\nla pareja',
+                                    imagenLeft: 'assets/images/areas/ingles/ingles2.png',
+                                    completado: _completado(vm, 'Module 2'),
+                                    cardHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => InglesParejaView(
+                                            onCompleted: () => vm.commandSeleccionarLeccion(
+                                                'Module 2',
+                                                porcentajeCompletado: 100.0),
+                                          ),
+                                        ),
+                                      );
+                                      if (mounted) {
+                                        ref.read(inglesViewModelProvider).commandCargarProgreso();
+                                      }
+                                    },
+                                  ),
+
+                                  SizedBox(height: sh * 0.018),
+                                  _ActividadCard(
+                                    texto: 'Tarjetas',
+                                    imagenLeft: 'assets/images/areas/ingles/ingles3.png',
+                                    completado: _completado(vm, 'Module 3'),
+                                    cardHeight: sh * 0.10,
+                                    onTap: () async {
+                                      bool completado = false;
+                                      final nav = Navigator.of(context);
+                                      await nav.push(
+                                        MaterialPageRoute(
+                                          builder: (_) => InglesTarjetasView(
+                                            onCompleted: () {
+                                              completado = true;
+                                              vm.commandSeleccionarLeccion('Module 3',
+                                                  porcentajeCompletado: 100.0);
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                      await ref
+                                          .read(inglesViewModelProvider)
+                                          .commandCargarProgreso();
+                                      if (completado && mounted) {
+                                        nav.push(
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const InglesCongratulationsView(),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 200),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Título
-                const Text(
-                  'Inglés',
-                  style: TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 44,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-
-                // Barra de progreso
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 6),
-                  child: _BarraProgreso(
-                      porcentaje: vm.progresoTotal,
-                      color: const Color(0xFF8B5CF6)),
-                ),
-
-                const Spacer(flex: 1),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 35),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _BotonMateria(
-                        imagen: 'assets/images/areas/ingles/ingles1.png',
-                        texto: 'Escucha',
-                        completado: _completado(vm, 'Module 1'),
-                        onTap: () async {
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => InglesEscuchaView(
-                                onCompleted: () => vm.commandSeleccionarLeccion(
-                                    'Module 1',
-                                    porcentajeCompletado: 100.0),
-                              ),
-                            ),
-                          );
-                          ref
-                              .read(inglesViewModelProvider)
-                              .commandCargarProgreso();
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      _BotonMateria(
-                        imagen: 'assets/images/areas/ingles/ingles2.png',
-                        texto: 'Une\nla pareja',
-                        completado: _completado(vm, 'Module 2'),
-                        onTap: () async {
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => InglesParejaView(
-                                onCompleted: () => vm.commandSeleccionarLeccion(
-                                    'Module 2',
-                                    porcentajeCompletado: 100.0),
-                              ),
-                            ),
-                          );
-                          ref
-                              .read(inglesViewModelProvider)
-                              .commandCargarProgreso();
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      _BotonMateria(
-                        imagen: 'assets/images/areas/ingles/ingles3.png',
-                        texto: 'Tarjetas',
-                        completado: _completado(vm, 'Module 3'),
-                        onTap: () async {
-                          bool completado = false;
-                          final nav = Navigator.of(context);
-                          await nav.push(
-                            MaterialPageRoute(
-                              builder: (_) => InglesTarjetasView(
-                                onCompleted: () {
-                                  completado = true;
-                                  vm.commandSeleccionarLeccion('Module 3',
-                                      porcentajeCompletado: 100.0);
-                                },
-                              ),
-                            ),
-                          );
-                          await ref
-                              .read(inglesViewModelProvider)
-                              .commandCargarProgreso();
-                          if (completado && mounted) {
-                            nav.push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const InglesCongratulationsView(),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Spacer(flex: 3),
-              ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   bool _completado(InglesViewModel vm, String modulo) =>
-      vm.progreso.any((p) => p.actividad == modulo && p.porcentaje >= 100);
+      vm.progreso.any((ProgresoModel p) => p.actividad == modulo && p.porcentaje >= 100);
 }
 
 // ─── Barra de progreso ─────────────────────────────────────────
 class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
+
   const _BarraProgreso({required this.porcentaje, required this.color});
 
   @override
@@ -241,13 +320,24 @@ class _BarraProgreso extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Progreso',
-                style: TextStyle(fontFamily: 'Poppins', fontSize: 12)),
-            Text('${porcentaje.toInt()}%',
-                style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600)),
+            const Text(
+              'Progreso',
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+            Text(
+              '${porcentaje.toInt()}%',
+              style: const TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -256,7 +346,7 @@ class _BarraProgreso extends StatelessWidget {
           child: LinearProgressIndicator(
             value: (porcentaje / 100).clamp(0.0, 1.0),
             minHeight: 10,
-            backgroundColor: Colors.black12,
+            backgroundColor: Colors.white.withOpacity(0.5),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
@@ -265,33 +355,70 @@ class _BarraProgreso extends StatelessWidget {
   }
 }
 
-// ─── Botón de módulo ───────────────────────────────────────────
-class _BotonMateria extends StatefulWidget {
-  final String imagen;
-  final String texto;
-  final bool completado;
-  final VoidCallback onTap;
+// ─── Delegate para encabezado sticky ──────────────────────────
+class _HeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
 
-  const _BotonMateria({
-    required this.imagen,
-    required this.texto,
-    required this.completado,
-    required this.onTap,
+  const _HeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
   });
 
   @override
-  State<_BotonMateria> createState() => _BotonMateriaState();
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_HeaderDelegate oldDelegate) =>
+      maxHeight != oldDelegate.maxHeight ||
+      minHeight != oldDelegate.minHeight ||
+      child != oldDelegate.child;
 }
 
-class _BotonMateriaState extends State<_BotonMateria>
+// ─── Tarjeta de actividad ──────────────────────────────────────
+class _ActividadCard extends StatefulWidget {
+  final String texto;
+  final String imagenLeft;
+  final bool completado;
+  final VoidCallback onTap;
+  final double cardHeight;
+
+  const _ActividadCard({
+    required this.texto,
+    required this.imagenLeft,
+    required this.completado,
+    required this.onTap,
+    this.cardHeight = 84,
+  });
+
+  @override
+  State<_ActividadCard> createState() => _ActividadCardState();
+}
+
+class _ActividadCardState extends State<_ActividadCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 100),
+    duration: const Duration(milliseconds: 80),
   );
-  late final Animation<double> _scale =
-      Tween<double>(begin: 1.0, end: 0.95).animate(
-          CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+  late final Animation<double> _scale = Tween<double>(
+    begin: 1.0,
+    end: 0.96,
+  ).animate(_ctrl);
 
   @override
   void dispose() {
@@ -311,15 +438,16 @@ class _BotonMateriaState extends State<_BotonMateria>
       child: ScaleTransition(
         scale: _scale,
         child: Container(
-          height: 80,
+          width: double.infinity,
+          height: widget.cardHeight,
           decoration: BoxDecoration(
             color: const Color(0xFF8B5CF6),
             borderRadius: BorderRadius.circular(18),
             boxShadow: const [
               BoxShadow(
-                color: Colors.black26,
-                blurRadius: 12,
-                offset: Offset(0, 6),
+                color: Color(0xFF5B3BA6),
+                blurRadius: 0,
+                offset: Offset(0, 5),
               ),
             ],
           ),
@@ -327,40 +455,41 @@ class _BotonMateriaState extends State<_BotonMateria>
             children: [
               // Imagen
               Container(
-                margin: const EdgeInsets.all(12),
-                width: 56,
+                margin: const EdgeInsets.all(8),
+                width: widget.cardHeight * 0.78,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    widget.imagen,
-                    fit: BoxFit.contain,
-                    errorBuilder: (ctx, e, _) => const Icon(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Image.asset(
+                      widget.imagenLeft,
+                      fit: BoxFit.contain,
+                      errorBuilder: (ctx, e, _) => Icon(
                         Icons.headphones_rounded,
-                        color: Color(0xFF8B5CF6),
-                        size: 32),
+                        color: const Color(0xFF8B5CF6),
+                        size: widget.cardHeight * 0.38,
+                      ),
+                    ),
                   ),
                 ),
               ),
               // Texto
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Center(
-                    child: Text(
-                      widget.texto,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Hiruko',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        height: 1.1,
-                      ),
+                child: Center(
+                  child: Text(
+                    widget.texto,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: (widget.cardHeight * 0.25).clamp(16.0, 26.0),
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.2,
                     ),
                   ),
                 ),
@@ -369,10 +498,16 @@ class _BotonMateriaState extends State<_BotonMateria>
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: widget.completado
-                    ? const Icon(Icons.check_circle_rounded,
-                        color: Colors.white, size: 28)
-                    : const Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white, size: 22),
+                    ? Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                        size: widget.cardHeight * 0.33,
+                      )
+                    : Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white,
+                        size: widget.cardHeight * 0.26,
+                      ),
               ),
             ],
           ),

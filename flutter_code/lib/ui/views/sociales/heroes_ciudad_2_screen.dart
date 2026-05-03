@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'heroes_ciudad_3_screen.dart';
@@ -18,12 +18,10 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   late final AnimationController _shakeCtrl;
   late final Animation<Offset> _shakeAnim;
 
-  // ── Audio ─────────────────────────────────────────────────────────────────
   late final AudioPlayer _player;
   bool _isPlayingAudio = false;
   StreamSubscription<bool>? _playingSub;
 
-  // Policía (índice 3) es la respuesta correcta
   static const int _correctIndex = 3;
 
   static const List<_CharData> _chars = [
@@ -243,101 +241,101 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 50, 20, 60),
-      color: const Color(0xFFF5A623),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Héroes de  la Ciudad',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 0.5,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: const Icon(
-                Icons.close_rounded,
-                size: 22,
-                color: Colors.white,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Héroes de la Ciudad',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  wordSpacing: 7,
+                ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 2 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildBody() {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
-            child: Text(
-              '¿Quién soy?\nEscucha y toca',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3D2B1F),
-                height: 1.3,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Enunciado sin cuadro — solo ícono de audio y texto
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: _toggleAudio,
-                child: Icon(
-                  _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up_rounded,
-                  color: const Color(0xFFF5A623),
-                  size: 28,
-                ),
+                child: _AudioBtn(sw: sw, isPlaying: _isPlayingAudio),
               ),
-              const SizedBox(width: 12),
-              const Expanded(
+              SizedBox(width: sw * 0.03),
+              Expanded(
                 child: Text(
-                  'Uso uniforme azul, ayudo a  las personas  en  la  calle, y cuido que todos estén seguros.',
+                  'Uso uniforme azul, ayudo a  las personas en  la calle, y cuido que todos estén seguros.',
                   style: TextStyle(
                     fontFamily: 'Hiruko',
-                    fontSize: 15,
+                    fontSize: (sw * 0.055).clamp(18.0, 38.0),
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D2B1F),
-                    height: 1.55,
+                    color: Colors.black,
+                    height: 1.3,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: (sw * 0.05).clamp(16.0, 32.0)),
 
           Expanded(
             child: SlideTransition(
               position: _selectedIndex != null && _isCorrect == false
                   ? _shakeAnim
                   : const AlwaysStoppedAnimation(Offset.zero),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
-                physics: const NeverScrollableScrollPhysics(),
-                children: List.generate(_chars.length, (i) => _buildCard(i)),
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  const spacing = 14.0;
+                  final cardW = (constraints.maxWidth - spacing) / 2;
+                  final cardH = (constraints.maxHeight - spacing) / 2;
+                  final ratio = cardW / cardH.clamp(1.0, double.infinity);
+                  return GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: spacing,
+                    mainAxisSpacing: spacing,
+                    childAspectRatio: ratio,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: List.generate(_chars.length, (i) => _buildCard(i)),
+                  );
+                },
               ),
             ),
           ),
@@ -376,18 +374,22 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
         ),
         child: Stack(
           children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset(
-                  char.imagePath,
-                  fit: BoxFit.contain,
-                  errorBuilder: (ctx, e, _) => Center(
-                    child: Text(char.fallbackEmoji,
-                        style: const TextStyle(fontSize: 64)),
+            LayoutBuilder(
+              builder: (ctx, constraints) {
+                final pad = constraints.maxWidth * 0.08;
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(pad),
+                    child: Image.asset(
+                      char.imagePath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (ctx, e, _) => Center(
+                        child: Text(char.fallbackEmoji, style: const TextStyle(fontSize: 64)),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             if (correct != null)
               Positioned.fill(
@@ -403,9 +405,7 @@ class _HeroesCiudad2ScreenState extends State<HeroesCiudad2Screen>
                     ),
                     child: Center(
                       child: Icon(
-                        correct
-                            ? Icons.check_circle_rounded
-                            : Icons.cancel_rounded,
+                        correct ? Icons.check_circle_rounded : Icons.cancel_rounded,
                         color: Colors.white,
                         size: 56,
                       ),
@@ -432,4 +432,35 @@ class _CharData {
     required this.fallbackEmoji,
     required this.bgColor,
   });
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
+      ),
+    );
+  }
 }

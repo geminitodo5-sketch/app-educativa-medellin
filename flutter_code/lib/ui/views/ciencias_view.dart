@@ -5,6 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
+import '../../data/models/estudiante_model.dart';
+import '../../data/models/progreso_model.dart';
 import '../viewmodels/ciencias_view_model (1).dart';
 import 'ciencias/vivo_no_vivo_screen.dart';
 import 'ciencias/cuerpo_humano_screen.dart';
@@ -31,191 +33,257 @@ class _CienciasViewState extends ConsumerState<CienciasView> {
   Widget build(BuildContext context) {
     final vm = ref.watch(cienciasViewModelProvider);
     final syncState = ref.watch(syncListenerProvider);
+    final EstudianteModel? estudiante = ref.watch(estudianteActivoProvider);
 
     return Scaffold(
-      // ── FIX 1: color de fondo que hace match con la imagen ──
-      backgroundColor: const Color(0xFFAEE6F0),
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.black, size: 28),
-          onPressed: () {
-            vm.commandVolver();
-            Navigator.of(context).maybePop();
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: syncState.when(
-              data: (count) => Icon(
-                count > 0 ? Icons.sync_rounded : Icons.cloud_done_rounded,
-                color: Colors.black45,
-                size: 24,
-              ),
-              error: (_, __) => const Icon(
-                Icons.cloud_off_rounded,
-                color: Colors.redAccent,
-                size: 24,
-              ),
-              loading: () => const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1EB9D8), Color(0xFF59E347)],
           ),
-        ],
-      ),
-
-      // ── FIX 2: SizedBox.expand para que el Stack ocupe toda la pantalla ──
-      body: SizedBox.expand(
+        ),
         child: Stack(
           children: [
-            // Fondo - cubre toda la pantalla incluyendo zonas del sistema
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/bienvenida/fondos (1).png',
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                errorBuilder: (ctx, e, _) =>
-                    Container(color: const Color(0xFFAEE6F0)),
-              ),
-            ),
-
-            // Pollito esquina inferior izquierda
+            // Fondo paisaje (mismo que matemáticas)
             Positioned(
-              bottom: -20,
-              left: 30,
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: Image.asset(
-                'assets/images/avatares/pollo feliz 2 (2).png',
-                width: 85,
+                'assets/images/interfaz/fondos/fondo.jpg',
+                fit: BoxFit.cover,
                 errorBuilder: (ctx, e, _) => const SizedBox(),
               ),
             ),
 
-            // Contenido principal
+            // Mono abajo derecha (mismo que matemáticas)
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Image.asset(
+                'assets/images/avatares/avatar_mono1.jpg',
+                width: 160,
+                errorBuilder: (ctx, e, _) => const SizedBox(),
+              ),
+            ),
+
             SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final screen = MediaQuery.of(context);
+                  final sw = screen.size.width;
+                  final sh = screen.size.height;
+                  final isTablet = sw >= 600;
+                  final headerHPadding = isTablet ? 40.0 : 16.0;
+                  final barraHPadding = isTablet ? 80.0 : 40.0;
 
-                    // Título
-                    const Text(
-                      'Ciencias\nnaturales',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Hiruko',
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                  // Altura dinámica segura: nunca menor al contenido real.
+                  // En celulares pequeños (sh < 650) el header necesita más %.
+                  final double headerFraction = sh < 650 ? 0.30 : (sh < 750 ? 0.27 : 0.25);
+                  final headerMin = sh * headerFraction;
+                  final headerMax = sh * headerFraction;
+
+                  return CustomScrollView(
+                    slivers: [
+                      // ── Encabezado sticky ──────────────────────────────
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _HeaderDelegate(
+                          minHeight: headerMin,
+                          maxHeight: headerMax,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(height: sh * 0.008),
+                                // Fila Superior: Volver + Sync Status
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: headerHPadding),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          vm.commandVolver();
+                                          Navigator.of(context).maybePop();
+                                        },
+                                        child: Icon(
+                                          Icons.arrow_back_rounded,
+                                          size: isTablet ? 44 : 32,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      syncState.when(
+                                        data: (count) => Icon(
+                                          count > 0
+                                              ? Icons.sync_rounded
+                                              : Icons.cloud_done_rounded,
+                                          color: Colors.black45,
+                                          size: isTablet ? 30 : 22,
+                                        ),
+                                        error: (_, __) => const Icon(
+                                          Icons.cloud_off_rounded,
+                                          color: Colors.redAccent,
+                                        ),
+                                        loading: () => const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                SizedBox(height: sh * 0.004),
+
+                                // Título — tamaño adaptativo para pantallas pequeñas
+                                Text(
+                                  'Ciencias\nnaturales',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Hiruko',
+                                    fontSize: isTablet ? 52 : (sh < 650 ? 28.0 : 34.0),
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black,
+                                    height: 1.1,
+                                  ),
+                                ),
+                                if (estudiante != null)
+                                  Text(
+                                    'Hola, ${estudiante.nombre}',
+                                    style: TextStyle(
+                                      fontFamily: 'Hiruko',
+                                      fontSize: isTablet ? 28 : (sh < 650 ? 16.0 : 19.0),
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+
+                                // Barra de progreso
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: barraHPadding,
+                                    vertical: sh * 0.004,
+                                  ),
+                                  child: _BarraProgreso(
+                                    porcentaje: vm.progresoTotal,
+                                    color: const Color(0xFF3DCC52),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
 
-                    // Barra de progreso
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 10),
-                      child: _BarraProgreso(
-                        porcentaje: vm.progresoTotal,
-                        color: const Color(0xFF3DCC52),
+                      // ── Contenido scrolleable ──────────────────────────
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: sh * 0.005),
                       ),
-                    ),
+                      SliverPadding(
+                        padding: EdgeInsets.symmetric(horizontal: isTablet ? 60.0 : 20.0),
+                        sliver: SliverToBoxAdapter(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Column(
+                                children: [
+                                  SizedBox(height: sh * 0.06),
 
-                    const SizedBox(height: 16),
+                                  _ActividadCard(
+                                    imagen: 'assets/images/areas/ciencias_naturales/Group 42 (1).png',
+                                    texto: '¿Vivo o no\nVivo?',
+                                    completado: _completado(vm, '¿Vivo o no Vivo?'),
+                                    cardHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const VivoNoVivoScreen(),
+                                        ),
+                                      );
+                                      if (mounted) {
+                                        ref.read(cienciasViewModelProvider).commandCargarProgreso();
+                                      }
+                                    },
+                                  ),
 
-                    // Tarjetas de actividades
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28),
-                      child: Column(
-                        children: [
-                          _ActividadCard(
-                            imagen: 'assets/images/areas/ciencias_naturales/Group 42 (1).png',
-                            texto: '¿Vivo o no\nVivo?',
-                            completado: _completado(vm, '¿Vivo o no Vivo?'),
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const VivoNoVivoScreen(),
-                                ),
-                              );
-                              if (mounted) {
-                                ref
-                                    .read(cienciasViewModelProvider)
-                                    .commandCargarProgreso();
-                              }
-                            },
+                                  SizedBox(height: sh * 0.018),
+                                  _ActividadCard(
+                                    imagen: 'assets/images/areas/ciencias_naturales/h1 2 (1).png',
+                                    texto: 'Cuerpo\nhumano',
+                                    completado: _completado(vm, 'Cuerpo humano'),
+                                    cardHeight: sh * 0.10,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const CuerpoHumanoScreen(),
+                                        ),
+                                      );
+                                      if (mounted) {
+                                        ref.read(cienciasViewModelProvider).commandCargarProgreso();
+                                      }
+                                    },
+                                  ),
+
+                                  SizedBox(height: sh * 0.018),
+                                  _ActividadCard(
+                                    imagen: 'assets/images/areas/ciencias_naturales/Group 43 (1).png',
+                                    texto: 'Animales',
+                                    completado: _completado(vm, 'Animales'),
+                                    cardHeight: sh * 0.10,
+                                    rellenar: true,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const AnimalesFlowScreen(),
+                                        ),
+                                      );
+                                      if (mounted) {
+                                        ref.read(cienciasViewModelProvider).commandCargarProgreso();
+                                      }
+                                    },
+                                  ),
+
+                                  SizedBox(height: sh * 0.018),
+                                  _ActividadCard(
+                                    imagen: 'assets/images/areas/ciencias_naturales/Group 44 (1).png',
+                                    texto: 'Las\nplantas',
+                                    completado: _completado(vm, 'Las plantas'),
+                                    cardHeight: sh * 0.10,
+                                    ajustarAncho: true,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const LasPlantasScreen(),
+                                        ),
+                                      );
+                                      if (mounted) {
+                                        ref.read(cienciasViewModelProvider).commandCargarProgreso();
+                                      }
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 200),
+                                ],
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 14),
-                          _ActividadCard(
-                            imagen: 'assets/images/areas/ciencias_naturales/h1 2 (1).png',
-                            texto: 'Cuerpo\nhumano',
-                            completado: _completado(vm, 'Cuerpo humano'),
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const CuerpoHumanoScreen(),
-                                ),
-                              );
-                              if (mounted) {
-                                ref
-                                    .read(cienciasViewModelProvider)
-                                    .commandCargarProgreso();
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 14),
-                          _ActividadCard(
-                            imagen: 'assets/images/areas/ciencias_naturales/Group 43 (1).png',
-                            texto: 'Animales',
-                            completado: _completado(vm, 'Animales'),
-                            rellenar: true,
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const AnimalesFlowScreen(),
-                                ),
-                              );
-                              if (mounted) {
-                                ref
-                                    .read(cienciasViewModelProvider)
-                                    .commandCargarProgreso();
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 14),
-                          _ActividadCard(
-                            imagen: 'assets/images/areas/ciencias_naturales/Group 44 (1).png',
-                            texto: 'Las\nplantas',
-                            completado: _completado(vm, 'Las plantas'),
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LasPlantasScreen(),
-                                ),
-                              );
-                              if (mounted) {
-                                ref
-                                    .read(cienciasViewModelProvider)
-                                    .commandCargarProgreso();
-                              }
-                            },
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 80),
-                  ],
-                ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -225,49 +293,96 @@ class _CienciasViewState extends ConsumerState<CienciasView> {
   }
 
   bool _completado(CienciasViewModel vm, String actividad) =>
-      vm.progreso.any((p) => p.actividad == actividad && p.porcentaje >= 100);
+      vm.progreso.any((ProgresoModel p) => p.actividad == actividad && p.porcentaje >= 100);
 }
 
 // ─── Barra de progreso ─────────────────────────────────────────
 class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
+
   const _BarraProgreso({required this.porcentaje, required this.color});
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final sh = MediaQuery.of(context).size.height;
+    final isTablet = sw >= 600;
+    final fontSize = isTablet ? 22.0 : (sw * 0.042).clamp(14.0, 18.0);
+    final barHeight = (sh * 0.013).clamp(8.0, 14.0);
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Progreso',
-              style: TextStyle(fontFamily: 'Poppins', fontSize: 12),
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: fontSize,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
             ),
             Text(
               '${porcentaje.toInt()}%',
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: fontSize,
+                fontWeight: FontWeight.w900,
+                color: Colors.black87,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: sh * 0.005),
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(barHeight),
           child: LinearProgressIndicator(
             value: (porcentaje / 100).clamp(0.0, 1.0),
-            minHeight: 10,
-            backgroundColor: Colors.black12,
+            minHeight: barHeight,
+            backgroundColor: Colors.white.withOpacity(0.5),
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),
       ],
     );
   }
+}
+
+// ─── Delegate para encabezado sticky ──────────────────────────
+class _HeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  const _HeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return ClipRect(child: SizedBox.expand(child: child));
+  }
+
+  @override
+  bool shouldRebuild(_HeaderDelegate oldDelegate) =>
+      maxHeight != oldDelegate.maxHeight ||
+      minHeight != oldDelegate.minHeight ||
+      child != oldDelegate.child;
 }
 
 // ─── Tarjeta de actividad ──────────────────────────────────────
@@ -277,6 +392,8 @@ class _ActividadCard extends StatefulWidget {
   final bool completado;
   final VoidCallback onTap;
   final bool rellenar;
+  final bool ajustarAncho;
+  final double cardHeight;
 
   const _ActividadCard({
     required this.imagen,
@@ -284,6 +401,8 @@ class _ActividadCard extends StatefulWidget {
     required this.completado,
     required this.onTap,
     this.rellenar = false,
+    this.ajustarAncho = false,
+    this.cardHeight = 84,
   });
 
   @override
@@ -318,15 +437,15 @@ class _ActividadCardState extends State<_ActividadCard>
         scale: _scale,
         child: Container(
           width: double.infinity,
-          height: 70,
+          height: widget.cardHeight,
           decoration: BoxDecoration(
             color: const Color(0xFF3DCC52),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(18),
             boxShadow: const [
               BoxShadow(
                 color: Color(0xFF22A45D),
                 blurRadius: 0,
-                offset: Offset(0, 4),
+                offset: Offset(0, 5),
               ),
             ],
           ),
@@ -334,59 +453,86 @@ class _ActividadCardState extends State<_ActividadCard>
             children: [
               // Imagen
               Container(
-                margin: const EdgeInsets.all(5),
-                width: 80,
+                margin: const EdgeInsets.all(8),
+                width: widget.cardHeight * 0.78,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   color: const Color(0xFFE0F7FA),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                   child: widget.rellenar
                       ? Image.asset(
                           widget.imagen,
                           fit: BoxFit.cover,
-                          errorBuilder: (ctx, e, _) => const Icon(
+                          errorBuilder: (ctx, e, _) => Icon(
                             Icons.science_rounded,
-                            color: Color(0xFF3DCC52),
+                            color: const Color(0xFF3DCC52),
+                            size: widget.cardHeight * 0.38,
                           ),
                         )
-                      : Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Image.asset(
-                            widget.imagen,
-                            fit: BoxFit.contain,
-                            errorBuilder: (ctx, e, _) => const Icon(
-                              Icons.science_rounded,
-                              color: Color(0xFF3DCC52),
+                      : widget.ajustarAncho
+                          ? LayoutBuilder(
+                              builder: (ctx, bc) => OverflowBox(
+                                maxWidth: bc.maxWidth * 1.8,
+                                maxHeight: bc.maxHeight * 1.8,
+                                alignment: Alignment.bottomCenter,
+                                child: Image.asset(
+                                  widget.imagen,
+                                  fit: BoxFit.fitWidth,
+                                  errorBuilder: (ctx, e, _) => Icon(
+                                    Icons.science_rounded,
+                                    color: const Color(0xFF3DCC52),
+                                    size: widget.cardHeight * 0.38,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Image.asset(
+                                widget.imagen,
+                                fit: BoxFit.contain,
+                                errorBuilder: (ctx, e, _) => Icon(
+                                  Icons.science_rounded,
+                                  color: const Color(0xFF3DCC52),
+                                  size: widget.cardHeight * 0.38,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
                 ),
               ),
               // Texto
               Expanded(
-                child: Text(
-                  widget.texto,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
+                child: Center(
+                  child: Text(
+                    widget.texto,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: (widget.cardHeight * 0.30).clamp(20.0, 32.0),
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
                   ),
                 ),
               ),
-              // Indicador
+              // Indicador completado o flecha
               Padding(
-                padding: const EdgeInsets.only(right: 14),
+                padding: const EdgeInsets.only(right: 16),
                 child: widget.completado
-                    ? const Icon(Icons.check_circle_rounded,
-                        color: Colors.white, size: 28)
-                    : const Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white, size: 22),
+                    ? Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                        size: widget.cardHeight * 0.33,
+                      )
+                    : Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Colors.white,
+                        size: widget.cardHeight * 0.26,
+                      ),
               ),
             ],
           ),

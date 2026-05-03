@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../terminado.dart';
@@ -17,7 +17,6 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   final Map<int, _Tool> _placed = {};
   final Set<_Tool> _usedTools = {};
 
-  // ── Audio ─────────────────────────────────────────────────────────────────
   late final AudioPlayer _player;
   bool _isPlayingAudio = false;
   StreamSubscription<bool>? _playingSub;
@@ -205,8 +204,9 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5A623), // fondo amarillo para que el header se extienda visualmente
+      backgroundColor: const Color(0xFFF5A623),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
@@ -218,45 +218,53 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-      // Sin border radius: esquinas completamente rectas
-      color: const Color(0xFFF5A623),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Héroes de la Ciudad',
-            style: TextStyle(
-              // Fuente sans-serif bold como en la imagen de referencia
-              fontFamily: 'Poppins',
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 0.3,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: const Icon(
-                Icons.close,
-                size: 22,
-                color: Colors.white,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Héroes de la Ciudad',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  wordSpacing: 7,
+                ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 3 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildBody() {
+    final sw = MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,
-      // Esquinas superiores redondeadas, inferiores rectas (como la imagen de referencia)
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -269,41 +277,24 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Título
-            const Text(
-              'Herramientas\ndel Héroe',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3D2B1F),
-                height: 1.3,
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
 
-            // Instrucción
             Row(
               children: [
                 GestureDetector(
                   onTap: _toggleAudio,
-                  child: Icon(
-                    _isPlayingAudio ? Icons.pause_rounded : Icons.volume_up,
-                    color: const Color(0xFF333333),
-                    size: 26,
-                  ),
+                  child: _AudioBtn(sw: sw, isPlaying: _isPlayingAudio),
                 ),
-                const SizedBox(width: 10),
-                const Expanded(
+                SizedBox(width: sw * 0.03),
+                Expanded(
                   child: Text(
                     'Arrastra cada objeto al personaje correcto',
                     style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 13,
+                      fontFamily: 'Hiruko',
+                      fontSize: (sw * 0.055).clamp(18.0, 38.0),
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF333333),
-                      height: 1.4,
+                      color: const Color(0xFF333333),
+                      height: 1.3,
                     ),
                   ),
                 ),
@@ -311,7 +302,6 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
             ),
             const SizedBox(height: 16),
 
-            // Fila personajes + drop zones
             LayoutBuilder(
               builder: (ctx, constraints) {
                 final cardSize = (constraints.maxWidth - 24) / 4;
@@ -337,18 +327,27 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
             const Divider(thickness: 1.5, color: Color(0xFFEEEEEE)),
             const SizedBox(height: 12),
 
-            // Zona de herramientas 2x2
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 12,
-                physics: const NeverScrollableScrollPhysics(),
-                children: _tools
-                    .map((t) => _usedTools.contains(t.tool)
-                        ? const SizedBox()
-                        : _buildDraggable(t))
-                    .toList(),
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  const hSpacing = 20.0;
+                  const vSpacing = 12.0;
+                  final itemW = (constraints.maxWidth - hSpacing) / 2;
+                  final itemH = (constraints.maxHeight - vSpacing) / 2;
+                  final ratio = itemW / itemH.clamp(1.0, double.infinity);
+                  return GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: hSpacing,
+                    mainAxisSpacing: vSpacing,
+                    childAspectRatio: ratio,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: _tools
+                        .map((t) => _usedTools.contains(t.tool)
+                            ? const SizedBox()
+                            : _buildDraggable(t))
+                        .toList(),
+                  );
+                },
               ),
             ),
           ],
@@ -371,8 +370,7 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
         hero.imagePath,
         fit: BoxFit.contain,
         errorBuilder: (ctx, e, _) => Center(
-          child:
-              Text(hero.fallbackEmoji, style: const TextStyle(fontSize: 28)),
+          child: Text(hero.fallbackEmoji, style: TextStyle(fontSize: size * 0.4)),
         ),
       ),
     );
@@ -410,15 +408,11 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
               ? Padding(
                   padding: const EdgeInsets.all(6),
                   child: Image.asset(
-                    _tools
-                        .firstWhere((t) => t.tool == placedTool)
-                        .imagePath,
+                    _tools.firstWhere((t) => t.tool == placedTool).imagePath,
                     fit: BoxFit.contain,
                     errorBuilder: (ctx, e, _) => Center(
                       child: Text(
-                        _tools
-                            .firstWhere((t) => t.tool == placedTool)
-                            .fallbackEmoji,
+                        _tools.firstWhere((t) => t.tool == placedTool).fallbackEmoji,
                         style: const TextStyle(fontSize: 24),
                       ),
                     ),
@@ -431,27 +425,34 @@ class _HeroesCiudad3ScreenState extends State<HeroesCiudad3Screen> {
   }
 
   Widget _buildDraggable(_ToolData toolData) {
-    final img = Image.asset(
-      toolData.imagePath,
-      fit: BoxFit.contain,
-      errorBuilder: (ctx, e, _) => Center(
-        child: Text(toolData.fallbackEmoji,
-            style: const TextStyle(fontSize: 52)),
-      ),
-    );
+    Widget paddedImg(double pad) => Padding(
+          padding: EdgeInsets.all(pad),
+          child: Image.asset(
+            toolData.imagePath,
+            fit: BoxFit.contain,
+            errorBuilder: (ctx, e, _) => Center(
+              child: Text(toolData.fallbackEmoji, style: const TextStyle(fontSize: 52)),
+            ),
+          ),
+        );
 
-    return Draggable<_Tool>(
-      data: toolData.tool,
-      feedback: SizedBox(
-        width: 90,
-        height: 90,
-        child: Material(
-          color: Colors.transparent,
-          child: Opacity(opacity: 0.85, child: img),
-        ),
-      ),
-      childWhenDragging: Opacity(opacity: 0.25, child: img),
-      child: img,
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        final pad = constraints.maxWidth * 0.12;
+        return Draggable<_Tool>(
+          data: toolData.tool,
+          feedback: SizedBox(
+            width: 90,
+            height: 90,
+            child: Material(
+              color: Colors.transparent,
+              child: Opacity(opacity: 0.85, child: paddedImg(0)),
+            ),
+          ),
+          childWhenDragging: Opacity(opacity: 0.25, child: paddedImg(pad)),
+          child: paddedImg(pad),
+        );
+      },
     );
   }
 }
@@ -480,4 +481,35 @@ class _ToolData {
     required this.imagePath,
     required this.fallbackEmoji,
   });
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
+      ),
+    );
+  }
 }

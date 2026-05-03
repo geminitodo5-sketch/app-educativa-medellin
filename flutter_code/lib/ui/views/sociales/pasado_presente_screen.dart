@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:just_audio/just_audio.dart';
 import 'pasado_presente_2_screen.dart';
@@ -52,8 +52,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
         weight: 1,
       ),
       TweenSequenceItem(
-        tween: Tween(
-            begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
+        tween: Tween(begin: const Offset(0.04, 0), end: const Offset(-0.04, 0)),
         weight: 2,
       ),
       TweenSequenceItem(
@@ -97,9 +96,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto
-                ? const Color(0xFFD7FFD3)
-                : const Color(0xFFFFD3D3),
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -112,9 +109,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto
-                        ? const Color(0xFF59E347)
-                        : const Color(0xFFF65757),
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -135,11 +130,8 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto
-                        ? const Color(0xFF59E347)
-                        : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -204,6 +196,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF5A623),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             _buildHeader(),
@@ -227,89 +220,72 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 36),
-      color: const Color(0xFFF5A623),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Pasado y Presente',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 0.3,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: const Icon(
-                Icons.close,
-                size: 22,
-                color: Colors.white,
+    final sw = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Pasado y Presente',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 1 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildBody() {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       child: Column(
         children: [
-          const Text(
-            'Pasado y Presente\nde  los Objetos',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D2B1F),
-              height: 1.2,
-            ),
-          ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
                 onTap: _reproducirInstruccion,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5A623).withValues(alpha: 0.14),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFF5A623).withValues(alpha: 0.40),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.volume_up_rounded,
-                    color: Color(0xFFF5A623),
-                    size: 20,
-                  ),
-                ),
+                child: _AudioBtn(sw: sw),
               ),
-              const SizedBox(width: 10),
-              const Expanded(
+              SizedBox(width: sw * 0.03),
+              Expanded(
                 child: Text(
-                  'Une el pasado con el presente,\ny empareja los objetos.',
+                  'Une el pasado con el presente, y empareja  los objetos.',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 13,
+                    fontFamily: 'Hiruko',
+                    fontSize: (sw * 0.055).clamp(18.0, 38.0),
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                    height: 1.5,
+                    color: const Color(0xFF333333),
+                    height: 1.3,
                   ),
                 ),
               ),
@@ -319,9 +295,18 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
           Expanded(
             child: SlideTransition(
               position: _shakeAnim,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(4, (row) => _buildRow(row)),
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  final itemH = (constraints.maxHeight / 4 - 10).clamp(70.0, 999.0);
+                  return Column(
+                    children: List.generate(4, (row) => Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: row < 3 ? 10.0 : 0.0),
+                        child: _buildRow(row, itemH),
+                      ),
+                    )),
+                  );
+                },
               ),
             ),
           ),
@@ -330,10 +315,11 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     );
   }
 
-  Widget _buildRow(int row) {
+  Widget _buildRow(int row, double itemH) {
     final rightPairIndex = _rightOrder[row];
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: _buildItem(
@@ -341,6 +327,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
             isSelected: _selectedLeft == row,
             isMatched: _matched.contains(row),
             onTap: () => _onLeftTap(row),
+            height: double.infinity,
           ),
         ),
         const SizedBox(width: 16),
@@ -350,6 +337,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
             isSelected: false,
             isMatched: _matched.contains(rightPairIndex),
             onTap: () => _onRightTap(row),
+            height: double.infinity,
           ),
         ),
       ],
@@ -361,6 +349,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
     required bool isSelected,
     required bool isMatched,
     required VoidCallback onTap,
+    required double height,
   }) {
     final Color borderColor = isMatched
         ? const Color(0xFF4CAF50)
@@ -378,7 +367,7 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        height: 90,
+        height: height == double.infinity ? null : height,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(16),
@@ -420,6 +409,37 @@ class _PasadoPresenteScreenState extends State<PasadoPresenteScreen>
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
       ),
     );
   }

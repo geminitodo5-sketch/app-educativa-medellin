@@ -198,16 +198,19 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
               _PageCard(
                 title: '¿Vivo o no Vivo?',
                 dots: _buildDots(),
+                progress: 1 / 3,
                 child: _Actividad1(key: _key1, onNext: _siguiente),
               ),
               _PageCard(
                 title: '¿Vivo o no Vivo?',
                 dots: _buildDots(),
+                progress: 2 / 3,
                 child: _Actividad2(key: _key2, onNext: _siguiente),
               ),
               _PageCard(
                 title: '¿Vivo o no Vivo?',
                 dots: _buildDots(),
+                progress: 1.0,
                 child: _Actividad3(key: _key3, onFinish: _irATerminado),
               ),
             ],
@@ -275,10 +278,17 @@ class _PageCard extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget dots;
-  const _PageCard({required this.title, required this.child, required this.dots});
+  final double progress;
+  const _PageCard({
+    required this.title,
+    required this.child,
+    required this.dots,
+    required this.progress,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         Container(color: const Color(0xFF3DCC52)),
@@ -286,18 +296,35 @@ class _PageCard extends StatelessWidget {
           children: [
             SafeArea(
               bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 18, 52, 48),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 18, 52, 12),
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 14),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.white30,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF59E347)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -351,25 +378,37 @@ class _Instruccion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ✅ Botón de volumen — mismo estilo visual, misma lógica que el código de referencia
-          IconButton(
-            icon: const Icon(Icons.volume_up_rounded, size: 36),
-            color: Colors.black87,
-            onPressed: _reproducir,
+          GestureDetector(
+            onTap: _reproducir,
+            child: Container(
+              width: (sw * 0.13).clamp(44.0, 60.0),
+              height: (sw * 0.13).clamp(44.0, 60.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.volume_up_rounded,
+                color: const Color(0xFF3DCC52),
+                size: (sw * 0.07).clamp(24.0, 34.0),
+              ),
+            ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: sw * 0.03),
           Expanded(
             child: Text(
               texto,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: Color(0xFF424242),
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: (sw * 0.065).clamp(20.0, 46.0),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF424242),
                 height: 1.3,
               ),
             ),
@@ -709,7 +748,7 @@ class _Actividad2State extends State<_Actividad2> {
           const SizedBox(height: 20),
           // ✅ Se pasa _player y _audioAsset
           _Instruccion(
-            'Elige el ser vivo entre los no vivos',
+            'Elige el ser vivo entre  los no vivos',
             player: _player,
             audioAsset: _audioAsset,
           ),
@@ -850,165 +889,158 @@ class _Actividad3State extends State<_Actividad3> {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final hPad = (sw * 0.035).clamp(10.0, 20.0);
+
     return _Tarjeta(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 20),
-          // ✅ Se pasa _player y _audioAsset
           _Instruccion(
-            'Arrastra dentro del cuadro los elementos más importantes para vivir',
+            'Arrastra dentro del cuadro  los elementos más importantes para vivir',
             player: _player,
             audioAsset: _audioAsset,
           ),
           Expanded(
-            child: Center(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 8),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-                    child: AspectRatio(
-                      aspectRatio: 1.1,
-                      child: DragTarget<String>(
-                        onWillAcceptWithDetails: (_) {
-                          setState(() => _hovering = true);
-                          return true;
-                        },
-                        onLeave: (_) => setState(() => _hovering = false),
-                        onAcceptWithDetails: (d) {
-                          setState(() => _hovering = false);
-                          _onDrop(context, d.data);
-                        },
-                        builder: (ctx, candidates, rejected) {
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: _hovering
-                                    ? const Color(0xFF3DCC52)
-                                    : const Color(0xFFBDBDBD),
-                                width: _hovering ? 3 : 1.5,
-                              ),
+                  Expanded(
+                    child: DragTarget<String>(
+                      onWillAcceptWithDetails: (_) {
+                        setState(() => _hovering = true);
+                        return true;
+                      },
+                      onLeave: (_) => setState(() => _hovering = false),
+                      onAcceptWithDetails: (d) {
+                        setState(() => _hovering = false);
+                        _onDrop(context, d.data);
+                      },
+                      builder: (ctx, candidates, rejected) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: _hovering
+                                  ? const Color(0xFF3DCC52)
+                                  : const Color(0xFFBDBDBD),
+                              width: _hovering ? 3 : 1.5,
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.asset(
-                                    '${_p3}cuadro.png',
-                                    fit: BoxFit.cover,
-                                    alignment: Alignment.center,
-                                    errorBuilder: (ctx, e, s) =>
-                                        Container(color: const Color(0xFFE3F2FD)),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.asset(
+                                  '${_p3}cuadro.png',
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.center,
+                                  errorBuilder: (ctx, e, s) =>
+                                      Container(color: const Color(0xFFE3F2FD)),
+                                ),
+                                if (_colocados.isNotEmpty)
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Wrap(
+                                        spacing: 4,
+                                        runSpacing: 4,
+                                        children: _colocados.map((n) {
+                                          final it = _items.firstWhere((i) => i.nombre == n);
+                                          final iconSz = (sw * 0.10).clamp(36.0, 60.0);
+                                          return Container(
+                                            width: iconSz,
+                                            height: iconSz,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xCCFFFFFF),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            padding: const EdgeInsets.all(4),
+                                            child: Image.asset(it.ruta, fit: BoxFit.contain),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
                                   ),
-                                  if (_colocados.isNotEmpty)
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Wrap(
-                                          spacing: 4,
-                                          runSpacing: 4,
-                                          children: _colocados.map((n) {
-                                            final it = _items
-                                                .firstWhere((i) => i.nombre == n);
-                                            return Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xCCFFFFFF),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              padding: const EdgeInsets.all(4),
-                                              child: Image.asset(it.ruta,
-                                                  fit: BoxFit.contain),
-                                            );
-                                          }).toList(),
-                                        ),
-                                      ),
+                                if (_completado)
+                                  Container(
+                                    color: const Color(0x554CAF50),
+                                    child: const Center(
+                                      child: Icon(Icons.check_circle_rounded,
+                                          color: Colors.white, size: 56),
                                     ),
-                                  if (_completado)
-                                    Container(
-                                      color: const Color(0x554CAF50),
-                                      child: const Center(
-                                        child: Icon(Icons.check_circle_rounded,
-                                            color: Colors.white, size: 56),
-                                      ),
-                                    ),
-                                ],
-                              ),
+                                  ),
+                              ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE0E0E0)),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: GridView.count(
-                        crossAxisCount: 5,
-                        mainAxisSpacing: 6,
-                        crossAxisSpacing: 6,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: _items.map((item) {
-                          if (_colocados.contains(item.nombre)) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEEEEEE),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            );
-                          }
-                          return Draggable<String>(
-                            data: item.nombre,
-                            feedback: Material(
-                              color: Colors.transparent,
-                              child: SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Image.asset(item.ruta,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (ctx, e, s) => const Icon(
-                                        Icons.image, size: 40, color: Colors.grey)),
-                              ),
-                            ),
-                            childWhenDragging: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEEEEEE),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF0F0F0),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: const Color(0xFFDDDDDD)),
-                              ),
-                              padding: const EdgeInsets.all(6),
-                              child: Image.asset(
-                                item.ruta,
-                                fit: BoxFit.contain,
-                                errorBuilder: (ctx, e, s) => const Icon(
-                                    Icons.image_not_supported,
-                                    size: 28,
-                                    color: Colors.grey),
-                              ),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE0E0E0)),
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    child: GridView.count(
+                      crossAxisCount: 5,
+                      mainAxisSpacing: 6,
+                      crossAxisSpacing: 6,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: _items.map((item) {
+                        if (_colocados.contains(item.nombre)) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEEEEEE),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           );
-                        }).toList(),
-                      ),
+                        }
+                        return Draggable<String>(
+                          data: item.nombre,
+                          feedback: Material(
+                            color: Colors.transparent,
+                            child: SizedBox(
+                              width: (sw * 0.13).clamp(44.0, 70.0),
+                              height: (sw * 0.13).clamp(44.0, 70.0),
+                              child: Image.asset(item.ruta,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (ctx, e, s) => const Icon(
+                                      Icons.image, size: 40, color: Colors.grey)),
+                            ),
+                          ),
+                          childWhenDragging: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEEEEEE),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF0F0F0),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFDDDDDD)),
+                            ),
+                            padding: const EdgeInsets.all(6),
+                            child: Image.asset(
+                              item.ruta,
+                              fit: BoxFit.contain,
+                              errorBuilder: (ctx, e, s) => const Icon(
+                                  Icons.image_not_supported,
+                                  size: 28,
+                                  color: Colors.grey),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ],

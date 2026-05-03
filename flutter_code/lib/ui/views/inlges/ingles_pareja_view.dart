@@ -316,15 +316,24 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                   const SizedBox(height: 4),
                   const Text(
                     '¡Une  la pareja!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Hiruko',
                       color: Colors.white,
-                      fontSize: 26,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  _buildIndicador(),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: (_nivel + 1) / 3,
+                      minHeight: 8,
+                      backgroundColor: Colors.white30,
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -343,29 +352,36 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                   child: Column(
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: _reproducirInstruccion,
                             child: Container(
-                              padding: const EdgeInsets.all(8),
+                              width: 56,
+                              height: 56,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF0F4FF),
-                                borderRadius: BorderRadius.circular(12),
+                                color: const Color(0xFFEDE7F6),
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              child: const Icon(
-                                Icons.volume_up_rounded,
-                                color: Color(0xFF3475F7),
-                                size: 22,
+                              child: const Center(
+                                child: Icon(
+                                  Icons.volume_up_rounded,
+                                  color: Color(0xFF7B2FBE),
+                                  size: 30,
+                                ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            'Une  la pareja',
-                            style: TextStyle(
-                              fontFamily: 'Hiruko',
-                              fontSize: 17,
-                              color: Colors.black87,
+                          const SizedBox(width: 14),
+                          const Expanded(
+                            child: Text(
+                              'Une  la pareja',
+                              style: TextStyle(
+                                fontFamily: 'Hiruko',
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF3E2000),
+                              ),
                             ),
                           ),
                         ],
@@ -389,133 +405,97 @@ class _InglesParejaViewState extends State<InglesParejaView> {
                                     ),
                                   ),
                                 ),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 100,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: List.generate(_pares.length, (
-                                          pos,
-                                        ) {
-                                          // ── NUEVO: pos es posición visual, parIdx es el par real
-                                          final parIdx = _imgsOrden[pos];
-                                          final par = _pares[parIdx];
-                                          final conectado = _conectados
-                                              .contains(parIdx);
-                                          final seleccion =
-                                              _imgSeleccionada == parIdx;
-                                          final esError = _errorImg == parIdx;
+                                Positioned.fill(
+                                  child: Column(
+                                  children: List.generate(_pares.length, (pos) {
+                                    // Imagen
+                                    final parIdx = _imgsOrden[pos];
+                                    final par = _pares[parIdx];
+                                    final conectado = _conectados.contains(parIdx);
+                                    final seleccion = _imgSeleccionada == parIdx;
+                                    final esErrorImg = _errorImg == parIdx;
 
-                                          return GestureDetector(
-                                            key:
-                                                _imgKeys[pos], // key por posición visual
-                                            onTap: () => _tocarImagen(pos),
-                                            child: AnimatedContainer(
-                                              duration: const Duration(
-                                                milliseconds: 200,
-                                              ),
-                                              width: 80,
-                                              height: 80,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: esError
-                                                    ? Colors.red.shade100
-                                                    : seleccion
-                                                    ? const Color(
-                                                        0xFF8B2FC9,
-                                                      ).withOpacity(0.12)
-                                                    : Colors.grey.shade100,
-                                                border: seleccion
-                                                    ? Border.all(
-                                                        color: const Color(
-                                                          0xFF8B2FC9,
-                                                        ),
-                                                        width: 2.5,
-                                                      )
-                                                    : conectado
-                                                    ? Border.all(
-                                                        color:
-                                                            _coloresPar[parIdx],
-                                                        width: 2.5,
-                                                      )
-                                                    : null,
-                                              ),
-                                              padding: const EdgeInsets.all(10),
-                                              child: Opacity(
-                                                opacity: conectado ? 0.5 : 1.0,
-                                                child: Image.asset(
-                                                  par['img'] as String,
-                                                  fit: BoxFit.contain,
-                                                  errorBuilder: (_, __, ___) =>
-                                                      const SizedBox(),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        }),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    SizedBox(
-                                      width: 110,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: List.generate(
-                                          _palabrasOrden.length,
-                                          (pos) {
-                                            final parIdx =
-                                                _palabrasOrden[pos] as int;
-                                            final par = _pares[parIdx];
-                                            final conectado = _conectados
-                                                .contains(parIdx);
-                                            final esError = _errorPal == parIdx;
-                                            final color = _coloresPar[parIdx];
+                                    // Palabra (columna derecha)
+                                    final parIdxPal = _palabrasOrden[pos] as int;
+                                    final parPal = _pares[parIdxPal];
+                                    final conectadoPal = _conectados.contains(parIdxPal);
+                                    final esErrorPal = _errorPal == parIdxPal;
+                                    final colorPal = _coloresPar[parIdxPal];
 
-                                            return GestureDetector(
-                                              key: _palKeys[pos],
-                                              onTap: () => _tocarPalabra(pos),
+                                    final rowHeight = constraints.maxHeight / _pares.length;
+                                    final imgSizeActual = (rowHeight * 0.82).clamp(70.0, 160.0);
+
+                                    return Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // ── Imagen (pegada a la izquierda) ──
+                                            GestureDetector(
+                                              key: _imgKeys[pos],
+                                              onTap: () => _tocarImagen(pos),
                                               child: AnimatedContainer(
-                                                duration: const Duration(
-                                                  milliseconds: 200,
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 10,
-                                                      vertical: 8,
-                                                    ),
+                                                duration: const Duration(milliseconds: 200),
+                                                width: imgSizeActual,
+                                                height: imgSizeActual,
                                                 decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  color: esError
-                                                      ? Colors.red.shade50
-                                                      : Colors.transparent,
+                                                  shape: BoxShape.circle,
+                                                  color: esErrorImg
+                                                      ? Colors.red.shade100
+                                                      : seleccion
+                                                      ? const Color(0xFF8B2FC9).withOpacity(0.12)
+                                                      : Colors.grey.shade100,
+                                                  border: seleccion
+                                                      ? Border.all(color: const Color(0xFF8B2FC9), width: 2.5)
+                                                      : conectado
+                                                      ? Border.all(color: _coloresPar[parIdx], width: 2.5)
+                                                      : null,
                                                 ),
-                                                child: Text(
-                                                  par['palabra'] as String,
-                                                  style: TextStyle(
-                                                    fontFamily: 'Hiruko',
-                                                    fontSize: 26,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: conectado
-                                                        ? Colors.grey.shade300
-                                                        : esError
-                                                        ? Colors.red
-                                                        : color,
+                                                padding: const EdgeInsets.all(10),
+                                                child: Opacity(
+                                                  opacity: conectado ? 0.5 : 1.0,
+                                                  child: Image.asset(
+                                                    par['img'] as String,
+                                                    fit: BoxFit.contain,
+                                                    errorBuilder: (_, __, ___) => const SizedBox(),
                                                   ),
                                                 ),
                                               ),
-                                            );
-                                          },
+                                            ),
+                                            // ── Palabra (pegada a la derecha) ────
+                                            GestureDetector(
+                                              key: _palKeys[pos],
+                                              onTap: () => _tocarPalabra(pos),
+                                              child: AnimatedContainer(
+                                                duration: const Duration(milliseconds: 200),
+                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  color: esErrorPal ? Colors.red.shade50 : Colors.transparent,
+                                                ),
+                                                child: Text(
+                                                  parPal['palabra'] as String,
+                                                  style: TextStyle(
+                                                    fontFamily: 'Hiruko',
+                                                    fontSize: (constraints.maxWidth * 0.11).clamp(26.0, 46.0),
+                                                    fontWeight: FontWeight.bold,
+                                                    color: conectadoPal
+                                                        ? Colors.grey.shade300
+                                                        : esErrorPal
+                                                        ? Colors.red
+                                                        : colorPal,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    );
+                                  }),
+                                  ),
                                 ),
                               ],
                             );

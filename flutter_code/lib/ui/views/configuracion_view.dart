@@ -22,15 +22,18 @@ class ConfiguracionView extends ConsumerStatefulWidget {
 }
 
 class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
-  bool _sonidoActivo = true;
-  bool _musicaActiva = true;
-  bool _modoOffline = true;
+  bool   _sonidoActivo = true;
+  bool   _musicaActiva = true;
+  double _volumen      = 1.0;
+  bool   _modoOffline  = true;
   String _idiomaSeleccionado = 'Español';
 
   @override
   void initState() {
     super.initState();
-    _musicaActiva = ref.read(musicaServiceProvider).musicaActiva;
+    final svc = ref.read(musicaServiceProvider);
+    _musicaActiva = svc.musicaActiva;
+    _volumen      = svc.volumen;
   }
 
   static const Color _cyanTeal = Color(0xFF65CEE3);
@@ -258,6 +261,21 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     final avatar = estudiante?.personaje ?? 'pollito';
     final grado = estudiante?.grado ?? 1;
 
+    final sw = MediaQuery.of(context).size.width;
+    final isTablet = sw >= 600;
+
+    final hPadding      = isTablet ? 32.0  : 16.0;
+    final cardPadding   = isTablet ? 24.0  : 16.0;
+    final cardRadius    = isTablet ? 24.0  : 20.0;
+    final avatarSize    = isTablet ? 100.0 : 70.0;
+    final nombreFontSize= isTablet ? 30.0  : 22.0;
+    final gradoFontSize = isTablet ? 20.0  : 15.0;
+    final cardTitleSize = isTablet ? 22.0  : 18.0;
+    final cardSubSize   = isTablet ? 16.0  : 14.0;
+    final iconSize      = isTablet ? 52.0  : 40.0;
+    final cardGap       = isTablet ? 16.0  : 12.0;
+    final editIconSize  = isTablet ? 26.0  : 20.0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -265,26 +283,25 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(hPadding),
                 children: [
                   // ── Perfil ─────────────────────────────────────
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(cardPadding),
                     decoration: BoxDecoration(
                       color: _royalBlue,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(cardRadius),
                     ),
                     child: Row(
                       children: [
                         // Avatar
                         Container(
-                          width: 70,
-                          height: 70,
+                          width: avatarSize,
+                          height: avatarSize,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border:
-                                Border.all(color: Colors.white, width: 3),
+                            border: Border.all(color: Colors.white, width: 3),
                             color: Colors.white24,
                           ),
                           child: ClipOval(
@@ -295,56 +312,74 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                                     ? 'assets/images/bienvenida/pollo feliz 2 (2).png'
                                     : 'assets/images/bienvenida/mono.png',
                                 fit: BoxFit.contain,
-                                errorBuilder: (ctx, e, _) => const Icon(
+                                errorBuilder: (ctx, e, _) => Icon(
                                     Icons.face_rounded,
                                     color: Colors.white,
-                                    size: 40),
+                                    size: avatarSize * 0.55),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: isTablet ? 24 : 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Nombre + lápiz
                               Row(
                                 children: [
-                                  Text(
-                                    nombre,
-                                    style: const TextStyle(
-                                      fontFamily: 'Hiruko',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22,
-                                      color: Colors.white,
+                                  Flexible(
+                                    child: Text(
+                                      nombre,
+                                      style: TextStyle(
+                                        fontFamily: 'Hiruko',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: nombreFontSize,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: _mostrarDialogoNombre,
-                                    child: const Icon(Icons.edit_rounded,
-                                        color: Colors.white70, size: 20),
+                                    child: Icon(Icons.edit_rounded,
+                                        color: Colors.white70,
+                                        size: editIconSize),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Text(
-                                    '$grado° Grado',
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 14,
-                                      color: Colors.white70,
-                                    ),
+                              const SizedBox(height: 8),
+                              // Grado: botón grande y clicable
+                              GestureDetector(
+                                onTap: _mostrarDialogoGrado,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 16 : 12,
+                                    vertical: isTablet ? 12 : 8,
                                   ),
-                                  const SizedBox(width: 8),
-                                  GestureDetector(
-                                    onTap: _mostrarDialogoGrado,
-                                    child: const Icon(Icons.edit_rounded,
-                                        color: Colors.white54, size: 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius: BorderRadius.circular(isTablet ? 14 : 10),
                                   ),
-                                ],
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '$grado° Grado',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: gradoFontSize,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(width: isTablet ? 10 : 6),
+                                      Icon(Icons.edit_rounded,
+                                          color: Colors.white,
+                                          size: isTablet ? 22 : 16),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -353,73 +388,114 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                     ),
                   ),
 
-                  const SizedBox(height: 12),
-
-                  // ── Sonido ─────────────────────────────────────
-                  _buildSoundCard(),
-                  const SizedBox(height: 12),
-
-                  // ── Idioma ─────────────────────────────────────
-                  _buildLanguageCard(),
-                  const SizedBox(height: 12),
-
-                  // ── Modo Offline ───────────────────────────────
-                  _buildOfflineCard(),
-                  const SizedBox(height: 12),
-
-                  // ── Sync info ──────────────────────────────────
-                  _buildSyncCard(),
-                  const SizedBox(height: 12),
-
-                  // ── Reiniciar BD ────────────────────────────────
-                  _buildResetCard(),
-                  const SizedBox(height: 12),
-
-                  // ── Cerrar sesión ───────────────────────────────
-                  _buildLogoutCard(),
+                  SizedBox(height: cardGap),
+                  _buildSoundCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize, isTablet),
+                  SizedBox(height: cardGap),
+                  _buildLanguageCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
+                  SizedBox(height: cardGap),
+                  _buildOfflineCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
+                  SizedBox(height: cardGap),
+                  _buildSyncCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
+                  SizedBox(height: cardGap),
+                  _buildResetCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
+                  SizedBox(height: cardGap),
+                  _buildLogoutCard(cardPadding, cardRadius, cardTitleSize, iconSize),
                 ],
               ),
             ),
 
-            // ── Barra de navegación ─────────────────────────────
-            _buildBottomNavBar(context),
+            _buildBottomNavBar(context, isTablet),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSoundCard() {
+  Widget _buildSoundCard(double cardPadding, double cardRadius,
+      double titleSize, double subSize, double iconSize, bool isTablet) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: _cyanTeal,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(cardRadius),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.volume_up_outlined, color: Colors.white, size: 40),
-          const SizedBox(width: 16),
+          Icon(Icons.volume_up_outlined, color: Colors.white, size: iconSize),
+          SizedBox(width: isTablet ? 24 : 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Sonido',
-                    style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.white)),
-                const SizedBox(height: 8),
+                Text(
+                  'Control de audio',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.bold,
+                    fontSize: titleSize,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: isTablet ? 10 : 6),
+                // ── Slider de volumen ───────────────────────────
+                Row(
+                  children: [
+                    Icon(
+                      _volumen == 0
+                          ? Icons.volume_off_rounded
+                          : _volumen < 0.5
+                              ? Icons.volume_down_rounded
+                              : Icons.volume_up_rounded,
+                      color: Colors.white,
+                      size: isTablet ? 26 : 20,
+                    ),
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: Colors.white,
+                          inactiveTrackColor: Colors.white30,
+                          thumbColor: Colors.white,
+                          overlayColor: Colors.white24,
+                          trackHeight: isTablet ? 5 : 4,
+                          thumbShape: RoundSliderThumbShape(
+                              enabledThumbRadius: isTablet ? 10 : 8),
+                        ),
+                        child: Slider(
+                          value: _volumen,
+                          min: 0.0,
+                          max: 1.0,
+                          onChanged: (v) {
+                            setState(() => _volumen = v);
+                            ref.read(musicaServiceProvider).setVolumen(v);
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: isTablet ? 44 : 36,
+                      child: Text(
+                        '${(_volumen * 100).round()}%',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: subSize,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: isTablet ? 8 : 4),
                 _buildToggleRow('Sonido', _sonidoActivo,
-                    (v) => setState(() => _sonidoActivo = v)),
-                const SizedBox(height: 8),
+                    (v) => setState(() => _sonidoActivo = v), subSize, isTablet),
+                SizedBox(height: isTablet ? 12 : 8),
                 _buildToggleRow('Música', _musicaActiva, (v) {
                   setState(() => _musicaActiva = v);
                   ref.read(musicaServiceProvider).setMusicaActiva(v);
-                }),
+                }, subSize, isTablet),
               ],
             ),
           ),
@@ -428,16 +504,16 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildToggleRow(
-      String title, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildToggleRow(String title, bool value, ValueChanged<bool> onChanged,
+      double fontSize, bool isTablet) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title,
-            style: const TextStyle(
-                fontFamily: 'Poppins', fontSize: 14, color: Colors.white)),
+            style: TextStyle(
+                fontFamily: 'Poppins', fontSize: fontSize, color: Colors.white)),
         SizedBox(
-          height: 30,
+          height: isTablet ? 40 : 30,
           child: Switch(
             value: value,
             onChanged: onChanged,
@@ -452,31 +528,32 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildLanguageCard() {
+  Widget _buildLanguageCard(double cardPadding, double cardRadius,
+      double titleSize, double subSize, double iconSize) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: _cyanTeal,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(cardRadius),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.language_outlined, color: Colors.white, size: 40),
+          Icon(Icons.language_outlined, color: Colors.white, size: iconSize),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Idioma',
+                Text('Idioma',
                     style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: titleSize,
                         color: Colors.white)),
                 const SizedBox(height: 8),
-                _buildRadioOption('Español'),
+                _buildRadioOption('Español', subSize),
               ],
             ),
           ),
@@ -485,7 +562,7 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildRadioOption(String title) {
+  Widget _buildRadioOption(String title, double fontSize) {
     final bool isSelected = _idiomaSeleccionado == title;
     return GestureDetector(
       onTap: () => setState(() => _idiomaSeleccionado = title),
@@ -504,57 +581,55 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
           ),
           const SizedBox(width: 12),
           Text(title,
-              style: const TextStyle(
-                  fontFamily: 'Poppins', fontSize: 14, color: Colors.white)),
+              style: TextStyle(
+                  fontFamily: 'Poppins', fontSize: fontSize, color: Colors.white)),
         ],
       ),
     );
   }
 
-  Widget _buildOfflineCard() {
+  Widget _buildOfflineCard(double cardPadding, double cardRadius,
+      double titleSize, double subSize, double iconSize) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: _cyanTeal,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(cardRadius),
       ),
       child: Row(
         children: [
-          const Icon(Icons.wifi_off_outlined, color: Colors.white, size: 40),
+          Icon(Icons.wifi_off_outlined, color: Colors.white, size: iconSize),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Modo Offline',
+                Text('Modo Offline',
                     style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: titleSize,
                         color: Colors.white)),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Text('¡Funciona sin internet!',
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 14,
+                              fontSize: subSize,
                               color: Colors.white)),
                     ),
-                    SizedBox(
-                      height: 30,
-                      child: Switch(
-                        value: _modoOffline,
-                        onChanged: (v) => setState(() => _modoOffline = v),
-                        activeThumbColor: Colors.white,
-                        activeTrackColor: Colors.green,
-                        inactiveTrackColor: Colors.white24,
-                        inactiveThumbColor: Colors.white,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
+                    Switch(
+                      value: _modoOffline,
+                      onChanged: (v) => setState(() => _modoOffline = v),
+                      activeThumbColor: Colors.white,
+                      activeTrackColor: Colors.green,
+                      inactiveTrackColor: Colors.white24,
+                      inactiveThumbColor: Colors.white,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ],
                 ),
@@ -566,34 +641,35 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildSyncCard() {
+  Widget _buildSyncCard(double cardPadding, double cardRadius,
+      double titleSize, double subSize, double iconSize) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: const Color(0xFF3475F7).withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(cardRadius),
       ),
       child: Row(
         children: [
-          const Icon(Icons.sync_rounded, color: Colors.white, size: 36),
+          Icon(Icons.sync_rounded, color: Colors.white, size: iconSize),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text('Sincronización',
                     style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: titleSize,
                         color: Colors.white)),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   'Tu progreso se guarda localmente y se sincroniza automáticamente cuando haya internet.',
                   style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 12,
+                      fontSize: subSize,
                       color: Colors.white70),
                 ),
               ],
@@ -604,20 +680,21 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildResetCard() {
+  Widget _buildResetCard(double cardPadding, double cardRadius,
+      double titleSize, double subSize, double iconSize) {
     return GestureDetector(
       onTap: _confirmarReset,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(cardPadding),
         decoration: BoxDecoration(
           color: const Color(0xFFFF8C00),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(cardRadius),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.delete_forever_rounded, color: Colors.white, size: 36),
-            SizedBox(width: 16),
+            Icon(Icons.delete_forever_rounded, color: Colors.white, size: iconSize),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,7 +704,7 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: titleSize,
                       color: Colors.white,
                     ),
                   ),
@@ -635,7 +712,7 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                     'Borra todos los datos y empieza desde cero',
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 12,
+                      fontSize: subSize,
                       color: Colors.white70,
                     ),
                   ),
@@ -648,26 +725,27 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildLogoutCard() {
+  Widget _buildLogoutCard(double cardPadding, double cardRadius,
+      double titleSize, double iconSize) {
     return GestureDetector(
       onTap: _cerrarSesion,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(cardPadding),
         decoration: BoxDecoration(
           color: const Color(0xFFEF5353),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(cardRadius),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.logout_rounded, color: Colors.white, size: 36),
-            SizedBox(width: 16),
+            Icon(Icons.logout_rounded, color: Colors.white, size: iconSize),
+            const SizedBox(width: 16),
             Text(
               'Cerrar sesión',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: titleSize,
                 color: Colors.white,
               ),
             ),
@@ -677,12 +755,16 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  Widget _buildBottomNavBar(BuildContext context) {
+  Widget _buildBottomNavBar(BuildContext context, bool isTablet) {
+    final navIconSize = isTablet ? 36.0 : 28.0;
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: EdgeInsets.only(
+          left: isTablet ? 32 : 16,
+          right: isTablet ? 32 : 16,
+          bottom: isTablet ? 20 : 16),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(vertical: isTablet ? 12 : 8),
         decoration: BoxDecoration(
           color: _cyanTeal,
           borderRadius: BorderRadius.circular(20),
@@ -691,20 +773,17 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
-              icon: const Icon(Icons.home_rounded,
-                  color: Colors.white, size: 28),
+              icon: Icon(Icons.home_rounded, color: Colors.white, size: navIconSize),
               onPressed: () => Navigator.of(context).maybePop(),
               tooltip: 'Inicio',
             ),
             IconButton(
-              icon: const Icon(Icons.bar_chart_rounded,
-                  color: Colors.white, size: 28),
+              icon: Icon(Icons.bar_chart_rounded, color: Colors.white, size: navIconSize),
               onPressed: () => Navigator.of(context).maybePop(),
               tooltip: 'Progreso',
             ),
             IconButton(
-              icon: const Icon(Icons.settings_rounded,
-                  color: Colors.white, size: 28),
+              icon: Icon(Icons.settings_rounded, color: Colors.white, size: navIconSize),
               onPressed: () {},
               tooltip: 'Configuración',
             ),

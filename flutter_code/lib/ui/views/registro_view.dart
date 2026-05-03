@@ -219,242 +219,263 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isTablet = size.shortestSide >= 600;
+    final hMargin = isTablet ? size.width * 0.15 : 28.0;
+    final titleSize = isTablet ? 48.0 : 38.0;
+    final formPadH = isTablet ? 32.0 : 24.0;
+    final formPadV = isTablet ? 36.0 : 28.0;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      // StackFit.expand hace que el Stack (y sus hijos no-Positioned) llenen
+      // toda la pantalla, evitando el fondo blanco en tablets donde el
+      // contenido es más corto que la pantalla.
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          // Fondo
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/bienvenida/fondos (1).png',
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          // Contenido principal
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.zero,
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    SizedBox(height: size.height * 0.06),
-
-                    const Text(
-                      'Regístrate',
-                      style: TextStyle(
-                        fontFamily: 'Hiruko',
-                        fontSize: 38,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-
-                    SizedBox(height: size.height * 0.04),
-
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 28),
-                      padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEEEFF2),
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ── Edad ──────────────────────────────
-                          _buildLabel('Edad'),
-                          const SizedBox(height: 6),
-                          TextField(
-                            controller: _edadController,
-                            keyboardType: TextInputType.number,
-                            // Solo dígitos, máximo 2 caracteres (bloquea el 3er dígito)
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(2),
-                            ],
-                            onChanged: (val) => setState(
-                              () => _errorEdad = _validarEdad(val.trim()),
-                            ),
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 15,
-                              color: Colors.black87,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF4A8BF5),
-                                  width: 1.5,
-                                ),
-                              ),
-                            ),
-                          ),
-                          _buildErrorText(_errorEdad),
-                          const SizedBox(height: 18),
-
-                          // ── Género ────────────────────────────
-                          _buildLabel('Género'),
-                          const SizedBox(height: 6),
-                          _buildGeneroSelector(),
-                          _buildErrorText(_errorGenero),
-                          const SizedBox(height: 18),
-
-                          // ── Email ─────────────────────────────
-                          _buildLabel('Email'),
-                          const SizedBox(height: 6),
-                          _buildTextField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            onChanged: (val) => setState(
-                              () => _errorEmail = _validarEmail(val.trim()),
-                            ),
-                          ),
-                          _buildErrorText(_errorEmail),
-                          const SizedBox(height: 18),
-
-                          // ── Contraseña ────────────────────────
-                          _buildLabel('Contraseña'),
-                          const SizedBox(height: 6),
-                          _buildPasswordField(),
-                          _buildErrorText(_errorContrasena),
-                          if (_errorContrasena == null &&
-                              _contrasenaController.text.isNotEmpty)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Text(
-                                '✓ Contraseña válida',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  color: Color(0xFF34A853),
-                                ),
-                              ),
-                            ),
-                          if (_contrasenaController.text.isEmpty)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Mín. 8 caracteres, una mayúscula y un número',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 11,
-                                  color: Colors.black45,
-                                ),
-                              ),
-                            ),
-
-                          const SizedBox(height: 28),
-
-                          // ── Botón Continuar ───────────────────
-                          SizedBox(
-                            width: double.infinity,
-                            height: 52,
-                            child: ElevatedButton(
-                              onPressed: _cargando ? null : _continuar,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4A8BF5),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: _cargando
-                                  ? const SizedBox(
-                                      width: 22,
-                                      height: 22,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2.5,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Continuar',
-                                      style: TextStyle(
-                                        fontFamily: 'Hiruko',
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          // ¿Ya tienes cuenta?
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder: (ctx, a, _) =>
-                                        const LoginView(),
-                                    transitionsBuilder: (ctx, anim, _, child) =>
-                                        FadeTransition(
-                                          opacity: anim,
-                                          child: child,
-                                        ),
-                                    transitionDuration: const Duration(
-                                      milliseconds: 400,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: RichText(
-                                text: const TextSpan(
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 14,
-                                    color: Colors.black54,
-                                  ),
-                                  children: [
-                                    TextSpan(text: '¿Ya tienes cuenta? '),
-                                    TextSpan(
-                                      text: 'Inicia sesión',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: size.height * 0.18),
-                  ],
-                ),
+          // ── Gradiente de cielo (igual que MatematicasView) ─────────
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF1EB9D8), Color(0xFF59E347)],
               ),
             ),
           ),
 
-          // Mono (Numi) — responsive y reactivo al teclado
+          // ── Paisaje inferior (igual que MatematicasView) ───────────
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/interfaz/fondos/fondo.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // ── Contenido principal ────────────────────────────────────
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  SizedBox(height: size.height * 0.06),
+
+                  Text(
+                    'Regístrate',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+
+                  SizedBox(height: size.height * 0.04),
+
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: hMargin),
+                    padding: EdgeInsets.fromLTRB(formPadH, formPadV, formPadH, formPadV),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEEEFF2),
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Edad ──────────────────────────────
+                        _buildLabel('Edad'),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _edadController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(2),
+                          ],
+                          onChanged: (val) => setState(
+                            () => _errorEdad = _validarEdad(val.trim()),
+                          ),
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: isTablet ? 16.0 : 15.0,
+                            color: Colors.black87,
+                          ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: isTablet ? 16.0 : 14.0,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF4A8BF5),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                        _buildErrorText(_errorEdad),
+                        const SizedBox(height: 18),
+
+                        // ── Género ────────────────────────────
+                        _buildLabel('Género'),
+                        const SizedBox(height: 6),
+                        _buildGeneroSelector(),
+                        _buildErrorText(_errorGenero),
+                        const SizedBox(height: 18),
+
+                        // ── Email ─────────────────────────────
+                        _buildLabel('Email'),
+                        const SizedBox(height: 6),
+                        _buildTextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          onChanged: (val) => setState(
+                            () => _errorEmail = _validarEmail(val.trim()),
+                          ),
+                        ),
+                        _buildErrorText(_errorEmail),
+                        const SizedBox(height: 18),
+
+                        // ── Contraseña ────────────────────────
+                        _buildLabel('Contraseña'),
+                        const SizedBox(height: 6),
+                        _buildPasswordField(),
+                        _buildErrorText(_errorContrasena),
+                        if (_errorContrasena == null &&
+                            _contrasenaController.text.isNotEmpty)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Text(
+                              '✓ Contraseña válida',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: Color(0xFF34A853),
+                              ),
+                            ),
+                          ),
+                        if (_contrasenaController.text.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Text(
+                              'Mín. 8 caracteres, una mayúscula y un número',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 11,
+                                color: Colors.black45,
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 28),
+
+                        // ── Botón Continuar ───────────────────
+                        SizedBox(
+                          width: double.infinity,
+                          height: isTablet ? 64.0 : 52.0,
+                          child: ElevatedButton(
+                            onPressed: _cargando ? null : _continuar,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF4A8BF5),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: _cargando
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : Text(
+                                    'Continuar',
+                                    style: TextStyle(
+                                      fontFamily: 'Hiruko',
+                                      fontSize: isTablet ? 24.0 : 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        // ¿Ya tienes cuenta?
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (ctx, a, _) =>
+                                      const LoginView(),
+                                  transitionsBuilder: (ctx, anim, _, child) =>
+                                      FadeTransition(
+                                        opacity: anim,
+                                        child: child,
+                                      ),
+                                  transitionDuration: const Duration(
+                                    milliseconds: 400,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: RichText(
+                              text: const TextSpan(
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                                children: [
+                                  TextSpan(text: '¿Ya tienes cuenta? '),
+                                  TextSpan(
+                                    text: 'Inicia sesión',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Espacio para que el fondo y el mono sean visibles debajo del formulario
+                  SizedBox(height: size.height * (isTablet ? 0.25 : 0.22)),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Mono (Numi) ────────────────────────────────────────────
           Builder(
             builder: (context) {
               final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-              final monoHeight = size.height * 0.22;
+              final monoHeight = size.height * (isTablet ? 0.22 : 0.22);
+              final monoWidth = size.width * (isTablet ? 0.30 : 0.45);
 
               return AnimatedPositioned(
                 duration: const Duration(milliseconds: 250),
@@ -465,7 +486,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                   child: Image.asset(
                     'assets/images/bienvenida/mono.png',
                     height: monoHeight,
-                    width: size.width * 0.45,
+                    width: monoWidth,
                     fit: BoxFit.contain,
                     alignment: Alignment.bottomRight,
                   ),
@@ -480,14 +501,16 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
 
   // ── Widgets helpers ──────────────────────────────────────────
 
+  bool get _esTablet => MediaQuery.of(context).size.shortestSide >= 600;
+
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Poppins',
-        fontSize: 14,
+        fontSize: _esTablet ? 16.0 : 14.0,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF555555),
+        color: const Color(0xFF555555),
       ),
     );
   }
@@ -498,10 +521,10 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
       padding: const EdgeInsets.only(top: 4),
       child: Text(
         error,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'Poppins',
-          fontSize: 12,
-          color: Color(0xFFEF5353),
+          fontSize: _esTablet ? 13.0 : 12.0,
+          color: const Color(0xFFEF5353),
         ),
       ),
     );
@@ -509,6 +532,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
 
   Widget _buildGeneroSelector() {
     const opciones = ['Masculino', 'Femenino'];
+    final isTablet = _esTablet;
     return Row(
       children: opciones.map((opcion) {
         final seleccionado = _generoSeleccionado == opcion;
@@ -521,7 +545,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               margin: EdgeInsets.only(right: opcion == 'Masculino' ? 8 : 0),
-              padding: const EdgeInsets.symmetric(vertical: 13),
+              padding: EdgeInsets.symmetric(vertical: isTablet ? 16.0 : 13.0),
               decoration: BoxDecoration(
                 color: seleccionado ? const Color(0xFF4A8BF5) : Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -531,7 +555,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                   opcion,
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 14,
+                    fontSize: isTablet ? 15.0 : 14.0,
                     fontWeight: FontWeight.w600,
                     color: seleccionado ? Colors.white : Colors.black54,
                   ),
@@ -549,21 +573,22 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
     TextInputType keyboardType = TextInputType.text,
     void Function(String)? onChanged,
   }) {
+    final isTablet = _esTablet;
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       onChanged: onChanged,
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Poppins',
-        fontSize: 15,
+        fontSize: isTablet ? 16.0 : 15.0,
         color: Colors.black87,
       ),
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 14,
+          vertical: isTablet ? 16.0 : 14.0,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -582,22 +607,23 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
   }
 
   Widget _buildPasswordField() {
+    final isTablet = _esTablet;
     return TextField(
       controller: _contrasenaController,
       obscureText: !_mostrarContrasena,
       onChanged: (val) =>
           setState(() => _errorContrasena = _validarContrasena(val.trim())),
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: 'Poppins',
-        fontSize: 15,
+        fontSize: isTablet ? 16.0 : 15.0,
         color: Colors.black87,
       ),
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 14,
+          vertical: isTablet ? 16.0 : 14.0,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -616,7 +642,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
           child: Icon(
             _mostrarContrasena ? Icons.visibility : Icons.visibility_off,
             color: Colors.grey,
-            size: 22,
+            size: isTablet ? 26.0 : 22.0,
           ),
         ),
       ),

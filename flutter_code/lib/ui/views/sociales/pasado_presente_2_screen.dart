@@ -1,15 +1,12 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'pasado_presente_3_screen.dart';
 
-void main() {
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TelefonoGameScreen(),
-    ),
-  );
+class _LetterData {
+  final String letter;
+  final Color color;
+  const _LetterData(this.letter, this.color);
 }
 
 class TelefonoGameScreen extends StatefulWidget {
@@ -33,7 +30,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
   @override
   void initState() {
     super.initState();
-    _player = AudioPlayer(); // ✅ CORRECCIÓN: inicializar antes de usar
+    _player = AudioPlayer();
     _initAndPlayAudio();
   }
 
@@ -68,16 +65,16 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     super.dispose();
   }
 
-  final List<Map<String, dynamic>> keyboardLetters = [
-    {'letter': 'A', 'image': 'assets/images/actividades/sociales/Botón letra 9.png'},
-    {'letter': 'U', 'image': 'assets/images/actividades/sociales/Botón letra 2.png'},
-    {'letter': 'M', 'image': 'assets/images/actividades/sociales/letra m.png'},
-    {'letter': 'E', 'image': 'assets/images/actividades/sociales/Botón letra 5.png'},
-    {'letter': 'C', 'image': 'assets/images/actividades/sociales/Botón letra 4_1.png'},
-    {'letter': 'L', 'image': 'assets/images/actividades/sociales/Botón letra 4.png'},
-    {'letter': 'N', 'image': 'assets/images/actividades/sociales/Botón letra 6.png'},
-    {'letter': 'T', 'image': 'assets/images/actividades/sociales/letra t.png'},
-    {'letter': 'F', 'image': 'assets/images/actividades/sociales/Botón letra 1.png'},
+  static const List<_LetterData> keyboardLetters = [
+    _LetterData('A', Color(0xFF7B5EA7)),
+    _LetterData('U', Color(0xFFD94040)),
+    _LetterData('M', Color(0xFF3A7BD5)),
+    _LetterData('E', Color(0xFFE8A820)),
+    _LetterData('C', Color(0xFFE8857A)),
+    _LetterData('L', Color(0xFF6AAEE8)),
+    _LetterData('N', Color(0xFF2BBFA0)),
+    _LetterData('T', Color(0xFF7B5EA7)),
+    _LetterData('F', Color(0xFFE8C030)),
   ];
 
   void _handleLetterTap(String letter) {
@@ -110,9 +107,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
         return Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: esCorrecto
-                ? const Color(0xFFD7FFD3)
-                : const Color(0xFFFFD3D3),
+            color: esCorrecto ? const Color(0xFFD7FFD3) : const Color(0xFFFFD3D3),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -125,9 +120,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                 children: [
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
-                    color: esCorrecto
-                        ? const Color(0xFF59E347)
-                        : const Color(0xFFF65757),
+                    color: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
                     size: 40,
                   ),
                   const SizedBox(width: 15),
@@ -137,9 +130,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                       fontFamily: 'Hiruko',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto
-                          ? Colors.green[900]
-                          : Colors.red[900],
+                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
@@ -150,11 +141,8 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: esCorrecto
-                        ? const Color(0xFF59E347)
-                        : const Color(0xFFF65757),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: esCorrecto ? const Color(0xFF59E347) : const Color(0xFFF65757),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -182,8 +170,7 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     _mostrarFeedback(true, () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) =>
-              EscuchaYEligePage(onCompleted: widget.onCompleted),
+          builder: (_) => EscuchaYEligePage(onCompleted: widget.onCompleted),
         ),
       );
     });
@@ -191,13 +178,14 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFFF39C12),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(sw),
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -208,121 +196,104 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
                     topRight: Radius.circular(28),
                   ),
                 ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
-                    child: Column(
-                      children: [
-                        const Text(
-                          '¿Cómo se  llama?',
-                          style: TextStyle(
-                            fontFamily: 'Hiruko',
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF3D2B1F),
-                            letterSpacing: 0.5,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: _toggleAudio,
+                            child: _AudioBtn(sw: sw, isPlaying: _isPlayingAudio),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: _toggleAudio,
-                              child: Icon(
-                                _isPlayingAudio
-                                    ? Icons.pause_rounded
-                                    : Icons.volume_up_rounded,
-                                color: const Color(0xFFF5A623),
-                                size: 28,
+                          SizedBox(width: sw * 0.03),
+                          Expanded(
+                            child: Text(
+                              'Toca  las  letras que faltan para completar  la palabra',
+                              style: TextStyle(
+                                fontFamily: 'Hiruko',
+                                fontSize: (sw * 0.055).clamp(18.0, 38.0),
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF3D2B1F),
+                                height: 1.3,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Text(
-                                'Toca  las  letras que faltan para\ncompletar la palabra',
-                                style: TextStyle(
-                                  fontFamily: 'Hiruko',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF3D2B1F),
-                                  height: 1.55,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-
-                        Image.asset(
-                          'assets/images/actividades/sociales/telefono1.png',
-                          height: 180,
-                          errorBuilder: (c, e, s) =>
-                              const Icon(Icons.image, size: 100),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(userSlots.length, (index) {
-                            return GestureDetector(
-                              onTap: () => _removeLetter(index),
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      width: 2,
-                                      color: Colors.black,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Image.asset(
+                        'assets/images/actividades/sociales/telefono1.png',
+                        height: (sw * 0.40).clamp(120.0, 220.0),
+                        errorBuilder: (c, e, s) => Icon(Icons.image, size: sw * 0.25),
+                      ),
+                      const SizedBox(height: 16),
+                      LayoutBuilder(
+                        builder: (ctx, constraints) {
+                          final slotW = ((constraints.maxWidth - 48) / 8).clamp(24.0, 44.0);
+                          final slotH = slotW * 1.3;
+                          final fontSize = (slotW * 0.7).clamp(18.0, 32.0);
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(userSlots.length, (index) {
+                              return GestureDetector(
+                                onTap: () => _removeLetter(index),
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(width: 2, color: Colors.black),
                                     ),
                                   ),
-                                ),
-                                width: 30,
-                                height: 40,
-                                child: Center(
-                                  child: Text(
-                                    userSlots[index] ?? "",
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
+                                  width: slotW,
+                                  height: slotH,
+                                  child: Center(
+                                    child: Text(
+                                      userSlots[index] ?? "",
+                                      style: TextStyle(
+                                        fontSize: fontSize,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                        const SizedBox(height: 40),
-
-                        SizedBox(
-                          width: 280,
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 15,
-                              crossAxisSpacing: 15,
-                              childAspectRatio: 1.0,
-                            ),
-                            itemCount: keyboardLetters.length,
-                            itemBuilder: (context, index) {
-                              return LetterButton(
-                                imagePath: keyboardLetters[index]['image'],
-                                onTap: () => _handleLetterTap(
-                                  keyboardLetters[index]['letter'],
                                 ),
                               );
-                            },
-                          ),
+                            }),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (ctx, constraints) {
+                            final btnW = (constraints.maxWidth - 30) / 3;
+                            final btnH = (constraints.maxHeight - 30) / 3;
+                            final fontSize = (btnH * 0.38).clamp(14.0, 48.0);
+                            return GridView.builder(
+                              shrinkWrap: false,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 15,
+                                crossAxisSpacing: 15,
+                                childAspectRatio: btnW / btnH,
+                              ),
+                              itemCount: keyboardLetters.length,
+                              itemBuilder: (context, index) {
+                                return LetterButton(
+                                  letter: keyboardLetters[index].letter,
+                                  color: keyboardLetters[index].color,
+                                  fontSize: fontSize,
+                                  onTap: () => _handleLetterTap(keyboardLetters[index].letter),
+                                );
+                              },
+                            );
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -333,58 +304,128 @@ class _TelefonoGameScreenState extends State<TelefonoGameScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
-      color: const Color(0xFFF39C12),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Pasado y Presente',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 0.5,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () => Navigator.maybePop(context),
-              child: const Icon(
-                Icons.close,
-                size: 22,
-                color: Colors.white,
+  Widget _buildHeader(double sw) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Pasado y Presente',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.065).clamp(22.0, 42.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.maybePop(context),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 2 / 3,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class LetterButton extends StatelessWidget {
-  final String imagePath;
+  final String letter;
+  final Color color;
+  final double fontSize;
   final VoidCallback onTap;
 
-  const LetterButton({required this.imagePath, required this.onTap});
+  const LetterButton({
+    required this.letter,
+    required this.color,
+    required this.fontSize,
+    required this.onTap,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final hsl = HSLColor.fromColor(color);
+    final shadowColor = hsl.withLightness((hsl.lightness - 0.15).clamp(0.0, 1.0)).toColor();
+    final textColor = hsl.withLightness((hsl.lightness - 0.25).clamp(0.0, 1.0)).toColor();
+
     return GestureDetector(
       onTap: onTap,
-      child: Image.asset(
-        imagePath,
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => Container(
-          color: Colors.grey.shade200,
-          child: const Icon(Icons.broken_image),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+          border: Border(
+            bottom: BorderSide(color: shadowColor, width: 4),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
+        child: Center(
+          child: Text(
+            letter,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Hiruko',
+              color: textColor,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  final bool isPlaying;
+  const _AudioBtn({required this.sw, this.isPlaying = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8E0),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A623).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        isPlaying ? Icons.pause_rounded : Icons.volume_up_rounded,
+        color: const Color(0xFFF5A623),
+        size: sz * 0.55,
       ),
     );
   }

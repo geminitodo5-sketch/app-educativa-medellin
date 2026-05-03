@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart'; // ✅ media_kit reemplaza just_audio
@@ -167,16 +168,19 @@ class _LasPlantasScreenState extends ConsumerState<LasPlantasScreen> {
               _PageCard(
                 title: 'Las plantas',
                 dots: _buildDots(),
+                progress: 1 / 3,
                 child: _Actividad1(onNext: _siguiente),
               ),
               _PageCard(
                 title: 'Las plantas',
                 dots: _buildDots(),
+                progress: 2 / 3,
                 child: _Actividad2(onNext: _siguiente),
               ),
               _PageCard(
                 title: 'Las plantas',
                 dots: _buildDots(),
+                progress: 1.0,
                 child: _Actividad3(onFinish: _irATerminado),
               ),
             ],
@@ -240,10 +244,12 @@ class _PageCard extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget dots;
-  const _PageCard({required this.title, required this.child, required this.dots});
+  final double progress;
+  const _PageCard({required this.title, required this.child, required this.dots, required this.progress});
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         Container(color: const Color(0xFF3DCC52)),
@@ -251,18 +257,34 @@ class _PageCard extends StatelessWidget {
           children: [
             SafeArea(
               bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 18, 52, 48),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 18, 52, 12),
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 14),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.white30,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -309,31 +331,46 @@ class _Instruccion extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.volume_up_rounded, size: 36),
-          color: Colors.black87,
-          onPressed: _reproducir,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            texto,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              color: Color(0xFF424242),
-              height: 1.3,
+  Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: _reproducir,
+            child: Container(
+              width: (sw * 0.13).clamp(44.0, 60.0),
+              height: (sw * 0.13).clamp(44.0, 60.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.volume_up_rounded,
+                color: const Color(0xFF3DCC52),
+                size: (sw * 0.07).clamp(24.0, 34.0),
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+          SizedBox(width: sw * 0.03),
+          Expanded(
+            child: Text(
+              texto,
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: (sw * 0.065).clamp(20.0, 46.0),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF424242),
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -402,50 +439,66 @@ class _Actividad1State extends State<_Actividad1> {
             flex: 3,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [1, 2, 3].expand((slot) => [
-                      _SlotDrop(
-                        slot: slot,
-                        colocada: _colocadas[slot],
-                        onAccepted: (f) => onSlotAccepted(slot, f),
-                        onRejected: () => _mostrarFeedback(context, false),
-                      ),
-                      if (slot < 3) const _FlechaEstilizada(),
-                    ]).toList(),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  const arrowW = 28.0;
+                  const slotMargin = 8.0; // 4px each side per empty slot
+                  final byW = (constraints.maxWidth - 2 * arrowW - 3 * slotMargin) / 3;
+                  final byH = (constraints.maxHeight - 24) / 2;
+                  final slotSize = min(byW, byH).clamp(60.0, 120.0);
+                  // spacerA positions the down-arrow under slot 3's center
+                  final spacerA = 2 * (slotSize + slotMargin) + 2 * arrowW;
+                  // spacerB aligns slot 4 directly below slot 3
+                  final spacerB = slotSize + slotMargin + arrowW;
+                  return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(width: 200 + 36 - 10),
-                      const _FlechaEstilizada(direccion: _DirFlecha.abajo),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(width: 100),
-                      _SlotDrop(
-                        slot: 5,
-                        colocada: _colocadas[5],
-                        onAccepted: (f) => onSlotAccepted(5, f),
-                        onRejected: () => _mostrarFeedback(context, false),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [1, 2, 3].expand((slot) => [
+                          _SlotDrop(
+                            slot: slot,
+                            colocada: _colocadas[slot],
+                            onAccepted: (f) => onSlotAccepted(slot, f),
+                            onRejected: () => _mostrarFeedback(context, false),
+                            size: slotSize,
+                          ),
+                          if (slot < 3) const _FlechaEstilizada(),
+                        ]).toList(),
                       ),
-                      const _FlechaEstilizada(direccion: _DirFlecha.izquierda),
-                      _SlotDrop(
-                        slot: 4,
-                        colocada: _colocadas[4],
-                        onAccepted: (f) => onSlotAccepted(4, f),
-                        onRejected: () => _mostrarFeedback(context, false),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: spacerA),
+                          const _FlechaEstilizada(direccion: _DirFlecha.abajo),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: spacerB),
+                          _SlotDrop(
+                            slot: 5,
+                            colocada: _colocadas[5],
+                            onAccepted: (f) => onSlotAccepted(5, f),
+                            onRejected: () => _mostrarFeedback(context, false),
+                            size: slotSize,
+                          ),
+                          const _FlechaEstilizada(direccion: _DirFlecha.izquierda),
+                          _SlotDrop(
+                            slot: 4,
+                            colocada: _colocadas[4],
+                            onAccepted: (f) => onSlotAccepted(4, f),
+                            onRejected: () => _mostrarFeedback(context, false),
+                            size: slotSize,
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ),
@@ -453,26 +506,31 @@ class _Actividad1State extends State<_Actividad1> {
             flex: 2,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: fasesSinColocar.map((fase) => Draggable<int>(
-                    data: fase,
-                    onDraggableCanceled: (_, __) => _mostrarFeedback(context, false),
-                    feedback: Material(
-                      color: Colors.transparent,
-                      child: _FaseChip(fase: fase, size: 70),
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  final chipSize = min(constraints.maxHeight * 0.65, (constraints.maxWidth - 24) / 5).clamp(44.0, 110.0);
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE0E0E0)),
                     ),
-                    childWhenDragging: _FaseChip(fase: fase, size: 66, opacity: 0.35),
-                    child: _FaseChip(fase: fase, size: 66),
-                  )).toList(),
-                ),
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: fasesSinColocar.map((fase) => Draggable<int>(
+                        data: fase,
+                        onDraggableCanceled: (_, __) => _mostrarFeedback(context, false),
+                        feedback: Material(
+                          color: Colors.transparent,
+                          child: _FaseChip(fase: fase, size: chipSize * 1.05),
+                        ),
+                        childWhenDragging: _FaseChip(fase: fase, size: chipSize, opacity: 0.35),
+                        child: _FaseChip(fase: fase, size: chipSize),
+                      )).toList(),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -562,14 +620,15 @@ class _SlotDrop extends StatelessWidget {
   final int? colocada;
   final ValueChanged<int> onAccepted;
   final VoidCallback onRejected;
+  final double size;
   const _SlotDrop({required this.slot, required this.colocada,
-      required this.onAccepted, required this.onRejected});
+      required this.onAccepted, required this.onRejected, this.size = 72});
 
   @override
   Widget build(BuildContext context) {
     if (colocada != null) {
       return SizedBox(
-        width: 72, height: 72,
+        width: size, height: size,
         child: Stack(
           children: [
             Positioned.fill(
@@ -608,7 +667,7 @@ class _SlotDrop extends StatelessWidget {
         final isRejected = rejected.isNotEmpty;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          width: 72, height: 72,
+          width: size, height: size,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           child: Stack(
             children: [
@@ -915,12 +974,15 @@ class _Actividad2State extends State<_Actividad2> {
     if (!_imagenesListas) return const Center(child: CircularProgressIndicator());
 
     final enBandeja = _enBandeja;
+    final sh = MediaQuery.of(context).size.height;
+    final bandejaH = (sh * 0.13).clamp(80.0, 150.0);
+    final thumbSize = (bandejaH * 0.68).clamp(50.0, 100.0);
 
     return _Tarjeta(
       child: Column(
         children: [
           _Instruccion(
-            'Arma la planta con todos sus elementos, arrastralos al cuadro',
+            'Arma  la planta con todos sus elementos, arrastralos al cuadro',
             player: _player,
             audioAsset: _audio11,
           ),
@@ -963,7 +1025,7 @@ class _Actividad2State extends State<_Actividad2> {
                           children: [
                             if (enBandeja.length == _piezas.length)
                               const Center(
-                                child: Text('⬆ Arrastra las piezas aquí',
+                                child: Text('⬆ Arrastra  las piezas aquí',
                                     style: TextStyle(color: Colors.grey, fontSize: 12)),
                               ),
 
@@ -1097,7 +1159,7 @@ class _Actividad2State extends State<_Actividad2> {
           // ── Bandeja de piezas ────────────────────────────────────────────
           if (enBandeja.isNotEmpty)
             SizedBox(
-              height: 92,
+              height: bandejaH,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1106,7 +1168,6 @@ class _Actividad2State extends State<_Actividad2> {
                   children: _piezas
                       .where((p) => enBandeja.contains(p.nombre))
                       .map((p) {
-                        const thumbSize = 64.0;
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Draggable<String>(
@@ -1125,10 +1186,10 @@ class _Actividad2State extends State<_Actividad2> {
                               ),
                             ),
                             childWhenDragging: Opacity(
-                                opacity: 0.30, child: _chipBandeja(p)),
+                                opacity: 0.30, child: _chipBandeja(p, thumbSize)),
                             // La bandeja no maneja posicionamiento:
                             // el DragTarget del área lo hace en onAcceptWithDetails
-                            child: _chipBandeja(p),
+                            child: _chipBandeja(p, thumbSize),
                           ),
                         );
                       })
@@ -1141,11 +1202,11 @@ class _Actividad2State extends State<_Actividad2> {
     );
   }
 
-  Widget _chipBandeja(_PiezaPlanta p) => Column(
+  Widget _chipBandeja(_PiezaPlanta p, double size) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
-        width: 64, height: 64,
+        width: size, height: size,
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -1190,6 +1251,11 @@ class _Actividad3State extends State<_Actividad3> {
   Player? _videoPlayer;
   VideoController? _videoController;
   StreamSubscription<bool>? _videoSub;
+  StreamSubscription<Duration>? _durationSub;
+  StreamSubscription<Duration>? _positionSub;
+  Duration _animDuration = Duration.zero;
+  bool _videoHasStarted = false;
+  bool _animHandled = false;
 
   @override
   void initState() {
@@ -1197,6 +1263,9 @@ class _Actividad3State extends State<_Actividad3> {
     _player = Player();
     _videoPlayer = Player();
     _videoController = VideoController(_videoPlayer!);
+    _durationSub = _videoPlayer!.stream.duration.listen((d) {
+      if (d > Duration.zero) _animDuration = d;
+    });
     Future.microtask(() => _playAudio());
     Future.microtask(() => _cargarVideoInicial());
   }
@@ -1204,6 +1273,8 @@ class _Actividad3State extends State<_Actividad3> {
   @override
   void dispose() {
     _videoSub?.cancel();
+    _durationSub?.cancel();
+    _positionSub?.cancel();
     _player?.dispose();
     _videoPlayer?.dispose();
     super.dispose();
@@ -1220,6 +1291,7 @@ class _Actividad3State extends State<_Actividad3> {
 
   Future<void> _cargarVideoInicial() async {
     try {
+      await _videoPlayer!.setPlaylistMode(PlaylistMode.none);
       await _videoPlayer!.open(
         Media('asset:///assets/animations/planta_creciendo.mp4'),
         play: false,
@@ -1229,17 +1301,47 @@ class _Actividad3State extends State<_Actividad3> {
     }
   }
 
+  void _finishVideo() {
+    if (!mounted || _animHandled) return;
+    _animHandled = true;
+    _videoSub?.cancel();
+    _positionSub?.cancel();
+    _videoSub = null;
+    _positionSub = null;
+    _videoPlayer?.pause();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _mostrarFeedback(context, true, onAction: () => widget.onFinish());
+    });
+  }
+
   void _iniciarVideo() {
     _player?.stop();
     _videoSub?.cancel();
-    _videoSub = _videoPlayer!.stream.completed.listen((done) {
-      if (done && mounted) {
-        _videoSub?.cancel();
-        _videoSub = null;
-        _mostrarFeedback(context, true, onAction: () => widget.onFinish());
+    _positionSub?.cancel();
+    _animHandled = false;
+    _videoHasStarted = false;
+
+    _videoSub = _videoPlayer!.stream.playing.listen((isPlaying) {
+      if (!isPlaying && _videoHasStarted && !_animHandled) {
+        _finishVideo();
       }
     });
-    _videoPlayer!.play();
+
+    _positionSub = _videoPlayer!.stream.position.listen((pos) {
+      if (!_videoHasStarted && pos.inMilliseconds > 300) {
+        _videoHasStarted = true;
+      }
+      if (_videoHasStarted && pos.inMilliseconds < 80 && !_animHandled) {
+        _finishVideo();
+      }
+    });
+
+    _videoPlayer!.seek(Duration.zero).then((_) => _videoPlayer!.play());
+
+    final duration = _animDuration > Duration.zero
+        ? _animDuration
+        : const Duration(seconds: 4);
+    Future.delayed(duration + const Duration(milliseconds: 600), _finishVideo);
   }
 
   void _tocar(BuildContext context, String id, bool correcto) {
@@ -1263,7 +1365,7 @@ class _Actividad3State extends State<_Actividad3> {
       child: Column(
         children: [
           _Instruccion(
-            'Necesito hacer crecer esta planta, elige los elementos que le ayudarán a crecer',
+            'Necesito hacer crecer esta planta, elige  los elementos que le ayudarán a crecer',
             player: _player,
             audioAsset: _audio12,
           ),
@@ -1280,36 +1382,41 @@ class _Actividad3State extends State<_Actividad3> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: _opciones.map((op) {
-                final sel = _seleccionados.contains(op.id);
-                final err = _error == op.id;
-                return GestureDetector(
-                  onTap: () => _tocar(context, op.id, op.correcto),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 68, height: 68,
-                    decoration: BoxDecoration(
-                      color: sel ? const Color(0xFFE8F5E9)
-                          : err ? const Color(0xFFFFEBEE)
-                          : const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: sel ? const Color(0xFF3DCC52)
-                            : err ? const Color(0xFFB71C1C)
-                            : const Color(0xFFE0E0E0),
-                        width: sel || err ? 3 : 1,
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+            child: LayoutBuilder(
+              builder: (ctx, constraints) {
+                final btnSide = ((constraints.maxWidth - 36) / 4).clamp(56.0, 150.0);
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: _opciones.map((op) {
+                    final sel = _seleccionados.contains(op.id);
+                    final err = _error == op.id;
+                    return GestureDetector(
+                      onTap: () => _tocar(context, op.id, op.correcto),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: btnSide, height: btnSide,
+                        decoration: BoxDecoration(
+                          color: sel ? const Color(0xFFE8F5E9)
+                              : err ? const Color(0xFFFFEBEE)
+                              : const Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: sel ? const Color(0xFF3DCC52)
+                                : err ? const Color(0xFFB71C1C)
+                                : const Color(0xFFE0E0E0),
+                            width: sel || err ? 3 : 1,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: Image.asset(op.ruta, fit: BoxFit.contain,
+                            errorBuilder: (c, e, s) =>
+                                const Icon(Icons.image_not_supported, color: Colors.grey)),
                       ),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: Image.asset(op.ruta, fit: BoxFit.contain,
-                        errorBuilder: (c, e, s) =>
-                            const Icon(Icons.image_not_supported, color: Colors.grey)),
-                  ),
+                    );
+                  }).toList(),
                 );
-              }).toList(),
+              },
             ),
           ),
         ],

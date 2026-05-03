@@ -1,3 +1,4 @@
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -89,7 +90,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildHeader(),
+            _buildHeader(state),
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
@@ -110,28 +111,17 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
                         children: [
                           GestureDetector(
                             onTap: _reproducirAudio,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF0F4FF),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.volume_up_rounded,
-                                color: Color(0xFF3475F7),
-                                size: 26,
-                              ),
-                            ),
+                            child: _AudioBtn(sw: MediaQuery.of(context).size.width),
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: (MediaQuery.of(context).size.width * 0.03).clamp(8.0, 16.0)),
                           Expanded(
                             child: Text(
-                              'Ordena las palabras y forma la oración.',
+                              'Ordena  las palabras y forma  la oración.',
                               style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[800],
+                                fontFamily: 'Hiruko',
+                                fontSize: (MediaQuery.of(context).size.width * 0.065).clamp(20.0, 46.0),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
                               ),
                             ),
                           ),
@@ -141,35 +131,39 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
 
                     // ── Zona central centrada: imagen + respuesta ──────────
                     Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // ── TAMAÑO IMAGEN: cambia 190 ──────────────────
-                          SizedBox(
-                            height: 190,
-                            child: Center(
-                              child: Image.asset(
-                                ejercicio.imagenAsset,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, _, _) => Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(20),
+                      child: LayoutBuilder(
+                        builder: (ctx, constraints) {
+                          final imgH = min(constraints.maxHeight * 0.60, MediaQuery.of(ctx).size.width * 0.78).clamp(150.0, 360.0);
+                          final gap = (constraints.maxHeight * 0.05).clamp(12.0, 28.0);
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: imgH,
+                                child: Center(
+                                  child: Image.asset(
+                                    ejercicio.imagenAsset,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, _, _) => Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Icon(Icons.image_not_supported,
+                                          size: 70, color: Colors.grey),
+                                    ),
                                   ),
-                                  child: const Icon(Icons.image_not_supported,
-                                      size: 70, color: Colors.grey),
                                 ),
                               ),
-                            ),
-                          ),
-                          // ── ESPACIO imagen → zona respuesta: cambia 20 ─
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: _buildZonaRespuesta(state, notifier, ejercicio),
-                          ),
-                        ],
+                              SizedBox(height: gap),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: _buildZonaRespuesta(state, notifier, ejercicio),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
 
@@ -192,33 +186,47 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      // ── ALTURA HEADER: cambia 80 ───────────────────────────────────────
-      height: 80,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'Oraciones',
-            style: TextStyle(
-              fontFamily: 'Hiruko',
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+  Widget _buildHeader(OracionesEstado state) {
+    final sw = MediaQuery.of(context).size.width;
+    final progress = (state.ejercicioActual + 1) / 4;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(width: 48),
+              Text(
+                'Oraciones',
+                style: TextStyle(
+                  fontFamily: 'Hiruko',
+                  fontSize: (sw * 0.07).clamp(26.0, 46.0),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: Colors.white30,
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
             ),
           ),
-          Positioned(
-            right: 0,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: const Icon(Icons.close, color: Colors.white, size: 26),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -248,12 +256,16 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
           : const Color(0xFFF65757);
     }
 
+    final sw = MediaQuery.of(context).size.width;
+    final fontSize = (sw * 0.048).clamp(15.0, 26.0);
+    final hPad = (sw * 0.035).clamp(10.0, 22.0);
+    final vPad = (sw * 0.025).clamp(8.0, 14.0);
     return GestureDetector(
       onTap: () => notifier.commandDevolverPalabra(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        constraints: const BoxConstraints(minWidth: 56),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        constraints: BoxConstraints(minWidth: (sw * 0.14).clamp(44.0, 80.0)),
+        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
         decoration: BoxDecoration(
           color: palabra != null
               ? (colorFeedback?.withValues(alpha: 0.15) ??
@@ -271,7 +283,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
           palabra ?? '',
           style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 16,
+            fontSize: fontSize,
             fontWeight: FontWeight.w600,
             color: colorFeedback ?? const Color(0xFF3475F7),
           ),
@@ -300,13 +312,17 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
     final palabra = state.palabrasDisponibles[index];
     final disponible = palabra != null;
 
+    final sw = MediaQuery.of(context).size.width;
+    final chipFontSize = (sw * 0.048).clamp(15.0, 26.0);
+    final chipHPad = (sw * 0.048).clamp(14.0, 28.0);
+    final chipVPad = (sw * 0.03).clamp(10.0, 18.0);
     return GestureDetector(
       onTap: disponible ? () => notifier.commandSeleccionarPalabra(index) : null,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),
         opacity: disponible ? 1.0 : 0.0,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: EdgeInsets.symmetric(horizontal: chipHPad, vertical: chipVPad),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -321,9 +337,9 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
           ),
           child: Text(
             palabra ?? '',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 16,
+              fontSize: chipFontSize,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -345,6 +361,8 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
 
     final todoLleno = state.respuestaUsuario.every((p) => p != null);
 
+    final sw = MediaQuery.of(context).size.width;
+    final btnH = (sw * 0.13).clamp(48.0, 72.0);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: ElevatedButton(
@@ -353,7 +371,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
           backgroundColor: const Color(0xFFF65757),
           foregroundColor: Colors.white,
           disabledBackgroundColor: Colors.grey[300],
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: Size(double.infinity, btnH),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 2,
@@ -390,7 +408,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF59E347),
               foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 52),
+              minimumSize: Size(double.infinity, (MediaQuery.of(context).size.width * 0.13).clamp(48.0, 72.0)),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               elevation: 2,
@@ -429,7 +447,7 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFF65757),
               foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 52),
+              minimumSize: Size(double.infinity, (MediaQuery.of(context).size.width * 0.13).clamp(48.0, 72.0)),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               elevation: 2,
@@ -445,6 +463,36 @@ class _OracionesActivityState extends ConsumerState<OracionesActivity>
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AudioBtn extends StatelessWidget {
+  final double sw;
+  const _AudioBtn({required this.sw});
+
+  @override
+  Widget build(BuildContext context) {
+    final sz = (sw * 0.12).clamp(42.0, 64.0);
+    return Container(
+      width: sz,
+      height: sz,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFEEEE),
+        borderRadius: BorderRadius.circular(sz * 0.27),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF65757).withValues(alpha: 0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(
+        Icons.volume_up_rounded,
+        color: const Color(0xFFF65757),
+        size: sz * 0.55,
+      ),
     );
   }
 }

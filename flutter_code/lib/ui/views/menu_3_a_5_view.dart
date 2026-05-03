@@ -4,8 +4,6 @@
 //  Toda la interacción pasa por el asistente RAG offline.
 // ─────────────────────────────────────────────────────────────
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
@@ -153,16 +151,12 @@ class Menu3A5Screen extends ConsumerStatefulWidget {
 
 class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
   int _tabIndex = 0;
-  int _currentPage = 0;
   final Map<String, bool> _descargado = {};
   final Map<String, double> _progresosDescarga = {};
   final Set<String> _descargando = {};
   bool _verificando = true;
 
   late final DescargaPaqueteService _svc;
-  late final PageController _pageController;
-  Timer? _carruselTimer;
-  bool _pausarCarrusel = false;
 
   // Evita doble-salir cuando dispose corre después de didPushNext.
   bool _salidoPorPush = false;
@@ -172,8 +166,6 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
     super.initState();
     _svc = DescargaPaqueteService(ref.read(sqliteServiceProvider));
     _verificarDescargas();
-    _pageController = PageController(viewportFraction: 0.82);
-    _iniciarCarrusel();
     ref.read(musicaServiceProvider).entrar();
   }
 
@@ -195,34 +187,10 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
     ref.read(musicaServiceProvider).entrar();
   }
 
-  void _iniciarCarrusel() {
-    _carruselTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (!mounted || !_pageController.hasClients || _pausarCarrusel) return;
-      final next = (_currentPage + 1) % _materias.length;
-      _pageController.animateToPage(
-        next,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-  void _onScrollStart() {
-    if (!_pausarCarrusel) setState(() => _pausarCarrusel = true);
-  }
-
-  void _onScrollEnd() {
-    Future.delayed(const Duration(seconds: 4), () {
-      if (mounted && _pausarCarrusel) setState(() => _pausarCarrusel = false);
-    });
-  }
-
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
     if (!_salidoPorPush) ref.read(musicaServiceProvider).salir();
-    _carruselTimer?.cancel();
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -283,6 +251,29 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
         .then((_) => _verificarDescargas());
   }
 
+  Future<void> _abrirUltimoChat() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    if (estudiante?.id == null) {
+      _abrirAsistente(_materias.first);
+      return;
+    }
+    final db = ref.read(sqliteServiceProvider);
+    final rows = await db.rawQuery(
+      'SELECT materia FROM historial_rag WHERE estudiante_id = ? ORDER BY fecha DESC LIMIT 1',
+      [estudiante!.id],
+    );
+    String clave = 'matematicas';
+    if (rows.isNotEmpty) {
+      final m = rows.first['materia'] as String;
+      clave = m == 'español' ? 'espanol' : m;
+    }
+    final materia = _materias.firstWhere(
+      (m) => m.clave == clave,
+      orElse: () => _materias.first,
+    );
+    _abrirAsistente(materia);
+  }
+
   String get _saludo {
     final h = DateTime.now().hour;
     if (h < 12) return 'Buenos días';
@@ -314,11 +305,9 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
                 descargado: _descargado,
                 descargando: _descargando,
                 progresosDescarga: _progresosDescarga,
-                pageController: _pageController,
-                currentPage: _currentPage,
-                onPageChanged: (i) => setState(() => _currentPage = i),
                 onDescargar: _descargar,
                 onAbrir: _abrirAsistente,
+                onAbrirUltimoChat: _abrirUltimoChat,
               ),
               _ProgresoTab(
                 nombre: nombre,
@@ -335,13 +324,6 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
             child: _NavBar(
               selectedIndex: _tabIndex,
               onHome: () => setState(() => _tabIndex = 0),
-              onAsistente: () {
-                final primera = _materias.firstWhere(
-                  (m) => _descargado[m.clave] == true,
-                  orElse: () => _materias.first,
-                );
-                _abrirAsistente(primera);
-              },
               onProgreso: () => setState(() => _tabIndex = 1),
               onConfiguracion: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ConfiguracionView()),
@@ -356,7 +338,7 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
 
 // ── Tab: Inicio ───────────────────────────────────────────────
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends StatefulWidget {
   final String saludo;
   final String nombre;
   final String avatar;
@@ -365,11 +347,9 @@ class _HomeTab extends StatelessWidget {
   final Map<String, bool> descargado;
   final Set<String> descargando;
   final Map<String, double> progresosDescarga;
-  final PageController pageController;
-  final int currentPage;
-  final ValueChanged<int> onPageChanged;
   final void Function(String) onDescargar;
   final void Function(_MateriaInfo) onAbrir;
+  final VoidCallback onAbrirUltimoChat;
 
   const _HomeTab({
     required this.saludo,
@@ -380,26 +360,75 @@ class _HomeTab extends StatelessWidget {
     required this.descargado,
     required this.descargando,
     required this.progresosDescarga,
-    required this.pageController,
-    required this.currentPage,
-    required this.onPageChanged,
     required this.onDescargar,
     required this.onAbrir,
+    required this.onAbrirUltimoChat,
   });
 
-  String get _avatarPath => avatar == 'pollito'
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  int _scrollIndex = 0;
+  late final ScrollController _scrollCtrl;
+
+  String get _avatarPath => widget.avatar == 'pollito'
       ? 'assets/images/bienvenida/pollo feliz 2 (2).png'
       : 'assets/images/bienvenida/mono.png';
 
   @override
+  void initState() {
+    super.initState();
+    _scrollCtrl = ScrollController();
+    _scrollCtrl.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final mq = MediaQuery.of(context);
+    final screenW = mq.size.width;
+    final isTablet = screenW >= 600;
+    final cardW = isTablet ? screenW * 0.38 : screenW * 0.72;
+    final gap = isTablet ? 16.0 : 12.0;
+    final step = cardW + gap;
+    final atEnd = _scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 1;
+    final idx = atEnd
+        ? _materias.length - 1
+        : (_scrollCtrl.offset / step).round().clamp(0, _materias.length - 1);
+    if (idx != _scrollIndex) setState(() => _scrollIndex = idx);
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.removeListener(_onScroll);
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final screenW = mq.size.width;
+    final isTablet = screenW >= 600;
+    final hPad = isTablet ? screenW * 0.06 : 20.0;
+    final saludoFs = isTablet ? 18.0 : 16.0;
+    final nombreFs = isTablet ? 36.0 : 30.0;
+    final nivelFs = isTablet ? 22.0 : 18.0;
+    final avatarCircle = isTablet ? 52.0 : 40.0;
+    // La mascota: pequeña, asomando por la izquierda del recuadro
+    final bannerMascotaH = screenW * 0.22;
+    final bannerTitleFs = isTablet ? 22.0 : screenW * 0.045;
+    final bannerSubFs = isTablet ? 19.0 : screenW * 0.048;
+    final screenH = mq.size.height;
+    final mClasesFs = isTablet ? 34.0 : 28.0;
+
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header ────────────────────────────────────────
+          // ── Header fijo arriba ─────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+            padding: EdgeInsets.fromLTRB(hPad, isTablet ? 24 : 18, hPad, 0),
             child: Row(
               children: [
                 Expanded(
@@ -407,18 +436,18 @@ class _HomeTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        saludo,
-                        style: const TextStyle(
+                        widget.saludo,
+                        style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 16,
+                          fontSize: saludoFs,
                           color: Colors.black54,
                         ),
                       ),
                       Text(
-                        '$nombre!',
-                        style: const TextStyle(
+                        '${widget.nombre}!',
+                        style: TextStyle(
                           fontFamily: 'Hiruko',
-                          fontSize: 30,
+                          fontSize: nombreFs,
                           fontWeight: FontWeight.w800,
                           color: Colors.black87,
                         ),
@@ -429,8 +458,8 @@ class _HomeTab extends StatelessWidget {
                 ),
                 // Píldora blanca con "Nivel X" + avatar
                 Container(
-                  padding: const EdgeInsets.only(
-                    left: 16,
+                  padding: EdgeInsets.only(
+                    left: isTablet ? 20 : 16,
                     top: 6,
                     bottom: 6,
                     right: 6,
@@ -450,18 +479,18 @@ class _HomeTab extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Nivel $nivel',
-                        style: const TextStyle(
+                        'Nivel ${widget.nivel}',
+                        style: TextStyle(
                           fontFamily: 'Hiruko',
-                          fontSize: 18,
+                          fontSize: nivelFs,
                           fontWeight: FontWeight.w800,
                           color: Colors.black87,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: avatarCircle,
+                        height: avatarCircle,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Color(0xFFFFF0D6),
@@ -485,131 +514,131 @@ class _HomeTab extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          // ── Contenido centrado verticalmente ──────────────
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-          // ── Banner ────────────────────────────────────────
+          // ── Banner: mascota asomando desde el recuadro blanco ───
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: hPad),
             child: Stack(
               clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
               children: [
-                // 1. Contenedor base responsivo (define el tamaño del Stack)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 55,
-                  ), // Espacio fijo para la mascota
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    // Eliminamos el height: 155 para que crezca según el texto interior
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(26),
-                      boxShadow: [
-                        BoxShadow(
-                          color:
-                              _materias[currentPage.clamp(
-                                    0,
-                                    _materias.length - 1,
-                                  )]
-                                  .sombra,
-                          blurRadius: 0,
-                          offset: const Offset(0, 8),
+                // 1) Recuadro dinámico — color según materia activa
+                Builder(builder: (context) {
+                  final bannerColor = _materias[_scrollIndex].color;
+                  final bannerSombra = _materias[_scrollIndex].sombra;
+                  return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(screenW * 0.065),
+                    boxShadow: [
+                      BoxShadow(
+                        color: bannerSombra,
+                        blurRadius: 0,
+                        offset: Offset(0, screenW * 0.02),
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(screenW * 0.055),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      color: bannerColor,
+                      padding: EdgeInsets.fromLTRB(
+                        screenW * 0.04,
+                        screenW * 0.27 * 0.78 - screenW * 0.14,
+                        screenW * 0.04,
+                        screenW * 0.04,
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenW * 0.04,
+                          vertical: screenW * 0.035,
                         ),
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.06),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(screenW * 0.045),
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeInOut,
-                        color:
-                            _materias[currentPage.clamp(
-                                  0,
-                                  _materias.length - 1,
-                                )]
-                                .color,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                          // Eliminamos el Align(bottomCenter) para que el layout fluya natural
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '¡No pares de aprender!',
+                                    style: TextStyle(
+                                      fontFamily: 'Hiruko',
+                                      fontSize: bannerTitleFs,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  SizedBox(height: screenW * 0.01),
+                                  Text(
+                                    'Cada pregunta es un nuevo descubrimiento',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: bannerSubFs,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize:
-                                        MainAxisSize.min, // Se adapta al texto
-                                    children: [
-                                      const Text(
-                                        '¡No pares de aprender!',
-                                        style: TextStyle(
-                                          fontFamily: 'Hiruko',
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'Cada pregunta es un nuevo descubrimiento',
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          fontSize: 13,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                            SizedBox(width: screenW * 0.025),
+                            GestureDetector(
+                              onTap: widget.onAbrirUltimoChat,
+                              child: Container(
+                                width: screenW * 0.1,
+                                height: screenW * 0.1,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF8C00),
+                                  borderRadius: BorderRadius.circular(screenW * 0.03),
                                 ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFF8C00),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: Colors.white,
-                                    size: 22,
-                                  ),
+                                child: Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.white,
+                                  size: screenW * 0.055,
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ),
-
-                // 2. Mascota asomándose desde arriba
+                  );
+                }),
+                // 2) Mascota asomándose desde arriba del recuadro blanco
                 Positioned(
-                  top: -35,
-                  child: ClipRect(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      heightFactor: 0.78,
-                      child: Image.asset(
-                        _avatarPath,
-                        height: 136,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, _, _) => const SizedBox(),
+                  top: -(screenW * 0.14),
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: ClipRect(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        heightFactor: 0.78,
+                        child: Image.asset(
+                          _avatarPath,
+                          height: screenW * 0.27,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => const SizedBox(),
+                        ),
                       ),
                     ),
                   ),
@@ -618,91 +647,91 @@ class _HomeTab extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 44),
+          SizedBox(height: isTablet ? 36 : 28),
 
           // ── Título "Mis Clases" ────────────────────────────
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: hPad),
             child: Text(
               'Mis Clases',
               style: TextStyle(
                 fontFamily: 'Hiruko',
-                fontSize: 28,
+                fontSize: mClasesFs,
                 fontWeight: FontWeight.w800,
                 color: Colors.black87,
               ),
             ),
           ),
 
-          const SizedBox(height: 14),
+          SizedBox(height: isTablet ? 14 : 10),
 
-          // ── Carrusel de clases ─────────────────────────────
-          if (verificando)
-            const SizedBox(
-              height: 260,
-              child: Center(
+          // ── Scroll horizontal de clases ────────────────────
+          if (widget.verificando)
+            SizedBox(
+              height: screenH * 0.44,
+              child: const Center(
                 child: CircularProgressIndicator(color: Color(0xFF3E7DFE)),
               ),
             )
           else ...[
             SizedBox(
-              height: 260,
-              child: PageView.builder(
-                controller: pageController,
-                onPageChanged: onPageChanged,
-                physics: const PageScrollPhysics(),
+              height: isTablet ? screenH * 0.46 : screenH * 0.44,
+              child: ListView.builder(
+                controller: _scrollCtrl,
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.only(
+                  left: hPad,
+                  right: hPad,
+                  bottom: 14,
+                ),
                 itemCount: _materias.length,
-                padEnds: false,
-                clipBehavior: Clip.none,
                 itemBuilder: (context, i) {
                   final m = _materias[i];
+                  final cardW = isTablet ? screenW * 0.38 : screenW * 0.72;
                   return Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 10),
-                    child: _ClaseCard(
-                      info: m,
-                      descargado: descargado[m.clave] ?? false,
-                      descargando: descargando.contains(m.clave),
-                      progreso: progresosDescarga[m.clave] ?? 0.0,
-                      onDescargar: () => onDescargar(m.clave),
-                      onAbrir: () => onAbrir(m),
+                    padding: EdgeInsets.only(right: isTablet ? 16 : 12),
+                    child: SizedBox(
+                      width: cardW,
+                      child: _ClaseCard(
+                        info: m,
+                        descargado: widget.descargado[m.clave] ?? false,
+                        descargando: widget.descargando.contains(m.clave),
+                        progreso: widget.progresosDescarga[m.clave] ?? 0.0,
+                        onDescargar: () => widget.onDescargar(m.clave),
+                        onAbrir: () => widget.onAbrir(m),
+                      ),
                     ),
                   );
                 },
               ),
             ),
 
-            const SizedBox(height: 10),
-
-            // Puntos indicadores (tapeables)
+            // ── Indicador de puntos ────────────────────────
+            SizedBox(height: isTablet ? 16 : 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                _materias.length,
-                (i) => GestureDetector(
-                  onTap: () => pageController.animateToPage(
-                    i,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
+              children: List.generate(_materias.length, (i) {
+                final selected = i == _scrollIndex;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: EdgeInsets.symmetric(horizontal: screenW * 0.008),
+                  width: selected ? screenW * 0.05 : screenW * 0.02,
+                  height: screenW * 0.02,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(screenW * 0.01),
+                    color: selected
+                        ? const Color(0xFF3E7DFE)
+                        : Colors.grey[350],
                   ),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: i == currentPage ? 20 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: i == currentPage
-                          ? const Color(0xFF3E7DFE)
-                          : Colors.grey[300],
-                    ),
-                  ),
-                ),
-              ),
+                );
+              }),
             ),
-
-            const SizedBox(height: 10),
-          ],
-        ],
+            SizedBox(height: isTablet ? 18 : 12),
+          ], // else
+              ], // Column interior children
+            ),
+          ), // Expanded
+          ], // Column exterior children
       ),
     );
   }
@@ -753,6 +782,12 @@ class _ClaseCardState extends State<_ClaseCard>
     final info = widget.info;
     final listo = widget.descargado;
     final enDescarga = widget.descargando;
+    final screenW = MediaQuery.of(context).size.width;
+    final isTablet = screenW >= 600;
+    final categoriaFs = isTablet ? 16.0 : 14.0;
+    final tituloFs = isTablet ? 26.0 : 22.0;
+    final timeFs = isTablet ? 16.0 : 14.0;
+    final iconSz = isTablet ? 60.0 : 48.0;
 
     return GestureDetector(
       onTapDown: (_) => _ctrl.forward(),
@@ -772,13 +807,18 @@ class _ClaseCardState extends State<_ClaseCard>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: info.sombra,
+                color: info.sombra.withValues(alpha: 0.85),
                 blurRadius: 0,
-                offset: const Offset(0, 8),
+                offset: const Offset(0, 10),
               ),
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 8,
+                color: info.sombra.withValues(alpha: 0.30),
+                blurRadius: 16,
+                offset: const Offset(0, 14),
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
             ],
@@ -808,7 +848,7 @@ class _ClaseCardState extends State<_ClaseCard>
                               errorBuilder: (_, _, _) => Icon(
                                 info.icono,
                                 color: Colors.white,
-                                size: 52,
+                                size: iconSz,
                               ),
                             ),
                           ),
@@ -846,56 +886,55 @@ class _ClaseCardState extends State<_ClaseCard>
                     ),
                   ),
                   // Texto inferior
-                  Expanded(
-                    flex: 38,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            info.categoria,
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: info.color,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          info.categoria,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: categoriaFs,
+                            fontWeight: FontWeight.w700,
+                            color: info.color,
                           ),
-                          Text(
-                            info.titulo,
-                            style: const TextStyle(
-                              fontFamily: 'Hiruko',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black87,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          info.titulo,
+                          style: TextStyle(
+                            fontFamily: 'Hiruko',
+                            fontSize: tituloFs,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
                           ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time_rounded,
-                                size: 14,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: timeFs,
+                              color: Colors.grey[500],
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              '10 minutos',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: timeFs,
                                 color: Colors.grey[500],
                               ),
-                              const SizedBox(width: 3),
-                              Text(
-                                '10 minutos',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 13,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -929,19 +968,30 @@ class _ProgresoTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final screenW = mq.size.width;
+    final isTablet = screenW >= 600;
+    final hPad = isTablet ? screenW * 0.06 : 20.0;
+    final cardH = isTablet ? 130.0 : 110.0;
+    final avatarSize = isTablet ? 108.0 : 90.0;
+    final avatarLeft = isTablet ? 20.0 : 16.0;
+    final nameLeft = isTablet ? 148.0 : 120.0;
+    final nameFs = isTablet ? 26.0 : 22.0;
+    final progresoTitleFs = isTablet ? 26.0 : 22.0;
+
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 100),
+        padding: EdgeInsets.only(bottom: isTablet ? 120 : 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: isTablet ? 28 : 20),
 
             // Tarjeta de perfil
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: hPad),
               child: Container(
-                height: 110,
+                height: cardH,
                 decoration: BoxDecoration(
                   color: const Color(0xFF45C0D0),
                   borderRadius: BorderRadius.circular(22),
@@ -958,11 +1008,11 @@ class _ProgresoTab extends StatelessWidget {
                   children: [
                     // Avatar centrado verticalmente
                     Positioned(
-                      top: 10,
-                      left: 16,
+                      top: (cardH - avatarSize) / 2,
+                      left: avatarLeft,
                       child: Container(
-                        width: 90,
-                        height: 90,
+                        width: avatarSize,
+                        height: avatarSize,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
@@ -982,16 +1032,16 @@ class _ProgresoTab extends StatelessWidget {
                     ),
                     // Nombre y grado
                     Positioned(
-                      left: 120,
+                      left: nameLeft,
                       top: 22,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             nombre,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Hiruko',
-                              fontSize: 22,
+                              fontSize: nameFs,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
                             ),
@@ -1031,22 +1081,22 @@ class _ProgresoTab extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 60),
+            SizedBox(height: isTablet ? 70 : 60),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hPad),
               child: Text(
                 'Tu progreso',
                 style: TextStyle(
                   fontFamily: 'Hiruko',
-                  fontSize: 22,
+                  fontSize: progresoTitleFs,
                   fontWeight: FontWeight.w800,
                   color: Colors.black87,
                 ),
               ),
             ),
 
-            const SizedBox(height: 14),
+            SizedBox(height: isTablet ? 18 : 14),
 
             progresoAsync.when(
               loading: () => const Padding(
@@ -1055,8 +1105,8 @@ class _ProgresoTab extends StatelessWidget {
                   child: CircularProgressIndicator(color: Color(0xFF3E7DFE)),
                 ),
               ),
-              error: (_, _) => _buildBarras({}),
-              data: (progreso) => _buildBarras(progreso),
+              error: (_, _) => _buildBarras({}, context),
+              data: (progreso) => _buildBarras(progreso, context),
             ),
           ],
         ),
@@ -1064,9 +1114,13 @@ class _ProgresoTab extends StatelessWidget {
     );
   }
 
-  Widget _buildBarras(Map<String, double> progreso) {
+  Widget _buildBarras(Map<String, double> progreso, BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final screenW = mq.size.width;
+    final isTablet = screenW >= 600;
+    final hPad = isTablet ? screenW * 0.06 : 20.0;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: hPad),
       child: Column(
         children: _progresoItems.map((item) {
           final pct = (progreso[item.clave] ?? 0.0).clamp(0.0, 100.0);
@@ -1145,23 +1199,28 @@ class _BarraProgreso extends StatelessWidget {
 class _NavBar extends StatelessWidget {
   final int selectedIndex;
   final VoidCallback onHome;
-  final VoidCallback onAsistente;
   final VoidCallback onProgreso;
   final VoidCallback onConfiguracion;
 
   const _NavBar({
     required this.selectedIndex,
     required this.onHome,
-    required this.onAsistente,
     required this.onProgreso,
     required this.onConfiguracion,
   });
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final screenW = mq.size.width;
+    final isTablet = screenW >= 600;
+    final navH = isTablet ? 80.0 : 68.0;
+    final hMargin = isTablet ? screenW * 0.15 : 20.0;
+    final iconSz = isTablet ? 32.0 : 28.0;
+
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-      height: 68,
+      margin: EdgeInsets.only(left: hMargin, right: hMargin, bottom: isTablet ? 28 : 20),
+      height: navH,
       decoration: BoxDecoration(
         color: const Color(0xFF45C0D0),
         borderRadius: BorderRadius.circular(40),
@@ -1176,26 +1235,9 @@ class _NavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _NavItem(
-            icon: Icons.home_rounded,
-            selected: selectedIndex == 0,
-            onTap: onHome,
-          ),
-          _NavItem(
-            icon: Icons.psychology_rounded,
-            selected: false,
-            onTap: onAsistente,
-          ),
-          _NavItem(
-            icon: Icons.emoji_events_rounded,
-            selected: selectedIndex == 1,
-            onTap: onProgreso,
-          ),
-          _NavItem(
-            icon: Icons.settings_rounded,
-            selected: false,
-            onTap: onConfiguracion,
-          ),
+          _NavItem(icon: Icons.home_rounded, selected: selectedIndex == 0, onTap: onHome, iconSize: iconSz),
+          _NavItem(icon: Icons.emoji_events_rounded, selected: selectedIndex == 1, onTap: onProgreso, iconSize: iconSz),
+          _NavItem(icon: Icons.settings_rounded, selected: false, onTap: onConfiguracion, iconSize: iconSz),
         ],
       ),
     );
@@ -1206,11 +1248,13 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final bool selected;
   final VoidCallback onTap;
+  final double iconSize;
 
   const _NavItem({
     required this.icon,
     required this.selected,
     required this.onTap,
+    this.iconSize = 28,
   });
 
   @override
@@ -1225,7 +1269,7 @@ class _NavItem extends StatelessWidget {
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Icon(icon, size: 28, color: Colors.white),
+        child: Icon(icon, size: iconSize, color: Colors.white),
       ),
     );
   }

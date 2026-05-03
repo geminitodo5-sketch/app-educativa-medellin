@@ -1,6 +1,6 @@
 ﻿import 'dart:async';
 import 'dart:convert';
-import 'dart:math' show sin, pi, Random;
+import 'dart:math' show sin, pi, Random, min;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -211,16 +211,19 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
               _PageCard(
                 title: 'Cuerpo humano',
                 dots: _buildDots(),
+                progress: 1 / 3,
                 child: _Actividad1(onNext: _siguiente),
               ),
               _PageCard(
                 title: 'Cuerpo humano',
                 dots: _buildDots(),
+                progress: 2 / 3,
                 child: _Actividad2(onNext: _siguiente),
               ),
               _PageCard(
                 title: 'Cuerpo humano',
                 dots: _buildDots(),
+                progress: 1.0,
                 child: _Actividad3(onFinish: _irATerminado),
               ),
             ],
@@ -281,8 +284,14 @@ class _CuerpoHumanoScreenState extends ConsumerState<CuerpoHumanoScreen> {
 class _Forma {
   final Offset centro;
   final double radio;
-  const _Forma(this.centro, this.radio);
-  bool contiene(Offset p) => (p - centro).distance <= radio;
+  final double radioY;
+  const _Forma(this.centro, this.radio, [this.radioY = 0]);
+  bool contiene(Offset p) {
+    final ry = radioY > 0 ? radioY : radio;
+    final dx = (p.dx - centro.dx) / radio;
+    final dy = (p.dy - centro.dy) / ry;
+    return dx * dx + dy * dy <= 1.0;
+  }
 }
 
 class _ZonaCuerpo {
@@ -303,18 +312,18 @@ class _Actividad1State extends State<_Actividad1>
     with SingleTickerProviderStateMixin {
   static const _zonas = [
     _ZonaCuerpo('ojos', [
-      _Forma(Offset(0.32, 0.40), 0.11),
-      _Forma(Offset(0.73, 0.40), 0.11),
+      _Forma(Offset(0.32, 0.40), 0.14, 0.07),
+      _Forma(Offset(0.74, 0.40), 0.14, 0.07),
     ]),
     _ZonaCuerpo('manos', [
-      _Forma(Offset(0.15, 0.77), 0.04),
-      _Forma(Offset(0.88, 0.77), 0.04),
+      _Forma(Offset(0.16, 0.77), 0.06),
+      _Forma(Offset(0.87, 0.77), 0.06),
     ]),
     _ZonaCuerpo('piernas', [
-      _Forma(Offset(0.42, 0.93), 0.08),
-      _Forma(Offset(0.64, 0.93), 0.08),
-      _Forma(Offset(0.44, 0.97), 0.048),
-      _Forma(Offset(0.62, 0.97), 0.048),
+      _Forma(Offset(0.41, 0.91), 0.09),
+      _Forma(Offset(0.66, 0.91), 0.09),
+      _Forma(Offset(0.45, 0.96), 0.07),
+      _Forma(Offset(0.62, 0.96), 0.07),
     ]),
   ];
 
@@ -456,7 +465,7 @@ class _Actividad1State extends State<_Actividad1>
       child: Column(
         children: [
           _Instruccion(
-            'Toca la parte del cuerpo',
+            'Toca  la parte del cuerpo',
             player: _playerInstruccion,
             audioPath: _audio4,
           ),
@@ -547,14 +556,17 @@ class _PageCard extends StatelessWidget {
   final String title;
   final Widget child;
   final Widget dots;
+  final double progress;
   const _PageCard({
     required this.title,
     required this.child,
     required this.dots,
+    required this.progress,
   });
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         Container(color: const Color(0xFF3DCC52)),
@@ -562,18 +574,34 @@ class _PageCard extends StatelessWidget {
           children: [
             SafeArea(
               bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 18, 52, 48),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Hiruko',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 18, 52, 12),
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(sw * 0.08, 0, sw * 0.08, 14),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.white30,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -636,6 +664,7 @@ class _InstruccionState extends State<_Instruccion> {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
       child: Row(
@@ -643,31 +672,29 @@ class _InstruccionState extends State<_Instruccion> {
         children: [
           GestureDetector(
             onTap: _reproducir,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: 36,
-              height: 36,
+            child: Container(
+              width: (sw * 0.13).clamp(44.0, 60.0),
+              height: (sw * 0.13).clamp(44.0, 60.0),
               decoration: BoxDecoration(
-                color: _reproduciendo
-                    ? const Color(0xFF3DCC52)
-                    : const Color(0xFFE8F5E9),
-                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 Icons.volume_up_rounded,
-                color: _reproduciendo ? Colors.white : const Color(0xFF3DCC52),
-                size: 22,
+                color: const Color(0xFF3DCC52),
+                size: (sw * 0.07).clamp(24.0, 34.0),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: sw * 0.03),
           Expanded(
             child: Text(
               widget.texto,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: Color(0xFF424242),
+              style: TextStyle(
+                fontFamily: 'Hiruko',
+                fontSize: (sw * 0.065).clamp(20.0, 46.0),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF424242),
                 height: 1.3,
               ),
             ),
@@ -979,7 +1006,7 @@ class _Actividad2State extends State<_Actividad2> {
       child: Column(
         children: [
           _Instruccion(
-            'Ayudame a armar la niña poniendo las partes en el lugar correcto',
+            'Ayudame a armar  la niña poniendo  las partes en el  lugar correcto',
             player: _player,
             audioPath: _audio5,
           ),
@@ -1360,13 +1387,13 @@ class _Actividad3State extends State<_Actividad3> {
     final lista = [
       {
         'txt':
-            '¿Con qué parte del cuerpo puedo mirar los colores del arcoíris?',
+            '¿Con qué parte del cuerpo puedo mirar  los colores del arcoíris?',
         'ans': 'vista',
       },
       {'txt': '¿Con qué parte del cuerpo escucho música?', 'ans': 'oido'},
-      {'txt': '¿Con qué parte del cuerpo toco los objetos?', 'ans': 'tacto'},
+      {'txt': '¿Con qué parte del cuerpo toco  los objetos?', 'ans': 'tacto'},
       {
-        'txt': '¿Con qué parte del cuerpo saboreo los alimentos?',
+        'txt': '¿Con qué parte del cuerpo saboreo  los alimentos?',
         'ans': 'gusto',
       },
     ]..shuffle(Random());
@@ -1407,6 +1434,35 @@ class _Actividad3State extends State<_Actividad3> {
     super.dispose();
   }
 
+  Widget _buildBoton(Map<String, dynamic> b, double side) {
+    final esCorrecto = _seleccion == b['id'] && b['id'] == _preguntas[_ronda]['ans'];
+    final esError = _seleccion == b['id'] && b['id'] != _preguntas[_ronda]['ans'];
+    return GestureDetector(
+      onTap: () => _responder(context, b['id'] as String),
+      child: SizedBox(
+        width: side,
+        height: side,
+        child: Container(
+          decoration: BoxDecoration(
+            color: b['c'] as Color,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: esCorrecto
+                  ? Colors.greenAccent
+                  : (esError ? Colors.red : Colors.transparent),
+              width: 4,
+            ),
+          ),
+          child: Image.asset(
+            b['img'] as String,
+            fit: BoxFit.contain,
+            filterQuality: ui.FilterQuality.high,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return _Tarjeta(
@@ -1418,42 +1474,39 @@ class _Actividad3State extends State<_Actividad3> {
             audioPath: _audioRondaActual,
           ),
           Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  children: _botones.map((b) {
-                    final esCorrecto =
-                        _seleccion == b['id'] &&
-                        b['id'] == _preguntas[_ronda]['ans'];
-                    final esError =
-                        _seleccion == b['id'] &&
-                        b['id'] != _preguntas[_ronda]['ans'];
-                    return GestureDetector(
-                      onTap: () => _responder(context, b['id'] as String),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: b['c'] as Color,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: esCorrecto
-                                ? Colors.greenAccent
-                                : (esError ? Colors.red : Colors.transparent),
-                            width: 4,
-                          ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: LayoutBuilder(
+                builder: (ctx, constraints) {
+                  const gap = 12.0;
+                  final maxW = (constraints.maxWidth - gap) / 2;
+                  final maxH = (constraints.maxHeight - gap) / 2;
+                  final side = min(maxW, maxH);
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildBoton(_botones[0], side),
+                            const SizedBox(width: gap),
+                            _buildBoton(_botones[1], side),
+                          ],
                         ),
-                        child: Image.asset(
-                          b['img'] as String,
-                          filterQuality: ui.FilterQuality.high,
+                        const SizedBox(height: gap),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildBoton(_botones[2], side),
+                            const SizedBox(width: gap),
+                            _buildBoton(_botones[3], side),
+                          ],
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ),

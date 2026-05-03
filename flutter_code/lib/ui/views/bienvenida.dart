@@ -112,33 +112,54 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.shortestSide >= 600;
+
+    // Escalas responsivas
+    final double titleFontSize    = isTablet ? 56.0  : 40.0;
+    final double subtitleFontSize = isTablet ? 50.0  : 36.0;
+    final double labelFontSize    = isTablet ? 32.0  : 24.0;
+    final double inputFontSize    = isTablet ? 22.0  : 18.0;
+    final double buttonFontSize   = isTablet ? 28.0  : 22.0;
+    final double avatarSize       = isTablet ? 140.0 : 100.0;
+    final double inputWidth       = isTablet ? 400.0 : 280.0;
+    final double buttonWidth      = isTablet ? 300.0 : 220.0;
+    final double buttonHeight     = isTablet ? 70.0  : 56.0;
+    final double avatarSpacing    = isTablet ? 48.0  : 30.0;
+    final double topSpacingFactor = isTablet ? 0.08  : 0.05;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
+        fit: StackFit.expand,
         children: [
           // Fondo
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/bienvenida/fondos (1).png',
-              fit: BoxFit.cover,
+          Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF7BD0E8),
+              image: DecorationImage(
+                image: AssetImage('assets/images/interfaz/fondos/fondo.jpg'),
+                fit: BoxFit.cover,
+                alignment: Alignment.bottomCenter,
+              ),
             ),
           ),
 
           // Contenido
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 48.0 : 24.0,
+              ),
               child: Column(
                 children: [
-                  SizedBox(height: screenSize.height * 0.28),
+                  SizedBox(height: screenSize.height * topSpacingFactor),
 
                   // ¡Hola!
-                  const Text(
+                  Text(
                     '¡Hola!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
-                      fontSize: 40,
+                      fontSize: titleFontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -146,13 +167,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
                   // Bienvenido a numi
                   RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       style: TextStyle(
                         fontFamily: 'Hiruko',
-                        fontSize: 36,
+                        fontSize: subtitleFontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      children: [
+                      children: const [
                         TextSpan(
                           text: 'Bienvenido a ',
                           style: TextStyle(color: Colors.black),
@@ -168,11 +189,11 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                   const SizedBox(height: 30),
 
                   // ¿Cuál es tu nombre?
-                  const Text(
+                  Text(
                     '¿Cuál es tu nombre?',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
-                      fontSize: 24,
+                      fontSize: labelFontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -182,7 +203,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
                   // Campo de nombre
                   Container(
-                    width: 280,
+                    width: inputWidth,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -202,14 +223,14 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: isTablet ? 28.0 : 20.0,
+                          vertical:   isTablet ? 20.0 : 16.0,
                         ),
                       ),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 18,
+                        fontSize: inputFontSize,
                         color: Colors.black,
                       ),
                     ),
@@ -218,11 +239,11 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                   const SizedBox(height: 36),
 
                   // Elige tu personaje
-                  const Text(
+                  Text(
                     'Elige tu personaje',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
-                      fontSize: 24,
+                      fontSize: labelFontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -239,14 +260,16 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         seleccionado: _avatarSeleccionado == 1,
                         color: const Color(0xFFA855F7),
                         imagen: 'assets/images/bienvenida/pollo feliz 2 (2).png',
+                        size: avatarSize,
                         onTap: () => setState(() => _avatarSeleccionado = 1),
                       ),
-                      const SizedBox(width: 30),
+                      SizedBox(width: avatarSpacing),
                       _AvatarOpcion(
                         index: 2,
                         seleccionado: _avatarSeleccionado == 2,
                         color: const Color(0xFF4ADE80),
                         imagen: 'assets/images/bienvenida/mono.png',
+                        size: avatarSize,
                         onTap: () => setState(() => _avatarSeleccionado = 2),
                       ),
                     ],
@@ -256,8 +279,8 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
                   // Botón continuar
                   SizedBox(
-                    width: 220,
-                    height: 56,
+                    width: buttonWidth,
+                    height: buttonHeight,
                     child: ElevatedButton(
                       onPressed: _guardando ? null : _continuar,
                       style: ElevatedButton.styleFrom(
@@ -270,19 +293,19 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         shadowColor: const Color(0xFF1A4BBF),
                       ),
                       child: _guardando
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
+                          ? SizedBox(
+                              width: isTablet ? 32.0 : 24.0,
+                              height: isTablet ? 32.0 : 24.0,
+                              child: const CircularProgressIndicator(
                                 color: Colors.white,
                                 strokeWidth: 2.5,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               '¡Continuar!',
                               style: TextStyle(
                                 fontFamily: 'Hiruko',
-                                fontSize: 22,
+                                fontSize: buttonFontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -306,6 +329,7 @@ class _AvatarOpcion extends StatelessWidget {
   final bool seleccionado;
   final Color color;
   final String imagen;
+  final double size;
   final VoidCallback onTap;
 
   const _AvatarOpcion({
@@ -313,6 +337,7 @@ class _AvatarOpcion extends StatelessWidget {
     required this.seleccionado,
     required this.color,
     required this.imagen,
+    required this.size,
     required this.onTap,
   });
 
@@ -323,8 +348,8 @@ class _AvatarOpcion extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
-        width: 100,
-        height: 100,
+        width: size,
+        height: size,
         transform: seleccionado
             ? Matrix4.diagonal3Values(1.1, 1.1, 1.0)
             : Matrix4.identity(),

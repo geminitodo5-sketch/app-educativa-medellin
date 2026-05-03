@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -29,17 +29,11 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
   final List<int> purpleTapped = [];
 
   static const Color verdeNumi = Color(0xFF59E347);
-  static const Color rojoNumi = Color(0xFFF65757);
+  static const Color rojoNumi  = Color(0xFFF65757);
 
-  // Posiciones base bien separadas para 1-5 naranjas
   static const Map<int, List<Alignment>> _baseLayouts = {
-    1: [
-      Alignment(0.0, 0.0),
-    ],
-    2: [
-      Alignment(-0.62, 0.0),
-      Alignment(0.62, 0.0),
-    ],
+    1: [Alignment(0.0, 0.0)],
+    2: [Alignment(-0.62, 0.0), Alignment(0.62, 0.0)],
     3: [
       Alignment(-0.60, -0.58),
       Alignment(0.60, -0.58),
@@ -73,11 +67,10 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
   void initState() {
     super.initState();
     final rng = Random();
-    num1 = rng.nextInt(5) + 1; // 1–5
-    num2 = rng.nextInt(5) + 1; // 1–5
+    num1 = rng.nextInt(5) + 1;
+    num2 = rng.nextInt(5) + 1;
     correctAnswer = num1 + num2;
 
-    // Genera 2 distractores con distancias aleatorias para más variedad
     final possibleDeltas = [1, -1, 2, -2, 3, -3]..shuffle(rng);
     final distractors = <int>[];
     for (final d in possibleDeltas) {
@@ -89,7 +82,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     }
     options = [correctAnswer, ...distractors]..shuffle(rng);
 
-    greenPositions = _withJitter(_baseLayouts[num1]!, rng);
+    greenPositions  = _withJitter(_baseLayouts[num1]!, rng);
     purplePositions = _withJitter(_baseLayouts[num2]!, rng);
 
     _player = AudioPlayer();
@@ -104,7 +97,8 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
 
   Future<void> _reproducirInstruccion() async {
     try {
-      await _player?.setAsset('assets/Audio/Matematicas/audio_matemaaticasnaranjas_mezcla.mp3');
+      await _player?.setAsset(
+          'assets/Audio/Matematicas/audio_matemaaticasnaranjas_mezcla.mp3');
       await _player?.play();
     } catch (e) {
       debugPrint('Error al reproducir audio: $e');
@@ -124,48 +118,85 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
 
   @override
   Widget build(BuildContext context) {
+    final sw        = MediaQuery.of(context).size.width;
+    final sh        = MediaQuery.of(context).size.height;
+    final statusBar = MediaQuery.of(context).padding.top;
+    final headerH  = (sh * 0.12).clamp(70.0, 110.0);
+
     return Scaffold(
       backgroundColor: const Color(0xFF3475F7),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            _buildTopBar(context),
-            const SizedBox(height: 10),
-            Expanded(child: _buildWhiteCanvas(context)),
-          ],
-        ),
+      body: Column(
+        children: [
+          _buildHeader(context, sw, sh, statusBar, headerH),
+          Expanded(child: _buildWhiteCanvas(context, sw, sh)),
+        ],
       ),
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.topRight,
-          child: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white, size: 30),
-            onPressed: () {
-              ref.read(respuestaSumarProvider.notifier).state = null;
-              Navigator.of(context).pop();
-            },
+  Widget _buildHeader(BuildContext context, double sw, double sh,
+      double statusBar, double headerH) {
+    return SizedBox(
+      height: statusBar + headerH,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: 28,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Sumar',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: (sw * 0.085).clamp(28.0, 42.0),
+                  fontFamily: 'Hiruko',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
-        ),
-        const Text(
-          'Sumar',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 32,
-            fontFamily: 'Hiruko',
-            fontWeight: FontWeight.bold,
+          Positioned(
+            top: statusBar + 4,
+            right: 8,
+            child: IconButton(
+              icon: Icon(
+                Icons.close,
+                color: Colors.white,
+                size: (sw * 0.075).clamp(24.0, 36.0),
+              ),
+              onPressed: () {
+                ref.read(respuestaSumarProvider.notifier).state = null;
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-        ),
-      ],
+          Positioned(
+            bottom: 12,
+            left: sw * 0.08,
+            right: sw * 0.08,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: const LinearProgressIndicator(
+                value: 1.0,
+                minHeight: 8,
+                backgroundColor: Colors.white30,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF59E347)),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildWhiteCanvas(BuildContext context) {
+  Widget _buildWhiteCanvas(BuildContext context, double sw, double sh) {
+    final hPad = (sw * 0.06).clamp(16.0, 30.0);
+    final vPad = (sh * 0.035).clamp(16.0, 40.0);
+    final gap  = sw * 0.05;
+    final boxW = (sw - hPad * 2 - gap) / 2;
+
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -175,44 +206,53 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
           topRight: Radius.circular(40),
         ),
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInstruction(),
-            const SizedBox(height: 24),
-            _buildOrangeBoxes(),
-            const SizedBox(height: 20),
-            _buildEquation(),
-            const SizedBox(height: 60),
-            _buildAnswerButtons(context),
-            const SizedBox(height: 24),
+            _buildInstruction(sw),
+            const Spacer(),
+            _buildOrangeBoxes(sw, gap, boxW),
+            const Spacer(),
+            _buildEquation(sw),
+            const Spacer(),
+            _buildAnswerButtons(context, sw, sh),
+            SizedBox(height: sh * 0.025),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInstruction() {
+  Widget _buildInstruction(double sw) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(
-          icon: const Icon(Icons.volume_up_rounded, size: 45),
-          color: const Color(0xFF3475F7),
-          onPressed: _reproducirInstruccion,
+        GestureDetector(
+          onTap: _reproducirInstruccion,
+          child: Container(
+            width: (sw * 0.13).clamp(44.0, 60.0),
+            height: (sw * 0.13).clamp(44.0, 60.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEEF2FF),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              Icons.volume_up_rounded,
+              color: const Color(0xFF3475F7),
+              size: (sw * 0.07).clamp(24.0, 34.0),
+            ),
+          ),
         ),
-        const SizedBox(width: 12),
-        const Expanded(
+        SizedBox(width: sw * 0.03),
+        Expanded(
           child: Text(
-            'Suma las naranjas de las dos cajas',
+            'Suma  las naranjas de  las dos cajas',
             style: TextStyle(
-              fontSize: 15,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w700,
+              fontSize: (sw * 0.055).clamp(18.0, 40.0),
+              fontFamily: 'Hiruko',
+              fontWeight: FontWeight.bold,
               color: Colors.black87,
-              height: 1.3,
             ),
           ),
         ),
@@ -220,7 +260,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     );
   }
 
-  Widget _buildOrangeBoxes() {
+  Widget _buildOrangeBoxes(double sw, double gap, double boxW) {
     return Row(
       children: [
         Expanded(
@@ -229,15 +269,17 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
             positions: greenPositions,
             count: num1,
             isGreen: true,
+            containerWidth: boxW,
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: gap),
         Expanded(
           child: _buildOrangeBox(
             color: const Color(0xFFBF3FFF),
             positions: purplePositions,
             count: num2,
             isGreen: false,
+            containerWidth: boxW,
           ),
         ),
       ],
@@ -249,9 +291,15 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     required List<Alignment> positions,
     required int count,
     required bool isGreen,
+    required double containerWidth,
   }) {
     final tapped = isGreen ? greenTapped : purpleTapped;
-    final orangeSize = count == 1 ? 90.0 : count <= 3 ? 68.0 : 56.0;
+    final orangeSize = (count == 1
+            ? containerWidth * 0.55
+            : count <= 3
+                ? containerWidth * 0.42
+                : containerWidth * 0.34)
+        .clamp(30.0, 220.0);
 
     return AspectRatio(
       aspectRatio: 1.0,
@@ -270,8 +318,8 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
                 isCounted: tapped.contains(i),
                 countNumber: tapped.contains(i) ? tapped.indexOf(i) + 1 : 0,
                 size: orangeSize,
-                entranceDelay:
-                    Duration(milliseconds: 80 * i + (isGreen ? 0 : 120)),
+                entranceDelay: Duration(
+                    milliseconds: 80 * i + (isGreen ? 0 : 120)),
                 onTap: () => _tapOrange(isGreen, i),
               ),
           ],
@@ -280,12 +328,12 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     );
   }
 
-  Widget _buildEquation() {
+  Widget _buildEquation(double sw) {
     return Center(
       child: Text(
         '$num1 + $num2 = ?',
-        style: const TextStyle(
-          fontSize: 42,
+        style: TextStyle(
+          fontSize: (sw * 0.11).clamp(34.0, 72.0),
           fontWeight: FontWeight.w900,
           fontFamily: 'Hiruko',
           color: Colors.black,
@@ -295,12 +343,16 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
     );
   }
 
-  Widget _buildAnswerButtons(BuildContext context) {
+  Widget _buildAnswerButtons(BuildContext context, double sw, double sh) {
+    final btnW     = (sw * 0.23).clamp(68.0, 160.0);
+    final btnH     = (sh * 0.08).clamp(52.0, 100.0);
+    final fontSize = (sw * 0.06).clamp(20.0, 42.0);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: options.map((option) {
         final isSelected = selectedAnswer == option;
-        final isCorrect = option == correctAnswer;
+        final isCorrect  = option == correctAnswer;
 
         return GestureDetector(
           onTap: () {
@@ -311,8 +363,8 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 90,
-            height: 60,
+            width: btnW,
+            height: btnH,
             decoration: BoxDecoration(
               color: isSelected
                   ? const Color(0xFF3475F7)
@@ -321,7 +373,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: const Color(0xFF3475F7).withOpacity(0.4),
+                        color: const Color(0xFF3475F7).withValues(alpha: 0.4),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -332,11 +384,10 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
               child: Text(
                 '$option',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: fontSize,
                   fontFamily: 'Hiruko',
                   fontWeight: FontWeight.bold,
-                  color:
-                      isSelected ? Colors.white : const Color(0xFF3475F7),
+                  color: isSelected ? Colors.white : const Color(0xFF3475F7),
                 ),
               ),
             ),
@@ -352,8 +403,9 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
       isDismissible: false,
       backgroundColor: Colors.transparent,
       builder: (context) {
+        final sw = MediaQuery.of(context).size.width;
         return Container(
-          padding: const EdgeInsets.all(30),
+          padding: EdgeInsets.all((sw * 0.07).clamp(20.0, 35.0)),
           decoration: BoxDecoration(
             color: esCorrecto
                 ? const Color(0xFFD7FFD3)
@@ -371,30 +423,32 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
                   Icon(
                     esCorrecto ? Icons.check_circle : Icons.cancel,
                     color: esCorrecto ? verdeNumi : rojoNumi,
-                    size: 40,
+                    size: (sw * 0.1).clamp(32.0, 48.0),
                   ),
-                  const SizedBox(width: 15),
+                  SizedBox(width: sw * 0.04),
                   Text(
-                    esCorrecto ? '¡Excelente trabajo!' : '¡Inténtalo de nuevo!',
+                    esCorrecto
+                        ? '¡Excelente trabajo!'
+                        : '¡Inténtalo de nuevo!',
                     style: TextStyle(
                       fontFamily: 'Hiruko',
-                      fontSize: 24,
+                      fontSize: (sw * 0.06).clamp(20.0, 28.0),
                       fontWeight: FontWeight.bold,
-                      color: esCorrecto ? Colors.green[900] : Colors.red[900],
+                      color:
+                          esCorrecto ? Colors.green[900] : Colors.red[900],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: sw * 0.05),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: (sw * 0.13).clamp(48.0, 60.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: esCorrecto ? verdeNumi : rojoNumi,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                        borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -413,11 +467,11 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
                   },
                   child: Text(
                     esCorrecto ? 'Continuar' : 'Reintentar',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: (sw * 0.045).clamp(16.0, 22.0),
                     ),
                   ),
                 ),
@@ -430,7 +484,7 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
   }
 }
 
-// Widget individual de naranja con animación de entrada y rebote al tocar
+// ── Naranja interactiva con animación de entrada y rebote ──────────────────
 class _OrangeItem extends StatefulWidget {
   final Alignment alignment;
   final bool isCounted;
@@ -488,6 +542,7 @@ class _OrangeItemState extends State<_OrangeItem>
 
   @override
   Widget build(BuildContext context) {
+    final badgeSize = (widget.size * 0.32).clamp(20.0, 30.0);
     return Align(
       alignment: widget.alignment,
       child: GestureDetector(
@@ -504,33 +559,38 @@ class _OrangeItemState extends State<_OrangeItem>
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Image.asset(
-                  'assets/images/actividades/matematicas/NARANJA_8.png',
-                  width: widget.size,
-                  height: widget.size,
+                ColorFiltered(
+                  colorFilter: const ColorFilter.matrix([
+                    1.5, 0, 0, 0, -64,
+                    0, 1.5, 0, 0, -64,
+                    0, 0, 1.5, 0, -64,
+                    0, 0, 0, 1, 0,
+                  ]),
+                  child: Image.asset(
+                    'assets/images/actividades/matematicas/NARANJA_8.png',
+                    width: widget.size,
+                    height: widget.size,
+                  ),
                 ),
                 if (widget.isCounted)
                   Positioned(
-                    right: -5,
-                    top: -5,
+                    right: -badgeSize * 0.2,
+                    top: -badgeSize * 0.2,
                     child: Container(
-                      width: 26,
-                      height: 26,
-                      decoration: BoxDecoration(
+                      width: badgeSize,
+                      height: badgeSize,
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 4,
-                          ),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black26, blurRadius: 4),
                         ],
                       ),
                       child: Center(
                         child: Text(
                           '${widget.countNumber}',
-                          style: const TextStyle(
-                            fontSize: 13,
+                          style: TextStyle(
+                            fontSize: badgeSize * 0.5,
                             fontWeight: FontWeight.bold,
                             color: Colors.deepOrange,
                           ),
