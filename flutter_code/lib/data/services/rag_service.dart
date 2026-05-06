@@ -1121,6 +1121,170 @@ class RagService {
     'ingles':      'Inglés',
     'sociales':    'Sociales',
   }[m] ?? m;
+
+  // ─── Generador de preguntas de selección múltiple ────────────
+
+  Future<List<PreguntaQuiz>> generarPreguntasMCQ({
+    required String materia,
+    required int grado,
+    int cantidad = 10,
+  }) async {
+    final corpus = await _db.consultar(
+      'base_conocimiento',
+      where: 'materia = ? AND grado = ?',
+      whereArgs: [materia, grado],
+    );
+
+    if (corpus.length < 4) return [];
+
+    final rng = Random();
+    final entradas = List<Map<String, dynamic>>.from(corpus)..shuffle(rng);
+    final resultado = <PreguntaQuiz>[];
+
+    for (final correcta in entradas.take(cantidad)) {
+      final temaCorrect = correcta['tema'] as String? ?? '';
+      final distractores = corpus
+          .where((e) =>
+              e != correcta &&
+              (e['tema'] as String? ?? '') != temaCorrect)
+          .toList()
+        ..shuffle(rng);
+
+      if (distractores.length < 3) continue;
+
+      final respCorrecta =
+          _extractarRespuestaCorta(correcta['respuesta'] as String);
+      final opciones = [
+        respCorrecta,
+        _extractarRespuestaCorta(distractores[0]['respuesta'] as String),
+        _extractarRespuestaCorta(distractores[1]['respuesta'] as String),
+        _extractarRespuestaCorta(distractores[2]['respuesta'] as String),
+      ];
+
+      final lista = List.generate(4, (i) => (i == 0, opciones[i]));
+      lista.shuffle(rng);
+
+      resultado.add(PreguntaQuiz(
+        pregunta: _reformularPregunta(correcta['pregunta'] as String),
+        opciones: lista.map((e) => e.$2).toList(),
+        indiceCorrecto: lista.indexWhere((e) => e.$1),
+        tema: temaCorrect,
+      ));
+    }
+
+    return resultado;
+  }
+
+  // Hace la pregunta concisa y amigable para niños de 3°-5°.
+  String _reformularPregunta(String pregunta) {
+    var q = pregunta.trim();
+
+    // Arreglar palabras pegadas del corpus
+    // ej: "esla" → "es la", "yla" → "y la", "esun" → "es un"
+    q = q.replaceAllMapped(
+      RegExp(
+        r'\b(es|son|fue|era|están|y)(la|el|los|las|un|una|unos|unas)\b',
+        caseSensitive: false,
+      ),
+      (m) => '${m.group(1)} ${m.group(2)}',
+    );
+
+    // Normalizar espacios dobles
+    q = q.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+
+    // Quitar punto final; las preguntas terminan en '?'
+    q = q.replaceAll(RegExp(r'[.:]$'), '').trim();
+    if (!q.endsWith('?')) q = '$q?';
+
+    // Simplificar arranques académicos comunes
+    q = q
+        .replaceFirst(RegExp(r'^¿En qué consiste\s+',              caseSensitive: false), '¿Qué es ')
+        .replaceFirst(RegExp(r'^¿Cuál es la definición de\s+',     caseSensitive: false), '¿Qué es ')
+        .replaceFirst(RegExp(r'^¿Cuál es el concepto de\s+',       caseSensitive: false), '¿Qué es ')
+        .replaceFirst(RegExp(r'^¿A qué se denomina\s+',            caseSensitive: false), '¿Cómo se llama ')
+        .replaceFirst(RegExp(r'^¿Cómo se denomina\s+',             caseSensitive: false), '¿Cómo se llama ')
+        .replaceFirst(RegExp(r'^¿Cuál de los siguientes\s+',       caseSensitive: false), '¿Cuál ');
+
+    // Si sigue siendo muy larga (>90 chars), cortar en coma o ':'
+    if (q.length > 90) {
+      final cortes = [q.indexOf(', '), q.indexOf(': ')];
+      final primero = cortes
+          .where((i) => i > 25 && i < 80)
+          .fold<int>(-1, (best, i) => best == -1 ? i : (i < best ? i : best));
+      if (primero > 0) {
+        q = '${q.substring(0, primero).trim()}?';
+      } else {
+        final sub = q.substring(0, 85);
+        final espacio = sub.lastIndexOf(' ');
+        q = '${sub.substring(0, espacio > 0 ? espacio : 85).replaceAll(RegExp(r'[?,]$'), '')}?';
+      }
+    }
+
+    // Capitalizar letra después de '¿'
+    if (q.length > 2 && q[0] == '¿') {
+      q = '¿${q[1].toUpperCase()}${q.substring(2)}';
+    }
+
+    return q;
+  }
+
+  // Devuelve la primera oración COMPLETA de la respuesta.
+  // Solo en último recurso (oración >130 chars) corta en punto natural.
+  // Nunca usa "...".
+  String _extractarRespuestaCorta(String respuesta) {
+    var s = respuesta.trim();
+
+    // Quitar prefijos académicos tipo "R:" o "Respuesta:"
+    s = s.replaceFirst(RegExp(r'^[Rr]espuesta\s*[:\-]\s*'), '');
+    s = s.replaceFirst(RegExp(r'^[Rr]\.\s*'), '');
+    s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+
+    // Paso 1 — primera oración completa (termina en '.' o '!')
+    // Aceptamos hasta 130 chars: suficiente para una oración larga pero legible.
+    final matchOracion = RegExp(r'[.!](?:\s|$)').firstMatch(s);
+    if (matchOracion != null) {
+      final primera = s.substring(0, matchOracion.start + 1).trim();
+      if (primera.length >= 8 && primera.length <= 130) {
+        return _limpiarOpcion(primera);
+      }
+    }
+
+    // Paso 2 — sin punto o primera oración muy larga: si el texto es corto, devolver completo
+    if (s.length <= 130) return _limpiarOpcion(s);
+
+    // Paso 3 — texto largo: buscar punto y coma (separador fuerte)
+    final semiIdx = s.indexOf('; ');
+    if (semiIdx >= 20 && semiIdx <= 120) {
+      return _limpiarOpcion(s.substring(0, semiIdx));
+    }
+
+    // Paso 4 — coma como separador, solo si el fragmento previo ya es completo
+    //          (mínimo 45 chars para que la idea tenga sentido)
+    final commaIdx = s.indexOf(', ');
+    if (commaIdx >= 45 && commaIdx <= 120) {
+      return _limpiarOpcion(s.substring(0, commaIdx));
+    }
+
+    // Paso 5 — corte en palabra completa (sin artículos/preposiciones finales)
+    final sub = s.substring(0, 120);
+    final palabras = sub.split(' ')..removeLast(); // descarta palabra posiblemente cortada
+    const _debiles = {
+      'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas',
+      'de', 'del', 'en', 'que', 'al', 'con', 'por', 'para',
+      'es', 'son', 'fue', 'su', 'sus', 'a', 'y', 'o', 'como', 'se',
+    };
+    while (palabras.isNotEmpty &&
+        _debiles.contains(palabras.last.toLowerCase())) {
+      palabras.removeLast();
+    }
+    return _limpiarOpcion(palabras.join(' '));
+  }
+
+  String _limpiarOpcion(String s) {
+    s = s.replaceAll(RegExp(r'[,;:]$'), '').trim();
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
+  }
 }
 
 // ─── Tipos internos ───────────────────────────────────────────
@@ -1140,6 +1304,22 @@ class RagRespuesta {
   const RagRespuesta({
     required this.texto,
     required this.encontrado,
+    required this.tema,
+  });
+}
+
+// ─── Pregunta de selección múltiple ──────────────────────────
+
+class PreguntaQuiz {
+  final String pregunta;
+  final List<String> opciones;   // siempre 4 elementos
+  final int indiceCorrecto;      // 0–3
+  final String tema;
+
+  const PreguntaQuiz({
+    required this.pregunta,
+    required this.opciones,
+    required this.indiceCorrecto,
     required this.tema,
   });
 }

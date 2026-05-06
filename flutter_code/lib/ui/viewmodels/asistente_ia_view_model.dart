@@ -44,6 +44,11 @@ class AsistenteIaEstado {
   final int gradoActual;
   final List<String> opcionesDisplay; // texto visible de cada opción numerada
   final List<String> opcionesQuery;   // query enviado al RAG para cada opción
+  final String avatarEstudiante;      // 'pollito' | 'mono'
+
+  // ── T3.7: pistas progresivas ───────────────────────────────
+  final String ultimoTema;   // tema de la última respuesta del RAG
+  final int nivelPista;      // 0 = sin pistas activas, 1-3 = nivel
 
   // ── Estado del modelo Gemma local ─────────────────────────
   final bool isModelReady;
@@ -60,6 +65,9 @@ class AsistenteIaEstado {
     this.gradoActual = 1,
     this.opcionesDisplay = const [],
     this.opcionesQuery = const [],
+    this.avatarEstudiante = 'pollito',
+    this.ultimoTema = '',
+    this.nivelPista = 0,
     this.isModelReady = false,
     this.isModelDownloading = false,
     this.modelDownloadProgress = 0.0,
@@ -75,6 +83,9 @@ class AsistenteIaEstado {
     int? gradoActual,
     List<String>? opcionesDisplay,
     List<String>? opcionesQuery,
+    String? avatarEstudiante,
+    String? ultimoTema,
+    int? nivelPista,
     bool? isModelReady,
     bool? isModelDownloading,
     double? modelDownloadProgress,
@@ -89,6 +100,9 @@ class AsistenteIaEstado {
         gradoActual: gradoActual ?? this.gradoActual,
         opcionesDisplay: opcionesDisplay ?? this.opcionesDisplay,
         opcionesQuery: opcionesQuery ?? this.opcionesQuery,
+        avatarEstudiante: avatarEstudiante ?? this.avatarEstudiante,
+        ultimoTema: ultimoTema ?? this.ultimoTema,
+        nivelPista: nivelPista ?? this.nivelPista,
         isModelReady: isModelReady ?? this.isModelReady,
         isModelDownloading: isModelDownloading ?? this.isModelDownloading,
         modelDownloadProgress:
@@ -269,6 +283,39 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     inicializar(materia: state.materiaActual, grado: grado);
   }
 
+  // ── T3.7: detección de confusión ──────────────────────────
+
+  static const _frasesConfusion = [
+    'no entiendo', 'no entendi', 'no entendí',
+    'no comprendo', 'no comprendi', 'no comprendí',
+    'no se', 'no sé', 'no lo se', 'no lo sé',
+    'pista', 'dame una pista', 'ayuda', 'me ayudas',
+    'explica mejor', 'explica mas', 'explica más',
+    'no queda claro', 'no está claro', 'mas facil', 'más fácil',
+    'no lo entiendo', 'repite', 'otra vez', 'como asi', 'cómo así',
+  ];
+
+  bool _esConfusion(String input) {
+    final lower = input.toLowerCase().trim();
+    return _frasesConfusion.any((f) => lower.contains(f));
+  }
+
+  String _queryPista(String tema, int nivel, int grado) {
+    switch (nivel) {
+      case 1: return 'Explica $tema de forma muy sencilla con palabras simples para grado $grado';
+      case 2: return 'Dame un ejemplo práctico concreto de $tema para grado $grado';
+      default: return 'Explica $tema paso a paso detallado para grado $grado';
+    }
+  }
+
+  String _prefijoPista(int nivel) {
+    switch (nivel) {
+      case 1: return '😊 Te lo explico de otra manera:\n\n';
+      case 2: return '💡 Mira este ejemplo concreto:\n\n';
+      default: return '📝 Vamos paso a paso:\n\n';
+    }
+  }
+
   // ── Preguntar ──────────────────────────────────────────────
 
   Future<void> preguntar(String input, {int? estudianteId}) async {
@@ -279,8 +326,16 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     final numero = int.tryParse(inputTrim);
     final String queryRAG;
     final String textoVisible;
+    int nuevoPista = 0;
+    bool esPista = false;
 
-    if (numero != null &&
+    // T3.7: detectar confusión → pista progresiva
+    if (_esConfusion(inputTrim) && state.ultimoTema.isNotEmpty) {
+      nuevoPista = (state.nivelPista % 3) + 1;
+      queryRAG = _queryPista(state.ultimoTema, nuevoPista, state.gradoActual);
+      textoVisible = inputTrim;
+      esPista = true;
+    } else if (numero != null &&
         numero >= 1 &&
         numero <= state.opcionesDisplay.length) {
       textoVisible = '$numero. ${state.opcionesDisplay[numero - 1]}';
@@ -288,6 +343,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     } else {
       textoVisible = inputTrim;
       queryRAG = inputTrim;
+      nuevoPista = 0; // reset al hacer una pregunta nueva
     }
 
     final msgUsuario = MensajeChat(texto: textoVisible, rol: RolMensaje.usuario);
@@ -298,6 +354,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     state = state.copyWith(
       mensajes: [...state.mensajes, msgUsuario, placeholder],
       respondiendo: true,
+      nivelPista: esPista ? nuevoPista : 0,
     );
 
     try {
@@ -317,10 +374,16 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
         );
       }
 
+      // Agregar prefijo de pista si corresponde
+      final textoFinal = esPista
+          ? '${_prefijoPista(nuevoPista)}${resultado.texto}'
+          : resultado.texto;
+
       final msgs = List<MensajeChat>.from(state.mensajes)..removeLast();
       state = state.copyWith(
-        mensajes: [...msgs, MensajeChat(texto: resultado.texto, rol: RolMensaje.asistente)],
+        mensajes: [...msgs, MensajeChat(texto: textoFinal, rol: RolMensaje.asistente)],
         respondiendo: false,
+        ultimoTema: resultado.tema.isNotEmpty ? resultado.tema : state.ultimoTema,
       );
     } catch (_) {
       final msgs = List<MensajeChat>.from(state.mensajes)..removeLast();

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/asistente_ia_view_model.dart';
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/racha_provider.dart';
+import 'rag_quiz_view.dart';
 
 class AsistenteIaView extends ConsumerStatefulWidget {
   final String materiaInicial;
@@ -125,6 +126,20 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
           ],
         ),
         actions: [
+          // Botón Quiz — solo para grados 3-5 con contenido descargado
+          if (estado.gradoActual >= 3 && estado.materiaDescargada)
+            IconButton(
+              icon: const Icon(Icons.quiz_rounded, color: Colors.white),
+              tooltip: 'Quiz',
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => RagQuizView(
+                    materia: estado.materiaActual,
+                    grado: estado.gradoActual,
+                  ),
+                ),
+              ),
+            ),
           // Historial de conversaciones
           IconButton(
             icon: const Icon(Icons.history_rounded, color: Colors.white),
@@ -199,6 +214,7 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
                     mensajes: estado.mensajes,
                     scrollCtrl: _scrollCtrl,
                     color: color,
+                    avatarEstudiante: estudiante?.personaje ?? 'pollito',
                   )
                 : _PantallaDescarga(
                     materia: estado.materiaActual,
@@ -416,11 +432,13 @@ class _ChatArea extends StatelessWidget {
   final List<MensajeChat> mensajes;
   final ScrollController scrollCtrl;
   final Color color;
+  final String avatarEstudiante;
 
   const _ChatArea({
     required this.mensajes,
     required this.scrollCtrl,
     required this.color,
+    this.avatarEstudiante = 'pollito',
   });
 
   @override
@@ -452,6 +470,7 @@ class _ChatArea extends StatelessWidget {
       itemBuilder: (_, i) => _BurbujaMensaje(
         mensaje: mensajes[i],
         colorAsistente: color,
+        avatarEstudiante: avatarEstudiante,
       ),
     );
   }
@@ -462,10 +481,12 @@ class _ChatArea extends StatelessWidget {
 class _BurbujaMensaje extends StatelessWidget {
   final MensajeChat mensaje;
   final Color colorAsistente;
+  final String avatarEstudiante;
 
   const _BurbujaMensaje({
     required this.mensaje,
     required this.colorAsistente,
+    this.avatarEstudiante = 'pollito',
   });
 
   @override
@@ -482,11 +503,19 @@ class _BurbujaMensaje extends StatelessWidget {
           if (!esUsuario) ...[
             CircleAvatar(
               radius: 16,
-              backgroundColor: colorAsistente,
-              child: const Icon(Icons.psychology_rounded,
-                  color: Colors.white, size: 18),
+              backgroundImage: AssetImage(
+                'assets/images/avatares/avatar_${avatarEstudiante == 'pollito' ? 'mono' : 'pollo'}1.jpg',
+              ),
             ),
             const SizedBox(width: 6),
+          ] else ...[
+            const SizedBox(width: 6),
+            CircleAvatar(
+              radius: 16,
+              backgroundImage: AssetImage(
+                'assets/images/avatares/avatar_${avatarEstudiante == 'pollito' ? 'pollo' : 'mono'}1.jpg',
+              ),
+            ),
           ],
           Flexible(
             child: Container(
@@ -520,7 +549,7 @@ class _BurbujaMensaje extends StatelessWidget {
                     ),
             ),
           ),
-          if (esUsuario) const SizedBox(width: 6),
+          if (!esUsuario) const SizedBox(width: 6),
         ],
       ),
     );
