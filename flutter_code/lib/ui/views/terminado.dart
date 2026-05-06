@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/providers/app_state_provider.dart';
+import '../../data/providers/racha_provider.dart';
 
-class ActividadTerminadaScreen extends StatefulWidget {
+class ActividadTerminadaScreen extends ConsumerStatefulWidget {
   final VoidCallback? onVolver;
 
   const ActividadTerminadaScreen({super.key, this.onVolver});
 
   @override
-  State<ActividadTerminadaScreen> createState() =>
+  ConsumerState<ActividadTerminadaScreen> createState() =>
       _ActividadTerminadaScreenState();
 }
 
-class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
+class _ActividadTerminadaScreenState
+    extends ConsumerState<ActividadTerminadaScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
@@ -46,7 +50,25 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
       ),
     );
 
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _verificarRacha();
+      }
+    });
+
     _controller.forward();
+  }
+
+  Future<void> _verificarRacha() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    // Solo aplica para grados 1 y 2
+    if (estudiante?.id == null || estudiante!.grado > 2 || !mounted) return;
+    final svc = ref.read(rachaServiceProvider);
+    final info = await svc.verificarRacha(estudiante.id!);
+    // Guarda la racha pendiente; el menú la mostrará al volver
+    if (info != null && mounted) {
+      ref.read(rachaPendienteProvider.notifier).state = info;
+    }
   }
 
   @override
@@ -95,7 +117,7 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
                 const Spacer(flex: 3),
 
                 // ── Personajes ──
-                _buildPersonajes(context), // ✅ pasamos context
+                _buildPersonajes(context),
 
                 const SizedBox(height: 40),
               ],
@@ -178,9 +200,7 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
     );
   }
 
-  // ✅ Recibe context para poder usar MediaQuery
   Widget _buildPersonajes(BuildContext context) {
-    // ✅ w y h ahora están correctamente definidos
     final double w = MediaQuery.of(context).size.width;
     final double h = MediaQuery.of(context).size.height;
 
@@ -201,7 +221,7 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
                 'assets/images/areas/ingles/mono gano.png',
                 width: w * 0.8,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const SizedBox(), // ✅
+                errorBuilder: (_, __, ___) => const SizedBox(),
               ),
             ),
 
@@ -215,7 +235,7 @@ class _ActividadTerminadaScreenState extends State<ActividadTerminadaScreen>
                   'assets/images/areas/ingles/pollo gano.png',
                   width: w * 0.38,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const SizedBox(), // ✅
+                  errorBuilder: (_, __, ___) => const SizedBox(),
                 ),
               ),
             ),

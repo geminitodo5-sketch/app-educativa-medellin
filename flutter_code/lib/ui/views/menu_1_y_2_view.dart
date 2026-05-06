@@ -9,7 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/musica_provider.dart';
+import '../../data/providers/racha_provider.dart';
 import '../../main.dart' show routeObserver;
+import 'racha_view.dart';
 import 'matematicas_view.dart';
 import 'ciencias_view.dart';
 import 'ingles_view.dart';
@@ -40,6 +42,18 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
   void initState() {
     super.initState();
     ref.read(musicaServiceProvider).entrar();
+  }
+
+  Future<void> _abrirRacha() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    if (estudiante?.id == null || !mounted) return;
+    final svc = ref.read(rachaServiceProvider);
+    final info = await svc.obtenerRacha(estudiante!.id!);
+    if (mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => RachaView(info: info)),
+      );
+    }
   }
 
   @override
@@ -194,6 +208,31 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
                               fontSize: 16 * s,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 6 * s),
+                        // Botón de racha
+                        GestureDetector(
+                          onTap: _abrirRacha,
+                          child: Container(
+                            width: 38 * s,
+                            height: 38 * s,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF8C00),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFCC5500),
+                                  blurRadius: 0,
+                                  offset: Offset(0, 3 * s),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.local_fire_department_rounded,
+                              color: Colors.white,
+                              size: 22 * s,
                             ),
                           ),
                         ),
@@ -407,12 +446,20 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
   }
 
   void _irA(BuildContext context, Widget vista) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => vista)).then((
-      _,
-    ) {
-      // Recarga el progreso al volver de cualquier materia
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => vista)).then((_) {
       ref.invalidate(menuProgresoProvider);
+      _mostrarRachaPendiente();
     });
+  }
+
+  void _mostrarRachaPendiente() {
+    if (!mounted) return;
+    final info = ref.read(rachaPendienteProvider);
+    if (info == null) return;
+    ref.read(rachaPendienteProvider.notifier).state = null;
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => RachaView(info: info)),
+    );
   }
 }
 

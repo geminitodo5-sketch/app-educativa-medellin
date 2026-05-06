@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/asistente_ia_view_model.dart';
 import '../../../data/providers/app_state_provider.dart';
+import '../../../data/providers/racha_provider.dart';
 
 class AsistenteIaView extends ConsumerStatefulWidget {
   final String materiaInicial;
@@ -70,6 +71,23 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
         );
       }
     });
+  }
+
+  Future<void> _enviarMensaje(int? estudianteId) async {
+    final pregunta = _inputCtrl.text.trim();
+    if (pregunta.isEmpty) return;
+    _inputCtrl.clear();
+    ref.read(asistenteIaViewModelProvider.notifier)
+        .preguntar(pregunta, estudianteId: estudianteId);
+    if (estudianteId == null || !mounted) return;
+    // Solo grados 3-5; el menú mostrará la pantalla al volver
+    final grado = ref.read(estudianteActivoProvider)?.grado ?? 0;
+    if (grado < 3) return;
+    final svc = ref.read(rachaServiceProvider);
+    final info = await svc.verificarRacha(estudianteId);
+    if (info != null && mounted) {
+      ref.read(rachaPendienteProvider.notifier).state = info;
+    }
   }
 
   @override
@@ -198,11 +216,7 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
               ctrl: _inputCtrl,
               respondiendo: estado.respondiendo,
               color: color,
-              onEnviar: () {
-                final pregunta = _inputCtrl.text.trim();
-                _inputCtrl.clear();
-                vm.preguntar(pregunta, estudianteId: estudiante?.id);
-              },
+              onEnviar: () => _enviarMensaje(estudiante?.id),
             ),
         ],
       ),

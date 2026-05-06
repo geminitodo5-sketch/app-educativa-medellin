@@ -857,7 +857,7 @@ class _Actividad2State extends State<_Actividad2> {
       'piernas': 0.26,
       'manos': 0.40,
       'ojos': 0.18,
-      'boca': 0.18,
+      'boca': 0.03,
     };
     final List<_PiezaCuerpo> nuevas = _piezasBase.map((p) {
       final imgSize = sizes[p.nombre]!;

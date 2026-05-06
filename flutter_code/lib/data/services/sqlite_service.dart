@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 
 class SqliteService {
   static const String _dbName    = 'numi.db';
-  static const int    _dbVersion = 3;
+  static const int    _dbVersion = 4;
 
   static SqliteService? _instance;
   static Database?      _database;
@@ -53,7 +53,9 @@ class SqliteService {
           email          TEXT,
           contrasena     TEXT,
           edad           INTEGER,
-          genero         TEXT
+          genero         TEXT,
+          racha_dias     INTEGER NOT NULL DEFAULT 0,
+          ultima_racha   TEXT
         )
       ''');
 
@@ -158,7 +160,18 @@ class SqliteService {
       await txn.execute(
         'CREATE INDEX idx_rag_materia ON base_conocimiento (materia, grado)');
 
-      // 8. configuracion (siempre 1 sola fila)
+      // 8. sesiones_diarias (racha — 1 fila por estudiante por día)
+      await txn.execute('''
+        CREATE TABLE sesiones_diarias (
+          id            INTEGER PRIMARY KEY AUTOINCREMENT,
+          estudiante_id INTEGER NOT NULL REFERENCES estudiantes(id) ON DELETE CASCADE,
+          fecha         TEXT    NOT NULL
+        )
+      ''');
+      await txn.execute(
+        'CREATE UNIQUE INDEX idx_sesiones_unico ON sesiones_diarias (estudiante_id, fecha)');
+
+      // 9. configuracion (siempre 1 sola fila)
       await txn.execute('''
         CREATE TABLE configuracion (
           id                   INTEGER PRIMARY KEY CHECK (id = 1),
@@ -197,6 +210,21 @@ class SqliteService {
       ''');
       await db.execute(
         'CREATE INDEX IF NOT EXISTS idx_rag_materia ON base_conocimiento (materia, grado)');
+    }
+    if (oldVersion < 4) {
+      await db.execute(
+        'ALTER TABLE estudiantes ADD COLUMN racha_dias INTEGER NOT NULL DEFAULT 0');
+      await db.execute(
+        'ALTER TABLE estudiantes ADD COLUMN ultima_racha TEXT');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS sesiones_diarias (
+          id            INTEGER PRIMARY KEY AUTOINCREMENT,
+          estudiante_id INTEGER NOT NULL REFERENCES estudiantes(id) ON DELETE CASCADE,
+          fecha         TEXT    NOT NULL
+        )
+      ''');
+      await db.execute(
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_sesiones_unico ON sesiones_diarias (estudiante_id, fecha)');
     }
   }
 

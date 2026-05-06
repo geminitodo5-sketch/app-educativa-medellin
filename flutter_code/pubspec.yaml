@@ -150,6 +150,7 @@ flutter:
     - assets/images/recompensas/insignias/
     - assets/images/recompensas/estrellas/
     - assets/images/asistente_ia/
+    - assets/images/racha/
     - assets/packages/
 
   # An image asset can refer to one or more resolution-specific "variants", see

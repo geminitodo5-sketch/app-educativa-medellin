@@ -9,10 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/musica_provider.dart';
+import '../../data/providers/racha_provider.dart';
 import '../../data/services/descarga_paquete_service.dart';
 import '../../main.dart' show routeObserver;
 import 'configuracion_view.dart';
 import 'asistente_ia/asistente_ia_view.dart';
+import 'racha_view.dart';
 
 // ── Datos de cada materia ─────────────────────────────────────
 
@@ -169,6 +171,18 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
     ref.read(musicaServiceProvider).entrar();
   }
 
+  Future<void> _abrirRacha() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    if (estudiante?.id == null || !mounted) return;
+    final svc = ref.read(rachaServiceProvider);
+    final info = await svc.obtenerRacha(estudiante!.id!);
+    if (mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => RachaView(info: info)),
+      );
+    }
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -248,7 +262,20 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
             ),
           ),
         )
-        .then((_) => _verificarDescargas());
+        .then((_) {
+          _verificarDescargas();
+          _mostrarRachaPendiente();
+        });
+  }
+
+  void _mostrarRachaPendiente() {
+    if (!mounted) return;
+    final info = ref.read(rachaPendienteProvider);
+    if (info == null) return;
+    ref.read(rachaPendienteProvider.notifier).state = null;
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => RachaView(info: info)),
+    );
   }
 
   Future<void> _abrirUltimoChat() async {
@@ -308,6 +335,7 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
                 onDescargar: _descargar,
                 onAbrir: _abrirAsistente,
                 onAbrirUltimoChat: _abrirUltimoChat,
+                onVerRacha: _abrirRacha,
               ),
               _ProgresoTab(
                 nombre: nombre,
@@ -350,6 +378,7 @@ class _HomeTab extends StatefulWidget {
   final void Function(String) onDescargar;
   final void Function(_MateriaInfo) onAbrir;
   final VoidCallback onAbrirUltimoChat;
+  final VoidCallback onVerRacha;
 
   const _HomeTab({
     required this.saludo,
@@ -363,6 +392,7 @@ class _HomeTab extends StatefulWidget {
     required this.onDescargar,
     required this.onAbrir,
     required this.onAbrirUltimoChat,
+    required this.onVerRacha,
   });
 
   @override
@@ -457,58 +487,88 @@ class _HomeTabState extends State<_HomeTab> {
                   ),
                 ),
                 // Píldora blanca con "Nivel X" + avatar
-                Container(
-                  padding: EdgeInsets.only(
-                    left: isTablet ? 20 : 16,
-                    top: 6,
-                    bottom: 6,
-                    right: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(40),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.10),
-                        blurRadius: 12,
-                        offset: const Offset(0, 3),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: isTablet ? 20 : 16,
+                        top: 6,
+                        bottom: 6,
+                        right: 6,
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Nivel ${widget.nivel}',
-                        style: TextStyle(
-                          fontFamily: 'Hiruko',
-                          fontSize: nivelFs,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black87,
-                        ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.10),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: avatarCircle,
-                        height: avatarCircle,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFFFFF0D6),
-                        ),
-                        padding: const EdgeInsets.all(2),
-                        child: ClipOval(
-                          child: Image.asset(
-                            _avatarPath,
-                            fit: BoxFit.contain,
-                            errorBuilder: (_, _, _) => const Icon(
-                              Icons.person,
-                              color: Color(0xFF3B74FF),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Nivel ${widget.nivel}',
+                            style: TextStyle(
+                              fontFamily: 'Hiruko',
+                              fontSize: nivelFs,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
                             ),
                           ),
+                          const SizedBox(width: 10),
+                          Container(
+                            width: avatarCircle,
+                            height: avatarCircle,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFFFFF0D6),
+                            ),
+                            padding: const EdgeInsets.all(2),
+                            child: ClipOval(
+                              child: Image.asset(
+                                _avatarPath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, _, _) => const Icon(
+                                  Icons.person,
+                                  color: Color(0xFF3B74FF),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Botón de racha
+                    GestureDetector(
+                      onTap: widget.onVerRacha,
+                      child: Container(
+                        width: isTablet ? 46 : 38,
+                        height: isTablet ? 46 : 38,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF8C00),
+                          shape: BoxShape.circle,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xFFCC5500),
+                              blurRadius: 0,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.local_fire_department_rounded,
+                          color: Colors.white,
+                          size: isTablet ? 26 : 22,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),

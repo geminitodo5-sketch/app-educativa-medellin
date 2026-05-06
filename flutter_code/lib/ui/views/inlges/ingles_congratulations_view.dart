@@ -1,12 +1,36 @@
 // lib/ui/views/ingles_congratulations_view.dart
-// Úsala desde cualquier módulo:
-//   Navigator.pushReplacement(context,
-//     MaterialPageRoute(builder: (_) => const InglesCongratulationsView()));
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../data/providers/app_state_provider.dart';
+import '../../../data/providers/racha_provider.dart';
 
-class InglesCongratulationsView extends StatelessWidget {
+class InglesCongratulationsView extends ConsumerStatefulWidget {
   const InglesCongratulationsView({super.key});
+
+  @override
+  ConsumerState<InglesCongratulationsView> createState() =>
+      _InglesCongratulationsViewState();
+}
+
+class _InglesCongratulationsViewState
+    extends ConsumerState<InglesCongratulationsView> {
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _verificarRacha());
+  }
+
+  Future<void> _verificarRacha() async {
+    final estudiante = ref.read(estudianteActivoProvider);
+    if (estudiante?.id == null || estudiante!.grado > 2 || !mounted) return;
+    final svc = ref.read(rachaServiceProvider);
+    final info = await svc.verificarRacha(estudiante.id!);
+    if (info != null && mounted) {
+      ref.read(rachaPendienteProvider.notifier).state = info;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
