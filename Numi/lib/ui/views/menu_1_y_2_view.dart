@@ -395,7 +395,7 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
         _MateriaRow(
           color: const Color(0xFF3E7DFE),
           shadowColor: const Color(0xFF2C60D2),
-          icono: 'assets/images/menu_materias/123_1.png',
+          icono: 'assets/images/menu_materias/123_12.png',
           nombre: 'Matemáticas',
           porcentaje: progreso['matematicas'] ?? 0.0,
           scale: s,
@@ -405,7 +405,7 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
         _MateriaRow(
           color: const Color(0xFF3DCC52),
           shadowColor: const Color(0xFF22A45D),
-          icono: 'assets/images/menu_materias/planta_1.png',
+          icono: 'assets/images/menu_materias/planta_12.png',
           nombre: 'Ciencias',
           porcentaje: progreso['ciencias'] ?? 0.0,
           scale: s,

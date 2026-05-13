@@ -302,6 +302,7 @@ class _ComparacionCantidadesViewState
                                   charSize: charSize,
                                   charOverflow: charOverflow,
                                   appleSize: appleSize,
+                                  cols: cols,
                                 ),
                                 SizedBox(width: hPad * 0.5),
                                 _PersonCard(
@@ -312,6 +313,7 @@ class _ComparacionCantidadesViewState
                                   charSize: charSize,
                                   charOverflow: charOverflow,
                                   appleSize: appleSize,
+                                  cols: cols,
                                 ),
                               ],
                             );
@@ -411,6 +413,7 @@ class _PersonCard extends StatelessWidget {
     required this.charSize,
     required this.charOverflow,
     required this.appleSize,
+    required this.cols,
   });
 
   final Color color;
@@ -418,7 +421,8 @@ class _PersonCard extends StatelessWidget {
   final int cantidadManzanas;
   final double charSize;
   final double charOverflow;
-  final double appleSize; // igual en ambas tarjetas
+  final double appleSize;
+  final int cols;
 
   @override
   Widget build(BuildContext context) {
@@ -448,21 +452,10 @@ class _PersonCard extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(
                         sidePad, topPad, sidePad, bottomPad),
-                    child: Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      alignment: WrapAlignment.center,
-                      runAlignment: WrapAlignment.center,
-                      children: List.generate(
-                        cantidadManzanas,
-                        (_) => Image.asset(
-                          'assets/images/actividades/matematicas/manzana.png',
-                          width: appleSize,
-                          height: appleSize,
-                          fit: BoxFit.contain,
-                          filterQuality: FilterQuality.high,
-                        ),
-                      ),
+                    child: _ManzanasGrid(
+                      cantidad: cantidadManzanas,
+                      cols: cols,
+                      appleSize: appleSize,
                     ),
                   ),
                 ),
@@ -486,6 +479,66 @@ class _PersonCard extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+// ── Grid de manzanas con filas/columnas fijas — sin Wrap ────────────────────
+// Usa el mismo cols calculado en el padre, garantizando que cada manzana
+// ocupa exactamente appleSize px y no desborda la tarjeta.
+class _ManzanasGrid extends StatelessWidget {
+  const _ManzanasGrid({
+    required this.cantidad,
+    required this.cols,
+    required this.appleSize,
+  });
+
+  final int cantidad;
+  final int cols;
+  final double appleSize;
+
+  static const _spacing = 3.0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (cantidad == 0) return const SizedBox.shrink();
+
+    final rows = (cantidad / cols).ceil();
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(rows, (row) {
+        final rowChildren = <Widget>[];
+        for (int col = 0; col < cols; col++) {
+          final idx = row * cols + col;
+          if (col > 0) rowChildren.add(const SizedBox(width: _spacing));
+          if (idx < cantidad) {
+            rowChildren.add(
+              Image.asset(
+                'assets/images/actividades/matematicas/manzana.png',
+                width: appleSize,
+                height: appleSize,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
+            );
+          } else {
+            // Celda vacía para mantener el alineado simétrico
+            rowChildren.add(SizedBox(width: appleSize, height: appleSize));
+          }
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (row > 0) const SizedBox(height: _spacing),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: rowChildren,
+            ),
+          ],
+        );
+      }),
     );
   }
 }

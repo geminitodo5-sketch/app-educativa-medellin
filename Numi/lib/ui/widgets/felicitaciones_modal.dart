@@ -1,11 +1,12 @@
 // ─────────────────────────────────────────────────────────────
 //  lib/ui/widgets/felicitaciones_modal.dart
-//  Modal de felicitaciones con animación de video
+//  Modal de felicitaciones: video + sonido simultáneos
 // ─────────────────────────────────────────────────────────────
 
 import 'package:flutter/material.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class FelicitacionesModal extends StatefulWidget {
   final VoidCallback? onFinished;
@@ -39,6 +40,10 @@ class FelicitacionesModal extends StatefulWidget {
 class _FelicitacionesModalState extends State<FelicitacionesModal> {
   late final player = Player();
   late final controller = VideoController(player);
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  static const _audioAsset =
+      'assets/Audio/correcto_incorrecto/sonido_felicitaciones.mp3';
 
   @override
   void initState() {
@@ -47,8 +52,16 @@ class _FelicitacionesModalState extends State<FelicitacionesModal> {
   }
 
   Future<void> _inicializar() async {
+    // Sonido y video simultáneos
+    _audioPlayer
+        .setAsset(_audioAsset)
+        .then((_) => _audioPlayer.play())
+        .catchError((e) => debugPrint('Audio felicitaciones error: $e'));
+
     await player.setPlaylistMode(PlaylistMode.none);
-    await player.open(Media('asset://assets/animations/felicidades_animacion_fondo.mp4'));
+    await player.open(
+        Media('asset://assets/animations/felicidades_animacion_fondo.mp4'));
+
     player.stream.completed.listen((completed) {
       if (completed && mounted) {
         final dur = player.state.duration;
@@ -58,6 +71,7 @@ class _FelicitacionesModalState extends State<FelicitacionesModal> {
         player.pause();
       }
     });
+
     Future.delayed(widget.duracion, () {
       if (mounted) {
         Navigator.pop(context);
@@ -69,6 +83,7 @@ class _FelicitacionesModalState extends State<FelicitacionesModal> {
   @override
   void dispose() {
     player.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 

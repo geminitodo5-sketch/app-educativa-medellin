@@ -201,12 +201,15 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
     final repo      = ref.read(progresoRepositoryProvider);
     final total     = _actividadesQuiz[widget.materia] ?? 3;
     final materiaDB = _materiaDB[widget.materia] ?? widget.materia;
+    // Usa el grado registrado del estudiante para que menuProgresoProvider
+    // pueda encontrar los datos (siempre consulta con estudiante.grado).
+    final grado     = estudiante.grado;
 
     // Registra N actividades al 100% para que porcentajeMateria() devuelva 100%
     for (int i = 1; i <= total; i++) {
       await repo.registrarIntento(
         estudianteId: estudiante.id!,
-        grado:        widget.grado,
+        grado:        grado,
         materia:      materiaDB,
         actividad:    'quiz_rag_$i',
         porcentaje:   100.0,

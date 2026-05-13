@@ -69,7 +69,7 @@ const _materias = [
     color: Color(0xFFEF5353),
     sombra: Color(0xFFC53030),
     icono: Icons.menu_book_rounded,
-    imagen: 'assets/images/menu_materias/alfabeto_1.png',
+    imagen: 'assets/images/menu_materias/alfabeto.png',
   ),
   _MateriaInfo(
     clave: 'sociales',
@@ -79,7 +79,7 @@ const _materias = [
     color: Color(0xFFF5A623),
     sombra: Color(0xFFB8710A),
     icono: Icons.public_rounded,
-    imagen: 'assets/images/menu_materias/globo_1.png',
+    imagen: 'assets/images/menu_materias/globo_(1).png',
   ),
   _MateriaInfo(
     clave: 'ingles',
@@ -89,7 +89,7 @@ const _materias = [
     color: Color(0xFF8B5CF6),
     sombra: Color(0xFF6A3592),
     icono: Icons.language_rounded,
-    imagen: 'assets/images/menu_materias/libros_1.png',
+    imagen: 'assets/images/menu_materias/libros.png',
   ),
 ];
 
@@ -263,6 +263,7 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
           ),
         )
         .then((_) {
+          ref.invalidate(menuProgresoProvider);
           _verificarDescargas();
           _mostrarRachaPendiente();
         });
@@ -901,11 +902,13 @@ class _ClaseCardState extends State<_ClaseCard>
                       decoration: BoxDecoration(color: info.color),
                       child: Stack(
                         children: [
-                          Center(
-                            child: Image.asset(
-                              info.imagen,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, _, _) => Icon(
+                          Image.asset(
+                            info.imagen,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => Center(
+                              child: Icon(
                                 info.icono,
                                 color: Colors.white,
                                 size: iconSz,
