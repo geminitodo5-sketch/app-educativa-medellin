@@ -1,4 +1,4 @@
-﻿// lib/ui/views/ciencias/las_plantas_screen.dart
+// lib/ui/views/ciencias/las_plantas_screen.dart
 
 import 'dart:async';
 import 'dart:convert';

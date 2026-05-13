@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/models/estudiante_model.dart';
 import '../../data/models/progreso_model.dart';
-import '../viewmodels/ciencias_view_model (1).dart';
+import '../viewmodels/ciencias_view_model.dart';
 import 'ciencias/vivo_no_vivo_screen.dart';
 import 'ciencias/cuerpo_humano_screen.dart';
 import 'ciencias/animales/animales_flow_screen.dart';

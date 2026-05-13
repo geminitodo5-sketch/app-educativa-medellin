@@ -274,6 +274,13 @@ class _SelectorMaterias extends StatelessWidget {
     'ingles':      'Ing',
     'sociales':    'Soc',
   };
+  static const _etiquetasLargas = {
+    'matematicas': 'Matemáticas',
+    'ciencias':    'Ciencias',
+    'espanol':     'Español',
+    'ingles':      'Inglés',
+    'sociales':    'Sociales',
+  };
 
   const _SelectorMaterias({
     required this.materiaActual,
@@ -284,53 +291,81 @@ class _SelectorMaterias extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: _materias.map((m) {
-          final activa = m == materiaActual;
-          final color = colores[m] ?? Colors.grey;
-          final ok = descargado[m] ?? false;
-          return GestureDetector(
-            onTap: () => onMateriaSeleccionada(m),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: activa ? color : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: activa ? color : Colors.grey.shade300,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _etiquetas[m] ?? m,
-                    style: TextStyle(
-                      fontFamily: 'Hiruko',
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: activa ? Colors.white : Colors.grey.shade600,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final sw = constraints.maxWidth;
+        final isTablet = sw >= 600;
+        final useLongLabel = sw >= 400;
+        return Container(
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(
+            horizontal: sw * 0.02,
+            vertical: isTablet ? 12.0 : 9.0,
+          ),
+          child: Row(
+            children: _materias.map((m) {
+              final activa = m == materiaActual;
+              final color = colores[m] ?? Colors.grey;
+              final ok = descargado[m] ?? false;
+              final label = useLongLabel
+                  ? (_etiquetasLargas[m] ?? m)
+                  : (_etiquetas[m] ?? m);
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: sw * 0.008),
+                  child: GestureDetector(
+                    onTap: () => onMateriaSeleccionada(m),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: sw * 0.012,
+                        vertical: isTablet ? 10.0 : 8.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: activa ? color : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: activa ? color : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              label,
+                              style: TextStyle(
+                                fontFamily: 'Hiruko',
+                                fontSize: (sw * (isTablet ? 0.020 : 0.030))
+                                    .clamp(11.0, 16.0),
+                                fontWeight: FontWeight.bold,
+                                color: activa
+                                    ? Colors.white
+                                    : Colors.grey.shade600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          if (ok) ...[
+                            SizedBox(width: sw * 0.01),
+                            Icon(
+                              Icons.check_circle_rounded,
+                              size: (sw * 0.028).clamp(10.0, 14.0),
+                              color: activa ? Colors.white70 : color,
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-                  if (ok) ...[
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.check_circle_rounded,
-                      size: 12,
-                      color: activa ? Colors.white70 : color,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }
@@ -444,22 +479,78 @@ class _ChatArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (mensajes.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.chat_bubble_outline_rounded, size: 60, color: Colors.grey.shade300),
-            const SizedBox(height: 12),
-            Text(
-              'Escribe una pregunta para empezar',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                color: Colors.grey.shade400,
+      return LayoutBuilder(
+        builder: (ctx, constraints) {
+          final sw = constraints.maxWidth;
+          final sh = constraints.maxHeight;
+          final isTablet = sw >= 600;
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: sh),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: sw * 0.09,
+                  vertical: sh * 0.05,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: (sw * 0.40).clamp(100.0, 190.0),
+                      height: (sw * 0.40).clamp(100.0, 190.0),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.10),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.psychology_alt_rounded,
+                        size: (sw * 0.23).clamp(60.0, 115.0),
+                        color: color.withValues(alpha: 0.70),
+                      ),
+                    ),
+                    SizedBox(height: sh * 0.04),
+                    Text(
+                      '¡Hola! Soy Sabi 👋',
+                      style: TextStyle(
+                        fontFamily: 'Hiruko',
+                        fontSize: (sw * (isTablet ? 0.042 : 0.060))
+                            .clamp(22.0, 36.0),
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: sh * 0.022),
+                    Text(
+                      'Tu compañero de aprendizaje inteligente.\n'
+                      'Escribe una pregunta o elige un tema para comenzar.',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: (sw * (isTablet ? 0.024 : 0.038))
+                            .clamp(13.0, 20.0),
+                        color: Colors.black54,
+                        height: 1.6,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: sh * 0.045),
+                    Wrap(
+                      spacing: sw * 0.025,
+                      runSpacing: sh * 0.014,
+                      alignment: WrapAlignment.center,
+                      children: const [
+                        _ChipSugerencia('💡 Explícame un tema'),
+                        _ChipSugerencia('📝 Ponme un ejemplo'),
+                        _ChipSugerencia('❓ Tengo una duda'),
+                        _ChipSugerencia('🔁 Repasa conmigo'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          );
+        },
       );
     }
 
@@ -542,9 +633,10 @@ class _BurbujaMensaje extends StatelessWidget {
                       mensaje.texto,
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 14,
+                        fontSize: (MediaQuery.of(context).size.width * 0.038)
+                            .clamp(13.0, 17.0),
                         color: esUsuario ? Colors.white : Colors.black87,
-                        height: 1.4,
+                        height: 1.5,
                       ),
                     ),
             ),
@@ -880,12 +972,17 @@ class _InputBar extends StatelessWidget {
                   maxLines: 3,
                   minLines: 1,
                   textCapitalization: TextCapitalization.sentences,
-                  style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
-                  decoration: const InputDecoration(
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: (MediaQuery.of(context).size.width * 0.038)
+                        .clamp(14.0, 18.0),
+                  ),
+                  decoration: InputDecoration(
                     hintText: '¿Tienes alguna pregunta?',
                     hintStyle: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 14,
+                      fontSize: (MediaQuery.of(context).size.width * 0.038)
+                          .clamp(14.0, 18.0),
                       color: Colors.black38,
                     ),
                     contentPadding:
@@ -921,6 +1018,43 @@ class _InputBar extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Chip decorativo de sugerencia ────────────────────────────
+
+class _ChipSugerencia extends StatelessWidget {
+  final String texto;
+  const _ChipSugerencia(this.texto);
+
+  @override
+  Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: sw * 0.042,
+        vertical: sw * 0.022,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Text(
+        texto,
+        style: TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: (sw * 0.034).clamp(11.0, 15.0),
+          color: Colors.black54,
         ),
       ),
     );

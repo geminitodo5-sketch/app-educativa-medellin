@@ -1,4 +1,4 @@
-﻿// lib/ui/views/ingles_tarjetas_view.dart
+// lib/ui/views/ingles_tarjetas_view.dart
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';

@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/viewmodels/ciencias_view_model.dart
-// ─────────────────────────────────────────────────────────────
-
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +18,6 @@ class CienciasViewModel extends ChangeNotifier {
 
   static const _materia = 'ciencias';
 
-  /// ¿Vivo o no Vivo?, Cuerpo humano, Animales, Las plantas
   static const _totalActividades = 4;
 
   int get estudianteId => _ref.read(estudianteActivoProvider)?.id ?? 1;
@@ -36,7 +31,6 @@ class CienciasViewModel extends ChangeNotifier {
   bool get ocupado => _ocupado;
   String? get error => _error;
 
-  /// Porcentaje real: suma / (total × 100) × 100
   double get progresoTotal {
     final suma =
         _progreso.fold<double>(0, (acc, p) => acc + p.porcentaje);

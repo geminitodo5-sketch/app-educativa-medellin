@@ -237,8 +237,10 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
 
     // Mensaje 1: saludo breve
     final msg1 = MensajeChat(
-      texto: 'Bienvenido. Soy el asistente RAG para grado $grado.\n'
-             'Puedo enseñarte temas específicos de ${_nombreMateria(materia)}.',
+      texto: '¡Hola! 😊 Soy Sabi, tu compañero de aprendizaje.\n\n'
+             '¡Estoy aquí para ayudarte a brillar en ${_nombreMateria(materia)} de grado $grado! '
+             '🌟 Puedes preguntarme lo que quieras, pedir que te explique algo paso a paso '
+             'o explorar un tema nuevo juntos. ¡Tú puedes lograrlo! 💪',
       rol: RolMensaje.asistente,
     );
 

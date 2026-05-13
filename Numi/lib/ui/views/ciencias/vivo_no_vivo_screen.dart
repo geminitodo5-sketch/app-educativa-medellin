@@ -1,4 +1,4 @@
-﻿// lib/ui/views/ciencias/vivo_no_vivo_screen.dart
+// lib/ui/views/ciencias/vivo_no_vivo_screen.dart
 
 import 'dart:convert';
 import 'dart:math' show sin, pi;

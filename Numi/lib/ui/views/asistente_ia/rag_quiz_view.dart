@@ -140,23 +140,30 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
 
         SizedBox(height: h * 0.02),
 
-        // ── Opciones — distribuidas para llenar el espacio ────
+        // ── Opciones — cada botón expande para llenar el espacio ──
         Expanded(
           child: Padding(
             padding: EdgeInsets.fromLTRB(w * 0.053, 0, w * 0.053, h * 0.02),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(pregunta.opciones.length, (i) =>
-                _BotonOpcion(
-                  letra: _letrasOpciones[i],
-                  texto: pregunta.opciones[i],
-                  estado: _estadoBoton(estado, i, pregunta.indiceCorrecto),
-                  colorMateria: _colorMateria,
-                  onTap: estado.ultimaRespuestaCorrecta == null
-                      ? () => _onResponder(i)
-                      : null,
-                ),
-              ),
+              children: List.generate(pregunta.opciones.length, (i) {
+                final isLast = i == pregunta.opciones.length - 1;
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: isLast ? 0 : h * 0.018,
+                    ),
+                    child: _BotonOpcion(
+                      letra: _letrasOpciones[i],
+                      texto: pregunta.opciones[i],
+                      estado: _estadoBoton(estado, i, pregunta.indiceCorrecto),
+                      colorMateria: _colorMateria,
+                      onTap: estado.ultimaRespuestaCorrecta == null
+                          ? () => _onResponder(i)
+                          : null,
+                    ),
+                  ),
+                );
+              }),
             ),
           ),
         ),
@@ -563,7 +570,7 @@ class _TarjetaPregunta extends StatelessWidget {
             texto,
             style: TextStyle(
               fontFamily: 'Hiruko',
-              fontSize: (sw * (isTablet ? 0.034 : 0.044)).clamp(15.0, 26.0),
+              fontSize: (sw * (isTablet ? 0.038 : 0.050)).clamp(17.0, 28.0),
               fontWeight: FontWeight.bold,
               color: const Color(0xFF1E293B),
               height: 1.35,
@@ -623,56 +630,61 @@ class _BotonOpcion extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: sw * 0.037, vertical: sw * 0.037),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor, width: 1.8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: isTablet ? 38 : 32,
-              height: isTablet ? 38 : 32,
-              decoration: BoxDecoration(
-                color: letraColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
+      child: SizedBox.expand(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.symmetric(
+            horizontal: sw * 0.037,
+            vertical: sw * 0.022,
+          ),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 1.8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
               ),
-              alignment: Alignment.center,
-              child: Text(
-                letra,
-                style: TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize:
-                      (sw * (isTablet ? 0.026 : 0.036)).clamp(13.0, 22.0),
-                  fontWeight: FontWeight.bold,
-                  color: letraColor,
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: isTablet ? 44 : 38,
+                height: isTablet ? 44 : 38,
+                decoration: BoxDecoration(
+                  color: letraColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  letra,
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize:
+                        (sw * (isTablet ? 0.030 : 0.042)).clamp(14.0, 24.0),
+                    fontWeight: FontWeight.bold,
+                    color: letraColor,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(width: sw * 0.032),
-            Expanded(
-              child: Text(
-                texto,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize:
-                      (sw * (isTablet ? 0.022 : 0.030)).clamp(11.0, 18.0),
-                  color: textColor,
-                  height: 1.35,
+              SizedBox(width: sw * 0.035),
+              Expanded(
+                child: Text(
+                  texto,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize:
+                        (sw * (isTablet ? 0.026 : 0.036)).clamp(13.0, 20.0),
+                    color: textColor,
+                    height: 1.4,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
