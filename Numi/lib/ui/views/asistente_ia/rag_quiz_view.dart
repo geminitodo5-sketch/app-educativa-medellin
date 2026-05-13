@@ -120,13 +120,16 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
+
     return Column(
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: h * 0.025),
 
         // ── Tarjeta de pregunta ───────────────────────────────
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: w * 0.053),
           child: _TarjetaPregunta(
             texto: pregunta.pregunta,
             tema: pregunta.tema,
@@ -135,27 +138,28 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
           ),
         ),
 
-        const SizedBox(height: 20),
+        SizedBox(height: h * 0.02),
 
-        // ── Opciones ─────────────────────────────────────────
+        // ── Opciones — distribuidas para llenar el espacio ────
         Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: pregunta.opciones.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            itemBuilder: (_, i) => _BotonOpcion(
-              letra: _letrasOpciones[i],
-              texto: pregunta.opciones[i],
-              estado: _estadoBoton(estado, i, pregunta.indiceCorrecto),
-              colorMateria: _colorMateria,
-              onTap: estado.ultimaRespuestaCorrecta == null
-                  ? () => _onResponder(i)
-                  : null,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(w * 0.053, 0, w * 0.053, h * 0.02),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(pregunta.opciones.length, (i) =>
+                _BotonOpcion(
+                  letra: _letrasOpciones[i],
+                  texto: pregunta.opciones[i],
+                  estado: _estadoBoton(estado, i, pregunta.indiceCorrecto),
+                  colorMateria: _colorMateria,
+                  onTap: estado.ultimaRespuestaCorrecta == null
+                      ? () => _onResponder(i)
+                      : null,
+                ),
+              ),
             ),
           ),
         ),
-
-        const SizedBox(height: 16),
       ],
     );
   }
@@ -497,7 +501,7 @@ class _TarjetaPregunta extends StatelessWidget {
     final avatarTutor = avatar == 'pollito' ? 'mono' : 'pollo';
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(sw * 0.048),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -521,7 +525,7 @@ class _TarjetaPregunta extends StatelessWidget {
                   'assets/images/avatares/avatar_${avatarTutor}1.jpg',
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: sw * 0.027),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -554,7 +558,7 @@ class _TarjetaPregunta extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: sw * 0.037),
           Text(
             texto,
             style: TextStyle(
@@ -621,7 +625,7 @@ class _BotonOpcion extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: sw * 0.037, vertical: sw * 0.037),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(16),
@@ -655,7 +659,7 @@ class _BotonOpcion extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: sw * 0.032),
             Expanded(
               child: Text(
                 texto,
@@ -685,36 +689,39 @@ class _SinContenido extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final sh = MediaQuery.of(context).size.height;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(sw * 0.085),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.download_for_offline_rounded, size: 80, color: color),
-            const SizedBox(height: 16),
+            Icon(Icons.download_for_offline_rounded, size: sw * 0.213, color: color),
+            SizedBox(height: sh * 0.02),
             Text(
               'Contenido no descargado',
               style: TextStyle(
                 fontFamily: 'Hiruko',
-                fontSize: 22,
+                fontSize: sw * 0.059,
                 fontWeight: FontWeight.bold,
                 color: color,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: sh * 0.01),
             Text(
               'Descarga el contenido de '
               '${AsistenteIaViewModel.nombreMateria(materia)} '
               'desde el chat del asistente para activar el Quiz.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 14,
+                fontSize: sw * 0.037,
                 color: Colors.black54,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: sh * 0.03),
             ElevatedButton.icon(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.arrow_back_rounded),
@@ -725,8 +732,7 @@ class _SinContenido extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: color,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                padding: EdgeInsets.symmetric(horizontal: sw * 0.075, vertical: sh * 0.017),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),

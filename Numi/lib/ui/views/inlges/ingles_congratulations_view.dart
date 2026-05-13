@@ -59,23 +59,23 @@ class _InglesCongratulationsViewState
                   children: [
                     // Barra superior
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 14),
+                      padding: EdgeInsets.fromLTRB(w * 0.043, h * 0.030, w * 0.043, h * 0.017),
                       child: Row(
                         children: [
                           GestureDetector(
                             onTap: () => Navigator.maybePop(context),
-                            child: const Icon(
+                            child: Icon(
                               Icons.arrow_back_rounded,
-                              size: 40,
+                              size: w * 0.107,
                               color: Colors.black,
                             ),
                           ),
-                          const SizedBox(width: 25),
-                          const Text(
+                          SizedBox(width: w * 0.067),
+                          Text(
                             'Completaste  las\nactividades',
                             style: TextStyle(
                               fontFamily: 'Hiruko',
-                              fontSize: 25,
+                              fontSize: w * 0.067,
                               fontWeight: FontWeight.w900,
                               color: Colors.black87,
                               height: 1.2,
@@ -88,11 +88,11 @@ class _InglesCongratulationsViewState
                     // Texto congratulations
                     Padding(
                       padding: EdgeInsets.only(top: h * 0.30, left: w * 0.15),
-                      child: const Text(
+                      child: Text(
                         '¡Congratulations!',
                         style: TextStyle(
                           fontFamily: 'Hiruko',
-                          fontSize: 30,
+                          fontSize: w * 0.08,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),

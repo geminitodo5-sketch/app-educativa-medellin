@@ -1175,12 +1175,11 @@ class RagService {
     return resultado;
   }
 
-  // Hace la pregunta concisa y amigable para niños de 3°-5°.
+  // Hace la pregunta concisa y muy fácil de leer para niños de 3°-5°.
   String _reformularPregunta(String pregunta) {
     var q = pregunta.trim();
 
     // Arreglar palabras pegadas del corpus
-    // ej: "esla" → "es la", "yla" → "y la", "esun" → "es un"
     q = q.replaceAllMapped(
       RegExp(
         r'\b(es|son|fue|era|están|y)(la|el|los|las|un|una|unos|unas)\b',
@@ -1196,27 +1195,40 @@ class RagService {
     q = q.replaceAll(RegExp(r'[.:]$'), '').trim();
     if (!q.endsWith('?')) q = '$q?';
 
-    // Simplificar arranques académicos comunes
+    // Simplificar arranques académicos → lenguaje infantil
     q = q
-        .replaceFirst(RegExp(r'^¿En qué consiste\s+',              caseSensitive: false), '¿Qué es ')
-        .replaceFirst(RegExp(r'^¿Cuál es la definición de\s+',     caseSensitive: false), '¿Qué es ')
-        .replaceFirst(RegExp(r'^¿Cuál es el concepto de\s+',       caseSensitive: false), '¿Qué es ')
-        .replaceFirst(RegExp(r'^¿A qué se denomina\s+',            caseSensitive: false), '¿Cómo se llama ')
-        .replaceFirst(RegExp(r'^¿Cómo se denomina\s+',             caseSensitive: false), '¿Cómo se llama ')
-        .replaceFirst(RegExp(r'^¿Cuál de los siguientes\s+',       caseSensitive: false), '¿Cuál ');
+        .replaceFirst(RegExp(r'^¿En qué consiste\s+',                   caseSensitive: false), '¿Qué es ')
+        .replaceFirst(RegExp(r'^¿Cuál es la definición de\s+',          caseSensitive: false), '¿Qué es ')
+        .replaceFirst(RegExp(r'^¿Cuál es el concepto de\s+',            caseSensitive: false), '¿Qué es ')
+        .replaceFirst(RegExp(r'^¿A qué se denomina\s+',                 caseSensitive: false), '¿Cómo se llama ')
+        .replaceFirst(RegExp(r'^¿Cómo se denomina\s+',                  caseSensitive: false), '¿Cómo se llama ')
+        .replaceFirst(RegExp(r'^¿Cuál de los siguientes\s+',            caseSensitive: false), '¿Cuál ')
+        .replaceFirst(RegExp(r'^¿Cuáles son las características de\s+', caseSensitive: false), '¿Cómo es ')
+        .replaceFirst(RegExp(r'^¿Cuál es la función de\s+',             caseSensitive: false), '¿Para qué sirve ')
+        .replaceFirst(RegExp(r'^¿Cuál es la importancia de\s+',         caseSensitive: false), '¿Por qué es importante ')
+        .replaceFirst(RegExp(r'^¿Qué elementos conforman\s+',           caseSensitive: false), '¿Qué tiene ')
+        .replaceFirst(RegExp(r'^¿Cómo se clasifican\s+',                caseSensitive: false), '¿En qué grupos se dividen ')
+        .replaceFirst(RegExp(r'^¿Cómo se lleva a cabo\s+',              caseSensitive: false), '¿Cómo ocurre ')
+        .replaceFirst(RegExp(r'^¿Cuál es el proceso de\s+',             caseSensitive: false), '¿Cómo funciona ')
+        .replaceFirst(RegExp(r'^¿Cuáles son los tipos de\s+',           caseSensitive: false), '¿Qué tipos de ')
+        .replaceFirst(RegExp(r'^¿Qué factores\s+',                      caseSensitive: false), '¿Qué cosas ')
+        .replaceFirst(RegExp(r'^¿De qué manera\s+',                     caseSensitive: false), '¿Cómo ')
+        .replaceFirst(RegExp(r'^¿De qué forma\s+',                      caseSensitive: false), '¿Cómo ')
+        .replaceFirst(RegExp(r'^¿Mediante qué\s+',                      caseSensitive: false), '¿Con qué ')
+        .replaceFirst(RegExp(r'^¿Cuál es la principal\s+',              caseSensitive: false), '¿Cuál es la ');
 
-    // Si sigue siendo muy larga (>90 chars), cortar en coma o ':'
-    if (q.length > 90) {
+    // Limite de 70 chars para que sea fácil de leer de un vistazo
+    if (q.length > 70) {
       final cortes = [q.indexOf(', '), q.indexOf(': ')];
       final primero = cortes
-          .where((i) => i > 25 && i < 80)
+          .where((i) => i > 20 && i < 62)
           .fold<int>(-1, (best, i) => best == -1 ? i : (i < best ? i : best));
       if (primero > 0) {
         q = '${q.substring(0, primero).trim()}?';
       } else {
-        final sub = q.substring(0, 85);
+        final sub = q.substring(0, 65);
         final espacio = sub.lastIndexOf(' ');
-        q = '${sub.substring(0, espacio > 0 ? espacio : 85).replaceAll(RegExp(r'[?,]$'), '')}?';
+        q = '${sub.substring(0, espacio > 0 ? espacio : 65).replaceAll(RegExp(r'[?,]$'), '')}?';
       }
     }
 
@@ -1228,9 +1240,8 @@ class RagService {
     return q;
   }
 
-  // Devuelve la primera oración COMPLETA de la respuesta.
-  // Solo en último recurso (oración >130 chars) corta en punto natural.
-  // Nunca usa "...".
+  // Devuelve la primera idea corta de la respuesta (máx 90 chars).
+  // Las opciones deben ser fáciles de leer de un vistazo para niños.
   String _extractarRespuestaCorta(String respuesta) {
     var s = respuesta.trim();
 
@@ -1239,35 +1250,33 @@ class RagService {
     s = s.replaceFirst(RegExp(r'^[Rr]\.\s*'), '');
     s = s.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
 
-    // Paso 1 — primera oración completa (termina en '.' o '!')
-    // Aceptamos hasta 130 chars: suficiente para una oración larga pero legible.
+    // Paso 1 — primera oración completa (hasta 90 chars)
     final matchOracion = RegExp(r'[.!](?:\s|$)').firstMatch(s);
     if (matchOracion != null) {
       final primera = s.substring(0, matchOracion.start + 1).trim();
-      if (primera.length >= 8 && primera.length <= 130) {
+      if (primera.length >= 8 && primera.length <= 90) {
         return _limpiarOpcion(primera);
       }
     }
 
-    // Paso 2 — sin punto o primera oración muy larga: si el texto es corto, devolver completo
-    if (s.length <= 130) return _limpiarOpcion(s);
+    // Paso 2 — texto corto: devolver completo
+    if (s.length <= 90) return _limpiarOpcion(s);
 
-    // Paso 3 — texto largo: buscar punto y coma (separador fuerte)
+    // Paso 3 — punto y coma como separador fuerte
     final semiIdx = s.indexOf('; ');
-    if (semiIdx >= 20 && semiIdx <= 120) {
+    if (semiIdx >= 15 && semiIdx <= 85) {
       return _limpiarOpcion(s.substring(0, semiIdx));
     }
 
-    // Paso 4 — coma como separador, solo si el fragmento previo ya es completo
-    //          (mínimo 45 chars para que la idea tenga sentido)
+    // Paso 4 — coma como separador (mínimo 30 chars para que tenga sentido)
     final commaIdx = s.indexOf(', ');
-    if (commaIdx >= 45 && commaIdx <= 120) {
+    if (commaIdx >= 30 && commaIdx <= 85) {
       return _limpiarOpcion(s.substring(0, commaIdx));
     }
 
-    // Paso 5 — corte en palabra completa (sin artículos/preposiciones finales)
-    final sub = s.substring(0, 120);
-    final palabras = sub.split(' ')..removeLast(); // descarta palabra posiblemente cortada
+    // Paso 5 — corte en palabra completa sin artículos/preposiciones al final
+    final sub = s.substring(0, 85);
+    final palabras = sub.split(' ')..removeLast();
     const _debiles = {
       'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas',
       'de', 'del', 'en', 'que', 'al', 'con', 'por', 'para',

@@ -119,7 +119,7 @@ class _ActividadTerminadaScreenState
                 // ── Personajes ──
                 _buildPersonajes(context),
 
-                const SizedBox(height: 40),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05),
               ],
             ),
           ),
@@ -129,35 +129,36 @@ class _ActividadTerminadaScreenState
   }
 
   Widget _buildTopBar() {
+    final w = MediaQuery.of(context).size.width;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: w * 0.04, vertical: w * 0.03),
       child: Row(
         children: [
           GestureDetector(
             onTap: widget.onVolver ?? () => Navigator.of(context).pop(),
             child: Container(
-              padding: const EdgeInsets.all(6),
+              padding: EdgeInsets.all(w * 0.016),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.25),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_rounded,
                 color: Colors.white,
-                size: 24,
+                size: w * 0.064,
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          const Expanded(
+          SizedBox(width: w * 0.032),
+          Expanded(
             child: Text(
               'Completaste \nlas actividades',
               style: TextStyle(
                 fontFamily: 'Hiruko',
-                fontSize: 16,
+                fontSize: w * 0.043,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
-                shadows: [
+                shadows: const [
                   Shadow(
                     color: Colors.black26,
                     offset: Offset(0, 1),
@@ -173,20 +174,21 @@ class _ActividadTerminadaScreenState
   }
 
   Widget _buildTitulo() {
+    final w = MediaQuery.of(context).size.width;
     return SlideTransition(
       position: _slideAnim,
       child: FadeTransition(
         opacity: _fadeAnim,
-        child: const Center(
+        child: Center(
           child: Text(
             '¡Felicitaciones!',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Hiruko',
-              fontSize: 36,
+              fontSize: w * 0.096,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              shadows: [
+              shadows: const [
                 Shadow(
                   color: Colors.black26,
                   offset: Offset(0, 2),
@@ -241,20 +243,20 @@ class _ActividadTerminadaScreenState
             ),
 
             // Corazones decorativos flotantes
-            const Positioned(
-              left: 80,
-              bottom: 180,
-              child: _CorazonFlotante(size: 18, color: Color(0xFFFF4D6D)),
+            Positioned(
+              left: w * 0.21,
+              bottom: h * 0.22,
+              child: _CorazonFlotante(size: w * 0.048, color: const Color(0xFFFF4D6D)),
             ),
-            const Positioned(
-              right: 90,
-              bottom: 220,
-              child: _CorazonFlotante(size: 14, color: Color(0xFFFF4D6D)),
+            Positioned(
+              right: w * 0.24,
+              bottom: h * 0.27,
+              child: _CorazonFlotante(size: w * 0.037, color: const Color(0xFFFF4D6D)),
             ),
-            const Positioned(
-              right: 55,
-              bottom: 170,
-              child: _CorazonFlotante(size: 10, color: Color(0xFFFF4D6D)),
+            Positioned(
+              right: w * 0.147,
+              bottom: h * 0.21,
+              child: _CorazonFlotante(size: w * 0.027, color: const Color(0xFFFF4D6D)),
             ),
           ],
         ),

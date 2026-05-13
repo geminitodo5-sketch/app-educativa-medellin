@@ -4,6 +4,8 @@
 //  Grados 3-5: 5 respuestas correctas → animación de felicitaciones
 // ─────────────────────────────────────────────────────────────
 
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/rag_service.dart';
 import 'asistente_ia_view_model.dart';
@@ -18,6 +20,7 @@ class RagQuizEstado {
   final bool quizCompletado;            // true al llegar a 5 correctas
   final bool sinContenido;              // true si no hay corpus descargado
   final bool? ultimaRespuestaCorrecta;  // null = sin responder aún
+  final Set<int> vistas;               // índices ya mostrados
 
   const RagQuizEstado({
     this.preguntas = const [],
@@ -27,6 +30,7 @@ class RagQuizEstado {
     this.quizCompletado = false,
     this.sinContenido = false,
     this.ultimaRespuestaCorrecta,
+    this.vistas = const {},
   });
 
   PreguntaQuiz? get preguntaActual =>
@@ -44,6 +48,7 @@ class RagQuizEstado {
     bool? quizCompletado,
     bool? sinContenido,
     Object? ultimaRespuestaCorrecta = _sentinel,
+    Set<int>? vistas,
   }) =>
       RagQuizEstado(
         preguntas: preguntas ?? this.preguntas,
@@ -55,6 +60,7 @@ class RagQuizEstado {
         ultimaRespuestaCorrecta: ultimaRespuestaCorrecta == _sentinel
             ? this.ultimaRespuestaCorrecta
             : ultimaRespuestaCorrecta as bool?,
+        vistas: vistas ?? this.vistas,
       );
 }
 
@@ -100,12 +106,30 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
     );
   }
 
-  // Avanza a la siguiente pregunta (luego de una respuesta correcta).
+  // Avanza a una pregunta aleatoria no mostrada aún.
   void avanzar() {
     final total = state.preguntas.length;
-    final siguiente = (state.indiceActual + 1) % total;
+    final visitados = {...state.vistas, state.indiceActual};
+
+    // Candidatos: índices que no se han visto todavía
+    var disponibles = List.generate(total, (i) => i)
+        .where((i) => !visitados.contains(i))
+        .toList();
+
+    // Si ya se vieron todas, reiniciar el ciclo
+    if (disponibles.isEmpty) {
+      disponibles = List.generate(total, (i) => i)
+          .where((i) => i != state.indiceActual)
+          .toList();
+      visitados.clear();
+    }
+
+    disponibles.shuffle(Random());
+    final siguiente = disponibles.first;
+
     state = state.copyWith(
       indiceActual: siguiente,
+      vistas: {...visitados, siguiente},
       ultimaRespuestaCorrecta: null,
     );
   }
