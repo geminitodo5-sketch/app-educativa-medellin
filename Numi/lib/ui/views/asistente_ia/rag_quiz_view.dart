@@ -11,9 +11,6 @@ import '../../viewmodels/rag_quiz_view_model.dart';
 import '../../viewmodels/asistente_ia_view_model.dart';
 import '../../widgets/felicitaciones_modal.dart';
 import '../../../data/providers/app_state_provider.dart';
-import '../../../data/providers/database_provider.dart';
-import '../../../data/providers/racha_provider.dart';
-import '../../../data/services/feedback_sounds.dart';
 
 class RagQuizView extends ConsumerStatefulWidget {
   final String materia;
@@ -184,53 +181,6 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
     return _EstadoBoton.normal;
   }
 
-  // Número de actividades por materia (para registrar progreso al 100%)
-  static const _actividadesQuiz = {
-    'matematicas': 3,
-    'ciencias':    4,
-    'espanol':     3,
-    'ingles':      3,
-    'sociales':    3,
-  };
-
-  // Mapeo al nombre que acepta el CHECK constraint del DB
-  // La tabla SQLite requiere 'español' (con acento)
-  static const _materiaDB = {
-    'espanol': 'español',
-  };
-
-  // Registra progreso al 100% y verifica la racha al completar el quiz.
-  Future<void> _onQuizCompletado() async {
-    final estudiante = ref.read(estudianteActivoProvider);
-    if (estudiante == null || estudiante.id == null) return;
-
-    final repo      = ref.read(progresoRepositoryProvider);
-    final total     = _actividadesQuiz[widget.materia] ?? 3;
-    final materiaDB = _materiaDB[widget.materia] ?? widget.materia;
-    // Usa el grado registrado del estudiante para que menuProgresoProvider
-    // pueda encontrar los datos (siempre consulta con estudiante.grado).
-    final grado     = estudiante.grado;
-
-    // Registra N actividades al 100% para que porcentajeMateria() devuelva 100%
-    for (int i = 1; i <= total; i++) {
-      await repo.registrarIntento(
-        estudianteId: estudiante.id!,
-        grado:        grado,
-        materia:      materiaDB,
-        actividad:    'quiz_rag_$i',
-        porcentaje:   100.0,
-      );
-    }
-
-    // Verificar racha (grados 3-5)
-    if (!mounted) return;
-    final svc  = ref.read(rachaServiceProvider);
-    final info = await svc.verificarRacha(estudiante.id!);
-    if (info != null && mounted) {
-      ref.read(rachaPendienteProvider.notifier).state = info;
-    }
-  }
-
   void _onResponder(int opcion) {
     final vm = ref.read(ragQuizViewModelProvider.notifier);
     vm.responder(opcion);
@@ -242,7 +192,6 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
   }
 
   void _mostrarFeedback(bool esCorrecto, bool quizCompletado) {
-    FeedbackSounds.instance.reproducir(esCorrecto);
     final mq       = MediaQuery.of(context);
     final sw       = mq.size.width;
     final isTablet = sw >= 600;
@@ -336,8 +285,9 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
                     Navigator.pop(ctx);
                     if (esCorrecto) {
                       if (quizCompletado) {
-                        // Registrar progreso 100% + racha antes del video
-                        await _onQuizCompletado();
+                        await ref
+                            .read(ragQuizViewModelProvider.notifier)
+                            .registrarProgresoYRacha(widget.materia, widget.grado);
                         if (!mounted) return;
                         FelicitacionesModal.mostrar(
                           context,

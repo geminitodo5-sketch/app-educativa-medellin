@@ -9,7 +9,10 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/rag_service.dart';
 import '../../data/services/banco_preguntas_service.dart';
+import '../../data/services/feedback_sounds.dart';
+import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
+import '../../data/providers/racha_provider.dart';
 import 'asistente_ia_view_model.dart';
 
 // ── Estado ────────────────────────────────────────────────────
@@ -79,8 +82,22 @@ const Object _sentinel = Object();
 class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
   final RagService _rag;
   final BancoPreguntasService _banco;
+  final Ref _ref;
 
-  RagQuizViewModel(this._rag, this._banco) : super(const RagQuizEstado());
+  RagQuizViewModel(this._rag, this._banco, this._ref)
+      : super(const RagQuizEstado());
+
+  static const _actividadesQuiz = {
+    'matematicas': 3,
+    'ciencias':    4,
+    'espanol':     3,
+    'ingles':      3,
+    'sociales':    3,
+  };
+
+  static const _materiaDB = {
+    'espanol': 'español',
+  };
 
   Future<void> inicializar(String materia, int grado) async {
     state = const RagQuizEstado(cargando: true);
@@ -114,7 +131,7 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
     }
   }
 
-  // Registra la opción seleccionada por el estudiante.
+  // Registra la opción seleccionada y reproduce el sonido de feedback.
   void responder(int opcion) {
     final pregunta = state.preguntaActual;
     if (pregunta == null || state.ultimaRespuestaCorrecta != null) return;
@@ -122,12 +139,42 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
     final esCorrecto = opcion == pregunta.indiceCorrecto;
     final nuevasCorrectas = esCorrecto ? state.correctas + 1 : state.correctas;
 
+    FeedbackSounds.instance.reproducir(esCorrecto);
+
     state = state.copyWith(
       ultimaRespuestaCorrecta: esCorrecto,
       ultimaOpcionSeleccionada: opcion,
       correctas: nuevasCorrectas,
       quizCompletado: nuevasCorrectas >= RagQuizEstado.metaCorrectas,
     );
+  }
+
+  // Registra progreso al 100% y verifica la racha al completar el quiz.
+  Future<void> registrarProgresoYRacha(String materia, int grado) async {
+    final estudiante = _ref.read(estudianteActivoProvider);
+    if (estudiante == null || estudiante.id == null) return;
+
+    final repo      = _ref.read(progresoRepositoryProvider);
+    final total     = _actividadesQuiz[materia] ?? 3;
+    final materiaDB = _materiaDB[materia] ?? materia;
+    final gradoEst  = estudiante.grado;
+
+    for (int i = 1; i <= total; i++) {
+      await repo.registrarIntento(
+        estudianteId: estudiante.id!,
+        grado:        gradoEst,
+        materia:      materiaDB,
+        actividad:    'quiz_rag_$i',
+        porcentaje:   100.0,
+      );
+    }
+
+    if (!mounted) return;
+    final svc  = _ref.read(rachaServiceProvider);
+    final info = await svc.verificarRacha(estudiante.id!);
+    if (info != null && mounted) {
+      _ref.read(rachaPendienteProvider.notifier).state = info;
+    }
   }
 
   // Avanza a una pregunta aleatoria no mostrada aún.
@@ -175,5 +222,6 @@ final ragQuizViewModelProvider =
   return RagQuizViewModel(
     ref.read(ragServiceProvider),
     ref.read(bancoPreguntasServiceProvider),
+    ref,
   );
 });
