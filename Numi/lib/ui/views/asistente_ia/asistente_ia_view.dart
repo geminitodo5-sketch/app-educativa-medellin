@@ -97,9 +97,49 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
     final vm = ref.read(asistenteIaViewModelProvider.notifier);
     final estudiante = ref.watch(estudianteActivoProvider);
 
-    final color = _coloresMaterias[estado.materiaActual] ?? const Color(0xFF3E7DFE);
+    final sw       = MediaQuery.of(context).size.width;
+    final isTablet = sw >= 600;
+    final color    = _coloresMaterias[estado.materiaActual] ?? const Color(0xFF3E7DFE);
 
     if (estado.mensajes.isNotEmpty) _scrollAbajo();
+
+    final bodyContent = Column(
+      children: [
+        // ── Selector de materias ──────────────────────────────
+        _SelectorMaterias(
+          materiaActual: estado.materiaActual,
+          descargado: estado.descargado,
+          onMateriaSeleccionada: vm.cambiarMateria,
+          colores: _coloresMaterias,
+        ),
+        // ── Chat ──────────────────────────────────────────────
+        Expanded(
+          child: estado.materiaDescargada
+              ? _ChatArea(
+                  mensajes: estado.mensajes,
+                  scrollCtrl: _scrollCtrl,
+                  color: color,
+                  avatarEstudiante: estudiante?.personaje ?? 'pollito',
+                )
+              : _PantallaDescarga(
+                  materia: estado.materiaActual,
+                  progreso: estado.progresoDescargaActual,
+                  descargando: estado.progresosDescarga
+                      .containsKey(estado.materiaActual),
+                  color: color,
+                  onDescargar: () => _descargar(estado.materiaActual),
+                ),
+        ),
+        // ── Input ──────────────────────────────────────────────
+        if (estado.materiaDescargada)
+          _InputBar(
+            ctrl: _inputCtrl,
+            respondiendo: estado.respondiendo,
+            color: color,
+            onEnviar: () => _enviarMensaje(estudiante?.id),
+          ),
+      ],
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4FF),
@@ -112,13 +152,14 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
         ),
         title: Row(
           children: [
-            Icon(_iconosMaterias[estado.materiaActual], color: Colors.white, size: 22),
+            Icon(_iconosMaterias[estado.materiaActual],
+                color: Colors.white, size: isTablet ? 24 : 22),
             const SizedBox(width: 8),
             Text(
               AsistenteIaViewModel.nombreMateria(estado.materiaActual),
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Hiruko',
-                fontSize: 20,
+                fontSize: isTablet ? 22.0 : 20.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -166,76 +207,30 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
               );
             },
           ),
-          // Selector de grado
-          PopupMenuButton<int>(
-            icon: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '${estado.gradoActual}°',
-                style: const TextStyle(
-                  fontFamily: 'Hiruko',
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          // Indicador de grado (solo lectura)
+          Container(
+            margin: const EdgeInsets.only(right: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(20),
             ),
-            onSelected: vm.cambiarGrado,
-            itemBuilder: (_) => List.generate(
-              5,
-              (i) => PopupMenuItem(
-                value: i + 1,
-                child: Text('Grado ${i + 1}',
-                    style: const TextStyle(fontFamily: 'Poppins')),
+            child: Text(
+              'Grado ${estado.gradoActual}',
+              style: const TextStyle(
+                fontFamily: 'Hiruko',
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
           const SizedBox(width: 8),
         ],
       ),
-      body: Column(
-        children: [
-          // ── Selector de materias ──────────────────────────────
-          _SelectorMaterias(
-            materiaActual: estado.materiaActual,
-            descargado: estado.descargado,
-            onMateriaSeleccionada: vm.cambiarMateria,
-            colores: _coloresMaterias,
-          ),
-
-          // ── Chat ──────────────────────────────────────────────
-          Expanded(
-            child: estado.materiaDescargada
-                ? _ChatArea(
-                    mensajes: estado.mensajes,
-                    scrollCtrl: _scrollCtrl,
-                    color: color,
-                    avatarEstudiante: estudiante?.personaje ?? 'pollito',
-                  )
-                : _PantallaDescarga(
-                    materia: estado.materiaActual,
-                    progreso: estado.progresoDescargaActual,
-                    descargando: estado.progresosDescarga
-                        .containsKey(estado.materiaActual),
-                    color: color,
-                    onDescargar: () => _descargar(estado.materiaActual),
-                  ),
-          ),
-
-          // ── Input ──────────────────────────────────────────────
-          if (estado.materiaDescargada)
-            _InputBar(
-              ctrl: _inputCtrl,
-              respondiendo: estado.respondiendo,
-              color: color,
-              onEnviar: () => _enviarMensaje(estudiante?.id),
-            ),
-        ],
-      ),
+      body: sw > 1024
+          ? Center(child: SizedBox(width: 960, child: bodyContent))
+          : bodyContent,
     );
   }
 
@@ -258,7 +253,7 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
 
 // ── Selector de materias ──────────────────────────────────────
 
-class _SelectorMaterias extends StatelessWidget {
+class _SelectorMaterias extends StatefulWidget {
   final String materiaActual;
   final Map<String, bool> descargado;
   final void Function(String) onMateriaSeleccionada;
@@ -267,13 +262,6 @@ class _SelectorMaterias extends StatelessWidget {
   static const _materias = [
     'matematicas', 'ciencias', 'espanol', 'ingles', 'sociales',
   ];
-  static const _etiquetas = {
-    'matematicas': 'Mat',
-    'ciencias':    'Cie',
-    'espanol':     'Esp',
-    'ingles':      'Ing',
-    'sociales':    'Soc',
-  };
   static const _etiquetasLargas = {
     'matematicas': 'Matemáticas',
     'ciencias':    'Ciencias',
@@ -290,79 +278,119 @@ class _SelectorMaterias extends StatelessWidget {
   });
 
   @override
+  State<_SelectorMaterias> createState() => _SelectorMateriasState();
+}
+
+class _SelectorMateriasState extends State<_SelectorMaterias> {
+  final List<GlobalKey> _chipKeys =
+      List.generate(5, (_) => GlobalKey());
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToActive());
+  }
+
+  @override
+  void didUpdateWidget(_SelectorMaterias old) {
+    super.didUpdateWidget(old);
+    if (old.materiaActual != widget.materiaActual) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToActive());
+    }
+  }
+
+  void _scrollToActive() {
+    final idx = _SelectorMaterias._materias.indexOf(widget.materiaActual);
+    if (idx < 0 || idx >= _chipKeys.length) return;
+    final ctx = _chipKeys[idx].currentContext;
+    if (ctx == null) return;
+    Scrollable.ensureVisible(
+      ctx,
+      alignment: 0.5,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final mq       = MediaQuery.of(context);
+    final sw       = mq.size.width;
+    final isTablet = sw >= 600;
+
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final sw = constraints.maxWidth;
-        final isTablet = sw >= 600;
-        final useLongLabel = sw >= 400;
+      builder: (ctx, box) {
         return Container(
           color: Colors.white,
-          padding: EdgeInsets.symmetric(
-            horizontal: sw * 0.02,
-            vertical: isTablet ? 12.0 : 9.0,
-          ),
-          child: Row(
-            children: _materias.map((m) {
-              final activa = m == materiaActual;
-              final color = colores[m] ?? Colors.grey;
-              final ok = descargado[m] ?? false;
-              final label = useLongLabel
-                  ? (_etiquetasLargas[m] ?? m)
-                  : (_etiquetas[m] ?? m);
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: sw * 0.008),
-                  child: GestureDetector(
-                    onTap: () => onMateriaSeleccionada(m),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: sw * 0.012,
-                        vertical: isTablet ? 10.0 : 8.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: activa ? color : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: activa ? color : Colors.grey.shade300,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              label,
-                              style: TextStyle(
-                                fontFamily: 'Hiruko',
-                                fontSize: (sw * (isTablet ? 0.020 : 0.030))
-                                    .clamp(11.0, 16.0),
-                                fontWeight: FontWeight.bold,
-                                color: activa
-                                    ? Colors.white
-                                    : Colors.grey.shade600,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
+          padding: EdgeInsets.symmetric(vertical: isTablet ? 12.0 : 9.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            // ConstrainedBox con minWidth = ancho disponible:
+            // · Si todos los chips caben → Row se estira al ancho completo
+            //   y spaceEvenly los distribuye uniformemente.
+            // · Si no caben → Row crece al ancho natural de los chips
+            //   y el SingleChildScrollView permite deslizar.
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: box.maxWidth),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(
+                  _SelectorMaterias._materias.length,
+                  (i) {
+                    final m      = _SelectorMaterias._materias[i];
+                    final activa = m == widget.materiaActual;
+                    final color  = widget.colores[m] ?? Colors.grey;
+                    final ok     = widget.descargado[m] ?? false;
+                    final label  = _SelectorMaterias._etiquetasLargas[m] ?? m;
+                    return Padding(
+                      key: _chipKeys[i],
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: GestureDetector(
+                        onTap: () => widget.onMateriaSeleccionada(m),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isTablet ? 16.0 : 14.0,
+                            vertical:   isTablet ? 10.0 :  8.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: activa ? color : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: activa ? color : Colors.grey.shade300,
                             ),
                           ),
-                          if (ok) ...[
-                            SizedBox(width: sw * 0.01),
-                            Icon(
-                              Icons.check_circle_rounded,
-                              size: (sw * 0.028).clamp(10.0, 14.0),
-                              color: activa ? Colors.white70 : color,
-                            ),
-                          ],
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                label,
+                                style: TextStyle(
+                                  fontFamily: 'Hiruko',
+                                  fontSize: isTablet ? 15.0 : 13.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: activa
+                                      ? Colors.white
+                                      : Colors.grey.shade600,
+                                ),
+                              ),
+                              if (ok) ...[
+                                const SizedBox(width: 5),
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  size: isTablet ? 14.0 : 12.0,
+                                  color: activa ? Colors.white70 : color,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              );
-            }).toList(),
+              ),
+            ),
           ),
         );
       },
@@ -554,15 +582,21 @@ class _ChatArea extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      controller: scrollCtrl,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      itemCount: mensajes.length,
-      itemBuilder: (_, i) => _BurbujaMensaje(
-        mensaje: mensajes[i],
-        colorAsistente: color,
-        avatarEstudiante: avatarEstudiante,
-      ),
+    return LayoutBuilder(
+      builder: (ctx, box) {
+        final cw   = box.maxWidth;
+        final hPad = cw >= 600 ? 16.0 : 12.0;
+        return ListView.builder(
+          controller: scrollCtrl,
+          padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 8),
+          itemCount: mensajes.length,
+          itemBuilder: (_, i) => _BurbujaMensaje(
+            mensaje: mensajes[i],
+            colorAsistente: color,
+            avatarEstudiante: avatarEstudiante,
+          ),
+        );
+      },
     );
   }
 }
@@ -583,6 +617,44 @@ class _BurbujaMensaje extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final esUsuario = mensaje.rol == RolMensaje.usuario;
+    final sw        = MediaQuery.of(context).size.width;
+    final isTablet  = sw >= 600;
+    final avatarR   = isTablet ? 20.0 : 16.0;
+    final gap       = isTablet ? 8.0 : 6.0;
+
+    final bubbleDecor = BoxDecoration(
+      color: esUsuario ? colorAsistente : Colors.white,
+      borderRadius: BorderRadius.only(
+        topLeft: const Radius.circular(18),
+        topRight: const Radius.circular(18),
+        bottomLeft: Radius.circular(esUsuario ? 18 : 4),
+        bottomRight: Radius.circular(esUsuario ? 4 : 18),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.07),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    );
+
+    final bubbleChild = mensaje.esCargando
+        ? const _IndicadorEscribiendo()
+        : Text(
+            mensaje.texto,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: (sw * (isTablet ? 0.026 : 0.038)).clamp(13.0, 17.0),
+              color: esUsuario ? Colors.white : Colors.black87,
+              height: 1.5,
+            ),
+          );
+
+    final bubblePad = EdgeInsets.symmetric(
+      horizontal: isTablet ? 18.0 : 14.0,
+      vertical:   isTablet ? 12.0 : 10.0,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -590,59 +662,45 @@ class _BurbujaMensaje extends StatelessWidget {
         mainAxisAlignment:
             esUsuario ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (!esUsuario) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage(
-                'assets/images/avatares/avatar_${avatarEstudiante == 'pollito' ? 'mono' : 'pollo'}1.jpg',
-              ),
-            ),
-            const SizedBox(width: 6),
-          ] else ...[
-            const SizedBox(width: 6),
-            CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage(
-                'assets/images/avatares/avatar_${avatarEstudiante == 'pollito' ? 'pollo' : 'mono'}1.jpg',
-              ),
-            ),
-          ],
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: esUsuario ? colorAsistente : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(18),
-                  topRight: const Radius.circular(18),
-                  bottomLeft: Radius.circular(esUsuario ? 18 : 4),
-                  bottomRight: Radius.circular(esUsuario ? 4 : 18),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.07),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
+        children: esUsuario
+            // ── Mensaje del usuario: burbuja con ancho cap + avatar a la derecha ──
+            ? [
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: (sw * (isTablet ? 0.72 : 0.78)).clamp(160.0, 600.0),
                   ),
-                ],
-              ),
-              child: mensaje.esCargando
-                  ? const _IndicadorEscribiendo()
-                  : Text(
-                      mensaje.texto,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: (MediaQuery.of(context).size.width * 0.038)
-                            .clamp(13.0, 17.0),
-                        color: esUsuario ? Colors.white : Colors.black87,
-                        height: 1.5,
-                      ),
-                    ),
-            ),
-          ),
-          if (!esUsuario) const SizedBox(width: 6),
-        ],
+                  child: Container(
+                    padding: bubblePad,
+                    decoration: bubbleDecor,
+                    child: bubbleChild,
+                  ),
+                ),
+                SizedBox(width: gap),
+                CircleAvatar(
+                  radius: avatarR,
+                  backgroundImage: AssetImage(
+                    'assets/images/avatares/avatar_${avatarEstudiante == 'pollito' ? 'pollo' : 'mono'}1.jpg',
+                  ),
+                ),
+              ]
+            // ── Mensaje del asistente: avatar + Flexible para aprovechar todo el ancho ──
+            : [
+                CircleAvatar(
+                  radius: avatarR,
+                  backgroundImage: AssetImage(
+                    'assets/images/avatares/avatar_${avatarEstudiante == 'pollito' ? 'mono' : 'pollo'}1.jpg',
+                  ),
+                ),
+                SizedBox(width: gap),
+                Flexible(
+                  child: Container(
+                    padding: bubblePad,
+                    decoration: bubbleDecor,
+                    child: bubbleChild,
+                  ),
+                ),
+                SizedBox(width: gap),
+              ],
       ),
     );
   }
@@ -952,9 +1010,15 @@ class _InputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sw       = MediaQuery.of(context).size.width;
+    final isTablet = sw >= 600;
+    final hPad     = isTablet ? 16.0 : 12.0;
+    final fontSize = (sw * (isTablet ? 0.026 : 0.038)).clamp(14.0, 18.0);
+    final btnSize  = isTablet ? 52.0 : 48.0;
+
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 12),
       child: SafeArea(
         top: false,
         child: Row(
@@ -972,21 +1036,18 @@ class _InputBar extends StatelessWidget {
                   maxLines: 3,
                   minLines: 1,
                   textCapitalization: TextCapitalization.sentences,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: (MediaQuery.of(context).size.width * 0.038)
-                        .clamp(14.0, 18.0),
-                  ),
+                  style: TextStyle(fontFamily: 'Poppins', fontSize: fontSize),
                   decoration: InputDecoration(
                     hintText: '¿Tienes alguna pregunta?',
                     hintStyle: TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: (MediaQuery.of(context).size.width * 0.038)
-                          .clamp(14.0, 18.0),
+                      fontSize: fontSize,
                       color: Colors.black38,
                     ),
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: isTablet ? 20.0 : 16.0,
+                      vertical:   isTablet ? 14.0 : 10.0,
+                    ),
                     border: InputBorder.none,
                   ),
                   onSubmitted: (_) => onEnviar(),
@@ -996,8 +1057,8 @@ class _InputBar extends StatelessWidget {
             const SizedBox(width: 8),
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 48,
-              height: 48,
+              width: btnSize,
+              height: btnSize,
               decoration: BoxDecoration(
                 color: respondiendo ? Colors.grey.shade300 : color,
                 shape: BoxShape.circle,
@@ -1013,8 +1074,8 @@ class _InputBar extends StatelessWidget {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.send_rounded,
-                        color: Colors.white, size: 20),
+                    : Icon(Icons.send_rounded,
+                        color: Colors.white, size: isTablet ? 22 : 20),
               ),
             ),
           ],

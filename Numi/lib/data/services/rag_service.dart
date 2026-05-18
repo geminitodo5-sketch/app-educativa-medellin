@@ -1143,24 +1143,47 @@ class RagService {
 
     for (final correcta in entradas.take(cantidad)) {
       final temaCorrect = correcta['tema'] as String? ?? '';
-      final distractores = corpus
+      final respCorrecta =
+          _extractarRespuestaCorta(correcta['respuesta'] as String);
+
+      // Candidatos ordenados: mismo tema primero, otros temas como fallback.
+      // Así todas las opciones hablan del mismo tema siempre que el corpus
+      // tenga suficientes entradas; solo se mezclan temas si no hay de sobra.
+      final mismoTema = corpus
+          .where((e) =>
+              e != correcta &&
+              (e['tema'] as String? ?? '') == temaCorrect)
+          .toList()
+        ..shuffle(rng);
+
+      final otrosTemas = corpus
           .where((e) =>
               e != correcta &&
               (e['tema'] as String? ?? '') != temaCorrect)
           .toList()
         ..shuffle(rng);
 
-      if (distractores.length < 3) continue;
+      // Elegir 3 distractores comprobando el texto extraído antes de usarlos,
+      // para garantizar que ningún par de opciones sea idéntico o casi idéntico.
+      final clavesUsadas = {_claveDistractor(respCorrecta)};
+      final distractoresTextos = <String>[];
 
-      final respCorrecta =
-          _extractarRespuestaCorta(correcta['respuesta'] as String);
-      final opciones = [
-        respCorrecta,
-        _extractarRespuestaCorta(distractores[0]['respuesta'] as String),
-        _extractarRespuestaCorta(distractores[1]['respuesta'] as String),
-        _extractarRespuestaCorta(distractores[2]['respuesta'] as String),
-      ];
+      for (final pool in [mismoTema, otrosTemas]) {
+        for (final e in pool) {
+          if (distractoresTextos.length >= 3) break;
+          final texto = _extractarRespuestaCorta(e['respuesta'] as String);
+          final clave = _claveDistractor(texto);
+          if (texto.length >= 8 && !clavesUsadas.contains(clave)) {
+            clavesUsadas.add(clave);
+            distractoresTextos.add(texto);
+          }
+        }
+        if (distractoresTextos.length >= 3) break;
+      }
 
+      if (distractoresTextos.length < 3) continue;
+
+      final opciones = [respCorrecta, ...distractoresTextos];
       final lista = List.generate(4, (i) => (i == 0, opciones[i]));
       lista.shuffle(rng);
 
@@ -1293,6 +1316,13 @@ class RagService {
     s = s.replaceAll(RegExp(r'[,;:]$'), '').trim();
     if (s.isEmpty) return s;
     return s[0].toUpperCase() + s.substring(1);
+  }
+
+  // Clave normalizada para detectar opciones duplicadas o casi idénticas.
+  // Compara los primeros 45 caracteres alfanuméricos sin acentos.
+  String _claveDistractor(String texto) {
+    final norm = _normalizar(texto).replaceAll(RegExp(r'[^a-z0-9]'), '');
+    return norm.substring(0, norm.length.clamp(0, 45));
   }
 }
 

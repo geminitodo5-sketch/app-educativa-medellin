@@ -500,10 +500,10 @@ class _BotonOpcion extends StatelessWidget {
     Color bgCol     = Colors.white;
 
     if (yaRespondio) {
-      if (esCorrecta) {
+      if (seleccionada && esCorrecta) {
         borderCol = const Color(0xFF59E347);
         bgCol     = const Color(0xFFEDFBE9);
-      } else if (seleccionada) {
+      } else if (seleccionada && !esCorrecta) {
         borderCol = const Color(0xFFF65757);
         bgCol     = const Color(0xFFFFEDED);
       }
@@ -557,7 +557,7 @@ class _BotonOpcion extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            if (yaRespondio && esCorrecta)
+            if (yaRespondio && seleccionada && esCorrecta)
               Icon(Icons.check_circle,
                   color: const Color(0xFF59E347),
                   size: iconSize),

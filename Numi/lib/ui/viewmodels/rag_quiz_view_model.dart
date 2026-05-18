@@ -8,6 +8,8 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/rag_service.dart';
+import '../../data/services/banco_preguntas_service.dart';
+import '../../data/providers/database_provider.dart';
 import 'asistente_ia_view_model.dart';
 
 // ── Estado ────────────────────────────────────────────────────
@@ -20,6 +22,7 @@ class RagQuizEstado {
   final bool quizCompletado;            // true al llegar a 5 correctas
   final bool sinContenido;              // true si no hay corpus descargado
   final bool? ultimaRespuestaCorrecta;  // null = sin responder aún
+  final int? ultimaOpcionSeleccionada;  // índice de la última opción elegida
   final Set<int> vistas;               // índices ya mostrados
 
   const RagQuizEstado({
@@ -30,6 +33,7 @@ class RagQuizEstado {
     this.quizCompletado = false,
     this.sinContenido = false,
     this.ultimaRespuestaCorrecta,
+    this.ultimaOpcionSeleccionada,
     this.vistas = const {},
   });
 
@@ -48,6 +52,7 @@ class RagQuizEstado {
     bool? quizCompletado,
     bool? sinContenido,
     Object? ultimaRespuestaCorrecta = _sentinel,
+    Object? ultimaOpcionSeleccionada = _sentinel,
     Set<int>? vistas,
   }) =>
       RagQuizEstado(
@@ -60,6 +65,9 @@ class RagQuizEstado {
         ultimaRespuestaCorrecta: ultimaRespuestaCorrecta == _sentinel
             ? this.ultimaRespuestaCorrecta
             : ultimaRespuestaCorrecta as bool?,
+        ultimaOpcionSeleccionada: ultimaOpcionSeleccionada == _sentinel
+            ? this.ultimaOpcionSeleccionada
+            : ultimaOpcionSeleccionada as int?,
         vistas: vistas ?? this.vistas,
       );
 }
@@ -70,17 +78,32 @@ const Object _sentinel = Object();
 
 class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
   final RagService _rag;
+  final BancoPreguntasService _banco;
 
-  RagQuizViewModel(this._rag) : super(const RagQuizEstado());
+  RagQuizViewModel(this._rag, this._banco) : super(const RagQuizEstado());
 
   Future<void> inicializar(String materia, int grado) async {
     state = const RagQuizEstado(cargando: true);
     try {
-      final preguntas = await _rag.generarPreguntasMCQ(
+      // Asegurar que el banco estático esté sembrado.
+      await _banco.inicializar();
+
+      // 1) Intentar banco estático primero (siempre disponible offline).
+      var preguntas = await _banco.obtenerPreguntas(
         materia: materia,
         grado: grado,
         cantidad: 15,
       );
+
+      // 2) Si no hay preguntas estáticas, intentar generar desde RAG corpus.
+      if (preguntas.isEmpty) {
+        preguntas = await _rag.generarPreguntasMCQ(
+          materia: materia,
+          grado: grado,
+          cantidad: 15,
+        );
+      }
+
       if (preguntas.isEmpty) {
         state = const RagQuizEstado(cargando: false, sinContenido: true);
       } else {
@@ -101,6 +124,7 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
 
     state = state.copyWith(
       ultimaRespuestaCorrecta: esCorrecto,
+      ultimaOpcionSeleccionada: opcion,
       correctas: nuevasCorrectas,
       quizCompletado: nuevasCorrectas >= RagQuizEstado.metaCorrectas,
     );
@@ -131,12 +155,16 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
       indiceActual: siguiente,
       vistas: {...visitados, siguiente},
       ultimaRespuestaCorrecta: null,
+      ultimaOpcionSeleccionada: null,
     );
   }
 
   // Permite volver a responder la misma pregunta (luego de incorrecta).
   void reintentarActual() {
-    state = state.copyWith(ultimaRespuestaCorrecta: null);
+    state = state.copyWith(
+      ultimaRespuestaCorrecta: null,
+      ultimaOpcionSeleccionada: null,
+    );
   }
 }
 
@@ -144,5 +172,8 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
 
 final ragQuizViewModelProvider =
     StateNotifierProvider.autoDispose<RagQuizViewModel, RagQuizEstado>((ref) {
-  return RagQuizViewModel(ref.read(ragServiceProvider));
+  return RagQuizViewModel(
+    ref.read(ragServiceProvider),
+    ref.read(bancoPreguntasServiceProvider),
+  );
 });

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter analyze *)",
+      "Bash(grep -n \"[A-ZÁÉÍÓÚÑ]\\\\{2,\\\\}\" Numi/lib/data/services/banco_preguntas_service.dart)"
+    ]
+  }
+}

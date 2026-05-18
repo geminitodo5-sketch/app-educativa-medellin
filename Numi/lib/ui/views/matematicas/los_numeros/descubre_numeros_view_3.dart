@@ -328,7 +328,7 @@ class _DescubreGlobosViewState extends ConsumerState<DescubreGlobosView>
     // el globo no debe ser más alto que el área, ni más ancho que ~55% de la pantalla
     final double maxH = availableHeight - floatMargin * 2;
     final double scaleByH = maxH / _BalloonWidget.kHeight;
-    final double scaleByW = (screenWidth * 0.55) / _BalloonWidget.kWidth;
+    final double scaleByW = (screenWidth * 0.72) / _BalloonWidget.kWidth;
     final double scale = scaleByH < scaleByW ? scaleByH : scaleByW;
 
     final double scaledW = _BalloonWidget.kWidth * scale;
@@ -589,7 +589,7 @@ class _BalloonWidget extends StatelessWidget {
           // Escalar fuente proporcionalmente al alto disponible
           final double fontSize = (constraints.maxHeight * 0.12).clamp(
             28.0,
-            70.0,
+            100.0,
           );
           return Stack(
             children: [

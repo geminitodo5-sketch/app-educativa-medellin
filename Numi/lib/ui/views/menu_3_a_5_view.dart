@@ -440,18 +440,31 @@ class _HomeTabState extends State<_HomeTab> {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     final screenW = mq.size.width;
-    final isTablet = screenW >= 600;
-    final hPad = isTablet ? screenW * 0.06 : 20.0;
-    final saludoFs = isTablet ? 18.0 : 16.0;
-    final nombreFs = isTablet ? 36.0 : 30.0;
-    final nivelFs = isTablet ? 22.0 : 18.0;
-    final avatarCircle = isTablet ? 52.0 : 40.0;
-    // La mascota: pequeña, asomando por la izquierda del recuadro
-    final bannerMascotaH = screenW * 0.22;
-    final bannerTitleFs = isTablet ? 22.0 : screenW * 0.045;
-    final bannerSubFs = isTablet ? 19.0 : screenW * 0.048;
     final screenH = mq.size.height;
-    final mClasesFs = isTablet ? 34.0 : 28.0;
+    final isTablet = screenW >= 600;
+
+    // ── Valores responsivos ────────────────────────────────────
+    // Padding horizontal: escala con el ancho de la pantalla
+    final hPad    = isTablet ? screenW * 0.06 : (screenW * 0.052).clamp(16.0, 24.0);
+    // Padding superior del header: proporcional a la altura de pantalla
+    final topPad  = isTablet ? 24.0 : (screenH * 0.022).clamp(14.0, 22.0);
+    final saludoFs     = isTablet ? 18.0 : 16.0;
+    final nombreFs     = isTablet ? 36.0 : 30.0;
+    final nivelFs      = isTablet ? 22.0 : 18.0;
+    final avatarCircle = isTablet ? 52.0 : 40.0;
+    final bannerTitleFs = isTablet ? 22.0 : screenW * 0.045;
+    final bannerSubFs   = isTablet ? 19.0 : screenW * 0.048;
+    final mClasesFs    = isTablet ? 34.0 : 28.0;
+    // La mascota sobresale (screenW * 0.14) px por encima del borde del banner.
+    // sp0 garantiza que ese desbordamiento no choque con el header en ningún dispositivo.
+    final mascotOverflow = screenW * 0.14;
+    final sp0 = mascotOverflow + (isTablet ? 10.0 : 6.0);
+    // Espaciado vertical proporcional a la altura de pantalla
+    final sp1 = isTablet ? 36.0 : (screenH * 0.030).clamp(18.0, 32.0);  // banner → "Mis Clases"
+    final sp2 = isTablet ? 14.0 : (screenH * 0.012).clamp(8.0, 14.0);   // "Mis Clases" → tarjetas
+    // Dimensiones de la navBar flotante (para el cálculo de cardH)
+    final navBarH      = isTablet ? 80.0 : 68.0;
+    final navBarMarginB = isTablet ? 28.0 : 20.0;
 
     return SafeArea(
       child: Column(
@@ -459,7 +472,7 @@ class _HomeTabState extends State<_HomeTab> {
         children: [
           // ── Header fijo arriba ─────────────────────────────
           Padding(
-            padding: EdgeInsets.fromLTRB(hPad, isTablet ? 24 : 18, hPad, 0),
+            padding: EdgeInsets.fromLTRB(hPad, topPad, hPad, 0),
             child: Row(
               children: [
                 Expanded(
@@ -575,223 +588,254 @@ class _HomeTabState extends State<_HomeTab> {
             ),
           ),
 
-          // ── Contenido centrado verticalmente ──────────────
+          // ── Contenido (espaciado proporcional, sin centrado forzado) ──
           Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: sp0),
 
-          // ── Banner: mascota asomando desde el recuadro blanco ───
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: hPad),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // 1) Recuadro dinámico — color según materia activa
-                Builder(builder: (context) {
-                  final bannerColor = _materias[_scrollIndex].color;
-                  final bannerSombra = _materias[_scrollIndex].sombra;
-                  return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(screenW * 0.065),
-                    boxShadow: [
-                      BoxShadow(
-                        color: bannerSombra,
-                        blurRadius: 0,
-                        offset: Offset(0, screenW * 0.02),
-                      ),
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                // ── Banner: mascota asomando desde el recuadro blanco ───
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: hPad),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Recuadro dinámico — color según materia activa
+                      Builder(builder: (context) {
+                        final bannerColor = _materias[_scrollIndex].color;
+                        final bannerSombra = _materias[_scrollIndex].sombra;
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(screenW * 0.065),
+                            boxShadow: [
+                              BoxShadow(
+                                color: bannerSombra,
+                                blurRadius: 0,
+                                offset: Offset(0, screenW * 0.02),
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(screenW * 0.055),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              color: bannerColor,
+                              padding: EdgeInsets.fromLTRB(
+                                screenW * 0.04,
+                                screenW * 0.27 * 0.78 - screenW * 0.14,
+                                screenW * 0.04,
+                                screenW * 0.04,
+                              ),
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: screenW * 0.04,
+                                  vertical: screenW * 0.035,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(screenW * 0.045),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            '¡No pares de aprender!',
+                                            style: TextStyle(
+                                              fontFamily: 'Hiruko',
+                                              fontSize: bannerTitleFs,
+                                              fontWeight: FontWeight.w800,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: screenW * 0.01),
+                                          Text(
+                                            'Cada pregunta es un nuevo descubrimiento',
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              fontSize: bannerSubFs,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: screenW * 0.025),
+                                    GestureDetector(
+                                      onTap: widget.onAbrirUltimoChat,
+                                      child: Container(
+                                        width: screenW * 0.1,
+                                        height: screenW * 0.1,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFF8C00),
+                                          borderRadius: BorderRadius.circular(screenW * 0.03),
+                                        ),
+                                        child: Icon(
+                                          Icons.arrow_forward_rounded,
+                                          color: Colors.white,
+                                          size: screenW * 0.055,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                      // Mascota asomándose desde arriba del recuadro blanco
+                      Positioned(
+                        top: -(screenW * 0.14),
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: ClipRect(
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              heightFactor: 0.78,
+                              child: Image.asset(
+                                _avatarPath,
+                                height: screenW * 0.27,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, _, _) => const SizedBox(),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(screenW * 0.055),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      color: bannerColor,
-                      padding: EdgeInsets.fromLTRB(
-                        screenW * 0.04,
-                        screenW * 0.27 * 0.78 - screenW * 0.14,
-                        screenW * 0.04,
-                        screenW * 0.04,
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: screenW * 0.04,
-                          vertical: screenW * 0.035,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(screenW * 0.045),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '¡No pares de aprender!',
-                                    style: TextStyle(
-                                      fontFamily: 'Hiruko',
-                                      fontSize: bannerTitleFs,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  SizedBox(height: screenW * 0.01),
-                                  Text(
-                                    'Cada pregunta es un nuevo descubrimiento',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: bannerSubFs,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: screenW * 0.025),
-                            GestureDetector(
-                              onTap: widget.onAbrirUltimoChat,
-                              child: Container(
-                                width: screenW * 0.1,
-                                height: screenW * 0.1,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFF8C00),
-                                  borderRadius: BorderRadius.circular(screenW * 0.03),
-                                ),
-                                child: Icon(
-                                  Icons.arrow_forward_rounded,
-                                  color: Colors.white,
-                                  size: screenW * 0.055,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  );
-                }),
-                // 2) Mascota asomándose desde arriba del recuadro blanco
-                Positioned(
-                  top: -(screenW * 0.14),
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: ClipRect(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        heightFactor: 0.78,
-                        child: Image.asset(
-                          _avatarPath,
-                          height: screenW * 0.27,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => const SizedBox(),
-                        ),
-                      ),
+                ),
+
+                SizedBox(height: sp1),
+
+                // ── Título "Mis Clases" ────────────────────────────
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: hPad),
+                  child: Text(
+                    'Mis Clases',
+                    style: TextStyle(
+                      fontFamily: 'Hiruko',
+                      fontSize: mClasesFs,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
 
-          SizedBox(height: isTablet ? 36 : 28),
+                SizedBox(height: sp2),
 
-          // ── Título "Mis Clases" ────────────────────────────
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: hPad),
-            child: Text(
-              'Mis Clases',
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: mClasesFs,
-                fontWeight: FontWeight.w800,
-                color: Colors.black87,
-              ),
-            ),
-          ),
+                // ── Tarjetas + dots: altura calculada sobre el espacio real ──
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (ctx, box) {
+                      // Solapamiento real de la navBar más allá del SafeArea
+                      final navOverlap = (navBarH + navBarMarginB - mq.padding.bottom)
+                          .clamp(navBarH * 0.4, navBarH + navBarMarginB);
+                      // Área total del indicador de scroll (puntos + márgenes)
+                      final dotsSpacingAbove = isTablet ? 16.0 : 12.0;
+                      final dotsH            = screenW * 0.02;
+                      final dotsSpacingBelow = isTablet ? 18.0 : 12.0;
+                      final dotsArea = dotsSpacingAbove + dotsH + dotsSpacingBelow;
+                      // cardH = espacio disponible - dots - navBar - 16 px de respiro visual
+                      final cardH = (box.maxHeight - dotsArea - navOverlap - 16.0)
+                          .clamp(isTablet ? 180.0 : 140.0, box.maxHeight * 0.85);
 
-          SizedBox(height: isTablet ? 14 : 10),
-
-          // ── Scroll horizontal de clases ────────────────────
-          if (widget.verificando)
-            SizedBox(
-              height: screenH * 0.44,
-              child: const Center(
-                child: CircularProgressIndicator(color: Color(0xFF3E7DFE)),
-              ),
-            )
-          else ...[
-            SizedBox(
-              height: isTablet ? screenH * 0.46 : screenH * 0.44,
-              child: ListView.builder(
-                controller: _scrollCtrl,
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.only(
-                  left: hPad,
-                  right: hPad,
-                  bottom: 14,
-                ),
-                itemCount: _materias.length,
-                itemBuilder: (context, i) {
-                  final m = _materias[i];
-                  final cardW = isTablet ? screenW * 0.38 : screenW * 0.72;
-                  return Padding(
-                    padding: EdgeInsets.only(right: isTablet ? 16 : 12),
-                    child: SizedBox(
-                      width: cardW,
-                      child: _ClaseCard(
-                        info: m,
-                        descargado: widget.descargado[m.clave] ?? false,
-                        descargando: widget.descargando.contains(m.clave),
-                        progreso: widget.progresosDescarga[m.clave] ?? 0.0,
-                        onDescargar: () => widget.onDescargar(m.clave),
-                        onAbrir: () => widget.onAbrir(m),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // ── Indicador de puntos ────────────────────────
-            SizedBox(height: isTablet ? 16 : 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_materias.length, (i) {
-                final selected = i == _scrollIndex;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: EdgeInsets.symmetric(horizontal: screenW * 0.008),
-                  width: selected ? screenW * 0.05 : screenW * 0.02,
-                  height: screenW * 0.02,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(screenW * 0.01),
-                    color: selected
-                        ? const Color(0xFF3E7DFE)
-                        : Colors.grey[350],
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (widget.verificando)
+                            SizedBox(
+                              height: cardH,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                    color: Color(0xFF3E7DFE)),
+                              ),
+                            )
+                          else ...[
+                            SizedBox(
+                              height: cardH,
+                              child: ListView.builder(
+                                controller: _scrollCtrl,
+                                scrollDirection: Axis.horizontal,
+                                padding: EdgeInsets.only(
+                                    left: hPad, right: hPad, bottom: 14),
+                                itemCount: _materias.length,
+                                itemBuilder: (context, i) {
+                                  final m = _materias[i];
+                                  final cardW =
+                                      isTablet ? screenW * 0.38 : screenW * 0.72;
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                        right: isTablet ? 16 : 12),
+                                    child: SizedBox(
+                                      width: cardW,
+                                      child: _ClaseCard(
+                                        info: m,
+                                        descargado:
+                                            widget.descargado[m.clave] ?? false,
+                                        descargando:
+                                            widget.descargando.contains(m.clave),
+                                        progreso:
+                                            widget.progresosDescarga[m.clave] ??
+                                                0.0,
+                                        onDescargar: () =>
+                                            widget.onDescargar(m.clave),
+                                        onAbrir: () => widget.onAbrir(m),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            // ── Indicador de scroll (dots) ────────────
+                            SizedBox(height: dotsSpacingAbove),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(_materias.length, (i) {
+                                final selected = i == _scrollIndex;
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 250),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: screenW * 0.008),
+                                  width: selected
+                                      ? screenW * 0.05
+                                      : screenW * 0.02,
+                                  height: dotsH,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(screenW * 0.01),
+                                    color: selected
+                                        ? const Color(0xFF3E7DFE)
+                                        : Colors.grey[350],
+                                  ),
+                                );
+                              }),
+                            ),
+                            SizedBox(height: dotsSpacingBelow),
+                          ], // else
+                        ],
+                      );
+                    },
                   ),
-                );
-              }),
-            ),
-            SizedBox(height: isTablet ? 18 : 12),
-          ], // else
+                ), // Expanded tarjetas
               ], // Column interior children
             ),
-          ), // Expanded
+          ), // Expanded principal
           ], // Column exterior children
       ),
     );

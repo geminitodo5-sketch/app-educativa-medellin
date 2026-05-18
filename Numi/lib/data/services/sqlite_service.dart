@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 
 class SqliteService {
   static const String _dbName    = 'numi.db';
-  static const int    _dbVersion = 4;
+  static const int    _dbVersion = 5;
 
   static SqliteService? _instance;
   static Database?      _database;
@@ -184,6 +184,26 @@ class SqliteService {
       ''');
       await txn.execute(
         "INSERT INTO configuracion (id, sonido_activado, idioma, modo_offline_forzado) VALUES (1, 1, 'es', 0)");
+
+      // 10. preguntas_quiz — banco estático de preguntas MCQ con distractores de calidad
+      await txn.execute('''
+        CREATE TABLE preguntas_quiz (
+          id          INTEGER PRIMARY KEY AUTOINCREMENT,
+          materia     TEXT    NOT NULL,
+          grado       INTEGER NOT NULL,
+          tema        TEXT    NOT NULL,
+          pregunta    TEXT    NOT NULL,
+          opcion_a    TEXT    NOT NULL,
+          opcion_b    TEXT    NOT NULL,
+          opcion_c    TEXT    NOT NULL,
+          opcion_d    TEXT    NOT NULL,
+          correcta    TEXT    NOT NULL,
+          explicacion TEXT,
+          dificultad  INTEGER NOT NULL DEFAULT 1
+        )
+      ''');
+      await txn.execute(
+        'CREATE INDEX idx_preguntas_quiz ON preguntas_quiz (materia, grado)');
     });
   }
 
@@ -225,6 +245,26 @@ class SqliteService {
       ''');
       await db.execute(
         'CREATE UNIQUE INDEX IF NOT EXISTS idx_sesiones_unico ON sesiones_diarias (estudiante_id, fecha)');
+    }
+    if (oldVersion < 5) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS preguntas_quiz (
+          id          INTEGER PRIMARY KEY AUTOINCREMENT,
+          materia     TEXT    NOT NULL,
+          grado       INTEGER NOT NULL,
+          tema        TEXT    NOT NULL,
+          pregunta    TEXT    NOT NULL,
+          opcion_a    TEXT    NOT NULL,
+          opcion_b    TEXT    NOT NULL,
+          opcion_c    TEXT    NOT NULL,
+          opcion_d    TEXT    NOT NULL,
+          correcta    TEXT    NOT NULL,
+          explicacion TEXT,
+          dificultad  INTEGER NOT NULL DEFAULT 1
+        )
+      ''');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_preguntas_quiz ON preguntas_quiz (materia, grado)');
     }
   }
 

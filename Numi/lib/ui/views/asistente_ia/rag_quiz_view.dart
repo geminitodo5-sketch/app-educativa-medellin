@@ -174,7 +174,13 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
   _EstadoBoton _estadoBoton(
       RagQuizEstado estado, int indice, int indiceCorrecto) {
     if (estado.ultimaRespuestaCorrecta == null) return _EstadoBoton.normal;
-    if (indice == indiceCorrecto) return _EstadoBoton.correcto;
+    if (estado.ultimaRespuestaCorrecta == true && indice == indiceCorrecto) {
+      return _EstadoBoton.correcto;
+    }
+    if (estado.ultimaRespuestaCorrecta == false &&
+        indice == estado.ultimaOpcionSeleccionada) {
+      return _EstadoBoton.incorrecto;
+    }
     return _EstadoBoton.normal;
   }
 
@@ -559,6 +565,7 @@ class _TarjetaPregunta extends StatelessWidget {
                                   .clamp(13.0, 20.0),
                           fontWeight: FontWeight.bold,
                           color: colorMateria,
+                          wordSpacing: 4.0,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -577,6 +584,7 @@ class _TarjetaPregunta extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: const Color(0xFF1E293B),
               height: 1.35,
+              wordSpacing: 6.0,
             ),
           ),
         ],
@@ -587,7 +595,7 @@ class _TarjetaPregunta extends StatelessWidget {
 
 // ── Estado visual de cada botón de opción ─────────────────────
 
-enum _EstadoBoton { normal, correcto }
+enum _EstadoBoton { normal, correcto, incorrecto }
 
 // ── Botón de opción ───────────────────────────────────────────
 
@@ -622,6 +630,12 @@ class _BotonOpcion extends StatelessWidget {
         borderColor = const Color(0xFF59E347);
         letraColor  = const Color(0xFF59E347);
         textColor   = Colors.green.shade900;
+        break;
+      case _EstadoBoton.incorrecto:
+        bgColor     = const Color(0xFFFFD3D3);
+        borderColor = const Color(0xFFF65757);
+        letraColor  = const Color(0xFFF65757);
+        textColor   = Colors.red.shade900;
         break;
       case _EstadoBoton.normal:
         bgColor     = Colors.white;

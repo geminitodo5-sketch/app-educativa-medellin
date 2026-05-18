@@ -1365,7 +1365,7 @@ class _Actividad3State extends State<_Actividad3> {
       child: Column(
         children: [
           _Instruccion(
-            'Necesito hacer crecer esta planta, elige  los elementos que le ayudarán a crecer',
+            'Necesito hacer crecer esta planta, elige  los elementos que  le ayudarán a crecer',
             player: _player,
             audioAsset: _audio12,
           ),

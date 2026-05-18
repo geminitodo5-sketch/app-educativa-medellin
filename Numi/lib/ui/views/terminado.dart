@@ -81,17 +81,42 @@ class _ActividadTerminadaScreenState
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
+    final mq = MediaQuery.of(context);
+    final w  = mq.size.width;
+    final h  = mq.size.height;
+
+    // El video es portrait 9:16. Calcular dimensiones para que CUBRA toda la
+    // pantalla sin barras (lógica equivalente a BoxFit.cover):
+    //   - Si ajustar por ancho deja la altura corta → ajustar por altura.
+    // Alinear al TOPE: si el video sobresale, se recorta por abajo, nunca
+    // por arriba, garantizando que el texto superior siempre sea visible.
+    const videoAspect = 9.0 / 16.0;
+    double videoW = w;
+    double videoH = w / videoAspect;
+    if (videoH < h) {
+      // Pantalla más ancha que 9:16 → escalar por altura para cubrir todo
+      videoH = h;
+      videoW = h * videoAspect;
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
-        fit: StackFit.expand,
+        clipBehavior: Clip.hardEdge,
         children: [
-          // Video a pantalla completa
-          Video(
-            controller: _videoController,
-            controls: NoVideoControls,
-            fit: BoxFit.cover,
+          // Video dimensionado para cubrir la pantalla, anclado al tope.
+          // El exceso vertical (si lo hay) se recorta por abajo.
+          Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: videoW,
+              height: videoH,
+              child: Video(
+                controller: _videoController,
+                controls: NoVideoControls,
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
 
           // Botón de volver superpuesto

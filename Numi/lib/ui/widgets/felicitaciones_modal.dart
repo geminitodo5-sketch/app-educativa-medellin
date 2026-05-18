@@ -89,17 +89,37 @@ class _FelicitacionesModalState extends State<FelicitacionesModal> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final mq = MediaQuery.of(context);
+    final w  = mq.size.width;
+    final h  = mq.size.height;
+
+    const videoAspect = 9.0 / 16.0;
+    double videoW = w;
+    double videoH = w / videoAspect;
+    if (videoH < h) {
+      videoH = h;
+      videoW = h * videoAspect;
+    }
+
     return Dialog(
       backgroundColor: Colors.black,
       insetPadding: EdgeInsets.zero,
       child: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: Video(
-          controller: controller,
-          controls: NoVideoControls,
-          fit: BoxFit.cover,
+        width: w,
+        height: h,
+        child: ClipRect(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: videoW,
+              height: videoH,
+              child: Video(
+                controller: controller,
+                controls: NoVideoControls,
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -7,6 +7,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/sqlite_service.dart';
 import '../services/sync_service.dart';
+import '../services/banco_preguntas_service.dart';
 import '../repositories/estudiante_repository.dart';
 import '../repositories/progreso_repository.dart';
 import '../repositories/sync_queue_repository.dart';
@@ -34,6 +35,11 @@ final syncQueueRepositoryProvider = Provider<SyncQueueRepository>((ref) {
 /// Servicio de sincronización offline→backend.
 final syncServiceProvider = Provider<SyncService>((ref) {
   return SyncService(ref.read(syncQueueRepositoryProvider));
+});
+
+/// Banco estático de preguntas MCQ con distractores de calidad.
+final bancoPreguntasServiceProvider = Provider<BancoPreguntasService>((ref) {
+  return BancoPreguntasService(ref.read(sqliteServiceProvider));
 });
 
 /// Resetea la base de datos completa (solo para desarrollo/debug).
