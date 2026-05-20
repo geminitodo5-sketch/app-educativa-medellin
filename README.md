@@ -273,7 +273,7 @@ Los cambios de Firestore se escuchan en tiempo real con un `StreamProvider`; la 
 | **Ingeniería** | ViewModels, UseCases, Repositories, Services, RAG, SQLite, Firebase, backend |
 | **Crosmedia** | Views, animaciones, paleta de colores, logo, mockups, assets de audio/imagen |
 
-**Regla estricta:** Ingeniería no diseña UI. Crosmedia no toca lógica ni datos.
+
 
 ---
 
