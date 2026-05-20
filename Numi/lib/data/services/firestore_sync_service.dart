@@ -104,4 +104,26 @@ class FirestoreSyncService {
     final snapshot = await _progresoCol(uid).get();
     return snapshot.docs.map((d) => d.data()).toList();
   }
+
+  // ── Listener en tiempo real ───────────────────────────────────
+
+  /// Devuelve un Stream que emite solo los documentos de progreso que
+  /// cambian en el servidor (no los escritos pendientes de este dispositivo).
+  ///
+  /// Firestore notifica con `includeMetadataChanges: true` para poder
+  /// filtrar por `hasPendingWrites`. Así, los cambios que este mismo
+  /// dispositivo sube a Firestore NO se reaplican localmente, evitando
+  /// procesamiento redundante y conflictos.
+  Stream<List<Map<String, dynamic>>> escucharProgreso(String uid) {
+    return _progresoCol(uid)
+        .snapshots(includeMetadataChanges: true)
+        .map((snap) => snap.docChanges
+            .where((c) =>
+                // Solo cambios ya confirmados por el servidor
+                !c.doc.metadata.hasPendingWrites &&
+                (c.type == DocumentChangeType.added ||
+                 c.type == DocumentChangeType.modified))
+            .map((c) => c.doc.data()!)
+            .toList());
+  }
 }

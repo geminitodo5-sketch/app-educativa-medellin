@@ -646,9 +646,14 @@ class _BurbujaMensaje extends StatelessWidget {
   Widget build(BuildContext context) {
     final esUsuario = mensaje.rol == RolMensaje.usuario;
     final sw        = MediaQuery.of(context).size.width;
-    final isTablet  = sw >= 600;
-    final avatarR   = isTablet ? 20.0 : 16.0;
-    final gap       = isTablet ? 8.0 : 6.0;
+
+    // Todas las dimensiones escalan proporcionalmente con el ancho de pantalla
+    final avatarR  = (sw * 0.055).clamp(18.0, 32.0);
+    final gap      = (sw * 0.018).clamp(6.0, 16.0);
+    final fontSize = (sw * 0.040).clamp(14.0, 22.0);
+    final hPadB    = (sw * 0.042).clamp(14.0, 28.0);
+    final vPadB    = (sw * 0.028).clamp(10.0, 20.0);
+    final vSpace   = (sw * 0.012).clamp(4.0, 12.0);
 
     final bubbleDecor = BoxDecoration(
       color: esUsuario ? colorAsistente : Colors.white,
@@ -673,29 +678,29 @@ class _BurbujaMensaje extends StatelessWidget {
             mensaje.texto,
             style: TextStyle(
               fontFamily: 'Poppins',
-              fontSize: (sw * (isTablet ? 0.026 : 0.038)).clamp(13.0, 17.0),
+              fontSize: fontSize,
               color: esUsuario ? Colors.white : Colors.black87,
-              height: 1.5,
+              height: 1.55,
             ),
           );
 
     final bubblePad = EdgeInsets.symmetric(
-      horizontal: isTablet ? 18.0 : 14.0,
-      vertical:   isTablet ? 12.0 : 10.0,
+      horizontal: hPadB,
+      vertical: vPadB,
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: vSpace),
       child: Row(
         mainAxisAlignment:
             esUsuario ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: esUsuario
-            // ── Mensaje del usuario: burbuja con ancho cap + avatar a la derecha ──
+            // ── Usuario: burbuja con ancho proporcional grande + avatar ──
             ? [
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: (sw * (isTablet ? 0.72 : 0.78)).clamp(160.0, 600.0),
+                    maxWidth: (sw * 0.88).clamp(200.0, 750.0),
                   ),
                   child: Container(
                     padding: bubblePad,
@@ -711,7 +716,7 @@ class _BurbujaMensaje extends StatelessWidget {
                   ),
                 ),
               ]
-            // ── Mensaje del asistente: avatar + Flexible para aprovechar todo el ancho ──
+            // ── Asistente: Expanded → burbuja ocupa todo el ancho disponible ──
             : [
                 CircleAvatar(
                   radius: avatarR,
@@ -720,14 +725,13 @@ class _BurbujaMensaje extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: gap),
-                Flexible(
+                Expanded(
                   child: Container(
                     padding: bubblePad,
                     decoration: bubbleDecor,
                     child: bubbleChild,
                   ),
                 ),
-                SizedBox(width: gap),
               ],
       ),
     );

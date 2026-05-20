@@ -1270,7 +1270,6 @@ class _ProgresoTab extends StatelessWidget {
               porcentaje: pct,
               color: item.color,
               sombra: item.sombra,
-              isTablet: isTablet,
             ),
           ),
         );
@@ -1286,19 +1285,20 @@ class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
   final Color sombra;
-  final bool isTablet;
 
   const _BarraProgreso({
     required this.etiqueta,
     required this.porcentaje,
     required this.color,
     required this.sombra,
-    this.isTablet = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final labelFs = isTablet ? 15.0 : 13.0;
+    final sw = MediaQuery.of(context).size.width;
+    final isTablet = sw >= 600;
+    // Texto proporcional al ancho de pantalla, notablemente más grande
+    final labelFs = (sw * 0.046).clamp(16.0, 26.0);
     return Container(
       decoration: BoxDecoration(
         color: color,
@@ -1316,19 +1316,20 @@ class _BarraProgreso extends StatelessWidget {
             Text(
               etiqueta,
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Hiruko',
                 fontSize: labelFs,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w800,
                 color: Colors.white,
+                letterSpacing: 0.3,
               ),
             ),
             Text(
               '${porcentaje.toInt()}%',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: labelFs,
+                fontSize: labelFs * 0.85,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: Colors.white.withValues(alpha: 0.9),
               ),
             ),
           ],

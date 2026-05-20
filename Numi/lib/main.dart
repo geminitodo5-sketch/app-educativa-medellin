@@ -7,7 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'data/providers/database_provider.dart';
 import 'data/providers/app_state_provider.dart'
-    show syncListenerProvider, firestoreSyncListenerProvider;
+    show syncListenerProvider, firestoreSyncListenerProvider,
+         progresoRealtimeProvider;
 import 'ui/viewmodels/asistente_ia_view_model.dart' show gemmaStartupProvider;
 import 'ui/views/inicio_view.dart';
 
@@ -51,6 +52,9 @@ class AppEducativa extends ConsumerWidget {
     ref.watch(syncListenerProvider);
     // Sincronización bidireccional con Firestore (progreso entre dispositivos).
     ref.watch(firestoreSyncListenerProvider);
+    // Listener en tiempo real: actualiza la UI al instante cuando otro
+    // dispositivo (misma cuenta) sube progreso a Firestore.
+    ref.watch(progresoRealtimeProvider);
 
     // Inicia verificación/descarga de Gemma 3n E2B en background al abrir la app.
     ref.watch(gemmaStartupProvider);
