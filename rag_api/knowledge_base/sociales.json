@@ -1,6 +1,6 @@
 {
   "materia": "sociales",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "descripcion": "Base de conocimiento ampliada de Ciencias Sociales grados 1-5 — currículo colombiano MEN (versión extendida con nuevos temas, mayor profundidad y cobertura curricular completa)",
   "contenido": [
     {
@@ -1589,6 +1589,55 @@
         "Pizarro",
         "Quesada",
         "Bogotá"
+      ]
+    },
+    {
+      "id": "soc_g4_cristobal_colon",
+      "grado": 4,
+      "tema": "historia de América",
+      "pregunta": "¿Quién fue Cristóbal Colón?",
+      "respuesta": "Cristóbal Colón (Génova, Italia, 1451 – Valladolid, España, 1506) fue el navegante italiano que llegó a América el 12 de octubre de 1492, al mando de tres carabelas: la Niña, la Pinta y la Santa María, financiadas por los Reyes Católicos de España. Aunque pensaba que había llegado a las Indias (Asia), en realidad descubrió para los europeos un continente nuevo: América. Por eso llamó 'indios' a los habitantes originarios. Colón realizó cuatro viajes al Nuevo Mundo en los años 1492, 1493, 1498 y 1502. Murió sin saber que había llegado a un continente desconocido para Europa; creía haber llegado a Asia. Su llegada cambió la historia del mundo: inició la colonización europea de América, el intercambio de plantas, animales y enfermedades entre continentes, y abrió una nueva era histórica. La fecha del 12 de octubre se celebra hoy como el Día de la Diversidad Cultural en Colombia.",
+      "palabras_clave": [
+        "Cristóbal Colón", "Colón", "1492", "navegante", "genovés", "América",
+        "descubrimiento", "España", "carabelas", "Niña", "Pinta", "Santa María",
+        "Reyes Católicos", "viaje", "Nuevo Mundo", "indias", "12 de octubre",
+        "colonización", "conquistador"
+      ]
+    },
+    {
+      "id": "soc_g3_cristobal_colon",
+      "grado": 3,
+      "tema": "historia de Colombia",
+      "pregunta": "¿Quién fue Cristóbal Colón?",
+      "respuesta": "Cristóbal Colón fue un navegante muy famoso que llegó a América el 12 de octubre de 1492. Nació en Génova (Italia) y viajó en tres barcos llamados la Niña, la Pinta y la Santa María, con el apoyo del Rey y la Reina de España. Colón pensaba que iba a llegar a Asia (las Indias), pero en realidad llegó a un continente que los europeos no conocían: América. Por eso llamó 'indios' a las personas que vivían allí. Su viaje fue muy importante porque marcó el inicio del contacto entre Europa y América. La fecha del 12 de octubre se celebra en Colombia como el Día de la Diversidad Cultural.",
+      "palabras_clave": [
+        "Cristóbal Colón", "Colón", "1492", "América", "navegante", "España",
+        "carabelas", "Niña", "Pinta", "Santa María", "indios", "12 de octubre",
+        "descubrimiento", "indias", "genovés", "colonia"
+      ]
+    },
+    {
+      "id": "soc_g3_simon_bolivar",
+      "grado": 3,
+      "tema": "historia de Colombia",
+      "pregunta": "¿Quién fue Simón Bolívar?",
+      "respuesta": "Simón Bolívar fue el héroe más famoso de la independencia de Colombia y de muchos países de América del Sur. Nació en Venezuela en 1783. Lo llamaban 'El Libertador' porque liberó cinco países del dominio español: Venezuela, Colombia, Ecuador, Perú y Bolivia (que lleva su nombre). La batalla más importante en Colombia fue la Batalla de Boyacá, el 7 de agosto de 1819, que le dio la libertad a Colombia. Bolívar soñaba con unir todos los países de América del Sur en una sola nación llamada la Gran Colombia. Murió en 1830 en Santa Marta, Colombia. Su imagen aparece en los billetes y monedas de varios países, y hay muchas plazas y calles con su nombre.",
+      "palabras_clave": [
+        "Simón Bolívar", "Bolívar", "Libertador", "independencia", "Colombia",
+        "Boyacá", "1819", "Venezuela", "Gran Colombia", "héroe", "batalla",
+        "libertad", "Ecuador", "Perú", "Bolivia", "Santa Marta"
+      ]
+    },
+    {
+      "id": "soc_g5_simon_bolivar",
+      "grado": 5,
+      "tema": "historia de Colombia grado quinto",
+      "pregunta": "¿Quién fue Simón Bolívar y cuál fue su legado?",
+      "respuesta": "Simón Bolívar (Caracas, Venezuela, 1783 – Santa Marta, Colombia, 1830) fue el principal líder militar y político de la independencia latinoamericana, conocido como 'El Libertador'. Dirigió los ejércitos patriotas que derrotaron a España en Venezuela, Nueva Granada (hoy Colombia), Ecuador, Perú y Bolivia. Sus victorias clave fueron: Boyacá (7 de agosto de 1819, Colombia), Carabobo (1821, Venezuela), Pichincha (1822, Ecuador), Junín y Ayacucho (1824, Perú). Fue presidente de la Gran Colombia (1819–1830), que unía Venezuela, Colombia y Ecuador. Su sueño era una confederación de naciones latinoamericanas, pero las rivalidades políticas lo impidieron. La Gran Colombia se disolvió en 1830. Murió pobre y olvidado, pero hoy es el símbolo de la libertad latinoamericana. Su pensamiento político ('bolivarismo') sigue influyendo en los debates políticos de la región.",
+      "palabras_clave": [
+        "Simón Bolívar", "Bolívar", "Libertador", "independencia", "Boyacá",
+        "1819", "Venezuela", "Gran Colombia", "héroe", "Carabobo", "Ayacucho",
+        "Colombia", "Ecuador", "Perú", "Bolivia", "bolivarismo", "legado"
       ]
     },
     {

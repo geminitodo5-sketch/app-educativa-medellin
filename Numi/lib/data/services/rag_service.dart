@@ -349,13 +349,9 @@ class RagService {
       return await _construirRespuesta(top, top5, pregunta, materia, grado);
     }
     if (top.puntaje >= _softMin) {
-      // Gemma lista: responde con el mejor contexto disponible del corpus.
-      // Si no está lista, muestra la sugerencia amigable de tema relacionado.
-      final llm = _localLlm;
-      if (llm != null && llm.isReady) {
-        return await _construirRespuesta(top, top5, pregunta, materia, grado);
-      }
-      return _respuestaAproximada(top, materia, grado);
+      // Siempre usamos el mejor contexto disponible del corpus.
+      // _construirRespuesta usa Gemma si está lista; si no, formatea el texto.
+      return await _construirRespuesta(top, top5, pregunta, materia, grado);
     }
     // Sin match útil en corpus → Gemma responde desde conocimiento general
     final respGemma = await _responderConGemmaGeneral(pregunta, materia, grado);

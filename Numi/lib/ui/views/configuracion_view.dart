@@ -10,7 +10,6 @@ import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/musica_provider.dart';
 import 'registro_view.dart';
-import 'inicio_view.dart';
 import 'menu_1_y_2_view.dart';
 import 'menu_3_a_5_view.dart';
 
@@ -222,48 +221,6 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
-  // ── Reiniciar base de datos ───────────────────────────────────
-  Future<void> _confirmarReset() async {
-    final confirmar = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Reiniciar base de datos',
-            style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
-        content: const Text(
-          '¿Borrar todos los datos y empezar desde cero?\nEsta acción no se puede deshacer.',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 15),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar',
-                style: TextStyle(fontFamily: 'Poppins')),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFEF5353),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Borrar',
-                style: TextStyle(fontFamily: 'Poppins')),
-          ),
-        ],
-      ),
-    );
-    if (confirmar != true || !mounted) return;
-    await ref.read(resetDbProvider)();
-    await ref.read(sqliteServiceProvider).database;
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const InicioView()),
-      (_) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final estudiante = ref.watch(estudianteActivoProvider);
@@ -408,8 +365,6 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                   _buildSyncCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
                   _buildManualCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
-                  SizedBox(height: cardGap),
-                  _buildResetCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
                   _buildLogoutCard(cardPadding, cardRadius, cardTitleSize, iconSize),
                 ],
@@ -688,51 +643,6 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildResetCard(double cardPadding, double cardRadius,
-      double titleSize, double subSize, double iconSize) {
-    return GestureDetector(
-      onTap: _confirmarReset,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(cardPadding),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFF8C00),
-          borderRadius: BorderRadius.circular(cardRadius),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.delete_forever_rounded, color: Colors.white, size: iconSize),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Reiniciar base de datos',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.bold,
-                      fontSize: titleSize,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    'Borra todos los datos y empieza desde cero',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: subSize,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
