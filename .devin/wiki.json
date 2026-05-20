@@ -1,0 +1,128 @@
+{
+  "repo_notes": [
+    {
+      "content": "Numi is an offline-first Flutter educational app for children in grades 1–5 (ages 6–10) in rural Medellín, Colombia. It covers 5 subject areas: Mathematics, Natural Sciences, Spanish, English, and Social Studies, with 15 interactive activities total. The app uses MVVM architecture with Riverpod for state management, SQLite (sqflite) for local-first storage, Firebase Auth (email + Google) and Firestore for multi-device sync, and an on-device AI assistant using Gemma 2B through a RAG pipeline. Target: Android 8+, minimum 2 GB RAM, low-end devices. Two teams: Ingeniería (ViewModels, Repositories, Services, backend, RAG) and Crosmedia (Views, animations, color palette, assets). The project includes a FastAPI backend on Railway for serving RAG knowledge base ZIPs and FAISS semantic search. The AI assistant runs 100% offline after the initial Gemma 2B model download from Hugging Face. Audio uses media_kit. Sync strategy: max(porcentaje) wins — a child never goes backward. Daily streak system motivates consistent use. Development was AI-assisted using Claude Sonnet 4.6 (Anthropic) — see bitacoras_lmunosrendon123@gmail.com/ for session logs."
+    }
+  ],
+  "pages": [
+    {
+      "title": "Numi — Visión General del Proyecto",
+      "purpose": "Introducción completa a Numi: qué es, para quién es, el problema que resuelve (brecha digital en zonas rurales de Medellín), las 5 áreas de aprendizaje cubiertas, los grados (1° a 5°), los dispositivos objetivo (Android 8+, 2 GB RAM, gama baja), y el principio offline-first. Incluir el listado de las 15 actividades distribuidas por materia.",
+      "page_notes": [
+        {
+          "content": "Highlight that the app works 100% offline after installation. Mention the two teams: Ingeniería and Crosmedia and their strict separation of responsibilities."
+        }
+      ]
+    },
+    {
+      "title": "Arquitectura MVVM",
+      "purpose": "Explicar la arquitectura MVVM implementada según la guía oficial de Flutter. Describir las tres capas: UI Layer (Views + ViewModels), Domain Layer (UseCases), Data Layer (Repositories + Services + Providers). Incluir las reglas no negociables: Views nunca acceden a Repositories, ViewModels no conocen Services, Services no guardan estado, RAG siempre offline. Mostrar el diagrama de capas.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "Focus on the strict layer boundaries. The lib/ui/viewmodels/ folder contains StateNotifier classes managing immutable state. The lib/data/providers/ folder contains Riverpod providers wiring everything together."
+        }
+      ]
+    },
+    {
+      "title": "Stack Tecnológico",
+      "purpose": "Documentar todas las tecnologías usadas: Flutter/Dart con flutter_riverpod, sqflite, firebase_auth, cloud_firestore, flutter_gemma, media_kit, connectivity_plus, dio, archive, just_audio. Backend: Python FastAPI, FAISS, fastembed, Google Gemini, Railway, Docker. Explicar por qué se eligió cada tecnología, especialmente la migración de just_audio a media_kit y de sentence-transformers a fastembed.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "Include the real versions from pubspec.yaml. Explain the fastembed migration: sentence-transformers was ~6GB Docker image (over Railway limit), fastembed is ~500MB with ONNX model."
+        }
+      ]
+    },
+    {
+      "title": "Asistente IA Offline (RAG + Gemma 2B)",
+      "purpose": "Documentar el pipeline RAG completo que corre en el dispositivo sin internet: EmbeddingService (TFLite con fallback hash-bag+bigramas), RAGRepository con búsqueda BM25 + similitud coseno en SQLite, LocalLlmService con Gemma 2B via flutter_gemma, respuestas adaptadas por grado (simple/claro/técnico). Explicar la descarga inicial del modelo desde Hugging Face, el SmartDownloader foreground service para archivos >500MB, y el timeout de 30s con fallback al formateador estructurado.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "The model file is gemma-2b-it-cpu-int8.bin hosted at NUMI12123/NUMI-gemma on Hugging Face (~2.6GB). Once downloaded, install() activates it without network. The bug fixed: gemmaStartupProvider used to call descargarModelo() directly causing a race condition with the ViewModel — fixed by having the provider only read asistenteIaViewModelProvider."
+        }
+      ]
+    },
+    {
+      "title": "Base de Datos SQLite y Modelos",
+      "purpose": "Documentar el esquema SQLite: tablas estudiantes, progreso, conversaciones, preguntas_quiz, sync_queue. Describir los modelos EstudianteModel, ProgresoModel, SyncQueueModel con sus campos. Explicar el índice único en progreso (estudiante_id, grado, materia, actividad) que garantiza REPLACE INTO sin duplicados.",
+      "parent": "Arquitectura MVVM",
+      "page_notes": [
+        {
+          "content": "The sincronizado column (0=pending, 1=synced) is the key to offline-first sync. The BancoPreguntasService seeds 150 MCQ questions on first init; opcionA is always correct in storage but positions are shuffled at runtime."
+        }
+      ]
+    },
+    {
+      "title": "Sincronización Firestore (Offline-First)",
+      "purpose": "Explicar la arquitectura de sincronización bidireccional: SincronizarUseCase sube registros con sincronizado=0 y descarga desde Firestore aplicando max(porcentaje). Describir progresoRealtimeProvider (StreamProvider con filtro hasPendingWrites) y firestoreSyncListenerProvider. Documentar sincronizarAlLogin() para restaurar progreso completo en un dispositivo nuevo.",
+      "parent": "Arquitectura MVVM",
+      "page_notes": [
+        {
+          "content": "Conflict resolution: max(porcentaje) always wins — a child never goes backward. The hasPendingWrites filter prevents the device→Firestore→device loop. connectivity_plus v5 compatibility handled with if (result is List) guard."
+        }
+      ]
+    },
+    {
+      "title": "Actividades Educativas",
+      "purpose": "Documentar las 15 actividades interactivas distribuidas en las 5 materias: Matemáticas (Los Números, Quién Tiene Más, Sumar), Ciencias (Vivo o No Vivo, Cuerpo Humano, Animales, Las Plantas), Español (Palabra Loca, Arma la Palabra, Oraciones), Inglés (Tarjetas, Parejas, Escucha y Elige), Sociales (Héroes de la Ciudad, Detective de Objetos, Pasado y Presente). Para cada una explicar la mecánica de juego y cómo guarda el progreso.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "Activities use Draggable/DragTarget for drag-and-drop. Audio plays via media_kit Player. Each activity calls ref.invalidate(menuProgresoProvider) after saving progress so the menu updates in real time."
+        }
+      ]
+    },
+    {
+      "title": "Firebase Auth y Perfiles",
+      "purpose": "Documentar la autenticación con email/contraseña y Google Sign-In. Explicar la migración de cuentas legacy (sin Firebase) vinculando el firebaseUid al registro SQLite existente. Describir FirebaseAuthService: signIn, registro, reload() para verificar email, setLanguageCode('es') para correos en español.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "reload() is needed because Firebase caches the auth state locally. setLanguageCode forces Spanish for verification emails. The app works fully offline without Firebase — Auth and Firestore sync are optional enhancements."
+        }
+      ]
+    },
+    {
+      "title": "Backend RAG API (Railway)",
+      "purpose": "Documentar la API FastAPI desplegada en Railway: endpoints GET /api/paquetes, GET /api/paquetes/{materia}, POST /api/buscar_semantico, POST /api/preguntar. Explicar la arquitectura FAISS init en background (asyncio.Task en lifespan), el fallback a BM25 cuando FAISS no está disponible, y la integración con Google Gemini para respuestas LLM en la nube.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "The Docker image uses fastembed (~500MB) instead of sentence-transformers to stay under Railway's 4GB limit. FAISS initializes in background so the health check passes immediately. See rag_api/README.md for full endpoint docs and deployment steps."
+        }
+      ]
+    },
+    {
+      "title": "Instalación y Configuración",
+      "purpose": "Guía paso a paso para correr el proyecto localmente: flutter pub get, configurar google-services.json, correr en dispositivo físico Android 8+. Requisitos: Flutter SDK 3.x, Android Studio con NDK 27.0.12077973, JDK 17. Instrucciones para configurar Firebase (SHA-1, habilitar Auth y Firestore). Instrucciones para correr el backend RAG localmente.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "The app works without google-services.json but Auth and Firestore won't be available. The Gemma model download requires internet the first time only. Build APK with flutter build apk --release."
+        }
+      ]
+    },
+    {
+      "title": "Sistema de Racha Diaria",
+      "purpose": "Documentar el sistema de racha que motiva el uso diario: RachaService calcula días consecutivos comparando ultima_sesion con la fecha actual, RachaProvider expone rachaPendienteProvider que los menús leen y limpian, la pantalla RachaView muestra animación Lottie con estadísticas de racha actual y récord.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "rachaPendienteProvider is a StateProvider<RachaInfo?> — set to non-null when a streak is calculated, read and cleared (null) by the menu screens after showing the modal."
+        }
+      ]
+    },
+    {
+      "title": "Bitácoras de Desarrollo con IA",
+      "purpose": "Resumen de las 9 sesiones de desarrollo asistido por Claude Sonnet 4.6. Cubrir las decisiones clave tomadas con IA: arquitectura MVVM, migración audio, race condition de Gemma, sincronización offline-first, sistema RAG, pipeline FAISS/fastembed. Ver la carpeta bitacoras_lmunosrendon123@gmail.com/ para los logs detallados de cada sesión.",
+      "parent": "Numi — Visión General del Proyecto",
+      "page_notes": [
+        {
+          "content": "The AI agent (Claude Sonnet 4.6) was configured via CLAUDE.md at the repo root with full architecture context, team rules, and exact file paths. This enabled consistent code generation across 9 development sessions spanning March–May 2026."
+        }
+      ]
+    }
+  ]
+}
