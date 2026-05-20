@@ -3,6 +3,7 @@
 //  Estado global de la sesión activa + progreso del menú
 // ─────────────────────────────────────────────────────────────
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/estudiante_model.dart';
 import 'database_provider.dart';
@@ -40,9 +41,32 @@ final menuProgresoProvider = FutureProvider<Map<String, double>>((ref) async {
   return result;
 });
 
-/// Stream que escucha la conectividad y sincroniza automáticamente.
+/// Stream que escucha la conectividad y drena la sync_queue legacy.
 /// Se watch-ea desde la raíz de la app para mantenerse vivo.
 final syncListenerProvider = StreamProvider<int>((ref) {
   final syncService = ref.watch(syncServiceProvider);
   return syncService.escucharYSincronizar();
+});
+
+/// Stream que escucha la conectividad y ejecuta la sincronización
+/// bidireccional con Firestore (progreso de las 5 áreas + perfil).
+/// Se activa solo cuando hay un estudiante con sesión activa.
+final firestoreSyncListenerProvider = StreamProvider<int>((ref) async* {
+  final connectivity = Connectivity();
+  await for (final result in connectivity.onConnectivityChanged) {
+    final esOnline = result == ConnectivityResult.mobile  ||
+                     result == ConnectivityResult.wifi    ||
+                     result == ConnectivityResult.ethernet;
+    if (esOnline) {
+      final estudiante = ref.read(estudianteActivoProvider);
+      if (estudiante?.id != null) {
+        final r = await ref
+            .read(sincronizarUseCaseProvider)
+            .ejecutar(estudiante!.id!);
+        yield r.subidos + r.descargados;
+        continue;
+      }
+    }
+    yield 0;
+  }
 });

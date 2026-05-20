@@ -4,6 +4,7 @@
 //  Aparece después de la animación de Numi y antes de Bienvenida
 // ─────────────────────────────────────────────────────────────
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,64 +63,12 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
   String? _validarEmail(String email) {
     if (email.isEmpty) return 'El email es obligatorio';
 
-    final formatoBasico = RegExp(
-      r'^[a-zA-Z0-9._\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}$',
-    );
-    if (!formatoBasico.hasMatch(email)) {
-      return 'Ingresa un email válido (sin caracteres especiales)';
+    final regex = RegExp(r'^[a-zA-Z0-9._\-]+@gmail\.com$');
+    if (!regex.hasMatch(email.toLowerCase())) {
+      return 'Solo se permiten correos de Gmail (@gmail.com)';
     }
 
-    const dominiosPermitidos = [
-      'gmail.com',
-      'hotmail.com',
-      'hotmail.es',
-      'outlook.com',
-      'outlook.es',
-      'yahoo.com',
-      'yahoo.es',
-      'icloud.com',
-      'live.com',
-      'live.es',
-      'protonmail.com',
-      'proton.me',
-      'unal.edu.co',
-      'udea.edu.co',
-      'uniandes.edu.co',
-      'javeriana.edu.co',
-      'urosario.edu.co',
-      'eafit.edu.co',
-      'uninorte.edu.co',
-      'icesi.edu.co',
-    ];
-
-    const extensionesValidas = [
-      '.com',
-      '.co',
-      '.es',
-      '.org',
-      '.net',
-      '.edu',
-      '.edu.co',
-      '.gov',
-      '.gov.co',
-      '.io',
-      '.me',
-      '.info',
-    ];
-
-    final partes = email.split('@');
-    final dominio = partes[1].toLowerCase();
-
-    final dominioExactoValido = dominiosPermitidos.contains(dominio);
-    final extensionValida = extensionesValidas.any(
-      (ext) => dominio.endsWith(ext),
-    );
-
-    if (!dominioExactoValido && !extensionValida) {
-      return 'Usa un correo de Gmail, Hotmail, Outlook u otro proveedor válido';
-    }
-
-    final usuario = partes[0];
+    final usuario = email.split('@')[0];
     if (usuario.length < 6) {
       return 'El nombre de usuario debe tener al menos 6 caracteres';
     }
@@ -154,9 +103,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
 
     setState(() {
       _errorEdad = _validarEdad(edad);
-      _errorGenero = _generoSeleccionado == null
-          ? 'Selecciona un género'
-          : null;
+      _errorGenero = _generoSeleccionado == null ? 'Selecciona un género' : null;
       _errorEmail = _validarEmail(email);
       _errorContrasena = _validarContrasena(contrasena);
     });
@@ -164,37 +111,92 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
     if (_errorEdad != null ||
         _errorGenero != null ||
         _errorEmail != null ||
-        _errorContrasena != null)
-      return;
+        _errorContrasena != null) return;
 
     setState(() => _cargando = true);
 
     try {
-      final repo = ref.read(estudianteRepositoryProvider);
-      final todos = await repo.listarTodos();
-      final emailOcupado = todos.any((e) => e.email == email);
+      // Crea la cuenta en Firebase Authentication
+      final authService = ref.read(firebaseAuthServiceProvider);
+      final credential = await authService.registrarConEmail(email, contrasena);
+      final uid = credential.user!.uid;
+
+      // Envía correo de verificación para confirmar que el Gmail es real
+      await authService.enviarVerificacionEmail();
 
       if (!mounted) return;
 
-      if (emailOcupado) {
-        setState(
-          () => _errorEmail = 'Ese email ya está registrado. ¡Inicia sesión!',
-        );
-        setState(() => _cargando = false);
-        return;
-      }
+      // Avisa al usuario que revise su Gmail antes de continuar
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.mark_email_read_rounded, color: Color(0xFF4A8BF5), size: 28),
+              SizedBox(width: 10),
+              Text('Verifica tu Gmail',
+                  style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+            ],
+          ),
+          content: Text(
+            'Enviamos un correo de verificación a $email.\n\n'
+            'Revisa tu Gmail y toca el enlace para activar tu cuenta. '
+            'Luego podrás iniciar sesión normalmente.',
+            style: const TextStyle(fontFamily: 'Poppins', fontSize: 14, height: 1.5),
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4A8BF5),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('¡Entendido!',
+                  style: TextStyle(fontFamily: 'Hiruko', fontSize: 16)),
+            ),
+          ],
+        ),
+      );
+
+      if (!mounted) return;
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (ctx, a, _) => WelcomeScreen(
             email: email,
-            contrasena: contrasena,
+            firebaseUid: uid,
             edad: int.tryParse(edad),
             genero: _generoSeleccionado!,
           ),
           transitionsBuilder: (ctx, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),
           transitionDuration: const Duration(milliseconds: 400),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      String mensaje;
+      if (e.code == 'email-already-in-use') {
+        setState(() => _errorEmail = 'Ese email ya está registrado. ¡Inicia sesión!');
+        setState(() => _cargando = false);
+        return;
+      } else if (e.code == 'invalid-email') {
+        mensaje = 'El email no tiene un formato válido.';
+      } else if (e.code == 'weak-password') {
+        mensaje = 'La contraseña es muy débil.';
+      } else if (e.code == 'network-request-failed') {
+        mensaje = 'Sin conexión a internet. Verifica tu red.';
+      } else {
+        mensaje = 'Error al registrar: ${e.message ?? e.code}';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mensaje, style: const TextStyle(fontFamily: 'Poppins')),
+          backgroundColor: const Color(0xFFEF5353),
         ),
       );
     } catch (e) {

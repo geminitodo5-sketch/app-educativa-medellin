@@ -209,23 +209,22 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
           ),
           // Indicador de grado (solo lectura)
           Container(
-            margin: const EdgeInsets.only(right: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            margin: const EdgeInsets.only(right: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              'Grado ${estado.gradoActual}',
+              'G${estado.gradoActual}',
               style: const TextStyle(
                 fontFamily: 'Hiruko',
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: sw > 1024

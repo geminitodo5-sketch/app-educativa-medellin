@@ -25,6 +25,8 @@
 //       con Gemma local offline, sin internet.
 // ─────────────────────────────────────────────────────────────
 
+import 'dart:async';
+
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 class LocalLlmService {
@@ -134,10 +136,21 @@ class LocalLlmService {
 
       await chat.addQueryChunk(Message(text: prompt, isUser: true));
 
-      await for (final response in chat.generateChatResponseAsync()) {
+      var hayTokens = false;
+      await for (final response in chat.generateChatResponseAsync()
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: (sink) => sink.close(),
+          )) {
         if (response is TextResponse && response.token.isNotEmpty) {
+          hayTokens = true;
           yield response.token;
         }
+      }
+      // Si el modelo no emitió ningún token en 30 s, propagamos el error
+      // para que rag_service.dart caiga al formateador de respaldo.
+      if (!hayTokens) {
+        throw TimeoutException('Gemma no respondió en 30 s', const Duration(seconds: 30));
       }
     } finally {
       await model.close();
@@ -159,13 +172,27 @@ class LocalLlmService {
       _    => 'un poco más detalladas, para un estudiante de 10-11 años',
     };
 
+    // Si el RAG no encontró contexto relevante, Gemma responde desde
+    // su conocimiento general en lugar de bloquearse con contexto vacío.
+    final seccionContexto = contexto.trim().isNotEmpty
+        ? 'Información del currículo escolar:\n$contexto\n\n'
+        : '';
+
+    final instruccionContexto = contexto.trim().isNotEmpty
+        ? 'Usa la información del currículo como base principal. '
+          'Si la pregunta va más allá del currículo, '
+          'complementa con tu conocimiento general.'
+        : 'El currículo no tiene información específica sobre este tema. '
+          'Responde usando tu conocimiento general de forma educativa, '
+          'clara y apropiada para un niño colombiano de $grado° grado.';
+
     return '<start_of_turn>user\n'
         '${_rolPorMateria(materia, grado)}\n'
         'Usa palabras $nivelLenguaje.\n'
         'Responde SIEMPRE en español. Máximo 4 oraciones cortas. '
+        '$instruccionContexto '
         'Termina con una frase de aliento motivadora.\n\n'
-        'Información del currículo escolar:\n'
-        '$contexto\n\n'
+        '$seccionContexto'
         'Pregunta del estudiante: $pregunta\n'
         '<end_of_turn>\n'
         '<start_of_turn>model\n';

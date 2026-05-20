@@ -78,6 +78,12 @@ dependencies:
   # LLM local offline — Gemma 2B via MediaPipe LLM Inference
   flutter_gemma: ^0.13.6
 
+  # Firebase — Autenticación y sincronización en la nube
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  google_sign_in: ^6.2.1
+  cloud_firestore: ^5.4.0
+
 
 dev_dependencies:
   flutter_test:

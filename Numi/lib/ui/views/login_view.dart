@@ -1,13 +1,16 @@
 // ─────────────────────────────────────────────────────────────
 //  lib/ui/views/login_view.dart
 //  Pantalla de inicio de sesión: Email + Contraseña + Google
+//  Autenticación: Firebase Auth (email/password y Google OAuth)
 // ─────────────────────────────────────────────────────────────
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/musica_provider.dart';
+import '../../data/models/estudiante_model.dart';
 import 'menu_1_y_2_view.dart';
 import 'bienvenida.dart';
 import 'registro_view.dart';
@@ -39,6 +42,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     super.dispose();
   }
 
+  // ── Login con email y contraseña via Firebase ────────────────
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final contrasena = _contrasenaController.text.trim();
@@ -51,49 +55,20 @@ class _LoginViewState extends ConsumerState<LoginView> {
     setState(() => _cargando = true);
 
     try {
-      final repo = ref.read(estudianteRepositoryProvider);
-      final estudiante = await repo.buscarPorEmailYContrasena(
-        email,
-        contrasena,
-      );
+      final authService = ref.read(firebaseAuthServiceProvider);
+      final credential = await authService.loginConEmail(email, contrasena);
+      final uid = credential.user!.uid;
 
       if (!mounted) return;
-
-      if (estudiante == null) {
-        _mostrarError('Email o contraseña incorrectos');
-        setState(() => _cargando = false);
-        return;
-      }
-
-      await repo.actualizarUltimaSesion(estudiante.id!);
-      ref.read(estudianteActivoProvider.notifier).state = estudiante;
-
-      if (!mounted) return;
-
-      if (estudiante.nombre.isEmpty || estudiante.personaje.isEmpty) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (ctx, a, _) => const WelcomeScreen(),
-            transitionsBuilder: (ctx, anim, _, child) =>
-                FadeTransition(opacity: anim, child: child),
-            transitionDuration: const Duration(milliseconds: 400),
-          ),
+      await _entrarConFirebaseUid(uid, email: email);
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        _mostrarError(
+          e.code == 'invalid-credential' || e.code == 'user-not-found'
+              ? 'Email o contraseña incorrectos'
+              : _mensajeFirebase(e),
         );
-        return;
       }
-
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (ctx, a, _) => Menu1Y2Screen(
-            nombre: estudiante.nombre,
-            avatar: estudiante.personaje,
-            nivel: estudiante.grado,
-          ),
-          transitionsBuilder: (ctx, anim, _, child) =>
-              FadeTransition(opacity: anim, child: child),
-          transitionDuration: const Duration(milliseconds: 400),
-        ),
-      );
     } catch (e) {
       if (mounted) _mostrarError('Error al iniciar sesión: $e');
     } finally {
@@ -101,7 +76,283 @@ class _LoginViewState extends ConsumerState<LoginView> {
     }
   }
 
-  Future<void> _loginConGoogle() async {}
+  // ── Recuperar contraseña ──────────────────────────────────────
+  Future<void> _olvideMiContrasena() async {
+    final controller =
+        TextEditingController(text: _emailController.text.trim());
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.lock_reset_rounded, color: Color(0xFF4DC63D), size: 26),
+            SizedBox(width: 10),
+            Text('Recuperar contraseña',
+                style: TextStyle(fontFamily: 'Hiruko', fontSize: 18)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Escribe tu correo Gmail. Te enviaremos un enlace para crear una nueva contraseña.',
+              style: TextStyle(
+                  fontFamily: 'Poppins', fontSize: 13, height: 1.5),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(fontFamily: 'Poppins', fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'tucorreo@gmail.com',
+                hintStyle: const TextStyle(
+                    fontFamily: 'Poppins', color: Colors.grey),
+                filled: true,
+                fillColor: const Color(0xFFF5F5F5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                      color: Color(0xFF4DC63D), width: 1.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar',
+                style: TextStyle(fontFamily: 'Poppins', color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4DC63D),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () async {
+              final email = controller.text.trim();
+              if (email.isEmpty) return;
+              Navigator.pop(ctx);
+              try {
+                final authService = ref.read(firebaseAuthServiceProvider);
+                await authService.enviarCorreoRecuperacion(email);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Correo enviado a $email',
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            '📌 Si no lo ves, revisa la carpeta SPAM o Correo no deseado',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      backgroundColor: const Color(0xFF4DC63D),
+                      duration: const Duration(seconds: 7),
+                    ),
+                  );
+                }
+              } on FirebaseAuthException catch (e) {
+                if (mounted) {
+                  _mostrarError(
+                    e.code == 'user-not-found'
+                        ? 'No hay una cuenta registrada con ese correo'
+                        : 'Error al enviar: ${e.message ?? e.code}',
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  _mostrarError('Error inesperado: $e');
+                }
+              }
+            },
+            child: const Text('Enviar correo',
+                style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Login con Google ──────────────────────────────────────────
+  Future<void> _loginConGoogle() async {
+    setState(() => _cargando = true);
+    try {
+      final authService = ref.read(firebaseAuthServiceProvider);
+      final credential = await authService.loginConGoogle();
+
+      if (credential == null) {
+        // El usuario canceló el selector de cuenta
+        setState(() => _cargando = false);
+        return;
+      }
+
+      final uid = credential.user!.uid;
+      final email = credential.user?.email;
+
+      if (!mounted) return;
+
+      // Google envía automáticamente una notificación de seguridad al Gmail
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.security_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Google envió una notificación de seguridad a ${email ?? 'tu Gmail'}',
+                  style: const TextStyle(
+                      fontFamily: 'Poppins', fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF1A73E8),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+
+      await _entrarConFirebaseUid(uid, email: email);
+    } on FirebaseAuthException catch (e) {
+      if (mounted) _mostrarError(_mensajeFirebase(e));
+    } catch (e) {
+      if (mounted) _mostrarError('Error con Google Sign-In: $e');
+    } finally {
+      if (mounted) setState(() => _cargando = false);
+    }
+  }
+
+  // ── Lógica común: busca perfil local y navega ─────────────────
+  Future<void> _entrarConFirebaseUid(String uid, {String? email}) async {
+    final repo     = ref.read(estudianteRepositoryProvider);
+    final syncCase = ref.read(sincronizarUseCaseProvider);
+
+    // 1. Buscar por firebase_uid
+    var estudiante = await repo.buscarPorFirebaseUid(uid);
+
+    // 2. Si no existe, buscar por email (migración de cuentas legacy)
+    if (estudiante == null && email != null) {
+      estudiante = await repo.buscarPorEmail(email);
+      if (estudiante != null) {
+        await repo.vincularFirebaseUid(estudiante.id!, uid);
+        estudiante = estudiante.copyWith(firebaseUid: uid);
+      }
+    }
+
+    if (!mounted) return;
+
+    // 3. Sin perfil local → intentar restaurar desde Firestore (nuevo dispositivo)
+    if (estudiante == null) {
+      final restored = await syncCase.sincronizarAlLogin(uid);
+
+      if (!mounted) return;
+
+      if (restored != null) {
+        // Perfil restaurado desde la nube → entrar directamente
+        await repo.actualizarUltimaSesion(restored.id!);
+        ref.read(estudianteActivoProvider.notifier).state = restored;
+        if (!mounted) return;
+        _navegarAlMenu(restored);
+      } else {
+        // Usuario completamente nuevo → crear perfil
+        _navegarABienvenida(email: email, uid: uid);
+      }
+      return;
+    }
+
+    // 4. Perfil local encontrado → actualizar sesión, entrar y sincronizar
+    await repo.actualizarUltimaSesion(estudiante.id!);
+    ref.read(estudianteActivoProvider.notifier).state = estudiante;
+
+    // Sync en background: sube avances locales y descarga los del otro dispositivo
+    syncCase.ejecutar(estudiante.id!).ignore();
+
+    if (!mounted) return;
+
+    if (estudiante.nombre.isEmpty || estudiante.personaje.isEmpty) {
+      _navegarABienvenida(email: email, uid: uid);
+      return;
+    }
+
+    _navegarAlMenu(estudiante);
+  }
+
+  void _navegarAlMenu(EstudianteModel e) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (ctx, a, _) => Menu1Y2Screen(
+          nombre: e.nombre,
+          avatar: e.personaje,
+          nivel:  e.grado,
+        ),
+        transitionsBuilder: (ctx, anim, _, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
+    );
+  }
+
+  void _navegarABienvenida({String? email, required String uid}) {
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (ctx, a, _) => WelcomeScreen(
+          email:       email,
+          firebaseUid: uid,
+        ),
+        transitionsBuilder: (ctx, anim, _, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
+    );
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────
+  String _mensajeFirebase(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'user-not-found':
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'Email o contraseña incorrectos';
+      case 'user-disabled':
+        return 'Esta cuenta ha sido deshabilitada';
+      case 'too-many-requests':
+        return 'Demasiados intentos. Espera un momento';
+      case 'network-request-failed':
+        return 'Sin conexión a internet';
+      case 'account-exists-with-different-credential':
+        return 'Ya existe una cuenta con ese email usando otro método';
+      default:
+        return 'Error: ${e.message ?? e.code}';
+    }
+  }
 
   void _mostrarError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -119,6 +370,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     );
   }
 
+  // ── Build ─────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -221,7 +473,26 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             const SizedBox(height: 6),
                             _buildPasswordField(),
 
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 8),
+
+                            // ¿Olvidaste tu contraseña?
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: _olvideMiContrasena,
+                                child: const Text(
+                                  '¿Olvidaste tu contraseña?',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF4DC63D),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
 
                             // Botón Login (verde)
                             SizedBox(
@@ -264,7 +535,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               width: double.infinity,
                               height: 52,
                               child: OutlinedButton(
-                                onPressed: _loginConGoogle,
+                                onPressed: _cargando ? null : _loginConGoogle,
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: Colors.black87,

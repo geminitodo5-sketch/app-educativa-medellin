@@ -18,7 +18,9 @@ class ProgresoRepository {
   /// (estudiante_id, grado, materia, actividad).
   Future<int> guardar(ProgresoModel progreso) async {
     final datos = progreso.copyWith(
-      ultimaVez: DateTime.now().toIso8601String(),
+      // Preserva ultimaVez si ya viene informado (ej: restaurado desde Firestore).
+      // Solo asigna la hora actual cuando el registro es nuevo/local.
+      ultimaVez: progreso.ultimaVez ?? DateTime.now().toIso8601String(),
     ).toMap();
     return await _db.insertar(_tabla, datos);
   }

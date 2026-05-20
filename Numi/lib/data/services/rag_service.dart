@@ -351,6 +351,9 @@ class RagService {
     if (top.puntaje >= _softMin) {
       return _respuestaAproximada(top, materia, grado);
     }
+    // Sin match útil en corpus → Gemma responde desde conocimiento general
+    final respGemma = await _responderConGemmaGeneral(pregunta, materia, grado);
+    if (respGemma != null) return respGemma;
     return _fallbackInteligente(corpus, materia, grado);
   }
 
@@ -512,6 +515,31 @@ class RagService {
   // ═══════════════════════════════════════════════════════════
   //  CONSTRUCCIÓN DE RESPUESTAS — interpretadas por grado
   // ═══════════════════════════════════════════════════════════
+
+  // Gemma responde sin contexto de corpus (conocimiento general del modelo).
+  // Se usa cuando la pregunta no tiene match en la base de conocimiento local.
+  Future<RagRespuesta?> _responderConGemmaGeneral(
+      String pregunta, String materia, int grado) async {
+    final llm = _localLlm;
+    if (llm == null || !llm.isReady) return null;
+
+    final buf = StringBuffer();
+    try {
+      await for (final token in llm.generarRespuesta(
+        contexto: '', // sin contexto → Gemma usa su conocimiento general
+        pregunta: pregunta,
+        grado: grado,
+        materia: materia,
+      )) {
+        buf.write(token);
+      }
+      final texto = buf.toString().trim();
+      if (texto.isEmpty) return null;
+      return RagRespuesta(texto: texto, encontrado: true, tema: '');
+    } catch (_) {
+      return null;
+    }
+  }
 
   // Respuesta directa (puntaje ≥ minScore)
   // Usa Gemma local si está listo; si no, cae al formateador por grado.

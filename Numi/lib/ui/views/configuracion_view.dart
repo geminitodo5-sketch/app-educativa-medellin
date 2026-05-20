@@ -212,6 +212,16 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
+  // ── Manual de usuario ─────────────────────────────────────────
+  void _mostrarManual() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _ManualSheet(),
+    );
+  }
+
   // ── Reiniciar base de datos ───────────────────────────────────
   Future<void> _confirmarReset() async {
     final confirmar = await showDialog<bool>(
@@ -396,6 +406,8 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                   _buildOfflineCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
                   _buildSyncCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
+                  SizedBox(height: cardGap),
+                  _buildManualCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
                   _buildResetCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
@@ -755,6 +767,53 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     );
   }
 
+  Widget _buildManualCard(double cardPadding, double cardRadius,
+      double titleSize, double subSize, double iconSize) {
+    return GestureDetector(
+      onTap: _mostrarManual,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(cardPadding),
+        decoration: BoxDecoration(
+          color: const Color(0xFF7C3AED),
+          borderRadius: BorderRadius.circular(cardRadius),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.menu_book_rounded, color: Colors.white, size: iconSize),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Manual de usuario',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: titleSize,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    'Aprende a usar numi paso a paso',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: subSize,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded,
+                color: Colors.white70, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomNavBar(BuildContext context, bool isTablet) {
     final navIconSize = isTablet ? 36.0 : 28.0;
     return Container(
@@ -789,6 +848,488 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── Modal del Manual de Usuario ─────────────────────────────────────────────
+class _ManualSheet extends StatelessWidget {
+  const _ManualSheet();
+
+  static const Color _purple   = Color(0xFF7C3AED);
+  static const Color _blue     = Color(0xFF3475F7);
+  static const Color _green    = Color(0xFF3DCC52);
+  static const Color _red      = Color(0xFFB83232);
+  static const Color _violet   = Color(0xFF8B5CF6);
+  static const Color _orange   = Color(0xFFF5A623);
+  static const Color _teal     = Color(0xFF65CEE3);
+
+  @override
+  Widget build(BuildContext context) {
+    final sw = MediaQuery.of(context).size.width;
+    final isTablet = sw >= 600;
+    final hPad = isTablet ? 32.0 : 20.0;
+    final titleSize = isTablet ? 22.0 : 18.0;
+    final bodySize  = isTablet ? 16.0 : 14.0;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.92,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, controller) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Encabezado
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hPad),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: _purple.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(Icons.menu_book_rounded, color: _purple, size: 28),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Manual de usuario',
+                            style: TextStyle(
+                                fontFamily: 'Hiruko',
+                                fontSize: isTablet ? 26.0 : 22.0,
+                                fontWeight: FontWeight.bold,
+                                color: _purple)),
+                        Text('numi v1.0.0  ·  Android  ·  Medellín 2026',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: bodySize - 1,
+                                color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+            Divider(color: Colors.grey.shade200),
+
+            // Contenido scrollable
+            Expanded(
+              child: ListView(
+                controller: controller,
+                padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 12),
+                children: [
+
+                  // 1 ─ ¿Qué es numi?
+                  _Seccion(
+                    numero: '1', titulo: '¿Qué es numi?',
+                    icono: Icons.auto_stories_rounded, color: _purple,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        'Numi es una app educativa móvil para niños y niñas de 1° a 5° de primaria en Medellín. '
+                        'Combina actividades interactivas, juegos y un asistente de inteligencia artificial '
+                        'que guía al estudiante a través de cinco áreas del conocimiento de forma divertida.\n\n'
+                        'La app tiene elementos de gamificación — rachas de días y seguimiento de progreso — '
+                        'para motivar el hábito de estudio diario.\n\n'
+                        '🔢 Matemáticas — Números, comparación y sumas.\n'
+                        '🔬 Ciencias Naturales — Seres vivos, cuerpo humano, animales y plantas.\n'
+                        '📖 Español — Palabras, vocabulario y oraciones.\n'
+                        '🌍 Inglés — Tarjetas, emparejamiento y escucha.\n'
+                        '🏙️ Ciencias Sociales — Héroes, objetos y pasado/presente.',
+                  ),
+
+                  // 2 ─ Requisitos
+                  _Seccion(
+                    numero: '2', titulo: 'Requisitos del sistema',
+                    icono: Icons.phone_android_rounded, color: _teal,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '📱 Sistema operativo: Android 8.0 o superior.\n'
+                        '💾 Espacio en disco: mínimo 150 MB libres.\n'
+                        '🖥️ Pantalla: resolución mínima 720 × 1280 px.\n'
+                        '🔊 Altavoz o audífonos (recomendados).\n'
+                        '🌐 Internet: solo para el registro inicial y sincronización.\n\n'
+                        '💡 La mayoría de actividades funcionan sin conexión una vez que '
+                        'el estudiante ha iniciado sesión al menos una vez.',
+                  ),
+
+                  // 3 ─ Primeros pasos
+                  _Seccion(
+                    numero: '3', titulo: 'Primeros pasos',
+                    icono: Icons.rocket_launch_rounded, color: _blue,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '▶ Al abrir numi por primera vez se reproduce una animación de introducción. '
+                        'La app detecta automáticamente si hay un perfil registrado.\n\n'
+                        '— Si hay estudiante registrado → va al menú de su grado.\n'
+                        '— Si no hay estudiante → abre la pantalla de Registro.\n\n'
+                        '📝 REGISTRO — Etapa 1 (datos básicos):\n'
+                        '1. Ingresa tu edad.\n'
+                        '2. Selecciona tu género: Niño o Niña.\n'
+                        '3. Escribe tu correo Gmail (@gmail.com).\n'
+                        '4. Crea una contraseña (mín. 8 caracteres, una mayúscula y un número).\n'
+                        '5. Toca "Continuar".\n\n'
+                        '📝 REGISTRO — Etapa 2 (nombre y personaje):\n'
+                        '1. Escribe tu nombre.\n'
+                        '2. Elige tu personaje: Pollito 🐥 o Monito 🐒.\n'
+                        '3. Selecciona tu grado escolar (1° a 5°).\n\n'
+                        '🔑 INICIO DE SESIÓN:\n'
+                        'Ingresa tu correo y contraseña, o usa "Entra con Google".\n'
+                        'Si olvidaste tu contraseña, toca "¿Olvidaste tu contraseña?" '
+                        'y recibirás un enlace en tu Gmail.',
+                  ),
+
+                  // 4 ─ Menú principal
+                  _Seccion(
+                    numero: '4', titulo: 'Menú principal',
+                    icono: Icons.home_rounded, color: _teal,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '🎓 GRADOS 1° y 2°:\n'
+                        'El menú muestra las 5 materias con íconos coloridos. '
+                        'En la parte superior aparecen el nombre del estudiante, '
+                        'su personaje y el indicador de Racha de días.\n\n'
+                        '🎓 GRADOS 3° a 5°:\n'
+                        'Diseño adaptado con actividades de mayor complejidad '
+                        'dentro de las mismas cinco materias.\n\n'
+                        '🔥 RACHA DE DÍAS:\n'
+                        'Muestra cuántos días consecutivos ha ingresado el estudiante. '
+                        'Se marca un círculo por cada día de la semana. '
+                        'Si no ingresas un día completo, ¡la racha se reinicia!',
+                  ),
+
+                  // 5 ─ Matemáticas
+                  _Seccion(
+                    numero: '5', titulo: 'Matemáticas 🔢',
+                    icono: Icons.calculate_rounded, color: _blue,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '📌 Descubre los Números\n'
+                        'Reconocimiento y conteo de números del 1 al 10. '
+                        'El estudiante asocia la cantidad con el símbolo numérico. '
+                        'Incluye retroalimentación sonora al acertar.\n\n'
+                        '📌 ¿Quién Tiene Más?\n'
+                        'Comparación de cantidades. Se presentan dos grupos de objetos '
+                        'y el estudiante identifica cuál tiene más elementos. '
+                        'Tiene niveles de dificultad incremental.\n\n'
+                        '📌 Sumar\n'
+                        'Operaciones de adición con elementos visuales (frutas, figuras). '
+                        'El estudiante arrastra objetos para completar sumas básicas '
+                        'con mecánica drag & drop.',
+                  ),
+
+                  // 6 ─ Ciencias Naturales
+                  _Seccion(
+                    numero: '6', titulo: 'Ciencias Naturales 🔬',
+                    icono: Icons.science_rounded, color: _green,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '📌 Vivo / No Vivo\n'
+                        'El estudiante clasifica objetos entre seres vivos y no vivos. '
+                        'Desarrolla pensamiento categórico y vocabulario científico básico.\n\n'
+                        '📌 El Cuerpo Humano\n'
+                        'Diagramas interactivos con las partes del cuerpo. '
+                        'Aprende a identificar y nombrar cada parte con imágenes claras.\n\n'
+                        '📌 Animales\n'
+                        'Exploración de diferentes tipos de animales, sus características '
+                        'y clasificaciones. Incluye imágenes, sonidos y descripciones.\n\n'
+                        '📌 Las Plantas\n'
+                        'Las partes de las plantas y su importancia para el ecosistema. '
+                        'Actividades de reconocimiento con vocabulario básico de botánica.',
+                  ),
+
+                  // 7 ─ Español
+                  _Seccion(
+                    numero: '7', titulo: 'Español 📖',
+                    icono: Icons.menu_book_rounded, color: _red,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '📌 Palabra Loca\n'
+                        'El estudiante lee o escucha palabras y debe identificar '
+                        'o completar la correcta. Trabaja vocabulario, ortografía '
+                        'y lectura comprensiva en formato dinámico.\n\n'
+                        '📌 Arma la Palabra\n'
+                        'Letras o sílabas desordenadas que el niño o niña debe ordenar '
+                        'para armar la palabra correcta. Desarrolla conciencia fonológica.\n\n'
+                        '📌 Oraciones\n'
+                        'El estudiante ordena palabras para construir oraciones completas '
+                        'con sentido, reforzando gramática y comprensión del lenguaje.',
+                  ),
+
+                  // 8 ─ Inglés
+                  _Seccion(
+                    numero: '8', titulo: 'Inglés 🌍',
+                    icono: Icons.language_rounded, color: _violet,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '📌 Tarjetas de Vocabulario\n'
+                        'Flashcards interactivas con imágenes y palabras en inglés. '
+                        'Se voltean para ver la traducción. Ideal para memorización visual.\n\n'
+                        '📌 Emparejamiento de Palabras\n'
+                        'El estudiante conecta palabras en inglés con su imagen '
+                        'o traducción en español. Desarrolla asociación de vocabulario bilingüe.\n\n'
+                        '📌 Inglés Escucha\n'
+                        'Escucha palabras pronunciadas en inglés y selecciona la imagen '
+                        'o palabra correcta. Fortalece comprensión auditiva y pronunciación.\n\n'
+                        '🎉 Al completar las actividades de inglés aparece una pantalla '
+                        'de celebración con animaciones y mensajes de motivación.',
+                  ),
+
+                  // 9 ─ Ciencias Sociales
+                  _Seccion(
+                    numero: '9', titulo: 'Ciencias Sociales 🏙️',
+                    icono: Icons.location_city_rounded, color: _orange,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '📌 Héroes de la Ciudad\n'
+                        'Aprende sobre los héroes cotidianos de Medellín: bomberos, médicos, '
+                        'policías, docentes y más. Disponible en tres niveles progresivos '
+                        'con tarjetas ilustradas.\n\n'
+                        '📌 Detective de Objetos\n'
+                        'Actividad de identificación donde el estudiante encuentra y clasifica '
+                        'objetos del entorno cotidiano. Tres niveles de dificultad progresiva.\n\n'
+                        '📌 Pasado y Presente\n'
+                        'Comparación de cómo eran las cosas antes y cómo son ahora: '
+                        'transporte, viviendas, herramientas. Desarrolla pensamiento histórico. '
+                        'Tres niveles disponibles.',
+                  ),
+
+                  // 10 ─ Asistente IA
+                  _Seccion(
+                    numero: '10', titulo: 'Asistente de IA 🤖',
+                    icono: Icons.smart_toy_rounded, color: _purple,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        'Numi incluye un asistente de IA con tecnología RAG que responde '
+                        'preguntas educativas relacionadas con las materias, adaptadas al grado.\n\n'
+                        '¿Cómo usarlo?\n'
+                        '1. Desde el menú principal, toca la materia que quieres.\n'
+                        '2. Escribe tu pregunta en el campo de texto inferior.\n'
+                        '3. Toca el botón de enviar.\n'
+                        '4. El asistente responde con una explicación adaptada a tu grado.\n'
+                        '5. Los grados 3° a 5° pueden hacer un Quiz tocando el ícono 🧩.\n\n'
+                        'Color del chat por materia:\n'
+                        '🔵 Matemáticas  🟢 Ciencias  🔴 Español  🟣 Inglés  🟠 Sociales',
+                  ),
+
+                  // 11 ─ Progreso y Racha
+                  _Seccion(
+                    numero: '11', titulo: 'Progreso y Racha 📊',
+                    icono: Icons.bar_chart_rounded, color: _teal,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '🔥 Racha de Días:\n'
+                        'La racha muestra cuántos días consecutivos ha ingresado el estudiante. '
+                        'Aparece en el menú principal con un círculo por cada día de la semana.\n'
+                        '— Días activos: marcados en color brillante.\n'
+                        '— Días inactivos: tono más claro o gris.\n'
+                        'La racha se reinicia si no ingresas un día completo.\n\n'
+                        '📈 Mi Progreso:\n'
+                        'Muestra el avance en cada materia mediante barras horizontales. '
+                        'Cada barra aumenta al completar actividades dentro de cada módulo. '
+                        '¡Los personajes celebran cada actividad completada!',
+                  ),
+
+                  // 12 ─ Configuración
+                  _Seccion(
+                    numero: '12', titulo: 'Configuración ⚙️',
+                    icono: Icons.settings_rounded, color: _teal,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '• Nombre del estudiante: cambia el nombre que aparece en el menú.\n'
+                        '• Grado escolar: cambia tu grado (redirige al menú correcto).\n'
+                        '• Música de fondo: activa o desactiva la música ambiental.\n'
+                        '• Efectos de sonido: activa o desactiva los sonidos de las actividades.\n'
+                        '• Volumen: ajusta el volumen general con el deslizador.\n'
+                        '• Modo sin conexión: activa el modo offline para usar sin internet.\n'
+                        '• Idioma: actualmente disponible en Español.\n'
+                        '• Manual de usuario: este manual que estás leyendo ahora.\n'
+                        '• Reiniciar base de datos: borra todos los datos (¡no se puede deshacer!).\n'
+                        '• Cerrar sesión: sale de la cuenta. La app regresa al Registro.',
+                  ),
+
+                  // 13 ─ Preguntas frecuentes
+                  _Seccion(
+                    numero: '13', titulo: 'Preguntas frecuentes ❓',
+                    icono: Icons.help_outline_rounded, color: _purple,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '¿Puedo usar numi sin internet?\n'
+                        'Sí. Una vez registrado e iniciada la sesión, la mayoría de actividades '
+                        'funcionan sin conexión. Solo el registro inicial y la sincronización '
+                        'requieren internet.\n\n'
+                        '¿Qué hago si olvido mi contraseña?\n'
+                        'En la pantalla de inicio de sesión toca "¿Olvidaste tu contraseña?" '
+                        'y recibirás un enlace en tu Gmail para crear una nueva.\n\n'
+                        '¿Puedo registrar más de un estudiante?\n'
+                        'La versión actual está optimizada para un perfil por dispositivo. '
+                        'Cierra sesión y registra un nuevo usuario para cambiar de perfil.\n\n'
+                        '¿El progreso se guarda automáticamente?\n'
+                        'Sí, se guarda en la base de datos del dispositivo al completar '
+                        'cada actividad.\n\n'
+                        '¿Los personajes (Pollito y Monito) tienen diferencias?\n'
+                        'No. La elección es puramente estética. Ambos acceden exactamente '
+                        'a las mismas actividades y contenidos.\n\n'
+                        '¿Por qué algunos grados aparecen deshabilitados?\n'
+                        'Los grados 1° y 2° están completamente activos. Los grados 3°, 4° '
+                        'y 5° tienen menú diferenciado y algunas actividades pueden estar '
+                        'en desarrollo.',
+                  ),
+
+                  // 14 ─ Soporte
+                  _Seccion(
+                    numero: '14', titulo: 'Soporte y solución de errores 🛠️',
+                    icono: Icons.support_agent_rounded, color: _blue,
+                    titleSize: titleSize, bodySize: bodySize,
+                    contenido:
+                        '• Consulta al docente o responsable que administre la app.\n'
+                        '• Repositorio en GitHub: github.com/geminitodo5-sketch/app-educativa-medellin\n\n'
+                        'Errores comunes:\n\n'
+                        '🔇 La app no reproduce sonido\n'
+                        'Verifica que el dispositivo no esté en silencio y activa el sonido en Configuración.\n\n'
+                        '🎬 El video de intro no reproduce\n'
+                        'La app detecta el error y continúa automáticamente después de 2 segundos.\n\n'
+                        '🔑 No puedo iniciar sesión\n'
+                        'Verifica el email y contraseña. Recuerda que distingue entre mayúsculas y minúsculas.\n\n'
+                        '📊 El progreso no se actualiza\n'
+                        'Completa la actividad hasta la pantalla final; el progreso se registra al terminar.\n\n'
+                        '💥 La app se cierra inesperadamente\n'
+                        'Cierra y vuelve a abrir la app. Si persiste, desinstala y vuelve a instalar.',
+                  ),
+
+                  const SizedBox(height: 32),
+                  // Pie del manual
+                  Center(
+                    child: Text(
+                      'NUMI — App Educativa para Medellín\nManual de Usuario v1.0  ·  2026',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: bodySize - 2,
+                        color: Colors.grey.shade400,
+                        height: 1.6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Widget de sección del manual ────────────────────────────────────────────
+class _Seccion extends StatelessWidget {
+  final String numero;
+  final String titulo;
+  final IconData icono;
+  final Color color;
+  final double titleSize;
+  final double bodySize;
+  final String contenido;
+
+  const _Seccion({
+    required this.numero,
+    required this.titulo,
+    required this.icono,
+    required this.color,
+    required this.titleSize,
+    required this.bodySize,
+    required this.contenido,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    numero,
+                    style: const TextStyle(
+                      fontFamily: 'Hiruko',
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(icono, color: color, size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  titulo,
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: titleSize,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF1E1E2E),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5F3FF),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFEDE9FE)),
+            ),
+            child: Text(
+              contenido,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: bodySize,
+                color: const Color(0xFF374151),
+                height: 1.6,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

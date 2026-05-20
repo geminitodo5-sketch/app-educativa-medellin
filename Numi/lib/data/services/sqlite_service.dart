@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 
 class SqliteService {
   static const String _dbName    = 'numi.db';
-  static const int    _dbVersion = 5;
+  static const int    _dbVersion = 6;
 
   static SqliteService? _instance;
   static Database?      _database;
@@ -55,7 +55,8 @@ class SqliteService {
           edad           INTEGER,
           genero         TEXT,
           racha_dias     INTEGER NOT NULL DEFAULT 0,
-          ultima_racha   TEXT
+          ultima_racha   TEXT,
+          firebase_uid   TEXT
         )
       ''');
 
@@ -265,6 +266,10 @@ class SqliteService {
       ''');
       await db.execute(
         'CREATE INDEX IF NOT EXISTS idx_preguntas_quiz ON preguntas_quiz (materia, grado)');
+    }
+    if (oldVersion < 6) {
+      await db.execute(
+        'ALTER TABLE estudiantes ADD COLUMN firebase_uid TEXT');
     }
   }
 

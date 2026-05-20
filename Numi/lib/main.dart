@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'data/providers/database_provider.dart';
-import 'data/providers/app_state_provider.dart';
+import 'data/providers/app_state_provider.dart'
+    show syncListenerProvider, firestoreSyncListenerProvider;
 import 'ui/viewmodels/asistente_ia_view_model.dart' show gemmaStartupProvider;
 import 'ui/views/inicio_view.dart';
 
@@ -17,13 +20,18 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
 
+  // Inicializa Firebase antes de cualquier otra cosa
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   // sqflite necesita FFI en Windows y Linux (no en Android/iOS)
   if (Platform.isWindows || Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
 
-  // Inicializa la BD (crea las 7 tablas si es la primera vez)
+  // Inicializa la BD (crea las tablas si es la primera vez)
   final container = ProviderContainer();
   await container.read(sqliteServiceProvider).database;
   container.dispose();
@@ -39,9 +47,10 @@ class AppEducativa extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Activa el stream que escucha conectividad y drena sync_queue
-    // cuando el dispositivo recupera internet.
+    // Drena sync_queue legacy al recuperar internet.
     ref.watch(syncListenerProvider);
+    // Sincronización bidireccional con Firestore (progreso entre dispositivos).
+    ref.watch(firestoreSyncListenerProvider);
 
     // Inicia verificación/descarga de Gemma 3n E2B en background al abrir la app.
     ref.watch(gemmaStartupProvider);

@@ -66,7 +66,7 @@ class EstudianteRepository {
     );
   }
 
-  /// Busca un estudiante por email y contraseña (para el login).
+  /// Busca un estudiante por email y contraseña (login local legacy).
   Future<EstudianteModel?> buscarPorEmailYContrasena(
       String email, String contrasena) async {
     final filas = await _db.consultar(
@@ -77,6 +77,40 @@ class EstudianteRepository {
     );
     if (filas.isEmpty) return null;
     return EstudianteModel.fromMap(filas.first);
+  }
+
+  /// Busca un estudiante por su UID de Firebase Auth.
+  Future<EstudianteModel?> buscarPorFirebaseUid(String uid) async {
+    final filas = await _db.consultar(
+      _tabla,
+      where:     'firebase_uid = ?',
+      whereArgs: [uid],
+      limit:     1,
+    );
+    if (filas.isEmpty) return null;
+    return EstudianteModel.fromMap(filas.first);
+  }
+
+  /// Busca un estudiante por email (para migración de cuentas legacy).
+  Future<EstudianteModel?> buscarPorEmail(String email) async {
+    final filas = await _db.consultar(
+      _tabla,
+      where:     'email = ?',
+      whereArgs: [email],
+      limit:     1,
+    );
+    if (filas.isEmpty) return null;
+    return EstudianteModel.fromMap(filas.first);
+  }
+
+  /// Asocia un firebase_uid a un estudiante existente (migración legacy).
+  Future<void> vincularFirebaseUid(int estudianteId, String uid) async {
+    await _db.actualizar(
+      _tabla,
+      {'firebase_uid': uid},
+      where:     'id = ?',
+      whereArgs: [estudianteId],
+    );
   }
 
   /// Crea el estudiante por defecto si no existe ninguno.

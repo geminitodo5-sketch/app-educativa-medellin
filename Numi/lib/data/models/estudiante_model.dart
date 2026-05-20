@@ -14,6 +14,7 @@ class EstudianteModel {
   final String? contrasena;
   final int?    edad;
   final String? genero;
+  final String? firebaseUid;     // UID de Firebase Auth
 
   const EstudianteModel({
     this.id,
@@ -26,6 +27,7 @@ class EstudianteModel {
     this.contrasena,
     this.edad,
     this.genero,
+    this.firebaseUid,
   });
 
   factory EstudianteModel.fromMap(Map<String, dynamic> map) {
@@ -40,6 +42,7 @@ class EstudianteModel {
       contrasena:    map['contrasena'] as String?,
       edad:          map['edad'] as int?,
       genero:        map['genero'] as String?,
+      firebaseUid:   map['firebase_uid'] as String?,
     );
   }
 
@@ -55,6 +58,7 @@ class EstudianteModel {
       'contrasena':     contrasena,
       'edad':           edad,
       'genero':         genero,
+      'firebase_uid':   firebaseUid,
     };
   }
 
@@ -69,6 +73,7 @@ class EstudianteModel {
     String? contrasena,
     int?    edad,
     String? genero,
+    String? firebaseUid,
   }) {
     return EstudianteModel(
       id:            id            ?? this.id,
@@ -81,6 +86,7 @@ class EstudianteModel {
       contrasena:    contrasena    ?? this.contrasena,
       edad:          edad          ?? this.edad,
       genero:        genero        ?? this.genero,
+      firebaseUid:   firebaseUid   ?? this.firebaseUid,
     );
   }
 }
