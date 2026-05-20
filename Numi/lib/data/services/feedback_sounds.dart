@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/feedback_sounds.dart
-//  Singleton que reproduce el sonido de correcto/incorrecto.
-//  Llamar FeedbackSounds.instance.reproducir(esCorrecto) desde
-//  cualquier pantalla de actividad antes de mostrar el feedback.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class FeedbackSounds {

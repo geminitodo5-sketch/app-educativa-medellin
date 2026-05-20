@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/models/sync_queue_model.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-//  Representa un registro pendiente de sincronización con el backend.
-// ─────────────────────────────────────────────────────────────
-
 class SyncQueueModel {
   final int?   id;
   final String tipoAccion;   // 'progreso' | 'logro' | 'estudiante'

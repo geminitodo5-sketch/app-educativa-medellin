@@ -1,17 +1,13 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/login_view.dart
-//  Pantalla de inicio de sesión: Email + Contraseña + Google
-//  Autenticación: Firebase Auth (email/password y Google OAuth)
-// ─────────────────────────────────────────────────────────────
-
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
+import '../../data/services/firebase_auth_service.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/musica_provider.dart';
 import '../../data/models/estudiante_model.dart';
 import 'menu_1_y_2_view.dart';
+import 'menu_3_a_5_view.dart';
 import 'bienvenida.dart';
 import 'registro_view.dart';
 
@@ -57,8 +53,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
     try {
       final authService = ref.read(firebaseAuthServiceProvider);
       final credential = await authService.loginConEmail(email, contrasena);
-      final uid = credential.user!.uid;
 
+      // Recarga para obtener el estado real de verificación desde el servidor
+      await authService.recargarUsuario();
+
+      if (!authService.estaVerificado) {
+        // El usuario está autenticado temporalmente → aprovechar para el reenvío
+        if (mounted) await _mostrarDialogoNoVerificado(email, authService);
+        await authService.cerrarSesion();
+        return;
+      }
+
+      final uid = credential.user!.uid;
       if (!mounted) return;
       await _entrarConFirebaseUid(uid, email: email);
     } on FirebaseAuthException catch (e) {
@@ -74,6 +80,85 @@ class _LoginViewState extends ConsumerState<LoginView> {
     } finally {
       if (mounted) setState(() => _cargando = false);
     }
+  }
+
+  // ── Diálogo de correo sin verificar ──────────────────────────
+  Future<void> _mostrarDialogoNoVerificado(
+      String email, FirebaseAuthService authService) async {
+    bool enviando = false;
+    bool reenviado = false;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (_, setDS) => AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.mark_email_unread_rounded,
+                  color: Color(0xFF4A8BF5), size: 26),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text('Verifica tu Gmail',
+                    style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+              ),
+            ],
+          ),
+          content: Text(
+            'Tu cuenta aún no está verificada.\n\n'
+            'Revisa tu Gmail ($email) y toca el enlace de activación. '
+            'Luego vuelve a iniciar sesión.\n\n'
+            'Si no lo ves, revisa la carpeta Spam.',
+            style: const TextStyle(
+                fontFamily: 'Poppins', fontSize: 13.5, height: 1.55),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Entendido',
+                  style: TextStyle(
+                      fontFamily: 'Poppins', color: Colors.grey)),
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4A8BF5),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: enviando
+                  ? const SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
+                  : Icon(reenviado ? Icons.check_rounded : Icons.send_rounded,
+                      size: 16),
+              label: Text(
+                reenviado ? '¡Enviado!' : 'Reenviar correo',
+                style: const TextStyle(fontFamily: 'Hiruko', fontSize: 15),
+              ),
+              onPressed: enviando || reenviado
+                  ? null
+                  : () async {
+                      setDS(() => enviando = true);
+                      try {
+                        await authService.enviarVerificacionEmail();
+                        setDS(() {
+                          enviando = false;
+                          reenviado = true;
+                        });
+                      } catch (_) {
+                        setDS(() => enviando = false);
+                      }
+                    },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // ── Recuperar contraseña ──────────────────────────────────────
@@ -306,13 +391,17 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 
   void _navegarAlMenu(EstudianteModel e) {
+    final Widget destino = e.grado <= 2
+        ? Menu1Y2Screen(
+            nombre: e.nombre,
+            avatar: e.personaje,
+            nivel: e.grado,
+          )
+        : const Menu3A5Screen();
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (ctx, a, _) => Menu1Y2Screen(
-          nombre: e.nombre,
-          avatar: e.personaje,
-          nivel:  e.grado,
-        ),
+        pageBuilder: (ctx, a, _) => destino,
         transitionsBuilder: (ctx, anim, _, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 400),
@@ -717,7 +806,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 }
 
-// ─── Ícono de Google dibujado con CustomPaint ─────────────────
 class _GoogleIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

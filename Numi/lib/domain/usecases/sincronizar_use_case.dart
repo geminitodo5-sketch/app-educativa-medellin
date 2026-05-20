@@ -1,27 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/domain/usecases/sincronizar_use_case.dart
-//  Capa: Dominio — Responsabilidad: Ingeniería
-//
-//  Orquesta la sincronización bidireccional offline-first:
-//
-//  SUBIR (local → Firestore):
-//    1. Consulta progreso WHERE sincronizado = 0.
-//    2. Sube a Firestore (batch write).
-//    3. Marca como sincronizado = 1 localmente.
-//
-//  DESCARGAR (Firestore → local):
-//    4. Descarga todos los docs de /usuarios/{uid}/progreso.
-//    5. Por cada doc: si cloud.porcentaje > local → actualiza local.
-//       Si no existe localmente → inserta.
-//
-//  Resolución de conflictos: max(porcentaje) gana.
-//  Un niño nunca retrocede en su avance.
-//
-//  USO EN NUEVO DISPOSITIVO (sincronizarAlLogin):
-//    — Si el usuario tiene perfil en Firestore, se restaura todo
-//      (perfil + progreso de las 5 áreas) automáticamente.
-// ─────────────────────────────────────────────────────────────
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../data/models/estudiante_model.dart';
 import '../../data/models/progreso_model.dart';
@@ -29,8 +5,6 @@ import '../../data/repositories/estudiante_repository.dart';
 import '../../data/repositories/progreso_repository.dart';
 import '../../data/services/firestore_sync_service.dart';
 import '../../data/services/sqlite_service.dart';
-
-// ── Resultado de sincronización ───────────────────────────────
 
 class SyncResultado {
   final int  subidos;
@@ -48,8 +22,6 @@ class SyncResultado {
   static const vacio =
       SyncResultado(subidos: 0, descargados: 0, exito: true);
 }
-
-// ── UseCase ───────────────────────────────────────────────────
 
 class SincronizarUseCase {
   final EstudianteRepository  _estudiantes;
@@ -70,8 +42,6 @@ class SincronizarUseCase {
         _db          = db,
         _connectivity = connectivity ?? Connectivity();
 
-  // ── Conectividad ──────────────────────────────────────────────
-
   Future<bool> _hayInternet() async {
     final result = await _connectivity.checkConnectivity();
     // connectivity_plus v5+ devuelve ConnectivityResult (v4) o
@@ -86,8 +56,6 @@ class SincronizarUseCase {
       r == ConnectivityResult.mobile  ||
       r == ConnectivityResult.wifi    ||
       r == ConnectivityResult.ethernet;
-
-  // ── Sync principal ────────────────────────────────────────────
 
   /// Sincronización completa para un estudiante ya existente en este
   /// dispositivo. Seguro llamar en background — captura todos los errores.
@@ -168,8 +136,6 @@ class SincronizarUseCase {
     }
   }
 
-  // ── Restaurar en nuevo dispositivo ────────────────────────────
-
   /// Llama al iniciar sesión cuando el usuario NO tiene perfil local.
   /// Busca el perfil en Firestore y reconstruye todo el historial de progreso.
   ///
@@ -218,8 +184,6 @@ class SincronizarUseCase {
       return null;
     }
   }
-
-  // ── Helpers privados ─────────────────────────────────────────
 
   Future<List<ProgresoModel>> _pendientesPara(int estudianteId) async {
     final filas = await _db.consultar(

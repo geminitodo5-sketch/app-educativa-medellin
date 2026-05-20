@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/matematicas_view.dart
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/models/estudiante_model.dart';
@@ -280,7 +276,6 @@ class _MatematicasViewState extends ConsumerState<MatematicasView> {
   }
 }
 
-// ─── Barra de progreso ─────────────────────────────────────────
 class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
@@ -329,7 +324,6 @@ class _BarraProgreso extends StatelessWidget {
   }
 }
 
-// ─── Delegate para encabezado sticky ──────────────────────────
 class _HeaderDelegate extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;

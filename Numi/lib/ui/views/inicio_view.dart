@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/inicio_view.dart
-//  Pantalla de introducción: reproduce intro.mp4 y luego navega.
-//  Si existe un estudiante registrado → va al Menú.
-//  Si no existe → va a Bienvenida (registro).
-// ─────────────────────────────────────────────────────────────
-
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';

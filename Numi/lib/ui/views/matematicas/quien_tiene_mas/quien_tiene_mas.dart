@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -403,8 +403,6 @@ class _ComparacionCantidadesViewState
   }
 }
 
-// ─── Widgets de apoyo ────────────────────────────────────────────────────────
-
 class _PersonCard extends StatelessWidget {
   const _PersonCard({
     required this.color,
@@ -483,7 +481,6 @@ class _PersonCard extends StatelessWidget {
   }
 }
 
-// ── Grid de manzanas con filas/columnas fijas — sin Wrap ────────────────────
 // Usa el mismo cols calculado en el padre, garantizando que cada manzana
 // ocupa exactamente appleSize px y no desborda la tarjeta.
 class _ManzanasGrid extends StatelessWidget {

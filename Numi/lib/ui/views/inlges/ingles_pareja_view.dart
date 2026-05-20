@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'ingles_congratulations_view.dart';
@@ -544,9 +544,7 @@ class _InglesParejaViewState extends State<InglesParejaView> {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════
 // PAINTER
-// ══════════════════════════════════════════════════════════════════════════
 class _FlechasPainter extends CustomPainter {
   final List<GlobalKey> imgKeys;
   final List<GlobalKey> palKeys;

@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/firebase_options.dart
-//  Configuración Firebase — proyecto: rag-numi
-//  Generado a partir de google-services.json
-// ─────────────────────────────────────────────────────────────
-
 // ignore_for_file: lines_longer_than_80_chars, avoid_classes_with_only_static_members
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;

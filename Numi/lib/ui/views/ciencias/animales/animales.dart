@@ -7,7 +7,6 @@ import '../../../../data/services/feedback_sounds.dart';
 
 const _audio7 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales7_mezcla.mp3';
 
-// --- Paleta de Colores NUMI ---
 const Color kColorAzulNumi = Color(0xFF3475F7);
 const Color kColorVerdeNumi = Color(0xFF59E347);
 const Color kColorRojoNumi = Color(0xFFF65757);
@@ -170,8 +169,6 @@ class _PantallaActividadAnimalesState
     );
   }
 }
-
-// --- Componentes Especializados ---
 
 class _HeaderActividad extends StatelessWidget {
   final String titulo;

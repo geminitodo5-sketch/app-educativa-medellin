@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/viewmodels/perfil_view_model.dart
-//  Capa: UI — Responsabilidad: Diseño + Ingeniería
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/estudiante_model.dart';
 import '../../data/providers/database_provider.dart';

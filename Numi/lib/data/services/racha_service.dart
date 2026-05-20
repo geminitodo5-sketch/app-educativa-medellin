@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/racha_service.dart
-//  Gestiona el sistema de rachas diarias del estudiante.
-// ─────────────────────────────────────────────────────────────
-
-import 'sqlite_service.dart';
+﻿import 'sqlite_service.dart';
 
 class RachaInfo {
   final int dias;

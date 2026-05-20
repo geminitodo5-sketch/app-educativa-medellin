@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/repositories/sync_queue_repository.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-//  Lee y escribe en la tabla sync_queue de SQLite.
-// ─────────────────────────────────────────────────────────────
-
 import '../services/sqlite_service.dart';
 import '../models/sync_queue_model.dart';
 

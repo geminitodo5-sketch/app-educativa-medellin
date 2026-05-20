@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'ingles_congratulations_view.dart';
 import 'dart:math';
@@ -7,7 +7,6 @@ import '../../../data/services/feedback_sounds.dart';
 const _img = 'assets/images/areas/ingles/juego_1/imagenes_1/';
 const _aud = 'assets/images/areas/ingles/juego_1/audios_1/';
 
-// ── Banco de preguntas por categoría ─────────────────────────
 // Cada entrada tiene: audio de pregunta, lista de opciones (img+audio)
 // La correcta se sortea aleatoriamente al iniciar
 
@@ -90,7 +89,6 @@ const _colores = [
 const _etiquetas = ['Fruits', 'Numbers', 'Animals'];
 const _audioInstruccion = '${_aud}audio.mp3';
 
-// ── Genera una ronda aleatoria para una categoría ─────────────
 Map<String, dynamic> _generarNivel(List<Map<String, dynamic>> banco) {
   final rng = Random();
   final correctaIdx = rng.nextInt(banco.length);

@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/repositories/progreso_repository.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-// ─────────────────────────────────────────────────────────────
-
 import '../services/sqlite_service.dart';
 import '../models/progreso_model.dart';
 

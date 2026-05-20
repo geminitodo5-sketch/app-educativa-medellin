@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/providers/app_state_provider.dart
-//  Estado global de la sesión activa + progreso del menú
-// ─────────────────────────────────────────────────────────────
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/estudiante_model.dart';

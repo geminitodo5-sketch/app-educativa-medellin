@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -157,8 +157,6 @@ class ComparacionCantidadesViewModel
     }
   }
 }
-
-// ─── Provider ────────────────────────────────────────────────────────────────
 
 final comparacionCantidadesViewModelProvider =
     StateNotifierProvider<

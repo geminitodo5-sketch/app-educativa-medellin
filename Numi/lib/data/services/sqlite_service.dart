@@ -1,10 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/sqlite_service.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-//  Crea y administra las 7 tablas de NUMI
-// ─────────────────────────────────────────────────────────────
-
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 

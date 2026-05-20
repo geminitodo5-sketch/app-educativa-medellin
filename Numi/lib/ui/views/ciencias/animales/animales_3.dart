@@ -411,7 +411,6 @@ class _JuegoAnimalesScreenState extends State<JuegoAnimalesScreen> {
   }
 }
 
-// --- Modelo ---
 class ConnectionModel {
   final GlobalKey startKey;
   final GlobalKey endKey;
@@ -423,7 +422,6 @@ class ConnectionModel {
   });
 }
 
-// --- Painter ---
 class ArrowPainter extends CustomPainter {
   final List<ConnectionModel> conexiones;
   final GlobalKey stackKey;

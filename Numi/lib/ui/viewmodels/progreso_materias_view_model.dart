@@ -1,9 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/viewmodels/progreso_materias_view_model.dart
-//  ViewModel para mostrar el progreso por materia
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/app_state_provider.dart';

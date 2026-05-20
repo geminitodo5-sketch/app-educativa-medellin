@@ -1,11 +1,9 @@
-// lib/ui/views/ciencias/las_plantas_screen.dart
-
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ media_kit reemplaza just_audio
+import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import '../../../data/services/feedback_sounds.dart';
 import 'dart:ui' as ui;
@@ -13,9 +11,6 @@ import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
 import '../../../data/models/sync_queue_model.dart';
 import '../terminado.dart';
-
-// ✅ Eliminado: dart:io, package:just_audio, package:path_provider
-// ✅ Eliminado: _resolverAudioPath — media_kit lee assets con Media('asset:///...') nativamente
 
 const _audio10 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales10_mezcla.mp3';
 const _audio11 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales11_mezcla.mp3';
@@ -25,7 +20,6 @@ const _p10 = 'assets/images/actividades/ciencias_naturales/pantalla 10/';
 const _p11 = 'assets/images/actividades/ciencias_naturales/pantalla 11/';
 const _p12 = 'assets/images/actividades/ciencias_naturales/pantalla 12/';
 
-// ── Popup de retroalimentación ────────────────────────────────────────────
 void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onAction}) {
   FeedbackSounds.instance.reproducir(correcto);
   showModalBottomSheet(
@@ -95,7 +89,6 @@ void _mostrarFeedback(BuildContext context, bool correcto, {VoidCallback? onActi
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 class LasPlantasScreen extends ConsumerStatefulWidget {
   const LasPlantasScreen({super.key});
   @override
@@ -234,7 +227,6 @@ class _LasPlantasScreenState extends ConsumerState<LasPlantasScreen> {
   }
 }
 
-// ── Componentes compartidos ───────────────────────────────────────────────
 class _Tarjeta extends StatelessWidget {
   final Widget child;
   const _Tarjeta({required this.child});
@@ -314,7 +306,6 @@ class _PageCard extends StatelessWidget {
   }
 }
 
-// ── Fila de instrucción ───────────────────────────────────────────────────
 class _Instruccion extends StatelessWidget {
   final String texto;
   final Player? player;
@@ -375,9 +366,7 @@ class _Instruccion extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 1
-// ═══════════════════════════════════════════════════════════════════════════
 class _Actividad1 extends StatefulWidget {
   final VoidCallback onNext;
   const _Actividad1({required this.onNext});
@@ -542,7 +531,6 @@ class _Actividad1State extends State<_Actividad1> {
   }
 }
 
-// ── Flecha estilizada ─────────────────────────────────────────────────────
 enum _DirFlecha { derecha, izquierda, abajo }
 
 class _FlechaEstilizada extends StatelessWidget {
@@ -616,7 +604,6 @@ class _FlechaPainter extends CustomPainter {
   bool shouldRepaint(_FlechaPainter old) => old.direccion != direccion;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 class _SlotDrop extends StatelessWidget {
   final int slot;
   final int? colocada;
@@ -726,9 +713,7 @@ class _FaseChip extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 2
-// ═══════════════════════════════════════════════════════════════════════════
 class _PiezaPlanta {
   final String nombre;
   final String ruta;
@@ -1228,9 +1213,7 @@ class _Actividad2State extends State<_Actividad2> {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 3
-// ═══════════════════════════════════════════════════════════════════════════
 class _Actividad3 extends StatefulWidget {
   final VoidCallback onFinish;
   const _Actividad3({required this.onFinish});

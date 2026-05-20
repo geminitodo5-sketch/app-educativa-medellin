@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -486,7 +486,6 @@ class _QuienTieneMasview3State extends ConsumerState<QuienTieneMasview3> {
   }
 }
 
-// ── Naranja interactiva con animación de entrada y rebote ──────────────────
 class _OrangeItem extends StatefulWidget {
   final Alignment alignment;
   final bool isCounted;

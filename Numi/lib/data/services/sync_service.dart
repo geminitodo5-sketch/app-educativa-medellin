@@ -1,12 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/sync_service.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-//  Detecta conexión a internet y drena la cola sync_queue.
-//  Por ahora simula el envío al backend (stub HTTP).
-//  Cuando el backend esté listo, reemplaza _enviarAlBackend().
-// ─────────────────────────────────────────────────────────────
-
-import 'package:connectivity_plus/connectivity_plus.dart';
+﻿import 'package:connectivity_plus/connectivity_plus.dart';
 import '../repositories/sync_queue_repository.dart';
 import '../models/sync_queue_model.dart';
 

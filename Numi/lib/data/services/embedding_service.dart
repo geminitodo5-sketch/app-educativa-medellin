@@ -1,5 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/embedding_service.dart
+﻿//  lib/data/services/embedding_service.dart
 //  Servicio de embeddings semánticos para reranking RAG offline.
 //
 //  Modos de operación:
@@ -11,7 +10,6 @@
 //
 //  La calidad del reranking mejora con un modelo TFLite real, pero el
 //  sistema funciona correctamente con el fallback hash-bag.
-// ─────────────────────────────────────────────────────────────
 
 import 'dart:math';
 import 'dart:typed_data';

@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/bienvenida.dart
-//  Registro del estudiante: nombre + avatar → guarda en BD
-// ─────────────────────────────────────────────────────────────
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/estudiante_model.dart';
@@ -323,7 +318,6 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   }
 }
 
-// ─── Widget de opción de avatar ───────────────────────────────
 class _AvatarOpcion extends StatelessWidget {
   final int index;
   final bool seleccionado;

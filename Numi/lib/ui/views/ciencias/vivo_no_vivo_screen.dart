@@ -1,24 +1,18 @@
-// lib/ui/views/ciencias/vivo_no_vivo_screen.dart
-
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:math' show sin, pi;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart'; // ✅ media_kit reemplaza just_audio
+import 'package:media_kit/media_kit.dart';
 import '../../../data/providers/app_state_provider.dart';
 import '../../../data/providers/database_provider.dart';
 import '../../../data/services/feedback_sounds.dart';
 import '../../../data/models/sync_queue_model.dart';
 import '../terminado.dart';
 
-// ── Eliminado: _resolverAudioPath ya no es necesario.
-// media_kit lee assets directamente con Media('asset:///...') en todas las plataformas.
-
 const _p1 = 'assets/images/actividades/ciencias_naturales/pantalla 1/';
 const _p2 = 'assets/images/actividades/ciencias_naturales/pantalla 2/';
 const _p3 = 'assets/images/actividades/ciencias_naturales/pantalla 3/';
 
-// ── Popup de retroalimentación ────────────────────────────────────────────
 void _mostrarFeedback(BuildContext context, bool esCorrecto, VoidCallback onAction) {
   FeedbackSounds.instance.reproducir(esCorrecto);
   showModalBottomSheet(
@@ -95,9 +89,6 @@ class _Item {
   const _Item(this.nombre, this.ruta, this.esVida);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  Pantalla principal — 3 actividades en PageView
-// ═══════════════════════════════════════════════════════════════════════════
 class VivoNoVivoScreen extends ConsumerStatefulWidget {
   const VivoNoVivoScreen({super.key});
 
@@ -176,7 +167,7 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
           PageView(
             controller: _ctrl,
             onPageChanged: (i) {
-              // ✅ Detener audios previos para que no se traslapen
+              // Detener audios previos para que no se traslapen
               _key1.currentState?.stopAudio();
               _key2.currentState?.stopAudio();
               _key3.currentState?.stopAudio();
@@ -266,7 +257,6 @@ class _VivoNoVivoScreenState extends ConsumerState<VivoNoVivoScreen> {
   }
 }
 
-// ── Tarjeta (passthrough) ─────────────────────────────────────────────────
 class _Tarjeta extends StatelessWidget {
   final Widget child;
   const _Tarjeta({required this.child});
@@ -275,7 +265,6 @@ class _Tarjeta extends StatelessWidget {
   Widget build(BuildContext context) => child;
 }
 
-// ── Tarjeta con header verde + cuerpo blanco ──────────────────────────────
 class _PageCard extends StatelessWidget {
   final String title;
   final Widget child;
@@ -354,13 +343,10 @@ class _PageCard extends StatelessWidget {
   }
 }
 
-// ── Fila de instrucción ───────────────────────────────────────────────────
-// ✅ Ahora recibe Player? en lugar de AudioPlayer?
-// ✅ El path del asset usa el formato 'asset:///...' que media_kit entiende nativamente
 class _Instruccion extends StatelessWidget {
   final String texto;
-  final Player? player;       // ✅ media_kit Player
-  final String? audioAsset;   // ✅ path del asset, ej: 'assets/audio/xxx.mp3'
+  final Player? player;
+  final String? audioAsset;
 
   const _Instruccion(
     this.texto, {
@@ -421,9 +407,6 @@ class _Instruccion extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  ACTIVIDAD 1 — Clasificar el cocodrilo: ¿vivo o no vivo?
-// ═══════════════════════════════════════════════════════════════════════════
 class _Actividad1 extends StatefulWidget {
   final VoidCallback onNext;
   const _Actividad1({super.key, required this.onNext});
@@ -458,7 +441,6 @@ class _Actividad1State extends State<_Actividad1>
     duration: const Duration(milliseconds: 500),
   );
 
-  // ✅ Player de media_kit — mismo patrón que el código de referencia
   Player? _player;
 
   static const _audioAsset =
@@ -467,15 +449,14 @@ class _Actividad1State extends State<_Actividad1>
   @override
   void initState() {
     super.initState();
-    _player = Player(); // ✅ Inicializar igual que en el código de referencia
-    // ✅ Reproducción automática al entrar, igual que en el código de referencia
+    _player = Player();
     Future.microtask(() => playAudio());
   }
 
   @override
   void dispose() {
     _shake.dispose();
-    _player?.dispose(); // ✅ Liberar memoria
+    _player?.dispose();
     super.dispose();
   }
 
@@ -489,7 +470,7 @@ class _Actividad1State extends State<_Actividad1>
   }
 
   Future<void> stopAudio() async {
-    await _player?.stop(); // ✅ media_kit usa stop()
+    await _player?.stop();
   }
 
   void _responder(BuildContext context, String opcion) {
@@ -524,7 +505,6 @@ class _Actividad1State extends State<_Actividad1>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ✅ Se pasa _player y _audioAsset a _Instruccion
           _Instruccion(
             'Ayúdame a decidir si estos son seres vivos o no vivos',
             player: _player,
@@ -674,9 +654,7 @@ class _BtnClasifica extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 //  ACTIVIDAD 2 — Elige el ser vivo entre los no vivos (grid 2×2)
-// ═══════════════════════════════════════════════════════════════════════════
 class _Actividad2 extends StatefulWidget {
   final VoidCallback onNext;
   const _Actividad2({super.key, required this.onNext});
@@ -700,18 +678,17 @@ class _Actividad2State extends State<_Actividad2> {
 
   int? _seleccionado;
 
-  // ✅ Player de media_kit
   Player? _player;
 
   @override
   void initState() {
     super.initState();
-    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+    _player = Player();
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    _player?.dispose();
     super.dispose();
   }
 
@@ -748,7 +725,6 @@ class _Actividad2State extends State<_Actividad2> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 20),
-          // ✅ Se pasa _player y _audioAsset
           _Instruccion(
             'Elige el ser vivo entre  los no vivos',
             player: _player,
@@ -816,9 +792,7 @@ class _Actividad2State extends State<_Actividad2> {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 //  ACTIVIDAD 3 — Arrastra al cuadro los elementos necesarios para vivir
-// ═══════════════════════════════════════════════════════════════════════════
 class _Actividad3 extends StatefulWidget {
   final VoidCallback onFinish;
   const _Actividad3({super.key, required this.onFinish});
@@ -845,7 +819,6 @@ class _Actividad3State extends State<_Actividad3> {
   static const _audioAsset =
       'assets/images/actividades/ciencias_naturales/audios/audio_naturales3_mezcla.mp3';
 
-  // ✅ Player de media_kit
   Player? _player;
 
   final Set<String> _colocados = {};
@@ -856,12 +829,12 @@ class _Actividad3State extends State<_Actividad3> {
   @override
   void initState() {
     super.initState();
-    _player = Player(); // ✅ Inicializar igual que en el código de referencia
+    _player = Player();
   }
 
   @override
   void dispose() {
-    _player?.dispose(); // ✅ Liberar memoria
+    _player?.dispose();
     super.dispose();
   }
 

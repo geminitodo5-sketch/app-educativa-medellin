@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/viewmodels/matematicas_view_model.dart
-// ─────────────────────────────────────────────────────────────
-
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/progreso_model.dart';

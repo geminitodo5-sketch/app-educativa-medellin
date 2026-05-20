@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/ciencias_sociales_view.dart
-// ─────────────────────────────────────────────────────────────
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
@@ -263,7 +259,6 @@ class _CienciasSocialesViewState extends ConsumerState<CienciasSocialesView> {
       vm.progreso.any((ProgresoModel p) => p.actividad == tema && p.porcentaje >= 100);
 }
 
-// ─── Barra de progreso ─────────────────────────────────────────
 class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
@@ -312,7 +307,6 @@ class _BarraProgreso extends StatelessWidget {
   }
 }
 
-// ─── Botón naranja de sociales ─────────────────────────────────
 class _BotonSociales extends StatefulWidget {
   final String imagePath;
   final String fallbackEmoji;

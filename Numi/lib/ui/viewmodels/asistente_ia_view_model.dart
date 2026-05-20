@@ -1,17 +1,6 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/viewmodels/asistente_ia_view_model.dart
-//  ViewModel para la pantalla del asistente RAG offline.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/providers/database_provider.dart';
-import '../../data/services/rag_service.dart';
-import '../../data/services/embedding_service.dart';
-import '../../data/services/descarga_paquete_service.dart';
-import '../../data/services/local_llm_service.dart';
-
-// ── Modelo de mensaje del chat ────────────────────────────────
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/repositories/rag_repository.dart';
+import '../../data/repositories/contenido_repository.dart';
 
 enum RolMensaje { usuario, asistente }
 
@@ -33,8 +22,6 @@ class MensajeChat {
       );
 }
 
-// ── Estado ────────────────────────────────────────────────────
-
 class AsistenteIaEstado {
   final List<MensajeChat> mensajes;
   final bool respondiendo;
@@ -46,11 +33,9 @@ class AsistenteIaEstado {
   final List<String> opcionesQuery;   // query enviado al RAG para cada opción
   final String avatarEstudiante;      // 'pollito' | 'mono'
 
-  // ── T3.7: pistas progresivas ───────────────────────────────
-  final String ultimoTema;   // tema de la última respuesta del RAG
-  final int nivelPista;      // 0 = sin pistas activas, 1-3 = nivel
+  final String ultimoTema;
+  final int nivelPista;    // 0 = sin pistas activas, 1-3 = nivel
 
-  // ── Estado del modelo Gemma local ─────────────────────────
   final bool isModelReady;
   final bool isModelDownloading;
   final double modelDownloadProgress; // 0.0–1.0
@@ -120,43 +105,34 @@ class AsistenteIaEstado {
 // Centinela para distinguir null explícito de "sin cambio" en copyWith.
 const Object _sentinel = Object();
 
-// ── ViewModel ─────────────────────────────────────────────────
-
 class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
-  final RagService _rag;
-  final DescargaPaqueteService _descarga;
-  final LocalLlmService _localLlm;
+  final RagRepository _ragRepo;
+  final ContenidoRepository _contenidoRepo;
 
   static const _materias = [
     'matematicas', 'ciencias', 'espanol', 'ingles', 'sociales',
   ];
 
-  AsistenteIaViewModel(this._rag, this._descarga, this._localLlm)
+  AsistenteIaViewModel(this._ragRepo, this._contenidoRepo)
       : super(const AsistenteIaEstado()) {
     _verificarDescargados();
     _inicializarModelo();
   }
 
-  // ── Estado del modelo local ────────────────────────────────
-
-  /// Verifica si el modelo ya fue descargado y, si no, inicia la
-  /// descarga automáticamente en background desde Firebase Storage.
   Future<void> _inicializarModelo() async {
     // 1. Activar el modelo si ya existe en el dispositivo.
-    await _localLlm.inicializarSiExiste();
+    await _ragRepo.inicializarModeloSiExiste();
 
-    if (_localLlm.isReady) {
+    if (_ragRepo.isModelReady) {
       if (mounted) state = state.copyWith(isModelReady: true);
       return;
     }
 
     // 2. Si no existe → descarga automática en background.
-    //    El asistente usa Gemini cloud como fallback mientras tanto.
+    //    El asistente usa RAG local como fallback mientras tanto.
     iniciarDescargaModelo();
   }
 
-  /// Descarga e inicializa el modelo Gemma local desde Firebase Storage.
-  /// Se llama automáticamente al abrir el asistente por primera vez.
   Future<void> iniciarDescargaModelo() async {
     if (state.isModelDownloading || state.isModelReady) return;
 
@@ -167,7 +143,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     );
 
     try {
-      await _localLlm.descargarModelo(
+      await _ragRepo.descargarModelo(
         onProgress: (p) {
           if (mounted) {
             state = state.copyWith(modelDownloadProgress: p);
@@ -193,15 +169,15 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     }
   }
 
-  // ── Inicialización ─────────────────────────────────────────
-
   Future<void> _verificarDescargados() async {
     final mapa = <String, bool>{};
     for (final m in _materias) {
-      mapa[m] = await _descarga.estaDescargado(m);
+      mapa[m] = await _contenidoRepo.estaDescargado(m);
     }
     state = state.copyWith(descargado: Map.unmodifiable(mapa));
   }
+
+  Future<void> verificarDescargados() => _verificarDescargados();
 
   Future<void> inicializar({required String materia, required int grado}) async {
     state = state.copyWith(
@@ -215,7 +191,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
 
     if (!state.materiaDescargada) return;
 
-    final sugeridas = await _rag.preguntasSugeridas(
+    final sugeridas = await _ragRepo.preguntasSugeridas(
       materia: materia,
       grado: grado,
       cantidad: 3,
@@ -263,8 +239,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     );
   }
 
-  // ── Cambio de materia / grado ──────────────────────────────
-
   void cambiarMateria(String materia) {
     state = state.copyWith(
       materiaActual: materia,
@@ -284,8 +258,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     );
     inicializar(materia: state.materiaActual, grado: grado);
   }
-
-  // ── T3.7: detección de confusión ──────────────────────────
 
   static const _frasesConfusion = [
     'no entiendo', 'no entendi', 'no entendí',
@@ -317,8 +289,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
       default: return '📝 Vamos paso a paso:\n\n';
     }
   }
-
-  // ── Preguntar ──────────────────────────────────────────────
 
   Future<void> preguntar(String input, {int? estudianteId}) async {
     final inputTrim = input.trim();
@@ -360,26 +330,26 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     );
 
     try {
-      final resultado = await _rag.responder(
+      final resultado = await _ragRepo.responder(
         pregunta: queryRAG,
         materia: state.materiaActual,
         grado: state.gradoActual,
       );
 
-      if (estudianteId != null && resultado.encontrado) {
-        await _rag.guardarHistorial(
-          estudianteId: estudianteId,
-          pregunta: queryRAG,
-          respuesta: resultado.texto,
-          materia: state.materiaActual,
-          grado: state.gradoActual,
-        );
-      }
-
       // Agregar prefijo de pista si corresponde
       final textoFinal = esPista
           ? '${_prefijoPista(nuevoPista)}${resultado.texto}'
           : resultado.texto;
+
+      if (estudianteId != null && textoFinal.isNotEmpty) {
+        await _ragRepo.guardarHistorial(
+          estudianteId: estudianteId,
+          pregunta: textoVisible,
+          respuesta: textoFinal,
+          materia: state.materiaActual,
+          grado: state.gradoActual,
+        );
+      }
 
       final msgs = List<MensajeChat>.from(state.mensajes)..removeLast();
       state = state.copyWith(
@@ -402,8 +372,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     }
   }
 
-  // ── Descarga ───────────────────────────────────────────────
-
   Future<void> descargarMateria(String materia) async {
     final nuevosProgresos =
         Map<String, double>.from(state.progresosDescarga);
@@ -411,7 +379,7 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
     state = state.copyWith(progresosDescarga: nuevosProgresos);
 
     try {
-      await _descarga.descargarPaquete(
+      await _contenidoRepo.descargarPaquete(
         materia,
         onProgress: (p) {
           final progs = Map<String, double>.from(state.progresosDescarga);
@@ -440,8 +408,6 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
       rethrow;
     }
   }
-
-  // ── Helpers ────────────────────────────────────────────────
 
   static List<String> _temasPorMateria(String materia, int grado) {
     const mapa = <String, Map<int, List<String>>>{
@@ -486,66 +452,34 @@ class AsistenteIaViewModel extends StateNotifier<AsistenteIaEstado> {
   }
 
   static String nombreMateria(String m) => _nombreMateria(m);
+
+  Future<String?> getUltimaMateria(int estudianteId) =>
+      _ragRepo.obtenerUltimaMateria(estudianteId);
 }
 
-// ── Providers ─────────────────────────────────────────────────
-
-// EmbeddingService: TFLite reranking. Falla silenciosamente si no hay modelo.
-final embeddingServiceProvider = Provider<EmbeddingService>((ref) {
-  final svc = EmbeddingService();
-  svc.initialize(); // fire-and-forget
-  return svc;
-});
-
-// LocalLlmService: Gemma 3n E2B local.
-final localLlmServiceProvider = Provider<LocalLlmService>((ref) {
-  return LocalLlmService();
-});
-
 // Se ejecuta una sola vez al arrancar la app (vía ProviderScope).
-// Comprueba si Gemma 3n ya está instalado; si no, inicia la descarga
-// automáticamente en background para que esté listo cuando el niño lo necesite.
+// Delega en el ViewModel para que TODO el estado del modelo (descargando,
+// progreso, listo) fluya por asistenteIaViewModelProvider y la UI en
+// configuracion_view vea el porcentaje real en tiempo real.
 final gemmaStartupProvider = FutureProvider<void>((ref) async {
-  final llm = ref.read(localLlmServiceProvider);
-  await llm.inicializarSiExiste();
-  if (llm.isReady) {
-    debugPrint('🟢 Gemma: modelo ya instalado, listo para usar.');
-    return;
-  }
-  if (!llm.isDownloading) {
-    debugPrint('⬇️ Gemma: iniciando descarga del modelo...');
-    llm.descargarModelo(onProgress: (p) {
-      debugPrint('⬇️ Gemma descargando: ${(p * 100).toInt()}%');
-    }).ignore();
-  }
-});
-
-final ragServiceProvider = Provider<RagService>((ref) {
-  return RagService(
-    ref.read(sqliteServiceProvider),
-    embeddings: ref.read(embeddingServiceProvider),
-    localLlm: ref.read(localLlmServiceProvider),
-  );
-});
-
-final descargaPaqueteServiceProvider = Provider<DescargaPaqueteService>((ref) {
-  return DescargaPaqueteService(ref.read(sqliteServiceProvider));
+  // Crear el ViewModel si aún no existe; su constructor llama a
+  // _inicializarModelo() → iniciarDescargaModelo(), que actualiza estado.
+  ref.read(asistenteIaViewModelProvider);
 });
 
 final asistenteIaViewModelProvider =
     StateNotifierProvider<AsistenteIaViewModel, AsistenteIaEstado>((ref) {
   return AsistenteIaViewModel(
-    ref.read(ragServiceProvider),
-    ref.read(descargaPaqueteServiceProvider),
-    ref.read(localLlmServiceProvider),
+    ref.read(ragRepositoryProvider),
+    ref.read(contenidoRepositoryProvider),
   );
 });
 
 final historialPorMateriaProvider = FutureProvider.family<
     List<Map<String, dynamic>>,
     ({int estudianteId, String materia})>((ref, params) async {
-  final rag = ref.read(ragServiceProvider);
-  return rag.obtenerHistorial(
+  final repo = ref.read(ragRepositoryProvider);
+  return repo.obtenerHistorial(
     estudianteId: params.estudianteId,
     materia: params.materia,
   );

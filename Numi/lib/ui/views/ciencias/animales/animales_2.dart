@@ -7,7 +7,6 @@ import '../../../../data/services/feedback_sounds.dart';
 
 const _audio8 = 'assets/images/actividades/ciencias_naturales/audios/audio_naturales8_mezcla.mp3';
 
-// --- Paleta de Colores NUMI ---
 const Color kColorAzulNumi = Color(0xFF3475F7);
 const Color kColorVerdeNumi = Color(0xFF59E347);
 const Color kColorRojoNumi = Color(0xFFF65757);
@@ -183,8 +182,6 @@ class _PantallaClasificacionAnimalesState
   }
 }
 
-// --- Componentes de Interfaz ---
-
 class _HeaderActividad extends StatelessWidget {
   final String titulo;
   const _HeaderActividad({required this.titulo});
@@ -343,8 +340,6 @@ class _IndicadorProgreso extends StatelessWidget {
     );
   }
 }
-
-// --- Pestaña de Retroalimentación ---
 
 void _showFeedbackSheet(
   BuildContext context,

@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/ciencias_view.dart
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/models/estudiante_model.dart';
@@ -296,7 +292,6 @@ class _CienciasViewState extends ConsumerState<CienciasView> {
       vm.progreso.any((ProgresoModel p) => p.actividad == actividad && p.porcentaje >= 100);
 }
 
-// ─── Barra de progreso ─────────────────────────────────────────
 class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
@@ -351,7 +346,6 @@ class _BarraProgreso extends StatelessWidget {
   }
 }
 
-// ─── Delegate para encabezado sticky ──────────────────────────
 class _HeaderDelegate extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;
@@ -385,7 +379,6 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
       child != oldDelegate.child;
 }
 
-// ─── Tarjeta de actividad ──────────────────────────────────────
 class _ActividadCard extends StatefulWidget {
   final String imagen;
   final String texto;

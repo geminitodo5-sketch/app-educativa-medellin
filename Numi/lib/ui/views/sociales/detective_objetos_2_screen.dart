@@ -1,10 +1,9 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'detective_objetos_3_screen.dart';
 import '../../../data/services/feedback_sounds.dart';
-
 
 class DetectiveObjetos2Screen extends StatefulWidget {
   const DetectiveObjetos2Screen({super.key, this.onCompleted});

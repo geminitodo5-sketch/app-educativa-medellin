@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:math' show min;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +11,7 @@ import '../../../../data/providers/app_state_provider.dart'
 import '../../../../data/providers/database_provider.dart';
 import '../../terminado.dart';
 
-// ══════════════════════════════════════════════════════════
 // MODELO
-// ══════════════════════════════════════════════════════════
 
 class PalabraLocaData {
   final String imagenAsset;
@@ -27,9 +25,7 @@ class PalabraLocaData {
   });
 }
 
-// ══════════════════════════════════════════════════════════
 // ESTADO
-// ══════════════════════════════════════════════════════════
 
 enum RespuestaEstado { ninguna, correcta, incorrecta }
 
@@ -59,9 +55,7 @@ class PalabraLocaState {
   }
 }
 
-// ══════════════════════════════════════════════════════════
 // VIEW MODEL
-// ══════════════════════════════════════════════════════════
 
 class PalabraLocaViewModel extends StateNotifier<PalabraLocaState> {
   final Ref _ref;
@@ -151,9 +145,7 @@ final palabraLocaViewModelProvider =
   (ref) => PalabraLocaViewModel(ref),
 );
 
-// ══════════════════════════════════════════════════════════
 // SCREEN
-// ══════════════════════════════════════════════════════════
 
 class PalabraLocaScreen extends ConsumerStatefulWidget {
   const PalabraLocaScreen({super.key});
@@ -476,9 +468,7 @@ class _PalabraLocaScreenState extends ConsumerState<PalabraLocaScreen>
   }
 }
 
-// ══════════════════════════════════════════════════════════
 // WIDGETS AUXILIARES
-// ══════════════════════════════════════════════════════════
 
 class _Header extends StatelessWidget {
   final VoidCallback onClose;

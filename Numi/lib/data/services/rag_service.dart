@@ -1,5 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/rag_service.dart  v4.0
+﻿//  lib/data/services/rag_service.dart  v4.0
 //  Motor RAG — FAISS (servidor) + BM25 offline + TFLite reranking
 //
 //  Flujo de búsqueda:
@@ -14,7 +13,6 @@
 //
 //  Respuestas: se interpretan y formatean por grado (3, 4, 5).
 //  Nunca se devuelve un copy-paste del campo `respuesta` de la KB.
-// ─────────────────────────────────────────────────────────────
 
 import 'dart:math';
 import 'package:dio/dio.dart';
@@ -67,14 +65,12 @@ class RagService {
     'es','as',
   ];
 
-  // ═══════════════════════════════════════════════════════════
   //  MAPAS DE EXPANSIÓN CONCEPTUAL
   //  Permiten que el sistema entienda el mismo tema desde
   //  distintos ángulos: "¿cómo respiran los peces?" encuentra
   //  la entrada sobre sistema respiratorio aunque use palabras
   //  diferentes. La key es el inicio de stem del término del
   //  usuario; los valores son términos de la KB relacionados.
-  // ═══════════════════════════════════════════════════════════
   static const Map<String, Map<String, List<String>>> _expansion = {
 
     // ── MATEMÁTICAS ──────────────────────────────────────────
@@ -275,9 +271,7 @@ class RagService {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════
   //  API PÚBLICA
-  // ═══════════════════════════════════════════════════════════
 
   Future<RagRespuesta> responder({
     required String pregunta,
@@ -446,13 +440,21 @@ class RagService {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════
+  Future<String?> obtenerUltimaMateria(int estudianteId) async {
+    final rows = await _db.rawQuery(
+      'SELECT materia FROM historial_rag WHERE estudiante_id = ? ORDER BY fecha DESC LIMIT 1',
+      [estudianteId],
+    );
+    if (rows.isEmpty) return null;
+    final m = rows.first['materia'] as String;
+    return m == 'español' ? 'espanol' : m;
+  }
+
   //  EXPANSIÓN CONCEPTUAL
   //  Transforma los tokens del usuario en un conjunto expandido
   //  que incluye conceptos relacionados de la KB.
   //  Ejemplo: tokens = ['respiramos'] → stem 'respir' →
   //           expandido += ['pulmones','oxigeno','alveolos',...]
-  // ═══════════════════════════════════════════════════════════
 
   List<String> _expandirConceptos(List<String> tokens, String materia) {
     final mapa = _expansion[materia];
@@ -476,12 +478,10 @@ class RagService {
     return expanded;
   }
 
-  // ═══════════════════════════════════════════════════════════
   //  RERANKING SEMÁNTICO CON TFLITE
   //  Si EmbeddingService tiene un modelo TFLite cargado,
   //  combina el score BM25 con la similitud coseno del embedding.
   //  Si no hay modelo, devuelve los resultados BM25 sin cambios.
-  // ═══════════════════════════════════════════════════════════
 
   Future<List<_EP>> _rerancarConTFLite(List<_EP> scored, String query) async {
     final emb = _embeddings;
@@ -514,9 +514,7 @@ class RagService {
     return [...reranked, ...rest];
   }
 
-  // ═══════════════════════════════════════════════════════════
   //  CONSTRUCCIÓN DE RESPUESTAS — interpretadas por grado
-  // ═══════════════════════════════════════════════════════════
 
   // Gemma responde sin contexto de corpus (conocimiento general del modelo).
   // Se usa cuando la pregunta no tiene match en la base de conocimiento local.
@@ -772,12 +770,10 @@ class RagService {
     return RagRespuesta(texto: buffer.toString(), encontrado: false, tema: '');
   }
 
-  // ═══════════════════════════════════════════════════════════
   //  EVALUADOR ARITMÉTICO COMPLETO
   //  Maneja: fracciones paso a paso, casos especiales
   //  (doble/mitad/triple/cuadrado/raíz), frases compuestas,
   //  operadores en palabra, operadores símbolo.
-  // ═══════════════════════════════════════════════════════════
 
   // ── GCD auxiliar para simplificar fracciones ──────────────
   static int _gcd(int a, int b) => b == 0 ? a.abs() : _gcd(b, a % b);
@@ -1037,9 +1033,7 @@ class RagService {
     return s.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
   }
 
-  // ═══════════════════════════════════════════════════════════
   //  BM25
-  // ═══════════════════════════════════════════════════════════
 
   List<_EP> _puntuarBM25(
     List<Map<String, dynamic>> corpus,
@@ -1098,9 +1092,7 @@ class RagService {
     return result;
   }
 
-  // ═══════════════════════════════════════════════════════════
   //  TOKENIZADOR
-  // ═══════════════════════════════════════════════════════════
 
   List<String> _tokenizar(String texto) {
     final mathTokens = <String>[];
@@ -1356,15 +1348,11 @@ class RagService {
   }
 }
 
-// ─── Tipos internos ───────────────────────────────────────────
-
 class _EP {
   final Map<String, dynamic> entrada;
   final double puntaje;
   _EP({required this.entrada, required this.puntaje});
 }
-
-// ─── Respuesta pública ────────────────────────────────────────
 
 class RagRespuesta {
   final String texto;
@@ -1376,8 +1364,6 @@ class RagRespuesta {
     required this.tema,
   });
 }
-
-// ─── Pregunta de selección múltiple ──────────────────────────
 
 class PreguntaQuiz {
   final String pregunta;

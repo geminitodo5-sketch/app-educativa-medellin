@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,8 +6,6 @@ import '../../data/models/sync_queue_model.dart';
 import '../../data/providers/app_state_provider.dart'
     show estudianteActivoProvider, menuProgresoProvider;
 import '../../data/providers/database_provider.dart';
-
-// ── Modelo de datos ──────────────────────────────────────────────────────────
 
 class PalabraData {
   final String imagenAsset;
@@ -22,8 +20,6 @@ class PalabraData {
     required this.opcionesMezcladas,
   });
 }
-
-// ── Estado ───────────────────────────────────────────────────────────────────
 
 class ArmaLaPalabraState {
   final int palabraIndex;
@@ -60,8 +56,6 @@ class ArmaLaPalabraState {
     );
   }
 }
-
-// ── ViewModel ────────────────────────────────────────────────────────────────
 
 class ArmaLaPalabraViewModel extends StateNotifier<ArmaLaPalabraState> {
   final Ref _ref;
@@ -285,8 +279,6 @@ class ArmaLaPalabraViewModel extends StateNotifier<ArmaLaPalabraState> {
     }
   }
 }
-
-// ── Provider ─────────────────────────────────────────────────────────────────
 
 final armaLaPalabraViewModelProvider = StateNotifierProvider.autoDispose<
     ArmaLaPalabraViewModel, ArmaLaPalabraState>(

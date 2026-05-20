@@ -1,4 +1,4 @@
-// lib/ui/views/ingles_tarjetas_view.dart
+﻿// lib/ui/views/ingles_tarjetas_view.dart
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -172,7 +172,6 @@ final _niveles = [
   ],
 ];
 
-// ─────────────────────────────────────────────────────────────────────────
 class InglesTarjetasView extends StatefulWidget {
   const InglesTarjetasView({super.key, this.onCompleted});
   final VoidCallback? onCompleted;
@@ -584,9 +583,7 @@ class _InglesTarjetasViewState extends State<InglesTarjetasView> {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════
 // Tarjeta con volteo 3D
-// ══════════════════════════════════════════════════════════════════════════
 class _TarjetaFlip extends StatefulWidget {
   final _CardData data;
   final bool volteada;
@@ -670,7 +667,6 @@ class _TarjetaFlipState extends State<_TarjetaFlip>
   }
 }
 
-// ── Frente ────────────────────────────────────────────────────────────────
 class _FrenteTarjeta extends StatelessWidget {
   final _CardData data;
   final bool encontrada;
@@ -787,7 +783,6 @@ class _FrenteTarjeta extends StatelessWidget {
   }
 }
 
-// ── Reverso (Numi) ────────────────────────────────────────────────────────
 class _ReversoTarjeta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

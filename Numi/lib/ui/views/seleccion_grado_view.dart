@@ -1,10 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/seleccion_grado_view.dart
-//  Selección de grado: solo 1° y 2° están activos.
-//  Actualiza el grado del estudiante en la BD y navega al menú.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../data/providers/database_provider.dart';
@@ -23,7 +17,6 @@ class SeleccionGradoView extends ConsumerStatefulWidget {
 class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   bool _cargando = false;
 
-  // ✅ Mismo patrón que el código de referencia
   AudioPlayer? _player;
 
   @override
@@ -34,7 +27,6 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
     ref.read(musicaServiceProvider).entrar();
   }
 
-  // ✅ Mismo método de reproducción que el código de referencia
   Future<void> _reproducirAudio() async {
     try {
       await _player?.setAsset('assets/Audio/sociales/audio_generalsi_mezcla_fix.mp3');
@@ -166,7 +158,6 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
                           letterSpacing: 0.5,
                         ),
                       ),
-                      // ✅ Botón con estilo cuadrado redondeado igual al de la imagen
                       const SizedBox(height: 4),
                       GestureDetector(
                         onTap: _reproducirAudio,
@@ -264,7 +255,6 @@ class _SeleccionGradoViewState extends ConsumerState<SeleccionGradoView> {
   }
 }
 
-// ─── Botón de grado ────────────────────────────────────────────
 class GradeButton extends StatefulWidget {
   final String text;
   final Color color;

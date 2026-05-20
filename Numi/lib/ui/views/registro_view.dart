@@ -1,17 +1,15 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/registro_view.dart
-//  Pantalla de registro: Edad, Género, Email, Contraseña
-//  Aparece después de la animación de Numi y antes de Bienvenida
-// ─────────────────────────────────────────────────────────────
-
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/models/estudiante_model.dart';
+import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/musica_provider.dart';
 import 'bienvenida.dart';
 import 'login_view.dart';
+import 'menu_1_y_2_view.dart';
+import 'menu_3_a_5_view.dart';
 
 class RegistroView extends ConsumerStatefulWidget {
   const RegistroView({super.key});
@@ -94,6 +92,139 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
     return null;
   }
 
+  // ── Registro / login con Google ──────────────────────────────
+
+  Future<void> _registrarConGoogle() async {
+    setState(() => _cargando = true);
+    try {
+      final authService = ref.read(firebaseAuthServiceProvider);
+      final credential  = await authService.loginConGoogle();
+
+      if (credential == null) return; // usuario canceló el selector
+
+      final uid   = credential.user!.uid;
+      final email = credential.user?.email;
+
+      if (!mounted) return;
+
+      // Google ya verifica el correo → podemos entrar directamente
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(children: [
+              const Icon(Icons.security_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Google envió una notificación de seguridad a ${email ?? 'tu Gmail'}',
+                  style: const TextStyle(fontFamily: 'Poppins', fontSize: 13),
+                ),
+              ),
+            ]),
+            backgroundColor: const Color(0xFF1A73E8),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+
+      await _entrarConGoogle(uid, email);
+    } on FirebaseAuthException catch (e) {
+      if (mounted) _mostrarErrorSnack(_mensajeFirebaseGoogle(e));
+    } catch (e) {
+      if (mounted) _mostrarErrorSnack('Error con Google Sign-In: $e');
+    } finally {
+      if (mounted) setState(() => _cargando = false);
+    }
+  }
+
+  Future<void> _entrarConGoogle(String uid, String? email) async {
+    final repo     = ref.read(estudianteRepositoryProvider);
+    final syncCase = ref.read(sincronizarUseCaseProvider);
+
+    // 1. Buscar perfil por firebase_uid
+    var estudiante = await repo.buscarPorFirebaseUid(uid);
+
+    // 2. Migración: buscar por email si no hay uid
+    if (estudiante == null && email != null) {
+      estudiante = await repo.buscarPorEmail(email);
+      if (estudiante != null) {
+        await repo.vincularFirebaseUid(estudiante.id!, uid);
+        estudiante = estudiante.copyWith(firebaseUid: uid);
+      }
+    }
+
+    if (!mounted) return;
+
+    // 3. Sin perfil local → intentar restaurar desde Firestore
+    if (estudiante == null) {
+      final restored = await syncCase.sincronizarAlLogin(uid);
+      if (!mounted) return;
+      if (restored != null) {
+        await repo.actualizarUltimaSesion(restored.id!);
+        ref.read(estudianteActivoProvider.notifier).state = restored;
+        if (!mounted) return;
+        _navegarAlMenu(restored);
+      } else {
+        _navegarABienvenida(email: email, uid: uid);
+      }
+      return;
+    }
+
+    // 4. Perfil existente → entrar
+    await repo.actualizarUltimaSesion(estudiante.id!);
+    ref.read(estudianteActivoProvider.notifier).state = estudiante;
+    syncCase.ejecutar(estudiante.id!).ignore();
+    if (!mounted) return;
+
+    if (estudiante.nombre.isEmpty || estudiante.personaje.isEmpty) {
+      _navegarABienvenida(email: email, uid: uid);
+      return;
+    }
+    _navegarAlMenu(estudiante);
+  }
+
+  void _navegarAlMenu(EstudianteModel e) {
+    final Widget destino = e.grado <= 2
+        ? Menu1Y2Screen(nombre: e.nombre, avatar: e.personaje, nivel: e.grado)
+        : const Menu3A5Screen();
+    Navigator.of(context).pushReplacement(PageRouteBuilder(
+      pageBuilder: (ctx, a, _) => destino,
+      transitionsBuilder: (ctx, anim, _, child) =>
+          FadeTransition(opacity: anim, child: child),
+      transitionDuration: const Duration(milliseconds: 400),
+    ));
+  }
+
+  void _navegarABienvenida({String? email, required String uid}) {
+    Navigator.of(context).pushReplacement(PageRouteBuilder(
+      pageBuilder: (ctx, a, _) =>
+          WelcomeScreen(email: email, firebaseUid: uid),
+      transitionsBuilder: (ctx, anim, _, child) =>
+          FadeTransition(opacity: anim, child: child),
+      transitionDuration: const Duration(milliseconds: 400),
+    ));
+  }
+
+  void _mostrarErrorSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg, style: const TextStyle(fontFamily: 'Poppins')),
+      backgroundColor: const Color(0xFFEF5353),
+    ));
+  }
+
+  String _mensajeFirebaseGoogle(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'account-exists-with-different-credential':
+        return 'Ya existe una cuenta con ese email usando otro método';
+      case 'network-request-failed':
+        return 'Sin conexión a internet';
+      case 'too-many-requests':
+        return 'Demasiados intentos. Espera un momento';
+      default:
+        return 'Error de Google: ${e.message ?? e.code}';
+    }
+  }
+
   // ── Acción principal ─────────────────────────────────────────
 
   Future<void> _continuar() async {
@@ -116,17 +247,20 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
     setState(() => _cargando = true);
 
     try {
-      // Crea la cuenta en Firebase Authentication
+      // 1. Crea la cuenta en Firebase Authentication
       final authService = ref.read(firebaseAuthServiceProvider);
-      final credential = await authService.registrarConEmail(email, contrasena);
-      final uid = credential.user!.uid;
+      await authService.registrarConEmail(email, contrasena);
 
-      // Envía correo de verificación para confirmar que el Gmail es real
+      // 2. Envía correo de verificación
       await authService.enviarVerificacionEmail();
+
+      // 3. Cierra la sesión inmediatamente — el niño no puede entrar
+      //    hasta que abra el correo y toque el enlace de activación.
+      await authService.cerrarSesion();
 
       if (!mounted) return;
 
-      // Avisa al usuario que revise su Gmail antes de continuar
+      // 4. Informa al usuario y lo manda a LoginView
       await showDialog(
         context: context,
         barrierDismissible: false,
@@ -134,17 +268,22 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Row(
             children: [
-              Icon(Icons.mark_email_read_rounded, color: Color(0xFF4A8BF5), size: 28),
+              Icon(Icons.mark_email_read_rounded,
+                  color: Color(0xFF4A8BF5), size: 28),
               SizedBox(width: 10),
-              Text('Verifica tu Gmail',
-                  style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+              Expanded(
+                child: Text('¡Revisa tu Gmail!',
+                    style: TextStyle(fontFamily: 'Hiruko', fontSize: 20)),
+              ),
             ],
           ),
           content: Text(
-            'Enviamos un correo de verificación a $email.\n\n'
-            'Revisa tu Gmail y toca el enlace para activar tu cuenta. '
-            'Luego podrás iniciar sesión normalmente.',
-            style: const TextStyle(fontFamily: 'Poppins', fontSize: 14, height: 1.5),
+            'Enviamos un correo de verificación a:\n$email\n\n'
+            'Abre ese correo y toca el enlace de activación.\n'
+            'Luego vuelve aquí e inicia sesión.\n\n'
+            'Si no lo ves, revisa la carpeta Spam.',
+            style: const TextStyle(
+                fontFamily: 'Poppins', fontSize: 14, height: 1.55),
           ),
           actions: [
             ElevatedButton(
@@ -155,7 +294,7 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                     borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: () => Navigator.pop(context),
-              child: const Text('¡Entendido!',
+              child: const Text('Ir a Iniciar Sesión',
                   style: TextStyle(fontFamily: 'Hiruko', fontSize: 16)),
             ),
           ],
@@ -164,14 +303,11 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
 
       if (!mounted) return;
 
+      // 5. Navega a LoginView — el WelcomeScreen solo se abre tras
+      //    verificar el correo e iniciar sesión correctamente.
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (ctx, a, _) => WelcomeScreen(
-            email: email,
-            firebaseUid: uid,
-            edad: int.tryParse(edad),
-            genero: _generoSeleccionado!,
-          ),
+          pageBuilder: (ctx, a, _) => const LoginView(),
           transitionsBuilder: (ctx, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),
           transitionDuration: const Duration(milliseconds: 400),
@@ -419,6 +555,54 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                           ),
                         ),
 
+                        const SizedBox(height: 14),
+
+                        // ── Separador ─────────────────────────
+                        Row(children: [
+                          const Expanded(child: Divider(color: Colors.black26)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Text('o regístrate con',
+                                style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: isTablet ? 13.0 : 12.0,
+                                    color: Colors.black45)),
+                          ),
+                          const Expanded(child: Divider(color: Colors.black26)),
+                        ]),
+
+                        const SizedBox(height: 14),
+
+                        // ── Botón Google ───────────────────────
+                        SizedBox(
+                          width: double.infinity,
+                          height: isTablet ? 60.0 : 50.0,
+                          child: OutlinedButton(
+                            onPressed: _cargando ? null : _registrarConGoogle,
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black87,
+                              side: const BorderSide(
+                                  color: Color(0xFFBBBBBB), width: 1.5),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14)),
+                              elevation: 0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('Registrarse con Google ',
+                                    style: TextStyle(
+                                        fontFamily: 'Hiruko',
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87)),
+                                _GoogleIcon(),
+                              ],
+                            ),
+                          ),
+                        ),
+
                         const SizedBox(height: 18),
 
                         // ¿Ya tienes cuenta?
@@ -650,4 +834,54 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
       ),
     );
   }
+}
+
+class _GoogleIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 22,
+      height: 22,
+      child: CustomPaint(painter: _GoogleLogoPainter()),
+    );
+  }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r  = size.width / 2;
+    canvas.drawCircle(Offset(cx, cy), r, Paint()..color = Colors.white);
+    final rect = Rect.fromCircle(center: Offset(cx, cy), radius: r);
+    for (final seg in [
+      (Colors.red,   -30.0, 90.0),
+      (Colors.amber,  60.0, 90.0),
+      (Colors.green, 150.0, 90.0),
+      (Colors.blue,  240.0, 90.0),
+    ]) {
+      canvas.drawArc(
+        rect.deflate(size.width * 0.11),
+        seg.$2 * 3.14159265 / 180,
+        seg.$3 * 3.14159265 / 180,
+        false,
+        Paint()
+          ..color = seg.$1
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = size.width * 0.22,
+      );
+    }
+    canvas.drawRect(
+      Rect.fromLTWH(cx, cy - r * 0.35, r, r * 0.7),
+      Paint()..color = Colors.white,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(cx, cy - r * 0.13, r * 0.85, r * 0.27),
+      Paint()..color = Colors.blue,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

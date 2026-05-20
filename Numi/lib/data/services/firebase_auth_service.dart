@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/firebase_auth_service.dart
-//  Autenticación con Firebase: email/contraseña + Google
-// ─────────────────────────────────────────────────────────────
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -12,7 +7,6 @@ class FirebaseAuthService {
 
   User? get usuarioActual => _auth.currentUser;
 
-  // ── Registro con email y contraseña ──────────────────────────
   Future<UserCredential> registrarConEmail(
     String email,
     String password,
@@ -23,7 +17,6 @@ class FirebaseAuthService {
     );
   }
 
-  // ── Login con email y contraseña ─────────────────────────────
   Future<UserCredential> loginConEmail(
     String email,
     String password,
@@ -34,7 +27,6 @@ class FirebaseAuthService {
     );
   }
 
-  // ── Login con Google ──────────────────────────────────────────
   Future<UserCredential?> loginConGoogle() async {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
     if (googleUser == null) return null; // usuario canceló
@@ -50,25 +42,29 @@ class FirebaseAuthService {
     return await _auth.signInWithCredential(credential);
   }
 
-  // ── Enviar correo de recuperación de contraseña ──────────────
   Future<void> enviarCorreoRecuperacion(String email) async {
-    // Fuerza el idioma español para que el correo llegue en español
+    // Fuerza español para que el correo llegue en ese idioma
     await _auth.setLanguageCode('es');
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-  // ── Enviar verificación de email tras registro ────────────────
+  bool get estaVerificado => _auth.currentUser?.emailVerified ?? false;
+
+  // reload() fuerza una consulta a Firebase; el caché local puede estar desactualizado
+  Future<void> recargarUsuario() async {
+    await _auth.currentUser?.reload();
+  }
+
   Future<void> enviarVerificacionEmail() async {
+    await _auth.setLanguageCode('es');
     await _auth.currentUser?.sendEmailVerification();
   }
 
-  // ── Cerrar sesión ─────────────────────────────────────────────
   Future<void> cerrarSesion() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
 
-  // ── Traduce errores de Firebase a mensajes en español ─────────
   static String mensajeDeError(FirebaseAuthException e) {
     switch (e.code) {
       case 'email-already-in-use':

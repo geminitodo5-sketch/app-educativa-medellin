@@ -1,43 +1,13 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/local_llm_service.dart
-//  LLM local offline con flutter_gemma 0.13.x + MediaPipe.
-//  Modelo: Gemma 3n E2B (Edge 2B, instruction-tuned, INT4).
-//
-//  Distribución del modelo via Firebase Storage:
-//    1. Descarga gemma-3n-e2b-it-int4.bin desde ai.google.dev/gemma.
-//    2. Súbelo a Firebase Storage → carpeta /models/.
-//    3. Copia la URL de descarga y pégala en _urlModelo abajo.
-//    4. Reglas de Storage mínimas (Storage → Rules):
-//         rules_version = '2';
-//         service firebase.storage {
-//           match /b/{bucket}/o {
-//             match /models/{file} {
-//               allow read: if true;
-//             }
-//           }
-//         }
-//
-//  Flujo en la app (transparente al usuario):
-//    1. Al arrancar → inicializarSiExiste() detecta si ya está descargado.
-//    2. Si no está → descarga automática en background desde Firebase.
-//    3. Mientras descarga → el asistente usa RAG local como fallback.
-//    4. Al completar → isReady = true; las preguntas se responden
-//       con Gemma local offline, sin internet.
-// ─────────────────────────────────────────────────────────────
-
 import 'dart:async';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 class LocalLlmService {
-  // ── URL Firebase Storage ──────────────────────────────────────
-  // Reemplaza con la URL real de tu archivo Gemma 3n E2B en Firebase.
   static const _urlModelo =
       'https://huggingface.co/NUMI12123/NUMI-gemma/resolve/main/gemma-2b-it-cpu-int8.bin';
 
   static const _nombreArchivo = 'gemma-2b-it-cpu-int8.bin';
 
-  // ── Estado público ─────────────────────────────────────────────
   bool _isReady = false;
   bool _isDownloading = false;
   double _downloadProgress = 0.0;
@@ -46,18 +16,13 @@ class LocalLlmService {
   bool get isDownloading => _isDownloading;
   double get downloadProgress => _downloadProgress;
 
-  // ──────────────────────────────────────────────────────────────
-  //  Inicialización al arrancar la app.
-  //  Si el modelo ya fue descargado en una sesión anterior,
-  //  lo activa sin volver a descargarlo.
-  // ──────────────────────────────────────────────────────────────
   Future<void> inicializarSiExiste() async {
     try {
       await FlutterGemma.initialize();
       final instalado = await FlutterGemma.isModelInstalled(_nombreArchivo);
       if (!instalado) return;
 
-      // El archivo ya existe localmente; install() lo reutiliza sin red.
+      // install() sobre un archivo ya descargado lo activa sin red
       await FlutterGemma.installModel(
         modelType: ModelType.gemmaIt,
         fileType: ModelFileType.binary,
@@ -69,12 +34,7 @@ class LocalLlmService {
     }
   }
 
-  // ──────────────────────────────────────────────────────────────
-  //  Descarga el modelo Gemma 3n E2B desde Firebase y lo activa.
-  //  Se llama automáticamente al abrir la app por primera vez.
-  //  SmartDownloader (interno de flutter_gemma) activa foreground
-  //  service para archivos >500 MB, evitando el límite de WorkManager.
-  // ──────────────────────────────────────────────────────────────
+  // SmartDownloader (flutter_gemma) activa foreground service para archivos >500 MB
   Future<void> descargarModelo({
     required void Function(double) onProgress,
   }) async {
@@ -107,10 +67,6 @@ class LocalLlmService {
     }
   }
 
-  // ──────────────────────────────────────────────────────────────
-  //  Generación de respuesta — streaming token a token.
-  //  Incluye system prompt adaptado por materia y grado.
-  // ──────────────────────────────────────────────────────────────
   Stream<String> generarRespuesta({
     required String contexto,
     required String pregunta,
@@ -147,8 +103,7 @@ class LocalLlmService {
           yield response.token;
         }
       }
-      // Si el modelo no emitió ningún token en 30 s, propagamos el error
-      // para que rag_service.dart caiga al formateador de respaldo.
+      // Sin tokens en 30 s → rag_service.dart cae al formateador de respaldo
       if (!hayTokens) {
         throw TimeoutException('Gemma no respondió en 30 s', const Duration(seconds: 30));
       }
@@ -157,9 +112,6 @@ class LocalLlmService {
     }
   }
 
-  // ──────────────────────────────────────────────────────────────
-  //  Prompt adaptado por materia y grado — formato Gemma IT
-  // ──────────────────────────────────────────────────────────────
   String _construirPrompt({
     required String contexto,
     required String pregunta,
@@ -172,8 +124,7 @@ class LocalLlmService {
       _    => 'un poco más detalladas, para un estudiante de 10-11 años',
     };
 
-    // Si el RAG no encontró contexto relevante, Gemma responde desde
-    // su conocimiento general en lugar de bloquearse con contexto vacío.
+    // Sin contexto del RAG, Gemma responde desde conocimiento general en vez de bloquearse
     final seccionContexto = contexto.trim().isNotEmpty
         ? 'Información del currículo escolar:\n$contexto\n\n'
         : '';
@@ -198,7 +149,6 @@ class LocalLlmService {
         '<start_of_turn>model\n';
   }
 
-  // ── System prompt por materia ─────────────────────────────────
   String _rolPorMateria(String materia, int grado) {
     const roles = <String, String>{
       'matematicas':

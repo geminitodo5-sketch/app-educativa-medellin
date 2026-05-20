@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/descarga_paquete_service.dart
-//  Descarga los paquetes RAG desde la API pública y los importa
-//  a SQLite para uso 100% offline.
-// ─────────────────────────────────────────────────────────────
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive_io.dart';

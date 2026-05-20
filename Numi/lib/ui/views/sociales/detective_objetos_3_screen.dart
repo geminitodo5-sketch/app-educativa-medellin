@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -445,7 +445,6 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     );
   }
 
-
   Widget _buildBoard(double boardSide) {
     const frameThickness = 10.0;
     const frameRadius = 18.0;
@@ -503,7 +502,7 @@ class _PuzzleScreenState extends State<PuzzleScreen>
     final id = _board[row][col];
     final isFail = _failCell?.row == row && _failCell?.col == col;
     final isTarget = _selectedId != null && id == null;
-    final popKey = _popKey(row, col); // ✅ key unificada
+    final popKey = _popKey(row, col);
 
     Widget inner;
 

@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/banco_preguntas_service.dart
-//  Banco estático de 150 preguntas MCQ (10 por grado × materia).
-//  opcionA siempre es la correcta en storage; el runtime baraja
-//  las posiciones para que la correcta no esté fija en A.
-// ─────────────────────────────────────────────────────────────
-
-import 'dart:math';
+﻿import 'dart:math';
 import 'sqlite_service.dart';
 import 'rag_service.dart';
 
@@ -71,24 +64,16 @@ class BancoPreguntasService {
   }
 }
 
-// ── Modelo interno ────────────────────────────────────────────
-
 class _P {
   final String m, t, q, a, b, c, d, e;
   final int g, dif;
   const _P(this.m, this.g, this.t, this.q, this.a, this.b, this.c, this.d, this.e, {this.dif = 1});
 }
 
-// ── Banco de 150 preguntas ────────────────────────────────────
-// Estructura: materia, grado, tema, pregunta,
-//             opcionA (CORRECTA), opcionB, opcionC, opcionD,
-//             explicacion
-
+// opcionA es siempre la correcta en _banco; el runtime baraja las posiciones.
 const List<_P> _banco = [
 
-  // ══════════════════════════════════════════════════════════
   // MATEMÁTICAS GRADO 3
-  // ══════════════════════════════════════════════════════════
   _P('matematicas', 3, 'tablas de multiplicar',
      '¿Cuánto es 7 × 8?',
      '56', '48', '54', '63',
@@ -140,9 +125,7 @@ const List<_P> _banco = [
      '3', '4', '2', '6',
      'El triángulo tiene 3 lados y 3 ángulos. La suma de sus ángulos siempre es 180°.'),
 
-  // ══════════════════════════════════════════════════════════
   // MATEMÁTICAS GRADO 4
-  // ══════════════════════════════════════════════════════════
   _P('matematicas', 4, 'división exacta',
      '¿Cuánto es 72 ÷ 8?',
      '9', '7', '8', '6',
@@ -197,9 +180,7 @@ const List<_P> _banco = [
      '4/6 = 2/3 (dividir por 2 ambos términos). 3/6 = 1/2, no 2/3.',
      dif: 2),
 
-  // ══════════════════════════════════════════════════════════
   // MATEMÁTICAS GRADO 5
-  // ══════════════════════════════════════════════════════════
   _P('matematicas', 5, 'potenciación',
      '¿Cuánto es 2³?',
      '8', '6', '9', '16',
@@ -253,9 +234,7 @@ const List<_P> _banco = [
      '8', '7', '9', '6',
      '√64 = 8 porque 8 × 8 = 64.'),
 
-  // ══════════════════════════════════════════════════════════
   // CIENCIAS NATURALES GRADO 3
-  // ══════════════════════════════════════════════════════════
   _P('ciencias', 3, 'seres vivos',
      '¿Cuál característica es exclusiva de los seres vivos?',
      'Reproducirse', 'Ocupar espacio', 'Tener peso', 'Cambiar de temperatura',
@@ -306,9 +285,7 @@ const List<_P> _banco = [
      'Pasa de líquido a sólido', 'Pasa de gaseoso a sólido', 'Pasa de líquido a gaseoso', 'Pasa de sólido a líquido',
      'La congelación es el cambio de líquido a sólido. Ocurre a 0 °C.'),
 
-  // ══════════════════════════════════════════════════════════
   // CIENCIAS NATURALES GRADO 4
-  // ══════════════════════════════════════════════════════════
   _P('ciencias', 4, 'ecosistemas colombianos',
      '¿Cuál es el ecosistema más biodiverso de Colombia?',
      'La Amazonia colombiana', 'El desierto de La Tatacoa', 'La sabana llanera', 'El páramo andino',
@@ -360,9 +337,7 @@ const List<_P> _banco = [
      'Filtración', 'Destilación', 'Evaporación', 'Imantación',
      'La filtración retiene la arena en el filtro y deja pasar el agua. Se usa cuando hay un sólido en un líquido.'),
 
-  // ══════════════════════════════════════════════════════════
   // CIENCIAS NATURALES GRADO 5
-  // ══════════════════════════════════════════════════════════
   _P('ciencias', 5, 'sistema solar',
      '¿Cuál es el planeta más grande del sistema solar?',
      'Júpiter', 'Saturno', 'Neptuno', 'Urano',
@@ -414,9 +389,7 @@ const List<_P> _banco = [
      'Mercurio', 'Venus', 'La Tierra', 'Marte',
      'Mercurio es el más cercano al Sol. Un año en Mercurio dura solo 88 días terrestres.'),
 
-  // ══════════════════════════════════════════════════════════
   // CIENCIAS SOCIALES GRADO 3
-  // ══════════════════════════════════════════════════════════
   _P('sociales', 3, 'mapas y puntos cardinales',
      '¿Cuáles son los cuatro puntos cardinales?',
      'Norte, Sur, Este, Oeste', 'Norte, Sur, Izquierda, Derecha', 'Arriba, Abajo, Derecha, Izquierda', 'Norte, Sur, Centro, Lateral',
@@ -467,9 +440,7 @@ const List<_P> _banco = [
      'Hacia arriba', 'Hacia abajo', 'Hacia la derecha', 'Hacia la izquierda',
      'Por convención cartográfica, el norte siempre se representa en la parte superior del mapa.'),
 
-  // ══════════════════════════════════════════════════════════
   // CIENCIAS SOCIALES GRADO 4
-  // ══════════════════════════════════════════════════════════
   _P('sociales', 4, 'historia precolombina',
      '¿Qué cultura construyó las estatuas de San Agustín?',
      'La cultura agustiniana', 'Los Muiscas', 'Los Taironas', 'Los Zenúes',
@@ -522,9 +493,7 @@ const List<_P> _banco = [
      'Tres ramales', 'Dos ramales', 'Cuatro ramales', 'Un solo ramal',
      'Los Andes colombianos se dividen en: Cordillera Occidental, Central y Oriental.'),
 
-  // ══════════════════════════════════════════════════════════
   // CIENCIAS SOCIALES GRADO 5
-  // ══════════════════════════════════════════════════════════
   _P('sociales', 5, 'independencia de Colombia',
      '¿En qué año se dio el Grito de Independencia de Colombia?',
      '1810', '1819', '1800', '1821',
@@ -575,9 +544,7 @@ const List<_P> _banco = [
      'Impartir justicia e interpretar las leyes', 'Crear y aprobar las leyes', 'Ejecutar el plan de gobierno', 'Recaudar los impuestos',
      'El Poder Judicial administra justicia, resuelve conflictos y protege los derechos ciudadanos.'),
 
-  // ══════════════════════════════════════════════════════════
   // ESPAÑOL GRADO 3
-  // ══════════════════════════════════════════════════════════
   _P('espanol', 3, 'sinónimos y antónimos',
      '¿Cuál es sinónimo de "feliz"?',
      'Alegre', 'Triste', 'Enojado', 'Asustado',
@@ -628,9 +595,7 @@ const List<_P> _banco = [
      'Árbol', 'Mesa', 'Casa', 'Gato',
      '"Árbol" es esdrújula (ÁR-bol) y todas las palabras esdrújulas llevan tilde obligatoriamente.'),
 
-  // ══════════════════════════════════════════════════════════
   // ESPAÑOL GRADO 4
-  // ══════════════════════════════════════════════════════════
   _P('espanol', 4, 'sujeto y predicado',
      'En "Los niños juegan en el parque", ¿cuál es el sujeto?',
      'Los niños', 'Juegan', 'En el parque', 'Juegan en el parque',
@@ -681,9 +646,7 @@ const List<_P> _banco = [
      'Explicar las características de un ser, objeto o lugar', 'Narrar sucesos en orden cronológico', 'Convencer al lector de una opinión', 'Dar instrucciones paso a paso',
      'El texto descriptivo "pinta con palabras": usa adjetivos para que el lector imagine lo descrito.'),
 
-  // ══════════════════════════════════════════════════════════
   // ESPAÑOL GRADO 5
-  // ══════════════════════════════════════════════════════════
   _P('espanol', 5, 'verbos en tiempos compuestos',
      '¿Cuál verbo está en pretérito perfecto compuesto?',
      'He comido', 'Comí', 'Comeré', 'Como',
@@ -735,9 +698,7 @@ const List<_P> _banco = [
      'Genio', 'Jabón', 'Jirafa', 'Jamón',
      '"Genio" lleva G. Regla: "ge" y "gi" suenan como J pero se escriben con G: general, girasol, genio.'),
 
-  // ══════════════════════════════════════════════════════════
   // INGLÉS GRADO 3
-  // ══════════════════════════════════════════════════════════
   _P('ingles', 3, 'colores',
      'How do you say "rojo" in English?',
      'Red', 'Blue', 'Green', 'Yellow',
@@ -788,9 +749,7 @@ const List<_P> _banco = [
      'Goodbye', 'Hello', 'Hi', 'How are you?',
      'Goodbye (o Bye) se usa para despedirse. Hello y Hi son saludos de bienvenida.'),
 
-  // ══════════════════════════════════════════════════════════
   // INGLÉS GRADO 4
-  // ══════════════════════════════════════════════════════════
   _P('ingles', 4, 'presente simple verbos de acción',
      'Which sentence is correct in simple present with "she"?',
      'She reads books every day', 'She read books every day', 'She reading books every day', 'She is read books every day',
@@ -841,9 +800,7 @@ const List<_P> _banco = [
      'Winter', 'Summer', 'Spring', 'Autumn',
      'Winter = invierno. Summer = verano, Spring = primavera, Autumn/Fall = otoño.'),
 
-  // ══════════════════════════════════════════════════════════
   // INGLÉS GRADO 5
-  // ══════════════════════════════════════════════════════════
   _P('ingles', 5, 'presente continuo',
      'Which sentence is in the present continuous?',
      'She is singing right now.', 'She sings every day.', 'She sang yesterday.', 'She will sing tomorrow.',

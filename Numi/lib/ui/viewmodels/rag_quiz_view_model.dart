@@ -1,21 +1,12 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/viewmodels/rag_quiz_view_model.dart
-//  ViewModel para el quiz MCQ generado por RAG (T3.10)
-//  Grados 3-5: 5 respuestas correctas → animación de felicitaciones
-// ─────────────────────────────────────────────────────────────
-
-import 'dart:math';
+﻿import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/services/rag_service.dart';
+import '../../data/repositories/rag_repository.dart';
 import '../../data/services/banco_preguntas_service.dart';
 import '../../data/services/feedback_sounds.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/racha_provider.dart';
-import 'asistente_ia_view_model.dart';
-
-// ── Estado ────────────────────────────────────────────────────
 
 class RagQuizEstado {
   final List<PreguntaQuiz> preguntas;
@@ -77,14 +68,12 @@ class RagQuizEstado {
 
 const Object _sentinel = Object();
 
-// ── ViewModel ─────────────────────────────────────────────────
-
 class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
-  final RagService _rag;
+  final RagRepository _ragRepo;
   final BancoPreguntasService _banco;
   final Ref _ref;
 
-  RagQuizViewModel(this._rag, this._banco, this._ref)
+  RagQuizViewModel(this._ragRepo, this._banco, this._ref)
       : super(const RagQuizEstado());
 
   static const _actividadesQuiz = {
@@ -114,7 +103,7 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
 
       // 2) Si no hay preguntas estáticas, intentar generar desde RAG corpus.
       if (preguntas.isEmpty) {
-        preguntas = await _rag.generarPreguntasMCQ(
+        preguntas = await _ragRepo.generarPreguntasMCQ(
           materia: materia,
           grado: grado,
           cantidad: 15,
@@ -219,12 +208,10 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
   }
 }
 
-// ── Provider ──────────────────────────────────────────────────
-
 final ragQuizViewModelProvider =
     StateNotifierProvider.autoDispose<RagQuizViewModel, RagQuizEstado>((ref) {
   return RagQuizViewModel(
-    ref.read(ragServiceProvider),
+    ref.read(ragRepositoryProvider),
     ref.read(bancoPreguntasServiceProvider),
     ref,
   );

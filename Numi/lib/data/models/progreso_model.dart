@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/models/progreso_model.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-// ─────────────────────────────────────────────────────────────
-
 import 'dart:convert';
 
 class ProgresoModel {

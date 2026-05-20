@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/racha_view.dart
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../data/services/racha_service.dart';
 
 class _R {
@@ -37,8 +33,6 @@ class _R {
 
   static double _c(double v, double mn, double mx) => v.clamp(mn, mx);
 }
-
-// ─────────────────────────────────────────────────────────────
 
 class RachaView extends StatelessWidget {
   final RachaInfo info;
@@ -134,10 +128,6 @@ class RachaView extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  Stack de personajes
-// ─────────────────────────────────────────────────────────────
-
 class _PersonajesStack extends StatelessWidget {
   final double availH;
   final double availW;
@@ -166,7 +156,7 @@ class _PersonajesStack extends StatelessWidget {
     final fuegoSobresale = fuegoH - (personajeH * 0.50);
     final grupoTotalH    = sombraH + 10 + personajeH + fuegoSobresale;
 
-    // ✅ CAMBIO: se suma availH * 0.10 para subir todo el grupo
+    // Suma availH * 0.10 para subir el grupo hacia arriba verticalmente
     final margenBase = ((availH - grupoTotalH) / 2 + availH * 0.10).clamp(8.0, availH * 0.40);
 
     final sombraBottom     = margenBase;
@@ -251,10 +241,6 @@ class _PersonajesStack extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  Círculo indicador de día
-// ─────────────────────────────────────────────────────────────
-
 class _DiaCircle extends StatelessWidget {
   final String label;
   final bool activo;
@@ -323,10 +309,6 @@ class _DiaCircle extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────
-//  Botón ¡Sigue así!
-// ─────────────────────────────────────────────────────────────
 
 class _BotonSiguiente extends StatelessWidget {
   final _R r;

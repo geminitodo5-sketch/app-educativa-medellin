@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/asistente_ia/rag_quiz_view.dart
-//  Pantalla de quiz MCQ generado por RAG — T3.10
-//  Grados 3-5: 5 correctas → FelicitacionesModal con video.
-//  Estilo de feedback tomado de descubre_numeros_view.dart.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/rag_quiz_view_model.dart';
 import '../../viewmodels/asistente_ia_view_model.dart';
@@ -328,8 +321,6 @@ class _RagQuizViewState extends ConsumerState<RagQuizView> {
   }
 }
 
-// ── Header con barra de progreso ──────────────────────────────
-
 class _QuizHeader extends StatelessWidget {
   final String materia;
   final Color colorMateria;
@@ -443,8 +434,6 @@ class _QuizHeader extends StatelessWidget {
   }
 }
 
-// ── Tarjeta de pregunta ───────────────────────────────────────
-
 class _TarjetaPregunta extends StatelessWidget {
   final String texto;
   final String tema;
@@ -543,11 +532,7 @@ class _TarjetaPregunta extends StatelessWidget {
   }
 }
 
-// ── Estado visual de cada botón de opción ─────────────────────
-
 enum _EstadoBoton { normal, correcto, incorrecto }
-
-// ── Botón de opción ───────────────────────────────────────────
 
 class _BotonOpcion extends StatelessWidget {
   final String letra;
@@ -657,8 +642,6 @@ class _BotonOpcion extends StatelessWidget {
     );
   }
 }
-
-// ── Sin contenido descargado ──────────────────────────────────
 
 class _SinContenido extends StatelessWidget {
   final String materia;

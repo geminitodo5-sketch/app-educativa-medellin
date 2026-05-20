@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/asistente_ia/asistente_ia_view.dart
-//  Pantalla del asistente de IA con RAG offline.
-// ─────────────────────────────────────────────────────────────
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/asistente_ia_view_model.dart';
@@ -250,8 +245,6 @@ class _AsistenteIaViewState extends ConsumerState<AsistenteIaView> {
   }
 }
 
-// ── Selector de materias ──────────────────────────────────────
-
 class _SelectorMaterias extends StatefulWidget {
   final String materiaActual;
   final Map<String, bool> descargado;
@@ -397,8 +390,6 @@ class _SelectorMateriasState extends State<_SelectorMaterias> {
   }
 }
 
-// ── Pantalla cuando el paquete no está descargado ─────────────
-
 class _PantallaDescarga extends StatelessWidget {
   final String materia;
   final double progreso;
@@ -511,8 +502,6 @@ class _PantallaDescarga extends StatelessWidget {
     );
   }
 }
-
-// ── Área de chat ──────────────────────────────────────────────
 
 class _ChatArea extends StatelessWidget {
   final List<MensajeChat> mensajes;
@@ -629,8 +618,6 @@ class _ChatArea extends StatelessWidget {
   }
 }
 
-// ── Burbuja de mensaje ────────────────────────────────────────
-
 class _BurbujaMensaje extends StatelessWidget {
   final MensajeChat mensaje;
   final Color colorAsistente;
@@ -738,8 +725,6 @@ class _BurbujaMensaje extends StatelessWidget {
   }
 }
 
-// ── Indicador "está escribiendo" ──────────────────────────────
-
 class _IndicadorEscribiendo extends StatefulWidget {
   const _IndicadorEscribiendo();
 
@@ -787,8 +772,6 @@ class _IndicadorEscribiendoState extends State<_IndicadorEscribiendo>
     );
   }
 }
-
-// ── Historial de conversaciones ───────────────────────────
 
 class _HistorialSheet extends ConsumerWidget {
   final String materia;
@@ -901,8 +884,6 @@ class _HistorialSheet extends ConsumerWidget {
     );
   }
 }
-
-// ── Ítem de historial ─────────────────────────────────────
 
 class _HistorialItem extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -1025,8 +1006,6 @@ class _HistorialItem extends StatelessWidget {
   }
 }
 
-// ── Barra de input ────────────────────────────────────────────
-
 class _InputBar extends StatelessWidget {
   final TextEditingController ctrl;
   final bool respondiendo;
@@ -1116,8 +1095,6 @@ class _InputBar extends StatelessWidget {
     );
   }
 }
-
-// ── Chip decorativo de sugerencia ────────────────────────────
 
 class _ChipSugerencia extends StatelessWidget {
   final String texto;

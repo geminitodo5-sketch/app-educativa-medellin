@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/models/estudiante_model.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-// ─────────────────────────────────────────────────────────────
-
 class EstudianteModel {
   final int?    id;
   final String  nombre;

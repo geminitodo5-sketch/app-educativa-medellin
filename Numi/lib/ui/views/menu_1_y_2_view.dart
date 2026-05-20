@@ -1,10 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/menu_1_y_2_view.dart
-//  Menú principal para grados 1 y 2.
-//  Muestra las 5 materias con barra de progreso real desde la BD.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../data/providers/app_state_provider.dart';
@@ -463,7 +457,6 @@ class _Menu1Y2ScreenState extends ConsumerState<Menu1Y2Screen> with RouteAware {
   }
 }
 
-// ─── Fila de materia con icono, nombre y barra de progreso ─────
 class _MateriaRow extends StatefulWidget {
   final Color color;
   final Color shadowColor;

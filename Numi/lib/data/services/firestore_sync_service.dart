@@ -1,5 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/firestore_sync_service.dart
+﻿//  lib/data/services/firestore_sync_service.dart
 //  Capa: Datos — Responsabilidad: Ingeniería
 //
 //  Sube y descarga progreso del estudiante hacia/desde Firestore.
@@ -26,7 +25,6 @@
 //        }
 //      }
 //    }
-// ─────────────────────────────────────────────────────────────
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/progreso_model.dart';

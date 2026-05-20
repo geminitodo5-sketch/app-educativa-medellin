@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/widgets/felicitaciones_modal.dart
-//  Modal de felicitaciones: video + sonido simultáneos
-// ─────────────────────────────────────────────────────────────
-
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:media_kit/media_kit.dart';

@@ -1,14 +1,12 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/configuracion_view.dart
-//  Pantalla de configuración: muestra datos reales del estudiante
-//  y permite cambiar nombre. Guarda ajustes en la BD.
-// ─────────────────────────────────────────────────────────────
+﻿import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../../data/providers/musica_provider.dart';
+import '../viewmodels/asistente_ia_view_model.dart';
 import 'registro_view.dart';
 import 'menu_1_y_2_view.dart';
 import 'menu_3_a_5_view.dart';
@@ -24,8 +22,10 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
   bool   _sonidoActivo = true;
   bool   _musicaActiva = true;
   double _volumen      = 1.0;
-  bool   _modoOffline  = true;
+  bool   _hayInternet  = false;
   String _idiomaSeleccionado = 'Español';
+
+  StreamSubscription<ConnectivityResult>? _connectivitySub;
 
   @override
   void initState() {
@@ -33,6 +33,23 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     final svc = ref.read(musicaServiceProvider);
     _musicaActiva = svc.musicaActiva;
     _volumen      = svc.volumen;
+
+    Connectivity().checkConnectivity().then((result) {
+      if (mounted) {
+        setState(() => _hayInternet = result != ConnectivityResult.none);
+      }
+    });
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((result) {
+      if (mounted) {
+        setState(() => _hayInternet = result != ConnectivityResult.none);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySub?.cancel();
+    super.dispose();
   }
 
   static const Color _cyanTeal = Color(0xFF65CEE3);
@@ -227,6 +244,7 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
     final nombre = estudiante?.nombre ?? 'Estudiante';
     final avatar = estudiante?.personaje ?? 'pollito';
     final grado = estudiante?.grado ?? 1;
+    final gemmaEstado = ref.watch(asistenteIaViewModelProvider);
 
     final sw = MediaQuery.of(context).size.width;
     final isTablet = sw >= 600;
@@ -363,6 +381,8 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
                   _buildOfflineCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
                   _buildSyncCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
+                  SizedBox(height: cardGap),
+                  _buildGemmaCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize, isTablet, gemmaEstado),
                   SizedBox(height: cardGap),
                   _buildManualCard(cardPadding, cardRadius, cardTitleSize, cardSubSize, iconSize),
                   SizedBox(height: cardGap),
@@ -557,6 +577,15 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
 
   Widget _buildOfflineCard(double cardPadding, double cardRadius,
       double titleSize, double subSize, double iconSize) {
+    final icon = _hayInternet ? Icons.wifi_rounded : Icons.wifi_off_rounded;
+    final statusText = _hayInternet ? 'Con internet' : 'Sin conexión';
+    final statusSub  = _hayInternet
+        ? 'La app se sincroniza automáticamente.'
+        : '¡Funciona sin internet!';
+    final statusColor = _hayInternet
+        ? const Color(0xFF3DCC52)
+        : Colors.orange;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(cardPadding),
@@ -566,44 +595,268 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
       ),
       child: Row(
         children: [
-          Icon(Icons.wifi_off_outlined, color: Colors.white, size: iconSize),
+          Icon(icon, color: Colors.white, size: iconSize),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Modo Offline',
+                Text('Estado de conexión',
                     style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                         fontSize: titleSize,
                         color: Colors.white)),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text('¡Funciona sin internet!',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: subSize,
-                              color: Colors.white)),
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: statusColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                    Switch(
-                      value: _modoOffline,
-                      onChanged: (v) => setState(() => _modoOffline = v),
-                      activeThumbColor: Colors.white,
-                      activeTrackColor: Colors.green,
-                      inactiveTrackColor: Colors.white24,
-                      inactiveThumbColor: Colors.white,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    const SizedBox(width: 8),
+                    Text(
+                      statusText,
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: subSize,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
                     ),
                   ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  statusSub,
+                  style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: subSize - 1,
+                      color: Colors.white70),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGemmaCard(
+    double cardPadding,
+    double cardRadius,
+    double titleSize,
+    double subSize,
+    double iconSize,
+    bool isTablet,
+    AsistenteIaEstado vm,
+  ) {
+    const cardColor = Color(0xFF5B21B6);
+
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Título ─────────────────────────────────────────
+        Text(
+          'Asistente IA',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            fontSize: titleSize,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 6),
+
+        // ── Estado: listo ───────────────────────────────────
+        if (vm.isModelReady) ...[
+          Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.greenAccent.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.greenAccent, width: 1),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.check_circle_rounded,
+                    color: Colors.greenAccent, size: 15),
+                const SizedBox(width: 5),
+                Text('¡Modelo listo!',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: subSize - 1,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.greenAccent)),
+              ]),
+            ),
+          ]),
+          const SizedBox(height: 4),
+          Text(
+            'El asistente funciona completamente sin internet.',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: subSize - 1,
+                color: Colors.white70),
+          ),
+        ]
+
+        // ── Estado: descargando ─────────────────────────────
+        else if (vm.isModelDownloading) ...[
+          Text(
+            'Descargando modelo... ${(vm.modelDownloadProgress * 100).toInt()}%',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: subSize,
+                fontWeight: FontWeight.w600,
+                color: Colors.white),
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: vm.modelDownloadProgress,
+              minHeight: isTablet ? 12 : 10,
+              backgroundColor: Colors.white24,
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(Colors.amberAccent),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'No cierres la app. Esto puede tardar unos minutos.',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: subSize - 2,
+                color: Colors.white60),
+          ),
+        ]
+
+        // ── Estado: error ───────────────────────────────────
+        else if (vm.modelError != null) ...[
+          Row(children: [
+            const Icon(Icons.error_outline_rounded,
+                color: Colors.orangeAccent, size: 18),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'No se pudo descargar. Verifica tu internet.',
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: subSize - 1,
+                    color: Colors.white70),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 8),
+          _botonGemma(
+            label: 'Reintentar',
+            icon: Icons.refresh_rounded,
+            isTablet: isTablet,
+            subSize: subSize,
+          ),
+        ]
+
+        // ── Estado: no descargado ───────────────────────────
+        else ...[
+          Text(
+            'Descarga el modelo para usar el asistente IA sin internet.',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: subSize - 1,
+                color: Colors.white70),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '⚠ Requiere ~1.5 GB de espacio libre y conexión WiFi.',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: subSize - 2,
+                color: Colors.white54),
+          ),
+          const SizedBox(height: 10),
+          _botonGemma(
+            label: 'Descargar modelo',
+            icon: Icons.download_rounded,
+            isTablet: isTablet,
+            subSize: subSize,
+          ),
+        ],
+      ],
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(cardPadding),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(cardRadius),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Ícono con insignia de estado ─────────────────
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(Icons.psychology_rounded, color: Colors.white70, size: iconSize),
+              if (vm.isModelReady)
+                Positioned(
+                  right: -4,
+                  bottom: -4,
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    decoration: const BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check, color: Colors.white, size: 12),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Expanded(child: content),
+        ],
+      ),
+    );
+  }
+
+  Widget _botonGemma({
+    required String label,
+    required IconData icon,
+    required bool isTablet,
+    required double subSize,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () => ref
+            .read(asistenteIaViewModelProvider.notifier)
+            .iniciarDescargaModelo(),
+        icon: Icon(icon, size: isTablet ? 20 : 18),
+        label: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'Hiruko',
+            fontSize: isTablet ? subSize + 2 : subSize,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF5B21B6),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+          padding: EdgeInsets.symmetric(
+              vertical: isTablet ? 14 : 10,
+              horizontal: isTablet ? 20 : 16),
+          elevation: 0,
+        ),
       ),
     );
   }
@@ -763,7 +1016,6 @@ class _ConfiguracionViewState extends ConsumerState<ConfiguracionView> {
   }
 }
 
-// ─── Modal del Manual de Usuario ─────────────────────────────────────────────
 class _ManualSheet extends StatelessWidget {
   const _ManualSheet();
 
@@ -1156,7 +1408,6 @@ class _ManualSheet extends StatelessWidget {
   }
 }
 
-// ─── Widget de sección del manual ────────────────────────────────────────────
 class _Seccion extends StatelessWidget {
   final String numero;
   final String titulo;

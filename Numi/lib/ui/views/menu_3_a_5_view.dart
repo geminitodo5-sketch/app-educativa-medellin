@@ -1,22 +1,13 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/ui/views/menu_3_a_5_view.dart
-//  Menú principal para grados 3, 4 y 5.
-//  Toda la interacción pasa por el asistente RAG offline.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/app_state_provider.dart';
-import '../../data/providers/database_provider.dart';
 import '../../data/providers/musica_provider.dart';
 import '../../data/providers/racha_provider.dart';
-import '../../data/services/descarga_paquete_service.dart';
 import '../../main.dart' show routeObserver;
 import 'configuracion_view.dart';
 import 'asistente_ia/asistente_ia_view.dart';
 import 'racha_view.dart';
-
-// ── Datos de cada materia ─────────────────────────────────────
+import '../viewmodels/asistente_ia_view_model.dart';
 
 class _MateriaInfo {
   final String clave;
@@ -93,8 +84,6 @@ const _materias = [
   ),
 ];
 
-// ── Item para barras de progreso ──────────────────────────────
-
 class _ProgresoItem {
   final String clave;
   final String etiqueta;
@@ -142,8 +131,6 @@ const _progresoItems = [
   ),
 ];
 
-// ── Pantalla ──────────────────────────────────────────────────
-
 class Menu3A5Screen extends ConsumerStatefulWidget {
   const Menu3A5Screen({super.key});
 
@@ -153,12 +140,6 @@ class Menu3A5Screen extends ConsumerStatefulWidget {
 
 class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
   int _tabIndex = 0;
-  final Map<String, bool> _descargado = {};
-  final Map<String, double> _progresosDescarga = {};
-  final Set<String> _descargando = {};
-  bool _verificando = true;
-
-  late final DescargaPaqueteService _svc;
 
   // Evita doble-salir cuando dispose corre después de didPushNext.
   bool _salidoPorPush = false;
@@ -166,9 +147,8 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    _svc = DescargaPaqueteService(ref.read(sqliteServiceProvider));
-    _verificarDescargas();
     ref.read(musicaServiceProvider).entrar();
+    // El ViewModel verifica las descargas automáticamente al crearse.
   }
 
   Future<void> _abrirRacha() async {
@@ -208,40 +188,11 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
     super.dispose();
   }
 
-  Future<void> _verificarDescargas() async {
-    setState(() => _verificando = true);
-    for (final m in _materias) {
-      _descargado[m.clave] = await _svc.estaDescargado(m.clave);
-    }
-    if (mounted) setState(() => _verificando = false);
-  }
-
   Future<void> _descargar(String clave) async {
-    if (_descargando.contains(clave)) return;
-    setState(() {
-      _descargando.add(clave);
-      _progresosDescarga[clave] = 0.0;
-    });
     try {
-      await _svc.descargarPaquete(
-        clave,
-        onProgress: (p) {
-          if (mounted) setState(() => _progresosDescarga[clave] = p);
-        },
-      );
-      if (mounted) {
-        setState(() {
-          _descargado[clave] = true;
-          _descargando.remove(clave);
-          _progresosDescarga.remove(clave);
-        });
-      }
+      await ref.read(asistenteIaViewModelProvider.notifier).descargarMateria(clave);
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _descargando.remove(clave);
-        _progresosDescarga.remove(clave);
-      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al descargar $clave: $e'),
@@ -264,7 +215,7 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
         )
         .then((_) {
           ref.invalidate(menuProgresoProvider);
-          _verificarDescargas();
+          ref.read(asistenteIaViewModelProvider.notifier).verificarDescargados();
           _mostrarRachaPendiente();
         });
   }
@@ -285,16 +236,10 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
       _abrirAsistente(_materias.first);
       return;
     }
-    final db = ref.read(sqliteServiceProvider);
-    final rows = await db.rawQuery(
-      'SELECT materia FROM historial_rag WHERE estudiante_id = ? ORDER BY fecha DESC LIMIT 1',
-      [estudiante!.id],
-    );
-    String clave = 'matematicas';
-    if (rows.isNotEmpty) {
-      final m = rows.first['materia'] as String;
-      clave = m == 'español' ? 'espanol' : m;
-    }
+    final clave = await ref
+            .read(asistenteIaViewModelProvider.notifier)
+            .getUltimaMateria(estudiante!.id!) ??
+        'matematicas';
     final materia = _materias.firstWhere(
       (m) => m.clave == clave,
       orElse: () => _materias.first,
@@ -317,6 +262,13 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
     final nivel = estudiante?.grado ?? 3;
     final progresoAsync = ref.watch(menuProgresoProvider);
 
+    // Estado de descargas desde el ViewModel (evita duplicar lógica en la View).
+    final vmState = ref.watch(asistenteIaViewModelProvider);
+    final verificando = vmState.descargado.isEmpty;
+    final descargado = vmState.descargado;
+    final progresosDescarga = vmState.progresosDescarga;
+    final descargando = vmState.progresosDescarga.keys.toSet();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: Stack(
@@ -329,10 +281,10 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
                 nombre: nombre,
                 avatar: avatar,
                 nivel: nivel,
-                verificando: _verificando,
-                descargado: _descargado,
-                descargando: _descargando,
-                progresosDescarga: _progresosDescarga,
+                verificando: verificando,
+                descargado: descargado,
+                descargando: descargando,
+                progresosDescarga: progresosDescarga,
                 onDescargar: _descargar,
                 onAbrir: _abrirAsistente,
                 onAbrirUltimoChat: _abrirUltimoChat,
@@ -364,8 +316,6 @@ class _Menu3A5ScreenState extends ConsumerState<Menu3A5Screen> with RouteAware {
     );
   }
 }
-
-// ── Tab: Inicio ───────────────────────────────────────────────
 
 class _HomeTab extends StatefulWidget {
   final String saludo;
@@ -842,8 +792,6 @@ class _HomeTabState extends State<_HomeTab> {
   }
 }
 
-// ── Tarjeta de clase ──────────────────────────────────────────
-
 class _ClaseCard extends StatefulWidget {
   final _MateriaInfo info;
   final bool descargado;
@@ -1054,8 +1002,6 @@ class _ClaseCardState extends State<_ClaseCard>
   }
 }
 
-// ── Tab: Progreso ─────────────────────────────────────────────
-
 class _ProgresoTab extends StatelessWidget {
   final String nombre;
   final String avatar;
@@ -1235,10 +1181,12 @@ class _ProgresoTab extends StatelessWidget {
                             child: CircularProgressIndicator(
                                 color: Color(0xFF3E7DFE)),
                           ),
-                          error: (_, _) =>
-                              _buildBarras({}, barH, barGap, isTablet),
-                          data: (progreso) =>
-                              _buildBarras(progreso, barH, barGap, isTablet),
+                          error: (_, _) => SingleChildScrollView(
+                            child: _buildBarras({}, barH, barGap, isTablet),
+                          ),
+                          data: (progreso) => SingleChildScrollView(
+                            child: _buildBarras(progreso, barH, barGap, isTablet),
+                          ),
                         ),
                       ),
                     ),
@@ -1277,8 +1225,6 @@ class _ProgresoTab extends StatelessWidget {
     );
   }
 }
-
-// ── Barra de progreso ─────────────────────────────────────────
 
 class _BarraProgreso extends StatelessWidget {
   final String etiqueta;
@@ -1338,8 +1284,6 @@ class _BarraProgreso extends StatelessWidget {
     );
   }
 }
-
-// ── Barra de navegación inferior ─────────────────────────────
 
 class _NavBar extends StatelessWidget {
   final int selectedIndex;

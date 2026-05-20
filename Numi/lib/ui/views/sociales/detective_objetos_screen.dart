@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'detective_objetos_2_screen.dart';
@@ -444,7 +444,6 @@ class _DetectiveObjetosScreenState extends State<DetectiveObjetosScreen> {
   }
 }
 
-// ── Tipos ──────────────────────────────────────────────────────────────────
 enum _Zone { estanteria, pizarra, manzana, juguete }
 
 class _ZoneRect {

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:math' show sin, pi, Random, min;
 import 'dart:ui' as ui;
@@ -707,9 +707,7 @@ class _InstruccionState extends State<_Instruccion> {
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 2
-// ═════════════════════════════════════════════════════════════════════════════
 
 class _PiezaCuerpo {
   final String nombre;
@@ -1332,9 +1330,7 @@ class _Actividad2State extends State<_Actividad2> {
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
 // ACTIVIDAD 3
-// ═════════════════════════════════════════════════════════════════════════════
 
 class _Actividad3 extends StatefulWidget {
   final VoidCallback onFinish;

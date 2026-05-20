@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/repositories/estudiante_repository.dart
-//  Capa: Datos — Responsabilidad: Ingeniería
-// ─────────────────────────────────────────────────────────────
-
 import '../services/sqlite_service.dart';
 import '../models/estudiante_model.dart';
 

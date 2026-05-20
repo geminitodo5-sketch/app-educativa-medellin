@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/providers/racha_provider.dart
-// ─────────────────────────────────────────────────────────────
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/racha_service.dart';
 import 'database_provider.dart';

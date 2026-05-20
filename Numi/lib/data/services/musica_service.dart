@@ -1,11 +1,4 @@
-// ─────────────────────────────────────────────────────────────
-//  lib/data/services/musica_service.dart
-//  Servicio global de música de fondo.
-//  Usa ref-counting para soportar transiciones suaves entre
-//  pantallas target sin cortar la música.
-// ─────────────────────────────────────────────────────────────
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
