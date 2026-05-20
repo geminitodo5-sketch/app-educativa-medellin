@@ -57,9 +57,6 @@ dependencies:
   # Descompresión de ZIPs
   archive: ^3.4.0
 
-  # Animaciones Lottie JSON
-  lottie: ^2.7.0
-
   # Preferencias simples
   shared_preferences: ^2.2.0
 
