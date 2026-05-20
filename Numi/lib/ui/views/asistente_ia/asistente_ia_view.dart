@@ -416,74 +416,98 @@ class _PantallaDescarga extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.download_for_offline_rounded, size: 80, color: color),
-            const SizedBox(height: 16),
-            Text(
-              'Descarga el contenido',
-              style: TextStyle(
-                fontFamily: 'Hiruko',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Para usar el asistente de ${AsistenteIaViewModel.nombreMateria(materia)} sin internet, descarga su base de conocimiento.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-            const SizedBox(height: 24),
-            if (descargando) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: progreso,
-                  minHeight: 10,
-                  backgroundColor: Colors.grey.shade200,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '${(progreso * 100).toInt()}%',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-            ] else
-              ElevatedButton.icon(
-                onPressed: onDescargar,
-                icon: const Icon(Icons.download_rounded),
-                label: const Text(
-                  'Descargar ahora',
-                  style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: color,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+    return LayoutBuilder(
+      builder: (ctx, box) {
+        final sw = box.maxWidth;
+        final sh = box.maxHeight;
+        final isTablet = sw >= 600;
+        final iconSize = (sw * (isTablet ? 0.13 : 0.21)).clamp(60.0, 160.0);
+        final titleFs  = (sw * (isTablet ? 0.034 : 0.056)).clamp(18.0, 32.0);
+        final bodyFs   = (sw * (isTablet ? 0.022 : 0.036)).clamp(12.0, 18.0);
+        final hPad     = (sw * 0.09).clamp(24.0, 96.0);
+        final vGap     = (sh * 0.030).clamp(10.0, 32.0);
+
+        return Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+                horizontal: hPad, vertical: vGap),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.download_for_offline_rounded,
+                    size: iconSize, color: color),
+                SizedBox(height: vGap),
+                Text(
+                  'Descarga el contenido',
+                  style: TextStyle(
+                    fontFamily: 'Hiruko',
+                    fontSize: titleFs,
+                    fontWeight: FontWeight.bold,
+                    color: color,
                   ),
                 ),
-              ),
-          ],
-        ),
-      ),
+                SizedBox(height: vGap * 0.5),
+                Text(
+                  'Para usar el asistente de '
+                  '${AsistenteIaViewModel.nombreMateria(materia)} '
+                  'sin internet, descarga su base de conocimiento.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: bodyFs,
+                    color: Colors.black54,
+                  ),
+                ),
+                SizedBox(height: vGap * 1.5),
+                if (descargando) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      value: progreso,
+                      minHeight: isTablet ? 12.0 : 10.0,
+                      backgroundColor: Colors.grey.shade200,
+                      valueColor: AlwaysStoppedAnimation<Color>(color),
+                    ),
+                  ),
+                  SizedBox(height: vGap * 0.4),
+                  Text(
+                    '${(progreso * 100).toInt()}%',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: bodyFs,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ] else
+                  ElevatedButton.icon(
+                    onPressed: onDescargar,
+                    icon: const Icon(Icons.download_rounded),
+                    label: Text(
+                      'Descargar ahora',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        fontSize: bodyFs,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: color,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet ? 36.0 : 28.0,
+                        vertical: isTablet ? 18.0 : 14.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -511,27 +535,34 @@ class _ChatArea extends StatelessWidget {
           final sw = constraints.maxWidth;
           final sh = constraints.maxHeight;
           final isTablet = sw >= 600;
+          // Rangos de clamp ampliados para aprovechar pantallas grandes
+          final circleSize = (sw * 0.40).clamp(100.0, 260.0);
+          final iconSize   = (sw * 0.23).clamp(60.0, 155.0);
+          final titleFs = (sw * (isTablet ? 0.042 : 0.060)).clamp(22.0, 44.0);
+          final bodyFs  = (sw * (isTablet ? 0.024 : 0.038)).clamp(13.0, 22.0);
+          final hPad = (sw * 0.09).clamp(20.0, 120.0);
+          final vPad = (sh * 0.05).clamp(16.0, 60.0);
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: sh),
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: sw * 0.09,
-                  vertical: sh * 0.05,
+                  horizontal: hPad,
+                  vertical: vPad,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: (sw * 0.40).clamp(100.0, 190.0),
-                      height: (sw * 0.40).clamp(100.0, 190.0),
+                      width: circleSize,
+                      height: circleSize,
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.10),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.psychology_alt_rounded,
-                        size: (sw * 0.23).clamp(60.0, 115.0),
+                        size: iconSize,
                         color: color.withValues(alpha: 0.70),
                       ),
                     ),
@@ -540,8 +571,7 @@ class _ChatArea extends StatelessWidget {
                       '¡Hola! Soy Sabi 👋',
                       style: TextStyle(
                         fontFamily: 'Hiruko',
-                        fontSize: (sw * (isTablet ? 0.042 : 0.060))
-                            .clamp(22.0, 36.0),
+                        fontSize: titleFs,
                         fontWeight: FontWeight.bold,
                         color: color,
                       ),
@@ -553,8 +583,7 @@ class _ChatArea extends StatelessWidget {
                       'Escribe una pregunta o elige un tema para comenzar.',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: (sw * (isTablet ? 0.024 : 0.038))
-                            .clamp(13.0, 20.0),
+                        fontSize: bodyFs,
                         color: Colors.black54,
                         height: 1.6,
                       ),
@@ -562,8 +591,8 @@ class _ChatArea extends StatelessWidget {
                     ),
                     SizedBox(height: sh * 0.045),
                     Wrap(
-                      spacing: sw * 0.025,
-                      runSpacing: sh * 0.014,
+                      spacing: (sw * 0.025).clamp(8.0, 24.0),
+                      runSpacing: (sh * 0.014).clamp(6.0, 18.0),
                       alignment: WrapAlignment.center,
                       children: const [
                         _ChipSugerencia('💡 Explícame un tema'),
@@ -1093,10 +1122,11 @@ class _ChipSugerencia extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sw = MediaQuery.of(context).size.width;
+    final isTablet = sw >= 600;
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: sw * 0.042,
-        vertical: sw * 0.022,
+        horizontal: (sw * 0.042).clamp(12.0, 52.0),
+        vertical: (sw * 0.022).clamp(8.0, 26.0),
       ),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1113,7 +1143,7 @@ class _ChipSugerencia extends StatelessWidget {
         texto,
         style: TextStyle(
           fontFamily: 'Poppins',
-          fontSize: (sw * 0.034).clamp(11.0, 15.0),
+          fontSize: (sw * 0.034).clamp(11.0, isTablet ? 18.0 : 15.0),
           color: Colors.black54,
         ),
       ),

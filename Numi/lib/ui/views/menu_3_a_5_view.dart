@@ -1085,163 +1085,196 @@ class _ProgresoTab extends StatelessWidget {
     final nameLeft = isTablet ? 148.0 : 120.0;
     final nameFs = isTablet ? 26.0 : 22.0;
     final progresoTitleFs = isTablet ? 26.0 : 22.0;
+    // Espacio que ocupa la navBar flotante desde el fondo del SafeArea
+    final navPad = isTablet ? 120.0 : 100.0;
+    final topSpacing = isTablet ? 28.0 : 20.0;
 
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: isTablet ? 120 : 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: isTablet ? 28 : 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: topSpacing),
 
-            // Tarjeta de perfil
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: hPad),
-              child: Container(
-                height: cardH,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF45C0D0),
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2DA0AE),
-                      blurRadius: 0,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Avatar centrado verticalmente
-                    Positioned(
-                      top: (cardH - avatarSize) / 2,
-                      left: avatarLeft,
-                      child: Container(
-                        width: avatarSize,
-                        height: avatarSize,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.all(color: Colors.white, width: 4),
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            _avatarPath,
-                            fit: BoxFit.contain,
-                            errorBuilder: (_, _, _) => const Icon(
-                              Icons.person,
-                              color: Color(0xFF45C0D0),
-                            ),
+          // ── Tarjeta de perfil ────────────────────────────────
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: hPad),
+            child: Container(
+              height: cardH,
+              decoration: BoxDecoration(
+                color: const Color(0xFF45C0D0),
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xFF2DA0AE),
+                    blurRadius: 0,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: (cardH - avatarSize) / 2,
+                    left: avatarLeft,
+                    child: Container(
+                      width: avatarSize,
+                      height: avatarSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.all(color: Colors.white, width: 4),
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          _avatarPath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.person,
+                            color: Color(0xFF45C0D0),
                           ),
                         ),
                       ),
                     ),
-                    // Nombre y grado
-                    Positioned(
-                      left: nameLeft,
-                      top: 22,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            nombre,
-                            style: TextStyle(
-                              fontFamily: 'Hiruko',
-                              fontSize: nameFs,
-                              fontWeight: FontWeight.w800,
+                  ),
+                  Positioned(
+                    left: nameLeft,
+                    top: 22,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          nombre,
+                          style: TextStyle(
+                            fontFamily: 'Hiruko',
+                            fontSize: nameFs,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF8C00),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0xFFCC6600),
+                                blurRadius: 0,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            '$nivel°',
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF8C00),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFCC6600),
-                                  blurRadius: 0,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Text(
-                              '$nivel°',
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Título + barras llenan el espacio restante ───────
+          Expanded(
+            child: LayoutBuilder(
+              builder: (ctx, box) {
+                final availH = box.maxHeight;
+                // Separación entre la tarjeta y el título: proporcional
+                final gap1 = (availH * 0.06).clamp(14.0, 36.0);
+                final titleH = progresoTitleFs * 1.3;
+                final spacing2 = isTablet ? 18.0 : 14.0;
+                final barGap = isTablet ? 14.0 : 12.0;
+                // Espacio neto para las barras
+                final barsH =
+                    availH - gap1 - titleH - spacing2 - navPad;
+                // Altura de cada barra distribuida uniformemente
+                final barH = ((barsH -
+                            barGap * _progresoItems.length) /
+                        _progresoItems.length)
+                    .clamp(48.0, 130.0);
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: gap1),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: hPad),
+                      child: Text(
+                        'Tu progreso',
+                        style: TextStyle(
+                          fontFamily: 'Hiruko',
+                          fontSize: progresoTitleFs,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: spacing2),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: hPad,
+                          right: hPad,
+                          bottom: navPad,
+                        ),
+                        child: progresoAsync.when(
+                          loading: () => const Center(
+                            child: CircularProgressIndicator(
+                                color: Color(0xFF3E7DFE)),
                           ),
-                        ],
+                          error: (_, _) =>
+                              _buildBarras({}, barH, barGap, isTablet),
+                          data: (progreso) =>
+                              _buildBarras(progreso, barH, barGap, isTablet),
+                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
+                );
+              },
             ),
-
-            SizedBox(height: isTablet ? 70 : 60),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: hPad),
-              child: Text(
-                'Tu progreso',
-                style: TextStyle(
-                  fontFamily: 'Hiruko',
-                  fontSize: progresoTitleFs,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-
-            SizedBox(height: isTablet ? 18 : 14),
-
-            progresoAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
-                child: Center(
-                  child: CircularProgressIndicator(color: Color(0xFF3E7DFE)),
-                ),
-              ),
-              error: (_, _) => _buildBarras({}, context),
-              data: (progreso) => _buildBarras(progreso, context),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBarras(Map<String, double> progreso, BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final screenW = mq.size.width;
-    final isTablet = screenW >= 600;
-    final hPad = isTablet ? screenW * 0.06 : 20.0;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: hPad),
-      child: Column(
-        children: _progresoItems.map((item) {
-          final pct = (progreso[item.clave] ?? 0.0).clamp(0.0, 100.0);
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+  Widget _buildBarras(
+    Map<String, double> progreso,
+    double barH,
+    double barGap,
+    bool isTablet,
+  ) {
+    return Column(
+      children: _progresoItems.map((item) {
+        final pct = (progreso[item.clave] ?? 0.0).clamp(0.0, 100.0);
+        return Padding(
+          padding: EdgeInsets.only(bottom: barGap),
+          child: SizedBox(
+            height: barH,
             child: _BarraProgreso(
               etiqueta: item.etiqueta,
               porcentaje: pct,
               color: item.color,
               sombra: item.sombra,
+              isTablet: isTablet,
             ),
-          );
-        }).toList(),
-      ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -1253,16 +1286,19 @@ class _BarraProgreso extends StatelessWidget {
   final double porcentaje;
   final Color color;
   final Color sombra;
+  final bool isTablet;
 
   const _BarraProgreso({
     required this.etiqueta,
     required this.porcentaje,
     required this.color,
     required this.sombra,
+    this.isTablet = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final labelFs = isTablet ? 15.0 : 13.0;
     return Container(
       decoration: BoxDecoration(
         color: color,
@@ -1272,24 +1308,25 @@ class _BarraProgreso extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+        padding: EdgeInsets.symmetric(horizontal: isTablet ? 22.0 : 18.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               etiqueta,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 14,
+                fontSize: labelFs,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),
             Text(
               '${porcentaje.toInt()}%',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 14,
+                fontSize: labelFs,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
