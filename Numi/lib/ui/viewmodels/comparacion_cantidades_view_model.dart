@@ -148,6 +148,10 @@ class ComparacionCantidadesViewModel
           fecha: DateTime.now().toIso8601String(),
         ),
       );
+
+      // Sync inmediata a Firestore para reflejar el progreso en otros dispositivos
+      _ref.read(sincronizarUseCaseProvider).ejecutar(estudiante.id!).ignore();
+      _ref.invalidate(menuProgresoProvider);
     } catch (e) {
       debugPrint('Error al guardar progreso de comparación: $e');
     }

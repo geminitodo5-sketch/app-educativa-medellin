@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/sync_queue_model.dart';
 import '../../data/providers/app_state_provider.dart'
-    show estudianteActivoProvider;
+    show estudianteActivoProvider, menuProgresoProvider;
 import '../../data/providers/database_provider.dart';
 
 class OracionEjercicio {
@@ -219,6 +219,10 @@ class OracionesViewModel extends StateNotifier<OracionesEstado> {
             }),
             fecha: DateTime.now().toIso8601String(),
           ));
+
+      // Sync inmediata a Firestore para reflejar el progreso en otros dispositivos
+      _ref.read(sincronizarUseCaseProvider).ejecutar(estudianteId).ignore();
+      _ref.invalidate(menuProgresoProvider);
     } catch (e) {
       debugPrint('Error guardando progreso Oraciones: $e');
     }

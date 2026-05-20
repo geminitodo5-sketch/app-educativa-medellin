@@ -8,7 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/progreso_model.dart';
 import '../../data/models/sync_queue_model.dart';
 import '../../data/providers/database_provider.dart';
-import '../../data/providers/app_state_provider.dart' show estudianteActivoProvider;
+import '../../data/providers/app_state_provider.dart'
+    show estudianteActivoProvider, menuProgresoProvider;
 
 final inglesViewModelProvider =
     ChangeNotifierProvider<InglesViewModel>((ref) {
@@ -90,6 +91,9 @@ class InglesViewModel extends ChangeNotifier {
         fecha: DateTime.now().toIso8601String(),
       ));
 
+      // Sync inmediata a Firestore para reflejar el progreso en otros dispositivos
+      _ref.read(sincronizarUseCaseProvider).ejecutar(estudianteId).ignore();
+      _ref.invalidate(menuProgresoProvider);
       await commandCargarProgreso();
     } catch (e) {
       _error = 'Error al guardar progreso: $e';

@@ -169,6 +169,10 @@ class RagQuizViewModel extends StateNotifier<RagQuizEstado> {
       );
     }
 
+    // Sync inmediata a Firestore para reflejar el progreso en otros dispositivos
+    _ref.read(sincronizarUseCaseProvider).ejecutar(estudiante.id!).ignore();
+    _ref.invalidate(menuProgresoProvider);
+
     if (!mounted) return;
     final svc  = _ref.read(rachaServiceProvider);
     final info = await svc.verificarRacha(estudiante.id!);

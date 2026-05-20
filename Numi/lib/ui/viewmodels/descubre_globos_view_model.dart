@@ -128,6 +128,10 @@ class DescubreGlobosViewModel extends StateNotifier<DescubreGlobosEstado> {
           actividad: 'Los números',
           porcentaje: 100,
         );
+
+    // Sync inmediata a Firestore para reflejar el progreso en otros dispositivos
+    _ref.read(sincronizarUseCaseProvider).ejecutar(estudiante.id!).ignore();
+    _ref.invalidate(menuProgresoProvider);
   }
 
   /// Nuevo reto: número objetivo diferente, nuevos globos
