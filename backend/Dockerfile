@@ -17,8 +17,8 @@ RUN useradd --create-home --uid 10001 numi \
 COPY --chown=numi . .
 USER numi
 
-# Los datos de usuario viven en /app/data → montar un volumen persistente aquí
-# (o usar USERS_DATABASE_URL apuntando a una BD gestionada).
-VOLUME ["/app/data"]
+# Los datos de usuario viven en /app/data. No se declara VOLUME aquí (Railway
+# lo prohíbe): monta un volumen de Railway en /app/data, o usa PostgreSQL con
+# USERS_DATABASE_URL.
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
