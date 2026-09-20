@@ -1,0 +1,14 @@
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+fastembed==0.3.6
+faiss-cpu==1.8.0
+numpy==1.26.4
+google-genai>=1.0.0
+
+# Datos de usuario + autenticación
+sqlalchemy>=2.0,<2.1
+google-auth>=2.29
+requests>=2.31
+cachecontrol>=0.14
+# Solo si USERS_DATABASE_URL apunta a PostgreSQL:
+# psycopg[binary]>=3.1
