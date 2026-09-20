@@ -11,6 +11,6 @@ class ApiConfig {
 
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://app-educativa-medellin-production.up.railway.app',
+    defaultValue: 'https://app-educativa-medellin-production-854b.up.railway.app',
   );
 }

@@ -10,5 +10,5 @@ sqlalchemy>=2.0,<2.1
 google-auth>=2.29
 requests>=2.31
 cachecontrol>=0.14
-# Solo si USERS_DATABASE_URL apunta a PostgreSQL:
-# psycopg[binary]>=3.1
+# Driver de PostgreSQL (solo se usa si USERS_DATABASE_URL apunta a PostgreSQL):
+psycopg[binary]>=3.1

@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../../data/models/estudiante_model.dart';
 import '../../data/models/progreso_model.dart';
@@ -55,6 +56,16 @@ class SincronizarUseCase {
         _remoto      = remoto,
         _db          = db,
         _connectivity = connectivity ?? Connectivity();
+
+  /// Texto de diagnóstico: para errores HTTP incluye método, URL, código y cuerpo.
+  static String _detalle(Object e) {
+    if (e is DioException) {
+      final r = e.response;
+      return '${e.requestOptions.method} ${e.requestOptions.uri} → '
+          '${r?.statusCode ?? e.type.name} ${r?.data ?? e.message ?? ''}';
+    }
+    return e.toString();
+  }
 
   Future<bool> _hayInternet() async {
     final result = await _connectivity.checkConnectivity();
@@ -144,7 +155,7 @@ class SincronizarUseCase {
         exito:        true,
       );
     } catch (e) {
-      debugPrint('SincronizarUseCase.ejecutar falló: $e');
+      debugPrint('SincronizarUseCase.ejecutar falló: ${_detalle(e)}');
       return SyncResultado(
         subidos: 0, descargados: 0, exito: false, error: e.toString(),
       );
@@ -197,7 +208,7 @@ class SincronizarUseCase {
 
       return RestauracionLogin(estudiante: estudianteLocal);
     } catch (e) {
-      debugPrint('SincronizarUseCase.sincronizarAlLogin falló: $e');
+      debugPrint('SincronizarUseCase.sincronizarAlLogin falló: ${_detalle(e)}');
       return const RestauracionLogin(sinConexion: true);
     }
   }
