@@ -1,4 +1,5 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/providers/database_provider.dart';
@@ -6,6 +7,7 @@ import '../widgets/restauracion_fallida_dialog.dart';
 import '../../data/services/firebase_auth_service.dart';
 import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/musica_provider.dart';
+import '../../data/services/musica_service.dart';
 import '../../data/models/estudiante_model.dart';
 import 'menu_1_y_2_view.dart';
 import 'menu_3_a_5_view.dart';
@@ -25,15 +27,19 @@ class _LoginViewState extends ConsumerState<LoginView> {
   bool _mostrarContrasena = false;
   bool _cargando = false;
 
+  // Se guarda al iniciar: en dispose() ya no se puede usar `ref`.
+  late final MusicaService _musica;
+
   @override
   void initState() {
     super.initState();
-    ref.read(musicaServiceProvider).entrar();
+    _musica = ref.read(musicaServiceProvider);
+    _musica.entrar();
   }
 
   @override
   void dispose() {
-    ref.read(musicaServiceProvider).salir();
+    _musica.salir();
     _emailController.dispose();
     _contrasenaController.dispose();
     super.dispose();
@@ -425,6 +431,20 @@ class _LoginViewState extends ConsumerState<LoginView> {
     );
   }
 
+  // ── SOLO para pruebas locales, nunca en producción ──────────────
+  // `kDebugMode` es `false` en todo build de release, así que esta ruta no
+  // puede llegar a un APK que se distribuya: el botón que la llama ni
+  // siquiera se dibuja fuera de modo debug. Crea un perfil 100% local (sin
+  // Firebase ni backend) para entrar a la app mientras se prueba algo que no
+  // depende del login.
+  Future<void> _entrarSinFirebaseDebug() async {
+    final repo = ref.read(estudianteRepositoryProvider);
+    final estudiante = await repo.obtenerOCrearPorDefecto();
+    if (!mounted) return;
+    ref.read(estudianteActivoProvider.notifier).state = estudiante;
+    _navegarAlMenu(estudiante);
+  }
+
   void _navegarABienvenida({String? email, required String uid}) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
@@ -670,6 +690,29 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 ),
                               ),
                             ),
+
+                            // Solo aparece en builds de debug (nunca en
+                            // release): entra sin Firebase para probar algo
+                            // que no depende del login, p. ej. la transición
+                            // de fin de actividad.
+                            if (kDebugMode) ...[
+                              const SizedBox(height: 10),
+                              Center(
+                                child: TextButton(
+                                  onPressed: _cargando
+                                      ? null
+                                      : _entrarSinFirebaseDebug,
+                                  child: const Text(
+                                    '🛠️ Entrar sin Firebase (solo debug)',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 12,
+                                      color: Colors.black38,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

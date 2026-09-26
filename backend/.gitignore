@@ -8,3 +8,6 @@ data/
 packages/
 fastembed_cache/
 .env
+# Claves de servicio de Firebase: nunca al repositorio
+*firebase-adminsdk*.json
+serviceAccount*.json

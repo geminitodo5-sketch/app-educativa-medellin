@@ -273,6 +273,22 @@ def _construir_prompt(
     }
     nivel, longitud, tono = config_grado.get(grado, config_grado[5])
 
+    # Matemáticas: instrucción extra contra cuentas inventadas. El cliente ya
+    # resuelve con código exacto (sin IA) las expresiones que puede reconocer
+    # (sumas, raíces, potencias, fracciones...); lo que llega hasta aquí son
+    # sobre todo problemas narrados ("Pedro tenía 15 canicas..."), donde SÍ
+    # hace falta que el modelo calcule — y calcule bien.
+    instruccion_matematicas = (
+        "\n- Esta es una pregunta de MATEMÁTICAS: antes de responder, resuelve la "
+        "cuenta paso a paso tú mismo y verifícala repitiendo la operación antes "
+        "de escribir el resultado final. Da SIEMPRE el número exacto de la "
+        "respuesta (nunca describas solo el procedimiento sin calcularlo). Si "
+        "no estás seguro del resultado, dilo explícitamente en vez de inventar "
+        "un número."
+        if materia == "matematicas"
+        else ""
+    )
+
     # Construir bloque de contexto con las 3 entradas más relevantes
     bloques = []
     for i, c in enumerate(contexto[:3], 1):
@@ -300,7 +316,7 @@ responde con tu conocimiento general del currículo escolar.
 - Si genuinamente no sabes, dilo con "No tengo esa información aquí, pero..." \
 y da una orientación básica.
 - NUNCA inventes datos académicos incorrectos (fechas, fórmulas, nombres, conceptos).
-- Explica con tus propias palabras, adaptadas al nivel del estudiante.
+- Explica con tus propias palabras, adaptadas al nivel del estudiante.{instruccion_matematicas}
 
 CONTEXTO DE REFERENCIA ({nombre_materia}, Grado {grado}):
 {ctx_text}

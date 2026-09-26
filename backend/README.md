@@ -40,6 +40,45 @@ El dueño de los datos es siempre el `uid` del token verificado. Firebase Auth s
 
 > Sin volumen o BD externa, el filesystem de Railway es efímero y los datos de usuario se perderían en cada despliegue.
 
+## Migrar datos de Firestore (una sola vez)
+
+Las cuentas creadas antes de esta versión tienen su progreso en Firestore. Este script lo copia a la base del backend; se puede repetir sin duplicar (el perfil no se pisa y el progreso conserva el mayor avance).
+
+1. Firebase Console → ⚙️ Configuración del proyecto → **Cuentas de servicio** → *Generar nueva clave privada*. Guarda el `.json` **fuera del repositorio**.
+2. La base de destino es la de producción: con PostgreSQL de Railway usa su URL **pública** (`DATABASE_PUBLIC_URL`) cambiando el inicio a `postgresql+psycopg://`.
+3. En PowerShell:
+   ```powershell
+   cd backend
+   pip install -r requirements-migracion.txt
+   $env:GOOGLE_APPLICATION_CREDENTIALS = "C:\ruta\fuera-del-repo\clave.json"
+   $env:USERS_DATABASE_URL = "postgresql+psycopg://usuario:clave@host:puerto/railway"
+   python scripts/migrar_firestore.py --dry-run     # solo informa
+   python scripts/migrar_firestore.py               # escribe
+   ```
+4. Al terminar, **borra la clave de servicio** (y revócala en la consola si ya no se necesita).
+
+## Migrar de SQLite a PostgreSQL (una sola vez)
+
+Si el backend ya guardó usuarios reales en SQLite (por ejemplo, con un volumen de Railway) antes de tener PostgreSQL, este script copia esos datos. Si la base en Railway todavía está vacía, este paso **no hace falta**: basta con apuntar `USERS_DATABASE_URL` a Postgres y redesplegar — las tablas se crean solas al arrancar.
+
+Es seguro repetirlo (misma regla que el resto de la app: el perfil no se pisa, el progreso conserva el mayor avance). Verificado end-to-end contra un PostgreSQL real en Docker, además de con pruebas automáticas.
+
+1. Consigue el archivo `.db` actual. Si el backend lo escribe en un volumen de Railway, descárgalo con la CLI de Railway; si lo tienes en un disco local de pruebas, usa esa ruta directamente.
+2. En PowerShell:
+   ```powershell
+   cd backend
+   .\venv\Scripts\Activate.ps1
+   python scripts/migrar_sqlite_a_postgres.py `
+     --origen "sqlite:///C:/ruta/a/usuarios.db" `
+     --destino "postgresql+psycopg://usuario:clave@host:puerto/railway" `
+     --dry-run     # solo informa
+
+   python scripts/migrar_sqlite_a_postgres.py `
+     --origen "sqlite:///C:/ruta/a/usuarios.db" `
+     --destino "postgresql+psycopg://usuario:clave@host:puerto/railway"
+   ```
+3. Revisa el resumen (perfiles y progreso copiados) antes de dar por hecha la migración.
+
 ## Pruebas
 
 ```bash

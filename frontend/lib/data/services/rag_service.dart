@@ -17,6 +17,7 @@
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'api_config.dart';
+import 'calculadora_matematica.dart';
 import 'sqlite_service.dart';
 import 'embedding_service.dart';
 import 'local_llm_service.dart';
@@ -280,8 +281,10 @@ class RagService {
   }) async {
     // 1. Evaluador aritmético (solo matemáticas — sin tocar la BD)
     if (materia == 'matematicas') {
-      final calc = _calcularExpresion(pregunta);
-      if (calc != null) return calc;
+      final calc = resolverExpresionMatematica(pregunta);
+      if (calc != null) {
+        return RagRespuesta(texto: calc.texto, encontrado: true, tema: calc.tema);
+      }
     }
 
     // 2. Tokenizar
@@ -770,268 +773,10 @@ class RagService {
     return RagRespuesta(texto: buffer.toString(), encontrado: false, tema: '');
   }
 
-  //  EVALUADOR ARITMÉTICO COMPLETO
-  //  Maneja: fracciones paso a paso, casos especiales
-  //  (doble/mitad/triple/cuadrado/raíz), frases compuestas,
-  //  operadores en palabra, operadores símbolo.
-
-  // ── GCD auxiliar para simplificar fracciones ──────────────
-  static int _gcd(int a, int b) => b == 0 ? a.abs() : _gcd(b, a % b);
-
-  // ── Evaluador de operaciones entre fracciones ─────────────
-  // Detecta el patrón "a/b [op] c/d" antes de que los operadores
-  // en palabra sean reemplazados por símbolos.
-  static RagRespuesta? _evaluarFraccion(String t) {
-    // Normalizar operadores en palabra a símbolos provisionales
-    final tn = t
-        .replaceAll(RegExp(r'multiplicado\s+(?:por|x)?\s*'), '×')
-        .replaceAll(RegExp(r'dividido\s+(?:entre|por)?\s*'), '÷')
-        .replaceAll(RegExp(r'\bpor\b|\bveces\b'), '×')
-        .replaceAll(RegExp(r'\bentre\b'), '÷')
-        .replaceAll(RegExp(r'\bmas\b'), '+')
-        .replaceAll(RegExp(r'\bmenos\b'), '-')
-        .replaceAll('×', '×') // idempotente
-        .trim();
-
-    // Patrón: entero/entero operador entero/entero
-    final m = RegExp(
-      r'^(\d+)\s*/\s*(\d+)\s*([+\-×÷*])\s*(\d+)\s*/\s*(\d+)$',
-    ).firstMatch(tn);
-    if (m == null) return null;
-
-    final a = int.parse(m.group(1)!);
-    final b = int.parse(m.group(2)!);
-    final op = m.group(3)!;
-    final c = int.parse(m.group(4)!);
-    final d = int.parse(m.group(5)!);
-
-    if (b == 0 || d == 0) {
-      return const RagRespuesta(
-        texto: '¡El denominador de una fracción no puede ser cero!',
-        encontrado: true, tema: 'fracciones',
-      );
-    }
-
-    int numR, denR;
-    String pasos;
-
-    if (op == '+') {
-      final g = _gcd(b, d);
-      final mcm = (b * d) ~/ g;
-      final na = a * (mcm ~/ b);
-      final nc = c * (mcm ~/ d);
-      numR = na + nc;
-      denR = mcm;
-      pasos = 'Suma de fracciones: $a/$b + $c/$d\n\n'
-              'Paso 1: Denominador común (MCM de $b y $d) = $mcm\n'
-              'Paso 2: Convierte cada fracción:\n'
-              '  • $a/$b = $na/$mcm\n'
-              '  • $c/$d = $nc/$mcm\n'
-              'Paso 3: Suma los numeradores: $na + $nc = $numR\n\n'
-              'Resultado: $numR/$denR';
-    } else if (op == '-') {
-      final g = _gcd(b, d);
-      final mcm = (b * d) ~/ g;
-      final na = a * (mcm ~/ b);
-      final nc = c * (mcm ~/ d);
-      numR = na - nc;
-      denR = mcm;
-      pasos = 'Resta de fracciones: $a/$b - $c/$d\n\n'
-              'Paso 1: Denominador común (MCM de $b y $d) = $mcm\n'
-              'Paso 2: Convierte cada fracción:\n'
-              '  • $a/$b = $na/$mcm\n'
-              '  • $c/$d = $nc/$mcm\n'
-              'Paso 3: Resta los numeradores: $na - $nc = $numR\n\n'
-              'Resultado: $numR/$denR';
-    } else if (op == '×' || op == '*') {
-      numR = a * c;
-      denR = b * d;
-      pasos = 'Multiplicación de fracciones: $a/$b × $c/$d\n\n'
-              'Paso 1: Multiplica los numeradores: $a × $c = $numR\n'
-              'Paso 2: Multiplica los denominadores: $b × $d = $denR\n\n'
-              'Resultado: $numR/$denR';
-    } else { // ÷
-      if (c == 0) {
-        return const RagRespuesta(
-          texto: '¡No se puede dividir entre cero!',
-          encontrado: true, tema: 'fracciones',
-        );
-      }
-      numR = a * d;
-      denR = b * c;
-      pasos = 'División de fracciones: $a/$b ÷ $c/$d\n\n'
-              'Paso 1: Invierte la segunda fracción: $c/$d → $d/$c\n'
-              'Paso 2: Ahora multiplica: $a/$b × $d/$c\n'
-              'Paso 3: Numeradores: $a × $d = $numR\n'
-              'Paso 4: Denominadores: $b × $c = $denR\n\n'
-              'Resultado: $numR/$denR';
-    }
-
-    // Simplificar resultado
-    if (denR != 0) {
-      final g = _gcd(numR.abs(), denR.abs());
-      if (g > 1) {
-        final sN = numR ~/ g;
-        final sD = denR ~/ g;
-        pasos += sD == 1 ? ' = $sN (número entero)' : ' = $sN/$sD (simplificado)';
-      } else if (numR > 0 && denR > 0 && numR > denR) {
-        final ent = numR ~/ denR;
-        final rem = numR % denR;
-        if (rem != 0) pasos += ' → número mixto: $ent y $rem/$denR';
-      }
-    }
-
-    return RagRespuesta(texto: pasos, encontrado: true, tema: 'fracciones');
-  }
-
-  static RagRespuesta? _calcularExpresion(String texto) {
-    var t = _quitarAcentos(texto.toLowerCase())
-        .replaceAll(RegExp(r'[?¿!¡]'), '')
-        .trim();
-
-    t = t
-        .replaceAll(RegExp(r'^cu[aá]nto[s]?\s+(es|son|da|vale|valen|hay)\s+'), '')
-        .replaceAll(RegExp(r'^cu[aá]l\s+es\s+(el\s+)?(resultado\s+de\s+)?'), '')
-        .replaceAll(RegExp(r'^(calcula|resuelve|halla|encuentra|dime)\s+'), '')
-        .replaceAll(RegExp(r'^(el\s+)?(resultado\s+de|resultado)\s+'), '')
-        .replaceAll(RegExp(r'^que\s+(es|vale|da)\s+'), '')
-        .trim();
-
-    // Detectar operaciones entre fracciones antes de normalizar operadores
-    final fracResult = _evaluarFraccion(t);
-    if (fracResult != null) return fracResult;
-
-    // Casos especiales
-    var m = RegExp(r'^(el\s+)?doble\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);
-    if (m != null) {
-      final n = _parseNum(m.group(2)!);
-      return _respEspecial('El doble de ${_fmt(n)}', n * 2, 'multiplicación',
-          '${_fmt(n)} × 2 = ${_fmt(n * 2)}');
-    }
-
-    m = RegExp(r'^(la\s+)?mitad\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);
-    if (m != null) {
-      final n = _parseNum(m.group(2)!);
-      return _respEspecial('La mitad de ${_fmt(n)}', n / 2, 'división',
-          '${_fmt(n)} ÷ 2 = ${_fmt(n / 2)}');
-    }
-
-    m = RegExp(r'^(el\s+)?triple\s+de\s+(\d+(?:[.,]\d+)?)$').firstMatch(t);
-    if (m != null) {
-      final n = _parseNum(m.group(2)!);
-      return _respEspecial('El triple de ${_fmt(n)}', n * 3, 'multiplicación',
-          '${_fmt(n)} × 3 = ${_fmt(n * 3)}');
-    }
-
-    m = RegExp(r'^(\d+(?:[.,]\d+)?)\s*(al\s+cuadrado|\^2|elevado\s+a\s+(la\s+)?2)$')
-        .firstMatch(t);
-    if (m != null) {
-      final n = _parseNum(m.group(1)!);
-      final r = n * n;
-      return RagRespuesta(
-        texto: '${_fmt(n)}² = ${_fmt(r)}\n(${_fmt(n)} × ${_fmt(n)} = ${_fmt(r)})',
-        encontrado: true, tema: 'potencias',
-      );
-    }
-
-    m = RegExp(r'^(\d+(?:[.,]\d+)?)\s*(al\s+cubo|\^3|elevado\s+a\s+(la\s+)?3)$')
-        .firstMatch(t);
-    if (m != null) {
-      final n = _parseNum(m.group(1)!);
-      final r = n * n * n;
-      return RagRespuesta(
-        texto: '${_fmt(n)}³ = ${_fmt(r)}\n(${_fmt(n)} × ${_fmt(n)} × ${_fmt(n)} = ${_fmt(r)})',
-        encontrado: true, tema: 'potencias',
-      );
-    }
-
-    m = RegExp(r'^(ra[ií]z\s+(?:cuadrada\s+)?de\s+|√)(\d+(?:[.,]\d+)?)$').firstMatch(t);
-    if (m != null) {
-      final n = _parseNum(m.group(2)!);
-      final r = sqrt(n);
-      return RagRespuesta(
-        texto: '√${_fmt(n)} = ${_fmt(r)}\n'
-               'La raíz cuadrada de ${_fmt(n)} es ${_fmt(r)}.',
-        encontrado: true, tema: 'raíz cuadrada',
-      );
-    }
-
-    // Normalización de operadores (frases multi-palabra primero)
-    t = t
-        .replaceAll(RegExp(r'multiplicado\s+por'), '*')
-        .replaceAll(RegExp(r'multiplicado\s+x'),   '*')
-        .replaceAll(RegExp(r'multiplicado\s+'),    '*')
-        .replaceAll(RegExp(r'dividido\s+entre'),   '/')
-        .replaceAll(RegExp(r'dividido\s+por'),     '/')
-        .replaceAll(RegExp(r'dividido\s+'),        '/')
-        .replaceAll(RegExp(r'sumado\s+[a-z]*\s*'), '+');
-
-    t = t
-        .replaceAll(RegExp(r'\bmas\b'),          '+')
-        .replaceAll(RegExp(r'\bmenos\b'),         '-')
-        .replaceAll(RegExp(r'\bpor\b|\bveces\b'), '*')
-        .replaceAll(RegExp(r'\bentre\b'),         '/')
-        .replaceAll(RegExp(r'\bx\b'),             '*');
-
-    t = t
-        .replaceAll('×', '*')
-        .replaceAll('÷', '/')
-        .replaceAll(',', '.')
-        .trim();
-
-    final match = RegExp(
-      r'^(\d+(?:\.\d+)?)\s*([+\-*/])\s*(\d+(?:\.\d+)?)$',
-    ).firstMatch(t);
-    if (match == null) return null;
-
-    final a  = double.parse(match.group(1)!);
-    final op = match.group(2)!;
-    final b  = double.parse(match.group(3)!);
-
-    double resultado;
-    String operacion;
-    String simbolo;
-
-    switch (op) {
-      case '+': resultado = a + b; operacion = 'suma';           simbolo = '+'; break;
-      case '-': resultado = a - b; operacion = 'resta';          simbolo = '-'; break;
-      case '*': resultado = a * b; operacion = 'multiplicación'; simbolo = '×'; break;
-      case '/':
-        if (b == 0) {
-          return const RagRespuesta(
-            texto: '¡No se puede dividir entre cero!\n'
-                   'El cero nunca puede ser divisor.',
-            encontrado: true, tema: 'división',
-          );
-        }
-        resultado = a / b; operacion = 'división'; simbolo = '÷'; break;
-      default: return null;
-    }
-
-    return RagRespuesta(
-      texto: '${_fmt(a)} $simbolo ${_fmt(b)} = ${_fmt(resultado)}\n\n'
-             '¡Muy bien! La $operacion de ${_fmt(a)} y ${_fmt(b)} es ${_fmt(resultado)}.',
-      encontrado: true,
-      tema: operacion,
-    );
-  }
-
-  static RagRespuesta _respEspecial(
-      String enunciado, double resultado, String tema, String calculo) {
-    return RagRespuesta(
-      texto: '$enunciado = ${_fmt(resultado)}\n($calculo)',
-      encontrado: true,
-      tema: tema,
-    );
-  }
-
-  static double _parseNum(String s) => double.parse(s.replaceAll(',', '.'));
-
-  static String _fmt(double n) {
-    if (n == n.truncateToDouble()) return n.toInt().toString();
-    final s = n.toStringAsFixed(4);
-    return s.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
-  }
+  //  El evaluador aritmético (fracciones, dobles/mitades/triples, potencias,
+  //  raíces y las 4 operaciones) vive en calculadora_matematica.dart —
+  //  aislado para poder probarlo con `dart test` y para que ninguna de esas
+  //  preguntas, aunque no las reconozca este archivo, dependa de un LLM.
 
   //  BM25
 

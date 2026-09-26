@@ -85,25 +85,44 @@ class _ActividadTerminadaScreenState
     final w  = mq.size.width;
     final h  = mq.size.height;
 
-    // El video es portrait 9:16. Calcular dimensiones para que CUBRA toda la
-    // pantalla sin barras (lógica equivalente a BoxFit.cover):
+    // El video mide 864×1920 px = aspecto 9:20 (confirmado con ffprobe; NO
+    // es 9:16). Calcular dimensiones para que CUBRA toda la pantalla sin
+    // barras (lógica equivalente a BoxFit.cover):
     //   - Si ajustar por ancho deja la altura corta → ajustar por altura.
     // Alinear al TOPE: si el video sobresale, se recorta por abajo, nunca
     // por arriba, garantizando que el texto superior siempre sea visible.
-    const videoAspect = 9.0 / 16.0;
+    const videoAspect = 9.0 / 20.0;
     double videoW = w;
     double videoH = w / videoAspect;
     if (videoH < h) {
-      // Pantalla más ancha que 9:16 → escalar por altura para cubrir todo
+      // Pantalla más ancha que 9:20 → escalar por altura para cubrir todo
       videoH = h;
       videoW = h * videoAspect;
     }
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      // Mismo azul del cielo de primer_frame_video.png: si ese asset tardara
+      // un instante en decodificarse, no se nota un salto de color.
+      backgroundColor: const Color(0xFF67CBE2),
       body: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
+          // Fondo estático de respaldo: el video (asíncrono) tarda un
+          // instante en abrir y decodificar su primer fotograma, y antes de
+          // eso no dibuja nada. Sin esta imagen, ese instante se veía como
+          // una pantalla negra entre la actividad y las felicitaciones.
+          // primer_frame_video.png es literalmente el primer fotograma del
+          // video (extraído con ffmpeg), así que el cambio de uno a otro es
+          // imperceptible — no un paisaje genérico parecido, sino el mismo
+          // píxel a píxel.
+          const Positioned.fill(
+            child: Image(
+              image: AssetImage(
+                  'assets/images/actividad_terminada/primer_frame_video.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+
           // Video dimensionado para cubrir la pantalla, anclado al tope.
           // El exceso vertical (si lo hay) se recorta por abajo.
           Align(
@@ -115,6 +134,12 @@ class _ActividadTerminadaScreenState
                 controller: _videoController,
                 controls: NoVideoControls,
                 fit: BoxFit.fill,
+                // El widget Video pinta su propio fondo negro sólido por
+                // defecto (fill), por encima de todo lo demás, mientras no
+                // tiene un fotograma que mostrar. Eso era la pantalla negra:
+                // en transparente, se ve la imagen de fondo de abajo en su
+                // lugar.
+                fill: Colors.transparent,
               ),
             ),
           ),

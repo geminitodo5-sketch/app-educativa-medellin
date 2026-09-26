@@ -88,7 +88,8 @@ class _FelicitacionesModalState extends State<FelicitacionesModal> {
     final w  = mq.size.width;
     final h  = mq.size.height;
 
-    const videoAspect = 9.0 / 16.0;
+    // El video mide 864×1920 px = aspecto 9:20 (confirmado con ffprobe).
+    const videoAspect = 9.0 / 20.0;
     double videoW = w;
     double videoH = w / videoAspect;
     if (videoH < h) {
@@ -97,23 +98,45 @@ class _FelicitacionesModalState extends State<FelicitacionesModal> {
     }
 
     return Dialog(
-      backgroundColor: Colors.black,
+      // Mientras el video (asíncrono) abre y decodifica su primer fotograma
+      // no dibuja nada, y sin fondo ese instante se veía como una pantalla
+      // negra. primer_frame_video.png es literalmente el primer fotograma
+      // del video (extraído con ffmpeg), así que el cambio de uno a otro es
+      // imperceptible.
+      backgroundColor: const Color(0xFF67CBE2),
       insetPadding: EdgeInsets.zero,
       child: SizedBox(
         width: w,
         height: h,
         child: ClipRect(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: videoW,
-              height: videoH,
-              child: Video(
-                controller: controller,
-                controls: NoVideoControls,
-                fit: BoxFit.fill,
+          child: Stack(
+            children: [
+              const Positioned.fill(
+                child: Image(
+                  image: AssetImage(
+                      'assets/images/actividad_terminada/primer_frame_video.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: videoW,
+                  height: videoH,
+                  child: Video(
+                    controller: controller,
+                    controls: NoVideoControls,
+                    fit: BoxFit.fill,
+                    // El widget Video pinta su propio fondo negro sólido por
+                    // defecto (fill), por encima de todo lo demás, mientras
+                    // no tiene un fotograma que mostrar. Eso era la pantalla
+                    // negra: en transparente, se ve la imagen de fondo de
+                    // abajo en su lugar.
+                    fill: Colors.transparent,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import '../../data/providers/app_state_provider.dart';
 import '../../data/providers/database_provider.dart';
 import '../widgets/restauracion_fallida_dialog.dart';
 import '../../data/providers/musica_provider.dart';
+import '../../data/services/musica_service.dart';
 import 'bienvenida.dart';
 import 'login_view.dart';
 import 'menu_1_y_2_view.dart';
@@ -34,15 +36,19 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
   String? _errorEmail;
   String? _errorContrasena;
 
+  // Se guarda al iniciar: en dispose() ya no se puede usar `ref`.
+  late final MusicaService _musica;
+
   @override
   void initState() {
     super.initState();
-    ref.read(musicaServiceProvider).entrar();
+    _musica = ref.read(musicaServiceProvider);
+    _musica.entrar();
   }
 
   @override
   void dispose() {
-    ref.read(musicaServiceProvider).salir();
+    _musica.salir();
     _edadController.dispose();
     _emailController.dispose();
     _contrasenaController.dispose();
@@ -209,6 +215,21 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
           FadeTransition(opacity: anim, child: child),
       transitionDuration: const Duration(milliseconds: 400),
     ));
+  }
+
+  // ── SOLO para pruebas locales, nunca en producción ──────────────
+  // `kDebugMode` es `false` en todo build de release (flutter build apk/appbundle
+  // --release), así que esta ruta no puede llegar a un APK que se distribuya:
+  // el botón que la llama ni siquiera se dibuja fuera de modo debug.
+  // Crea un perfil 100% local (sin Firebase ni backend) para entrar a la app
+  // mientras se prueba algo que no depende del login, p. ej. la transición de
+  // fin de actividad.
+  Future<void> _entrarSinFirebaseDebug() async {
+    final repo = ref.read(estudianteRepositoryProvider);
+    final estudiante = await repo.obtenerOCrearPorDefecto();
+    if (!mounted) return;
+    ref.read(estudianteActivoProvider.notifier).state = estudiante;
+    _navegarAlMenu(estudiante);
   }
 
   void _navegarABienvenida({String? email, required String uid}) {
@@ -661,6 +682,27 @@ class _RegistroViewState extends ConsumerState<RegistroView> {
                             ),
                           ),
                         ),
+
+                        // Solo aparece en builds de debug (nunca en release):
+                        // entra sin Firebase para probar algo que no depende
+                        // del login, p. ej. la transición de fin de actividad.
+                        if (kDebugMode) ...[
+                          const SizedBox(height: 12),
+                          Center(
+                            child: TextButton(
+                              onPressed:
+                                  _cargando ? null : _entrarSinFirebaseDebug,
+                              child: const Text(
+                                '🛠️ Entrar sin Firebase (solo debug)',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  color: Colors.black38,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
