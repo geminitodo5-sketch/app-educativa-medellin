@@ -1,5 +1,11 @@
 FROM python:3.11-slim
 WORKDIR /app
+
+# Sin esto, Python guarda el output en un buffer interno y los `print()` de
+# diagnóstico pueden tardar varios minutos en aparecer en los logs de Railway
+# (solo salen cuando el buffer se llena por otro lado, no cuando se escriben).
+ENV PYTHONUNBUFFERED=1
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
