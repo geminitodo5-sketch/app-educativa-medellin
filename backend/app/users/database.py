@@ -40,6 +40,15 @@ def _crear_engine(url: str):
 engine = _crear_engine(config.USERS_DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
+# Diagnóstico de arranque: nunca imprime usuario ni contraseña, solo confirma
+# a qué motor y host se conectó realmente el proceso. Útil para detectar un
+# USERS_DATABASE_URL que no se aplicó (p. ej. cayó de vuelta a SQLite).
+print(
+    f"[DB] usuarios → backend={engine.url.get_backend_name()} "
+    f"host={engine.url.host or '(sin host: archivo local)'} "
+    f"db={engine.url.database}"
+)
+
 
 def get_db():
     db = SessionLocal()
@@ -52,3 +61,4 @@ def get_db():
 def init_db() -> None:
     from app.users import models  # noqa: F401  (registra las tablas)
     Base.metadata.create_all(engine)
+    print(f"[DB] tablas listas: {sorted(Base.metadata.tables.keys())}")
